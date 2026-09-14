@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/trade/v1/domain.schema.json",
+  "title": "Baobab Trade B2B domain types",
+  "$defs": {
+    "resourceId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "minLength": 3,
+      "maxLength": 128,
+      "description": "Opaque identifier minted by its declared authority. Names, email addresses, SKUs and document numbers are not identities."
+    },
+    "decimal": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$",
+      "maxLength": 64,
+      "description": "Non-negative base-10 decimal string. JSON floating-point values are forbidden for money and quantity."
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "ISO 4217 alphabetic currency code."
+    },
+    "quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "unit"],
+      "properties": {
+        "value": { "$ref": "#/$defs/decimal" },
+        "unit": { "type": "string", "pattern": "^[A-Z0-9][A-Z0-9._/-]*$", "maxLength": 24 }
+      }
+    },
+    "money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": { "$ref": "#/$defs/decimal" },
+        "currency": { "$ref": "#/$defs/currency" }
+      }
+    },
+    "buyerContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_id", "tenant_id", "legal_entity_id", "digital_estate_id", "market_id", "buyer_organisation_id"],
+      "properties": {
+        "principal_id": { "$ref": "#/$defs/resourceId" },
+        "tenant_id": { "$ref": "#/$defs/resourceId" },
+        "legal_entity_id": { "$ref": "#/$defs/resourceId" },
+        "digital_estate_id": { "$ref": "#/$defs/resourceId" },
+        "market_id": { "$ref": "#/$defs/resourceId" },
+        "buyer_organisation_id": { "$ref": "#/$defs/resourceId" }
+      },
+      "description": "Requested buyer context after IAM authentication, Control Plane resolution and Trade membership authorization. It is context, never a credential."
+    },
+    "lineInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["client_line_id", "variant_id", "quantity"],
+      "properties": {
+        "client_line_id": { "$ref": "#/$defs/resourceId" },
+        "variant_id": { "$ref": "#/$defs/resourceId" },
+        "quantity": { "$ref": "#/$defs/quantity" }
+      }
+    }
+  }
+}

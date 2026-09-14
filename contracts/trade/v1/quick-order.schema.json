@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/trade/v1/quick-order.schema.json",
+  "title": "B2B quick-order validation",
+  "$defs": {
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context", "lines"],
+      "properties": {
+        "context": { "$ref": "domain.schema.json#/$defs/buyerContext" },
+        "lines": { "type": "array", "minItems": 1, "maxItems": 100, "items": { "$ref": "domain.schema.json#/$defs/lineInput" } }
+      }
+    },
+    "lineResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["client_line_id", "variant_id", "quantity", "decision"],
+      "properties": {
+        "client_line_id": { "$ref": "domain.schema.json#/$defs/resourceId" },
+        "variant_id": { "$ref": "domain.schema.json#/$defs/resourceId" },
+        "quantity": { "$ref": "domain.schema.json#/$defs/quantity" },
+        "decision": { "type": "string", "enum": ["ACCEPTED", "REJECTED"] },
+        "reason_codes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" } },
+        "unit_price": { "$ref": "domain.schema.json#/$defs/money" },
+        "minimum_order": { "$ref": "domain.schema.json#/$defs/quantity" },
+        "available_quantity": { "$ref": "domain.schema.json#/$defs/quantity" }
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["validation_id", "decision", "lines", "validated_at"],
+      "properties": {
+        "validation_id": { "$ref": "domain.schema.json#/$defs/resourceId" },
+        "decision": { "type": "string", "enum": ["ACCEPTED", "PARTIAL", "REJECTED"] },
+        "lines": { "type": "array", "minItems": 1, "maxItems": 100, "items": { "$ref": "#/$defs/lineResult" } },
+        "validated_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time", "description": "Expiry of this advisory validation. Cart and checkout must revalidate server-side." }
+      }
+    }
+  }
+}
