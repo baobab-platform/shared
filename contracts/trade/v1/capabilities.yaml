@@ -9,7 +9,7 @@ capabilities:
   - capability_key: commercial.rfq.manage
     owner: baobab-trade
     data_classification: TENANT_CONFIDENTIAL
-    request_schema: rfq.schema.json
+    request_schema: rfq-create.schema.json
     response_schema: rfq.schema.json
     idempotency: required_for_commands
   - capability_key: commercial.quotation.manage

@@ -61,7 +61,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json: { schema: { $ref: ./rfq.schema.json } }
+          application/json: { schema: { $ref: ./rfq-create.schema.json } }
       responses:
         "201":
           description: RFQ created, or the prior idempotent outcome returned
