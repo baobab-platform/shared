@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/trade/v1/quotation.schema.json",
+  "title": "B2B quotation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["quotation_id", "rfq_id", "context", "status", "currency", "lines", "total", "valid_until", "version", "created_at", "updated_at"],
+  "properties": {
+    "quotation_id": { "$ref": "domain.schema.json#/$defs/resourceId" },
+    "rfq_id": { "$ref": "domain.schema.json#/$defs/resourceId" },
+    "context": { "$ref": "domain.schema.json#/$defs/buyerContext" },
+    "status": { "type": "string", "enum": ["DRAFT", "ISSUED", "ACCEPTED", "REJECTED", "WITHDRAWN", "EXPIRED", "CONVERTED"] },
+    "currency": { "$ref": "domain.schema.json#/$defs/currency" },
+    "lines": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["line_id", "variant_id", "quantity", "unit_price", "line_total"],
+        "properties": {
+          "line_id": { "$ref": "domain.schema.json#/$defs/resourceId" },
+          "variant_id": { "$ref": "domain.schema.json#/$defs/resourceId" },
+          "quantity": { "$ref": "domain.schema.json#/$defs/quantity" },
+          "unit_price": { "$ref": "domain.schema.json#/$defs/money" },
+          "line_total": { "$ref": "domain.schema.json#/$defs/money" }
+        }
+      }
+    },
+    "total": { "$ref": "domain.schema.json#/$defs/money" },
+    "incoterm": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "payment_terms": { "type": "string", "maxLength": 500 },
+    "valid_until": { "type": "string", "format": "date-time" },
+    "version": { "type": "integer", "minimum": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "description": "Trade-owned confidential commercial offer. Values are authoritative only for the identified buyer context and version."
+}

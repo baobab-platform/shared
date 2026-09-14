@@ -66,6 +66,7 @@ on:
       - "scripts/validate-identity-events-contracts.rb"
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
+      - "scripts/validate-trade-contracts.rb"
   pull_request:
     paths:
       - ".github/workflows/**"
@@ -80,6 +81,7 @@ on:
       - "scripts/validate-identity-events-contracts.rb"
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
+      - "scripts/validate-trade-contracts.rb"
   workflow_dispatch:
 
 permissions:
@@ -106,6 +108,8 @@ jobs:
         run: ruby scripts/validate-authorization-contracts.rb
       - name: Validate capability-centric contracts
         run: ruby scripts/validate-capability-contracts.rb
+      - name: Validate Trade B2B boundary contracts
+        run: ruby scripts/validate-trade-contracts.rb
 
   action-pinning:
     name: Enforce action pinning (self-check)

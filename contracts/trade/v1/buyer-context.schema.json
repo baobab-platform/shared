@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/trade/v1/buyer-context.schema.json",
+  "title": "Authorized buyer context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["context", "membership_id", "roles", "permissions", "approval_state", "resolved_at"],
+  "properties": {
+    "context": { "$ref": "domain.schema.json#/$defs/buyerContext" },
+    "membership_id": { "$ref": "domain.schema.json#/$defs/resourceId" },
+    "roles": { "type": "array", "uniqueItems": true, "items": { "$ref": "domain.schema.json#/$defs/resourceId" } },
+    "permissions": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[.:_-][a-z0-9]+)*$" } },
+    "approval_state": { "type": "string", "enum": ["PENDING", "APPROVED", "SUSPENDED", "REVOKED"] },
+    "resolved_at": { "type": "string", "format": "date-time" }
+  },
+  "description": "Trade-owned authorization projection. Authentication or IAM organisation membership alone cannot produce this object."
+}

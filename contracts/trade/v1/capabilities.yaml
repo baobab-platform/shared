@@ -1,0 +1,20 @@
+version: 1
+capabilities:
+  - capability_key: commerce.cart.manage
+    owner: baobab-trade
+    data_classification: TENANT_CONFIDENTIAL
+    request_schema: quick-order.schema.json#/$defs/request
+    response_schema: quick-order.schema.json#/$defs/response
+    idempotency: required_for_cart_mutation
+  - capability_key: commercial.rfq.manage
+    owner: baobab-trade
+    data_classification: TENANT_CONFIDENTIAL
+    request_schema: rfq.schema.json
+    response_schema: rfq.schema.json
+    idempotency: required_for_commands
+  - capability_key: commercial.quotation.manage
+    owner: baobab-trade
+    data_classification: RESTRICTED
+    request_schema: rfq.schema.json
+    response_schema: quotation.schema.json
+    idempotency: required_for_commands
