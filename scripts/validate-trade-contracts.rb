@@ -41,6 +41,12 @@ quotation_statuses = quotation.dig("properties", "status", "enum")
 fail_contract("quotation lifecycle must distinguish acceptance, expiry and order conversion") unless %w[ACCEPTED EXPIRED CONVERTED].all? { |status| quotation_statuses.include?(status) }
 fail_contract("quotation must carry an optimistic version") unless quotation.fetch("required").include?("version")
 
+rfq_create = documents.fetch("rfq-create.schema.json")
+server_owned_rfq_fields = %w[rfq_id status version created_at updated_at]
+leaked_fields = server_owned_rfq_fields & rfq_create.fetch("properties").keys
+fail_contract("RFQ create command exposes server-owned fields: #{leaked_fields.join(', ')}") unless leaked_fields.empty?
+fail_contract("RFQ create command must require buyer context and lines") unless rfq_create.fetch("required") == %w[context lines]
+
 quick_order = documents.fetch("quick-order.schema.json")
 limit = quick_order.dig("$defs", "request", "properties", "lines", "maxItems")
 fail_contract("quick order must have a bounded line count") unless limit.is_a?(Integer) && limit.positive? && limit <= 100
