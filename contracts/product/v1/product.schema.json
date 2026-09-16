@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/product/v1/product.schema.json",
+  "title": "Product and ProductVersion",
+  "description": "A Product is a sellable platform offering (e.g. \"baobab-xbt\"); a ProductVersion is one immutable, versioned packaging of that offering as a CapabilityComposition. Product/ProductVersion carry no business logic and mint no runtime service -- ProductSubscription -> ProductVersion -> CapabilityComposition -> CapabilityGrant expansion is a nabhold/baobab-cp runtime responsibility (Technical Specification SS31).",
+  "$defs": {
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_id", "name", "status"],
+      "properties": {
+        "product_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/productId" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "status": { "$ref": "domain.schema.json#/$defs/productLifecycle" },
+        "owner": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "The Baobab repository/engine that owns this product's definition, e.g. \"baobab-cp\"."
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "productVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_version_id", "product_id", "version", "composition_key", "status"],
+      "properties": {
+        "product_version_id": { "$ref": "domain.schema.json#/$defs/productVersionId" },
+        "product_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/productId" },
+        "version": { "$ref": "domain.schema.json#/$defs/productVersionSemver" },
+        "composition_key": {
+          "$ref": "../../capability/v1/domain.schema.json#/$defs/capabilityCompositionKey",
+          "description": "The base CapabilityComposition this ProductVersion packages, e.g. \"solution.baobab-xbt\". Additional profiles/add-ons are selected per-subscription (see subscription.schema.json's subscription_profiles), not baked into the ProductVersion itself, so the same version can serve tenants with different profile combinations."
+        },
+        "status": { "$ref": "domain.schema.json#/$defs/productLifecycle" },
+        "released_at": { "type": ["string", "null"], "format": "date-time" },
+        "deprecated_at": { "type": ["string", "null"], "format": "date-time" },
+        "retired_at": { "type": ["string", "null"], "format": "date-time" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "if": {
+        "properties": { "status": { "const": "DEPRECATED" } }
+      },
+      "then": { "required": ["deprecated_at"] }
+    }
+  }
+}
