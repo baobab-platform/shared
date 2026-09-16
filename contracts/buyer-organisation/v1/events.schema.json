@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/buyer-organisation/v1/events.schema.json",
+  "title": "BuyerOrganisation lifecycle event payloads",
+  "description": "Data payloads for BuyerOrganisation lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "buyerOrganisationRegisteredEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buyer_organisation_id", "tenant_id", "name", "status"],
+      "properties": {
+        "buyer_organisation_id": { "$ref": "domain.schema.json#/$defs/buyerOrganisationId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "status": { "$ref": "domain.schema.json#/$defs/buyerOrganisationStatus" }
+      }
+    },
+    "buyerOrganisationStatusChangedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buyer_organisation_id", "tenant_id", "status"],
+      "properties": {
+        "buyer_organisation_id": { "$ref": "domain.schema.json#/$defs/buyerOrganisationId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/buyerOrganisationStatus" },
+        "previous_status": { "$ref": "domain.schema.json#/$defs/buyerOrganisationStatus" }
+      }
+    }
+  }
+}

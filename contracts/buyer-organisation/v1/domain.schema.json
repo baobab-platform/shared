@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/buyer-organisation/v1/domain.schema.json",
+  "title": "Nabhold BuyerOrganisation domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): the buyer-side counterparty a tenant trades with. Governed under the capability/v1 namespace registry's `customer` domain. This package defines vocabulary and the resource shape only; it mints no canonical Organisation ID and does not replace an engine-owned Customer/Business Partner record -- same boundary contracts/supplier-onboarding/v1 draws for suppliers.",
+  "$defs": {
+    "buyerOrganisationId": {
+      "type": "string",
+      "pattern": "^buyerorg_[a-z0-9]+$",
+      "minLength": 10,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for a BuyerOrganisation."
+    },
+    "buyerOrganisationStatus": {
+      "type": "string",
+      "enum": ["PENDING", "ACTIVE", "SUSPENDED", "ARCHIVED"],
+      "description": "Lifecycle state of a BuyerOrganisation."
+    },
+    "buyerOrganisation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buyer_organisation_id", "tenant_id", "name", "status"],
+      "properties": {
+        "buyer_organisation_id": { "$ref": "#/$defs/buyerOrganisationId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "canonical_organisation_id": {
+          "type": ["string", "null"],
+          "maxLength": 128,
+          "description": "Reserved and nullable, mirroring contracts/supplier-onboarding/v1's canonical_organisation_id: no canonical Organisation ID authority exists yet (contracts/erp/v1/system-of-record.yaml keeps Organisation's canonical_owner unassigned)."
+        },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "status": { "$ref": "#/$defs/buyerOrganisationStatus" },
+        "market_id": { "type": "string", "maxLength": 128 },
+        "currency_code": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/trade-document/v1/domain.schema.json",
+  "title": "Nabhold TradeDocument domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a trade, inspection or proof-of-delivery document's metadata and lifecycle. Governed under the capability/v1 namespace registry's `documents` domain.",
+  "$defs": {
+    "tradeDocumentId": {
+      "type": "string",
+      "pattern": "^tdoc_[a-z0-9]+$",
+      "minLength": 8,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for a TradeDocument."
+    },
+    "tradeDocumentType": {
+      "type": "string",
+      "enum": [
+        "COMMERCIAL_INVOICE",
+        "PACKING_LIST",
+        "BILL_OF_LADING",
+        "AIRWAY_BILL",
+        "CERTIFICATE_OF_ORIGIN",
+        "CUSTOMS_DECLARATION",
+        "INSPECTION_CERTIFICATE",
+        "PROOF_OF_DELIVERY",
+        "INSURANCE_CERTIFICATE"
+      ],
+      "description": "Document type. Deliberately excludes tax-authority filings, which belong to the `tax` domain (ADR-SHARED-008)."
+    },
+    "tradeDocumentStatus": {
+      "type": "string",
+      "enum": ["DRAFT", "ISSUED", "VERIFIED", "REJECTED", "SUPERSEDED"],
+      "description": "Lifecycle state of a TradeDocument."
+    },
+    "tradeDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trade_document_id", "tenant_id", "document_type", "status", "issuing_party_reference"],
+      "properties": {
+        "trade_document_id": { "$ref": "#/$defs/tradeDocumentId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "document_type": { "$ref": "#/$defs/tradeDocumentType" },
+        "status": { "$ref": "#/$defs/tradeDocumentStatus" },
+        "related_shipment_id": { "type": ["string", "null"] },
+        "related_procurement_request_id": { "type": ["string", "null"] },
+        "issuing_party_reference": { "type": "string", "maxLength": 128 },
+        "storage_reference": {
+          "type": ["string", "null"],
+          "format": "uri",
+          "description": "URI of the stored document artifact. This package does not choose or own a document management system."
+        },
+        "issued_at": { "type": ["string", "null"], "format": "date-time" },
+        "superseded_by": { "type": ["string", "null"] },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "if": {
+        "properties": { "status": { "const": "ISSUED" } }
+      },
+      "then": { "required": ["issued_at"] }
+    }
+  }
+}

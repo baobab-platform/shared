@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/shipment/v1/domain.schema.json",
+  "title": "Nabhold Shipment domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a physical movement of goods along a trade lane, from planning through delivery. Governed under the capability/v1 namespace registry's `logistics` domain.",
+  "$defs": {
+    "shipmentId": {
+      "type": "string",
+      "pattern": "^ship_[a-z0-9]+$",
+      "minLength": 7,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for a Shipment."
+    },
+    "shipmentStatus": {
+      "type": "string",
+      "enum": ["PLANNED", "IN_TRANSIT", "CUSTOMS_HOLD", "DELIVERED", "EXCEPTION", "CANCELLED"],
+      "description": "Lifecycle state of a Shipment."
+    },
+    "shipmentMode": {
+      "type": "string",
+      "enum": ["SEA", "AIR", "ROAD", "RAIL", "MULTIMODAL"],
+      "description": "Primary transport mode of a Shipment."
+    },
+    "shipmentTrackingEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["occurred_at", "description"],
+      "properties": {
+        "occurred_at": { "type": "string", "format": "date-time" },
+        "location": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "shipment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shipment_id", "tenant_id", "status", "mode"],
+      "properties": {
+        "shipment_id": { "$ref": "#/$defs/shipmentId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "trade_lane_id": {
+          "type": ["string", "null"],
+          "description": "The trade-lane/v1 tradeLaneId this shipment moves along, if applicable."
+        },
+        "origin_market_id": { "type": "string", "maxLength": 128 },
+        "destination_market_id": { "type": "string", "maxLength": 128 },
+        "carrier_reference": { "type": "string", "maxLength": 128 },
+        "mode": { "$ref": "#/$defs/shipmentMode" },
+        "status": { "$ref": "#/$defs/shipmentStatus" },
+        "tracking_events": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/shipmentTrackingEvent" }
+        },
+        "estimated_departure": { "type": "string", "format": "date-time" },
+        "estimated_arrival": { "type": "string", "format": "date-time" },
+        "delivered_at": { "type": ["string", "null"], "format": "date-time" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "if": {
+        "properties": { "status": { "const": "DELIVERED" } }
+      },
+      "then": { "required": ["delivered_at"] }
+    }
+  }
+}
