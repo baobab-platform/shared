@@ -37,6 +37,28 @@
 #   C/C++) would need to override this to "autobuild" or "manual"; that
 #   is a per-consumer decision, not something this workflow should guess.
 #
+# WHY THE SARIF UPLOAD IS ITS OWN STEP (not analyze's built-in auto-upload):
+#   codeql-action/analyze's implicit upload (its default `upload: always`)
+#   needs to resolve which calling job it's running in by re-fetching and
+#   parsing the *calling* repository's own workflow YAML, looking for a
+#   job literally named "analyze" with a step that uses this action. That
+#   lookup only succeeds when a consumer calls this workflow directly. A
+#   consumer that calls it through its own `workflow_call` job (every
+#   consumer of this file does — see nabhold/baobab-erp's
+#   .github/workflows/security.yml) never has a job named "analyze" in
+#   its own YAML (that job id only exists here), so the lookup always
+#   fails: "Could not get upload input to github/codeql-action/analyze
+#   since the workflow has no job named analyze"
+#   (job_status: JOB_STATUS_CONFIGURATION_ERROR), even though the CodeQL
+#   query evaluation itself completed successfully. Setting
+#   `upload: never` on analyze and uploading via a separate, explicit
+#   upload-sarif step avoids this: upload-sarif computes its analysis key
+#   from the `category`/`matrix` inputs given to it directly, not by
+#   parsing the calling workflow for a job name, so it isn't subject to
+#   the same lookup regardless of how many workflow_call levels sit above
+#   it. sarif_file/checkout_path are left at their defaults, which match
+#   analyze's own `output` default ("../results") by convention.
+#
 # PERMISSIONS:
 #   `security-events: write` is required to upload SARIF results to the
 #   calling repository's Security tab; `actions: read` is required by
@@ -47,6 +69,11 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Split the SARIF upload into its own explicit upload-sarif step
+#   (analyze: upload: never) -- analyze's implicit auto-upload cannot
+#   resolve its calling job through a second workflow_call level and
+#   always failed for every consumer of this workflow with
+#   JOB_STATUS_CONFIGURATION_ERROR ("workflow has no job named analyze").
 # * Initial version.
 # ==============================================================================
 
@@ -96,5 +123,11 @@ jobs:
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@37f2634a92ba38a0926ef79a0748ac8ae7d95ab2 # v4.37.8
+        with:
+          category: "/language:${{ matrix.language }}"
+          upload: never
+
+      - name: Upload CodeQL results
+        uses: github/codeql-action/upload-sarif@37f2634a92ba38a0926ef79a0748ac8ae7d95ab2 # v4.37.8
         with:
           category: "/language:${{ matrix.language }}"
