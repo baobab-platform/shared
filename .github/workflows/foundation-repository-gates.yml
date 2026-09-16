@@ -50,6 +50,30 @@
 # already carries the suffix (frontend/frontend-e2e's real convention) or
 # doesn't (full/infra's real convention, e.g. nabhold/infrastructure's
 # bare "1.4.0-rc.0").
+#
+# 2026-09-16: repository-contract job gained a NEW check — after
+# confirming the devcontainer file's TEXT contains the expected
+# `ghcr.io/nabhold/baobab-dev:<tag>` string (the check above), it now also
+# confirms that tag actually RESOLVES on GHCR. Root cause for adding this:
+# every check above only proves internal consistency between a repo's own
+# environment.yaml and its own devcontainer file — it says nothing about
+# whether the image those two files agree on actually exists. That gap is
+# exactly how Codespaces ended up stuck in recovery mode for zuribeans and
+# other consumer repos: a repo's contract and devcontainer.json can agree
+# on a tag (passing every check above) while that tag was never
+# successfully published, or was published then removed/retagged —
+# developers only find out when `docker pull`/Codespaces creation fails
+# locally, with no CI signal beforehand. Deliberately does NOT reach
+# across repos to read baobab-dev's own release notes or another
+# consumer's files (GITHUB_TOKEN cannot access other repositories'
+# contents regardless of org membership — this is a hard platform
+# restriction, not a permissions oversight); it only needs `packages:
+# read` to query GHCR directly for the tag THIS repo itself already
+# declares, which is a registry API call, not a cross-repo GitHub API
+# call, so the restriction above doesn't apply to it. Self-contained per
+# repo: each consuming repo's own Foundation Repository Gates run catches
+# its own dead pin, on every PR/push, before it reaches a developer's
+# Codespace.
 # ==============================================================================
 
 name: Reusable — Foundation Repository Gates
@@ -88,9 +112,17 @@ jobs:
 
   repository-contract:
     runs-on: ubuntu-26.04
+    # packages: read ADDED 2026-09-16 — needed for the new "Verify pinned
+    # baobab-dev image resolves on GHCR" step below (crane digest lookup).
+    # contents: read repeated explicitly because a job-level permissions:
+    # block REPLACES the workflow-level default rather than adding to it.
+    permissions:
+      contents: read
+      packages: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Validate Codespaces and environment contract
+        id: contract
         shell: ruby {0}
         run: |
           require "yaml"
@@ -152,6 +184,14 @@ jobs:
           capabilities = declaration.dig("validation", "required_capabilities")
           abort "required_capabilities must not be empty" unless capabilities.is_a?(Array) && !capabilities.empty?
 
+          # Handed to the "Verify pinned baobab-dev image resolves on GHCR"
+          # step below — computed once here, not re-derived from
+          # environment.yaml a second time in bash, so the two steps can
+          # never disagree about which tag is actually "the" declared one.
+          File.open(ENV.fetch("GITHUB_OUTPUT"), "a") do |f|
+            f.puts "expected_image=#{expected}"
+          end
+
       - name: Enforce reproducibility inputs
         shell: bash
         run: |
@@ -175,6 +215,56 @@ jobs:
             }
           done < <(find .github -type f \( -name '*.yml' -o -name '*.yaml' \) -exec grep -hE '^[[:space:]]*(-[[:space:]]*)?uses:[[:space:]]*' {} + 2>/dev/null || true)
           (( violations == 0 ))
+
+      # ------------------------------------------------------------------
+      # Verify pinned baobab-dev image resolves on GHCR
+      # ------------------------------------------------------------------
+      # See this file's 2026-09-16 header note for the full rationale.
+      # Everything above proves the repo's OWN files agree with each
+      # other; nothing above proves the image they agree on still exists.
+      # This closes that gap with a live registry lookup against the
+      # exact `expected_image` the contract step above already computed.
+      #
+      # docker/login-action + a checksummed crane binary, same pattern
+      # nabhold/baobab-dev's own publish.yml and registry-integrity.yml
+      # use — kept identical rather than inventing a second convention.
+      # GHCR auth here only needs `packages: read` (this job's own
+      # permissions: block above); it is a registry API call scoped to
+      # this token's org-visible packages, NOT the repo-scoped Contents
+      # API, so it does not run into the cross-repo GITHUB_TOKEN
+      # restriction this file's header note explains.
+      - name: Authenticate to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install crane CLI tool
+        env:
+          CRANE_VERSION: "0.21.9"
+          CRANE_SHA256: "5c16d8ddb971cb1d5e6ed8b1e743da8224414eeba2c2762d8f1a61b2f095699e"
+        run: |
+          set -euo pipefail
+          ASSET="go-containerregistry_Linux_x86_64.tar.gz"
+          curl -fsSL -o "${ASSET}" "https://github.com/google/go-containerregistry/releases/download/v${CRANE_VERSION}/${ASSET}"
+          echo "${CRANE_SHA256}  ${ASSET}" | sha256sum -c -
+          tar -xzf "${ASSET}" crane
+          chmod +x crane
+          sudo mv crane /usr/local/bin/crane
+          crane version
+
+      - name: Verify pinned baobab-dev image resolves on GHCR
+        env:
+          EXPECTED_IMAGE: ${{ steps.contract.outputs.expected_image }}
+        run: |
+          set -euo pipefail
+          if ! digest=$(crane digest "${EXPECTED_IMAGE}" 2>&1); then
+            echo "::error::${EXPECTED_IMAGE} is declared in .nabhold/environment.yaml and referenced in .devcontainer/**, but GHCR cannot resolve it: ${digest}"
+            echo "::error::This is the exact failure mode that leaves Codespaces stuck in recovery mode and 'docker pull' failing locally for every developer on this repo — the contract says this tag exists, but it doesn't (yet, or anymore)."
+            exit 1
+          fi
+          echo "Resolved ${EXPECTED_IMAGE} -> ${digest}"
 
   vulnerability-scan:
     runs-on: ubuntu-26.04
