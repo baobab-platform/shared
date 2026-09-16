@@ -66,6 +66,20 @@ Changes that have been merged but have not yet been included in a released versi
 - ADR-SHARED-008, confirming `com.nabhold.<context>.<...>.v<N>`
   (`contracts/events/v1/envelope.schema.json`) as the sole canonical
   event-type convention and registering the four domains above.
+- A new `contracts/product/v1` package: `Product`, `ProductVersion`
+  (`product.schema.json`), `ProductSubscription`, `EntitlementProjection`
+  (`subscription.schema.json`), lifecycle events and AsyncAPI contract,
+  closing 5 of Programme Gate P1's previously-absent items.
+- `TenantProvisioning` (`contracts/control-plane/v1/provisioning-plan.schema.json`),
+  the onboarding process aggregate Technical Specification §21 requires,
+  additive to (not replacing) the already-shipped coarse
+  provisioning-state-machine.yaml lifecycle.
+- `ReadinessSnapshot` (`contracts/control-plane/v1/readiness.schema.json`)
+  and `Drift` (`drift.schema.json`), the last 2 of Programme Gate P1's
+  previously-absent items, both reusing the existing
+  `capability_resolution_denial` reason-code vocabulary rather than
+  introducing a new one.
+- ADR-SHARED-009, closing Programme Gate P1 — Shared Contract Foundation.
 
 ## Changed
 
