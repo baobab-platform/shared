@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/quotation/v1/events.schema.json",
+  "title": "Quotation lifecycle event payloads",
+  "description": "Data payloads for Quotation lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "quotationSubmittedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["quotation_id", "tenant_id", "status"],
+      "properties": {
+        "quotation_id": { "$ref": "domain.schema.json#/$defs/quotationId" },
+        "rfq_id": { "type": ["string", "null"] },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/quotationStatus" },
+        "valid_until": { "type": "string", "format": "date-time" }
+      }
+    },
+    "quotationDecidedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["quotation_id", "tenant_id", "status"],
+      "properties": {
+        "quotation_id": { "$ref": "domain.schema.json#/$defs/quotationId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/quotationStatus" },
+        "rejection_reason": { "type": "string", "maxLength": 500 }
+      }
+    }
+  }
+}

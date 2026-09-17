@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/rfq/v1/events.schema.json",
+  "title": "RFQ lifecycle event payloads",
+  "description": "Data payloads for RFQ lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "rfqPublishedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rfq_id", "tenant_id", "buyer_organisation_id", "status"],
+      "properties": {
+        "rfq_id": { "$ref": "domain.schema.json#/$defs/rfqId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "buyer_organisation_id": { "$ref": "../../buyer-organisation/v1/domain.schema.json#/$defs/buyerOrganisationId" },
+        "status": { "$ref": "domain.schema.json#/$defs/rfqStatus" },
+        "response_deadline": { "type": "string", "format": "date-time" }
+      }
+    },
+    "rfqClosedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rfq_id", "tenant_id", "status"],
+      "properties": {
+        "rfq_id": { "$ref": "domain.schema.json#/$defs/rfqId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/rfqStatus" },
+        "awarded_quotation_id": {
+          "type": ["string", "null"],
+          "description": "Set when status is AWARDED; the quotation.schema.json quotationId that won this RFQ."
+        }
+      }
+    }
+  }
+}

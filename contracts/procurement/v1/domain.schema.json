@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/procurement/v1/domain.schema.json",
+  "title": "Nabhold ProcurementRequest domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a tenant's internal request to purchase, tracked from creation through approval to conversion into a commitment. Governed under the capability/v1 namespace registry's `procurement` domain.",
+  "$defs": {
+    "procurementRequestId": {
+      "type": "string",
+      "pattern": "^procreq_[a-z0-9]+$",
+      "minLength": 10,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for a ProcurementRequest."
+    },
+    "procurementRequestStatus": {
+      "type": "string",
+      "enum": ["REQUESTED", "APPROVED", "REJECTED", "CONVERTED", "CANCELLED"],
+      "description": "Lifecycle state of a ProcurementRequest."
+    },
+    "procurementApproval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approver_reference", "decision", "decided_at"],
+      "properties": {
+        "approver_reference": { "type": "string", "maxLength": 128 },
+        "decision": { "type": "string", "enum": ["APPROVED", "REJECTED"] },
+        "decided_at": { "type": "string", "format": "date-time" },
+        "comment": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "procurementRequestLineItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line_item_id", "description", "quantity"],
+      "properties": {
+        "line_item_id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "product_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/productId" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "quantity": { "type": "number", "exclusiveMinimum": 0 },
+        "unit_of_measure": { "type": "string", "maxLength": 32 },
+        "estimated_unit_price": { "type": "number", "minimum": 0 }
+      }
+    },
+    "procurementRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["procurement_request_id", "tenant_id", "requesting_legal_entity_id", "status", "line_items"],
+      "properties": {
+        "procurement_request_id": { "$ref": "#/$defs/procurementRequestId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "requesting_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "source_rfq_id": {
+          "type": ["string", "null"],
+          "description": "The rfq/v1 rfqId this request originated from, if any."
+        },
+        "source_quotation_id": {
+          "type": ["string", "null"],
+          "description": "The quotation/v1 quotationId this request is converting, if any."
+        },
+        "status": { "$ref": "#/$defs/procurementRequestStatus" },
+        "line_items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/procurementRequestLineItem" }
+        },
+        "approvals": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/procurementApproval" }
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

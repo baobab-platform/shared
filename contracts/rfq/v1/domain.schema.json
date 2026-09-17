@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/rfq/v1/domain.schema.json",
+  "title": "Nabhold RFQ (Request for Quotation) domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a buyer-initiated request for supplier pricing on one or more line items. Governed under the capability/v1 namespace registry's `commercial` domain (\"RFQ, quotation and contract negotiation capabilities not specific to one engine\").",
+  "$defs": {
+    "rfqId": {
+      "type": "string",
+      "pattern": "^rfq_[a-z0-9]+$",
+      "minLength": 6,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for an RFQ."
+    },
+    "rfqStatus": {
+      "type": "string",
+      "enum": ["DRAFT", "PUBLISHED", "CLOSED", "CANCELLED", "AWARDED"],
+      "description": "Lifecycle state of an RFQ."
+    },
+    "rfqLineItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line_item_id", "description", "quantity"],
+      "properties": {
+        "line_item_id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "product_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/productId" },
+        "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "quantity": { "type": "number", "exclusiveMinimum": 0 },
+        "unit_of_measure": { "type": "string", "maxLength": 32 },
+        "target_price": { "type": "number", "minimum": 0 }
+      }
+    },
+    "rfq": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rfq_id", "tenant_id", "buyer_organisation_id", "status", "line_items"],
+      "properties": {
+        "rfq_id": { "$ref": "#/$defs/rfqId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "buyer_organisation_id": { "$ref": "../../buyer-organisation/v1/domain.schema.json#/$defs/buyerOrganisationId" },
+        "market_id": { "type": "string", "maxLength": 128 },
+        "currency_code": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "status": { "$ref": "#/$defs/rfqStatus" },
+        "line_items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/rfqLineItem" }
+        },
+        "response_deadline": { "type": "string", "format": "date-time" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

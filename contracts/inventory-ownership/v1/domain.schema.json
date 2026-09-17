@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/inventory-ownership/v1/domain.schema.json",
+  "title": "Nabhold InventoryOwnershipRecord domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): which legal entity owns a quantity of stock at a location, distinct from physical custody. Governed under the capability/v1 namespace registry's `inventory` domain. Exists primarily to support ADR-BCP-012's intercompany in-transit-ownership model.",
+  "$defs": {
+    "inventoryOwnershipId": {
+      "type": "string",
+      "pattern": "^invown_[a-z0-9]+$",
+      "minLength": 9,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for an InventoryOwnershipRecord."
+    },
+    "inventoryOwnershipType": {
+      "type": "string",
+      "enum": ["OWNED", "CONSIGNMENT", "IN_TRANSIT"],
+      "description": "Nature of the owning legal entity's claim over the stock quantity."
+    },
+    "inventoryOwnershipRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventory_ownership_id", "tenant_id", "owning_legal_entity_id", "location_reference", "quantity", "ownership_type", "effective_from"],
+      "properties": {
+        "inventory_ownership_id": { "$ref": "#/$defs/inventoryOwnershipId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "owning_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "product_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/productId" },
+        "sku": { "type": "string", "maxLength": 128 },
+        "location_reference": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Opaque reference to the physical or virtual location holding the stock. This package does not mint a canonical Location/Warehouse ID."
+        },
+        "quantity": { "type": "number" },
+        "unit_of_measure": { "type": "string", "maxLength": 32 },
+        "ownership_type": { "$ref": "#/$defs/inventoryOwnershipType" },
+        "effective_from": { "type": "string", "format": "date-time" },
+        "effective_to": { "type": ["string", "null"], "format": "date-time" },
+        "created_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
