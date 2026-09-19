@@ -1,0 +1,290 @@
+# ==============================================================================
+# NABHOLD GROUP AFRICA — nabhold/shared
+#
+# VERSION PACKAGE RELEASES
+#
+# Target path:
+#
+#   .github/workflows/version-packages.yml
+#
+# PURPOSE
+# -------
+# Maintain the Changesets "Version Packages" pull request.
+#
+# This workflow:
+#
+#   ✓ detects pending .changeset files
+#   ✓ calculates package version increments
+#   ✓ updates package.json versions
+#   ✓ updates package changelogs
+#   ✓ updates internal dependency versions where required
+#   ✓ removes consumed changeset files
+#   ✓ creates/updates the Version Packages PR
+#
+# This workflow MUST NOT:
+#
+#   ✗ publish npm packages
+#   ✗ publish OCI images
+#   ✗ create GHCR artifacts
+#   ✗ create release tags
+#   ✗ create production releases
+#
+# Publication happens ONLY after a deliberate repository release tag:
+#
+#   vX.Y.Z
+#
+# Release architecture:
+#
+#   feature/change PR
+#          │
+#          ├── implementation
+#          └── .changeset/*.md
+#                   │
+#                   ▼
+#                 main
+#                   │
+#                   ▼
+#        version-packages.yml
+#                   │
+#                   ▼
+#          Version Packages PR
+#                   │
+#              reviewed/merged
+#                   │
+#                   ▼
+#           release-ready main
+#                   │
+#          NO PUBLICATION YET
+#                   │
+#                   ▼
+#             git tag vX.Y.Z
+#                   │
+#          ┌────────┴─────────┐
+#          ▼                  ▼
+# publish-shared.yml   publish-contracts-oci.yml
+#          │                  │
+#          ▼                  ▼
+# GitHub Packages           GHCR
+#
+# ==============================================================================
+
+name: Version Shared Packages
+
+on:
+  push:
+    branches:
+      - main
+
+    # Run only for changes that can materially affect package releases
+    # or the Changesets release state.
+    paths:
+      - ".changeset/**"
+      - "packages/**"
+      - "contracts/**"
+      - "contracts.lock.yaml"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "changeset-config.json"
+      - "turbo.json"
+      - ".github/workflows/version-packages.yml"
+
+  # Useful if the release PR needs to be regenerated manually.
+  workflow_dispatch:
+
+# There must never be two competing Version Packages updates.
+concurrency:
+  group: version-shared-packages-main
+  cancel-in-progress: false
+
+# Start with no permissions beyond repository read.
+permissions:
+  contents: read
+
+jobs:
+
+  # ============================================================================
+  # VERSION PACKAGES
+  # ============================================================================
+
+  version:
+    name: Prepare package versions
+
+    runs-on: ubuntu-26.04
+
+    # Changesets needs to:
+    #
+    #   - create/update its release branch
+    #   - create/update the Version Packages PR
+    #
+    # packages:read allows dependency installation from GitHub Packages where
+    # shared packages eventually depend on other private @nabhold packages.
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: read
+
+    steps:
+
+      # ------------------------------------------------------------------------
+      # Checkout
+      # ------------------------------------------------------------------------
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Changesets benefits from complete Git history for changelog and
+          # release calculations.
+          fetch-depth: 0
+
+      # ------------------------------------------------------------------------
+      # pnpm
+      #
+      # Version is intentionally not duplicated here.
+      #
+      # package.json already declares:
+      #
+      #   "packageManager": "pnpm@11.24.0"
+      #
+      # ------------------------------------------------------------------------
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      # ------------------------------------------------------------------------
+      # Node
+      # ------------------------------------------------------------------------
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: "pnpm"
+
+          # Configure GitHub Packages for any private @nabhold dependencies.
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@nabhold"
+
+      # ------------------------------------------------------------------------
+      # Install
+      #
+      # Frozen lockfile ensures version preparation executes against exactly
+      # the dependency graph committed to the repository.
+      # ------------------------------------------------------------------------
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ------------------------------------------------------------------------
+      # Repository state information
+      #
+      # Useful in workflow logs when diagnosing unexpected version behaviour.
+      # ------------------------------------------------------------------------
+
+      - name: Report pending changesets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Pending Changesets:"
+          echo
+
+          if compgen -G ".changeset/*.md" > /dev/null; then
+            for file in .changeset/*.md; do
+
+              # Ignore the Changesets README if one exists.
+              if [[ "$(basename "${file}")" == "README.md" ]]; then
+                continue
+              fi
+
+              echo "  - ${file}"
+            done
+          else
+            echo "  none"
+          fi
+
+      # ------------------------------------------------------------------------
+      # Changesets
+      #
+      # CRITICAL:
+      #
+      # There is intentionally NO:
+      #
+      #     publish: ...
+      #
+      # input here.
+      #
+      # Without a publish command Changesets only manages the Version Packages
+      # PR. Package publication is delegated exclusively to the tag-triggered
+      # publish-shared.yml workflow.
+      #
+      # Root package.json currently defines:
+      #
+      #   "version-packages": "changeset version"
+      #
+      # Using that script rather than relying on the action's implicit default
+      # makes the repository's release behaviour explicit and locally
+      # reproducible.
+      # ------------------------------------------------------------------------
+
+      - name: Create or update Version Packages PR
+        id: changesets
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        with:
+          version: pnpm version-packages
+
+          title: "chore(release): version shared packages"
+          commit: "chore(release): version shared packages"
+
+          # This workflow only versions packages.
+          #
+          # GitHub Releases belong to the separate tag-driven release process.
+          createGithubReleases: false
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ------------------------------------------------------------------------
+      # Workflow summary
+      # ------------------------------------------------------------------------
+
+      - name: Write version preparation summary
+        if: always()
+        shell: bash
+        env:
+          HAS_CHANGESETS: ${{ steps.changesets.outputs.hasChangesets }}
+          VERSION_PR: ${{ steps.changesets.outputs.pullRequestNumber }}
+        run: |
+          {
+            echo "# Shared Package Version Preparation"
+            echo
+            echo "| Property | Value |"
+            echo "|---|---|"
+            echo "| Base branch | \`main\` |"
+            echo "| Pending Changesets | \`${HAS_CHANGESETS:-unknown}\` |"
+            echo "| Version Packages PR | \`${VERSION_PR:-none}\` |"
+            echo "| npm publication | **disabled in this workflow** |"
+            echo "| OCI publication | **disabled in this workflow** |"
+            echo
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+          if [[ -n "${VERSION_PR:-}" ]]; then
+            {
+              echo "The Changesets Version Packages PR is:"
+              echo
+              echo "\`#${VERSION_PR}\`"
+              echo
+              echo "After that PR is reviewed and merged, \`main\` is release-ready."
+              echo
+              echo "Artifacts are published only when a \`vX.Y.Z\` release tag is cut."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          else
+            {
+              echo "No Version Packages PR was created or updated."
+              echo
+              echo "This normally means there are no pending Changesets requiring"
+              echo "package version changes."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          fi

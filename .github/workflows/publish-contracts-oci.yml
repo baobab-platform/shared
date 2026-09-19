@@ -41,7 +41,7 @@ name: Publish Baobab Contracts OCI Bundle
 on:
   push:
     tags:
-      - "baobab-contracts-v*"
+      - "v*.*.*"
 
 concurrency:
   group: baobab-contracts-${{ github.ref }}
@@ -82,6 +82,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify release commit belongs to main
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin main
+
+          if ! git merge-base --is-ancestor \
+            "${GITHUB_SHA}" \
+            "origin/main"; then
+
+            echo "::error::Release tag must reference a commit contained in main."
+            exit 1
+          fi
       # ------------------------------------------------------------------------
       # Extract and strictly validate the Baobab contract bundle version.
       #
