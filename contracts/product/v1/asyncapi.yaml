@@ -1,11 +1,11 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold Baobab product and subscription lifecycle events
+  title: Baobab-Platform Baobab product and subscription lifecycle events
   version: 1.0.0
   description: >
     Product, ProductVersion, ProductSubscription and EntitlementProjection
     lifecycle events (Technical Specification SS31, SS88, SS91). Uses the
-    same canonical event envelope and com.nabhold.<context>.<...>.v<N>
+    same canonical event envelope and com.baobab-platform.<context>.<...>.v<N>
     naming convention already shipped for identity, ERP, supplier-onboarding
     and capability events (see ADR-SHARED-008) — this package does not
     introduce a different naming scheme. As with contracts/capability/v1,
@@ -15,7 +15,7 @@ info:
 defaultContentType: application/json
 channels:
   productEvents:
-    address: nabhold.product.events.v1
+    address: baobab-platform.product.events.v1
     messages:
       productCreated: { $ref: "#/components/messages/ProductCreated" }
       productDeprecated: { $ref: "#/components/messages/ProductDeprecated" }
@@ -33,7 +33,7 @@ operations:
 components:
   messages:
     ProductCreated:
-      name: com.nabhold.product.product.created.v1
+      name: com.baobab-platform.product.product.created.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -41,7 +41,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/productLifecycleEventData }
     ProductDeprecated:
-      name: com.nabhold.product.product.deprecated.v1
+      name: com.baobab-platform.product.product.deprecated.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -49,7 +49,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/productLifecycleEventData }
     ProductVersionPublished:
-      name: com.nabhold.product.product-version.published.v1
+      name: com.baobab-platform.product.product-version.published.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -57,7 +57,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/productVersionLifecycleEventData }
     ProductVersionDeprecated:
-      name: com.nabhold.product.product-version.deprecated.v1
+      name: com.baobab-platform.product.product-version.deprecated.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -65,7 +65,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/productVersionLifecycleEventData }
     SubscriptionCreated:
-      name: com.nabhold.product.subscription.created.v1
+      name: com.baobab-platform.product.subscription.created.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -73,7 +73,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/subscriptionLifecycleEventData }
     SubscriptionActivated:
-      name: com.nabhold.product.subscription.activated.v1
+      name: com.baobab-platform.product.subscription.activated.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -81,7 +81,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/subscriptionLifecycleEventData }
     SubscriptionSuspended:
-      name: com.nabhold.product.subscription.suspended.v1
+      name: com.baobab-platform.product.subscription.suspended.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -89,7 +89,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/subscriptionLifecycleEventData }
     SubscriptionCancelled:
-      name: com.nabhold.product.subscription.cancelled.v1
+      name: com.baobab-platform.product.subscription.cancelled.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -97,7 +97,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/subscriptionLifecycleEventData }
     EntitlementProjectionUpdated:
-      name: com.nabhold.product.entitlement-projection.updated.v1
+      name: com.baobab-platform.product.entitlement-projection.updated.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json

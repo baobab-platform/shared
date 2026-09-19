@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
-  title: Nabhold Baobab capability-centric platform API
+  title: Baobab-Platform Baobab capability-centric platform API
   version: 1.0.0
   description: >
-    Capability registry and runtime resolution contract. nabhold/baobab-cp
+    Capability registry and runtime resolution contract. baobab-platform/baobab-cp
     is the sole runtime authority implementing this contract; this package
     defines shape only. Consumers resolve context first
     (contracts/control-plane/v1/context-resolution.schema.json today, its
@@ -14,7 +14,7 @@ info:
     name: Apache-2.0
     identifier: Apache-2.0
 servers:
-  - url: https://control-plane.nabhold.com/v1
+  - url: https://control-plane.baobab-platform.com/v1
     description: Production placeholder; activation requires an approved domain binding.
 security:
   - workloadOidc: [context:resolve]
@@ -175,5 +175,5 @@ components:
   securitySchemes:
     workloadOidc:
       type: openIdConnect
-      openIdConnectUrl: https://identity.nabhold.com/.well-known/openid-configuration
+      openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
       description: Short-lived workload or delegated identity token. The resolved tenant claim is authoritative; capability resolution never accepts a caller-selected provider_id or engine_instance_id override for ordinary business requests.

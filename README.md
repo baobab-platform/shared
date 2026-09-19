@@ -1,10 +1,10 @@
-# NABHOLD Shared
+# BAOBAB-PLATFORM Shared
 
-> **Organisation-wide shared workflows, pipelines, contracts, packages, automation, configuration, and engineering standards for the NABHOLD GitHub ecosystem.**
+> **Organisation-wide shared workflows, pipelines, contracts, packages, automation, configuration, and engineering standards for the BAOBAB-PLATFORM GitHub ecosystem.**
 
-**Repository:** `nabhold/shared`
+**Repository:** `baobab-platform/shared`
 **Visibility:** Private
-**Scope:** NABHOLD Organisation
+**Scope:** BAOBAB-PLATFORM Organisation
 **Status:** Foundational / Internal Infrastructure
 
 ---
@@ -12,11 +12,11 @@
 ## Foundation 4 repository baseline
 
 This repository owns the reusable GitHub and contract-compatibility gates used
-across all eleven Nabhold repositories. Its Codespaces environment uses the
+across all eleven Baobab-Platform repositories. Its Codespaces environment uses the
 `baobab-dev` v1.2.6 `frontend` profile because Shared builds Node-based contract
 packages but no deployable service.
 
-Every consuming repository must provide a `.nabhold/environment.yaml`, use an
+Every consuming repository must provide a `.baobab/environment.yaml`, use an
 exact v1.2.6 development profile, commit dependency lockfiles, pin GitHub
 Actions to full commit SHAs, and call the reusable Foundation Repository Gates.
 Those gates perform dependency review, source/dependency/secret scanning,
@@ -30,18 +30,18 @@ ruleset](docs/governance/foundation-4-branch-protection.md).
 
 ## Overview
 
-`nabhold/shared` is the central repository for **versioned organisational
-contracts and reusable engineering infrastructure across the NABHOLD
+`baobab-platform/shared` is the central repository for **versioned organisational
+contracts and reusable engineering infrastructure across the BAOBAB-PLATFORM
 organisation**.
 
 It is also the source of truth for portable API, event, identity, tenancy, and
 environment schemas. It contains no deployable server or environment. Runtime
 implementation belongs to the consuming application; infrastructure
-implementation belongs to `nabhold/infrastructure`.
+implementation belongs to `baobab-platform/infrastructure`.
 
 It exists to prevent individual repositories from independently reinventing the same CI/CD pipelines, GitHub Actions workflows, automation scripts, security controls, configuration patterns, operational conventions, API contracts, data schemas, and common libraries.
 
-The repository provides a controlled foundation that can be consumed by NABHOLD projects, products, platforms, and subsidiaries — both as **importable code** (via reusable workflows, composite actions, and versioned packages) and as **agreed interfaces** (via contracts and schemas that multiple services and repositories depend on).
+The repository provides a controlled foundation that can be consumed by BAOBAB-PLATFORM projects, products, platforms, and subsidiaries — both as **importable code** (via reusable workflows, composite actions, and versioned packages) and as **agreed interfaces** (via contracts and schemas that multiple services and repositories depend on).
 
 The principle is simple:
 
@@ -53,7 +53,7 @@ This repository should therefore be treated as **organisation infrastructure**, 
 
 ## Why This Repository Exists
 
-As the NABHOLD technology estate grows, individual repositories will inevitably need many of the same capabilities:
+As the BAOBAB-PLATFORM technology estate grows, individual repositories will inevitably need many of the same capabilities:
 
 - Continuous Integration
 - Continuous Deployment
@@ -102,7 +102,7 @@ The `shared` repository exists to establish a common foundation:
 
 ```
              ┌────────────────────────────────────┐
-             │           NABHOLD Shared            │
+             │           BAOBAB-PLATFORM Shared            │
              │                                      │
              │ Workflows        API Contracts        │
              │ Pipelines        Data Schemas         │
@@ -138,7 +138,7 @@ Repositories should not need to invent their own CI/CD architecture, error forma
 
 ## 2. Reuse
 
-Enable repositories throughout NABHOLD to consume common workflows, automation, contracts, and packages without copying implementation code or re-deriving interfaces from scratch.
+Enable repositories throughout BAOBAB-PLATFORM to consume common workflows, automation, contracts, and packages without copying implementation code or re-deriving interfaces from scratch.
 
 Where GitHub supports reusable workflows, those should generally be preferred over duplication. Where a data shape or API interface is consumed by more than one repository, it should be defined once here.
 
@@ -172,7 +172,7 @@ A change to a common process, error shape, or event schema should ideally requir
 
 ## 5. Governance
 
-Establish organisation-wide conventions for how NABHOLD repositories:
+Establish organisation-wide conventions for how BAOBAB-PLATFORM repositories:
 
 - build;
 - test;
@@ -199,7 +199,7 @@ The repository should provide **paved roads**, not bureaucratic obstacles. Proje
 
 Ensure that services and repositories which need to talk to one another, or to be operated the same way, agree on the same shapes: API contracts, event payloads, error responses, and identifiers.
 
-A consumer of a NABHOLD service should be able to rely on the same conventions regardless of which service, repository, or team produced it.
+A consumer of a BAOBAB-PLATFORM service should be able to rely on the same conventions regardless of which service, repository, or team produced it.
 
 ---
 
@@ -237,7 +237,7 @@ Example:
 ```
 jobs:
   ci:
-    uses: nabhold/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
+    uses: baobab-platform/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
 ```
 
 ---
@@ -298,12 +298,12 @@ A contract is a promise to consumers. Changing one is equivalent to changing a p
 
 ## Shared Packages
 
-`packages/` is a pnpm/Turborepo-managed workspace of versioned, publishable TypeScript/JavaScript packages consumed by NABHOLD repositories. Candidates include:
+`packages/` is a pnpm/Turborepo-managed workspace of versioned, publishable TypeScript/JavaScript packages consumed by BAOBAB-PLATFORM repositories. Candidates include:
 
-- `@nabhold/eslint-config`, `@nabhold/tsconfig`, `@nabhold/prettier-config` — organisation-wide lint, type-checking, and formatting baselines.
-- `@nabhold/types` — shared TypeScript types generated from, or hand-aligned with, the contracts in `contracts/`.
-- `@nabhold/api-client` — a typed client for calling NABHOLD services, generated from their OpenAPI contracts where practical.
-- `@nabhold/ui-tokens` — shared design tokens (colour, spacing, typography) for future frontend and mobile work.
+- `@baobab-platform/eslint-config`, `@baobab-platform/tsconfig`, `@baobab-platform/prettier-config` — organisation-wide lint, type-checking, and formatting baselines.
+- `@baobab-platform/types` — shared TypeScript types generated from, or hand-aligned with, the contracts in `contracts/`.
+- `@baobab-platform/api-client` — a typed client for calling BAOBAB-PLATFORM services, generated from their OpenAPI contracts where practical.
+- `@baobab-platform/ui-tokens` — shared design tokens (colour, spacing, typography) for future frontend and mobile work.
 - Small, dependency-conscious utility packages (date/time helpers, validators, tenant-context helpers) that would otherwise be copy-pasted between repositories.
 
 A package belongs here only once a second consumer genuinely needs it — see [Relationship With Product-Level Shared Directories](#relationship-with-product-level-shared-directories).
@@ -317,7 +317,7 @@ Shared specifications so that logs, metrics, and traces are interpretable the sa
 - Structured logging schema — required fields (timestamp, service, tenant, correlation ID, severity) and their names.
 - Metric-naming conventions.
 - Trace-context propagation standards.
-- OpenTelemetry semantic-convention extensions specific to NABHOLD, where the standard conventions are insufficient.
+- OpenTelemetry semantic-convention extensions specific to BAOBAB-PLATFORM, where the standard conventions are insufficient.
 
 ---
 
@@ -327,7 +327,7 @@ Shared vocabulary and schemas that support regulatory and governance obligations
 
 - A data-classification taxonomy (e.g. public / internal / confidential / restricted, with explicit PII handling tiers).
 - A standardised audit-log event schema, so that "who did what, to what, when" is captured the same way in every service — this is both an engineering convenience and part of the organisation's POPIA compliance posture.
-- Common validation rules and enums relevant to the jurisdictions NABHOLD operates in (e.g. South African ID number and phone number formats, currency and locale codes).
+- Common validation rules and enums relevant to the jurisdictions BAOBAB-PLATFORM operates in (e.g. South African ID number and phone number formats, currency and locale codes).
 
 ---
 
@@ -430,7 +430,7 @@ Individual product repositories (for example `baobab/shared/`) may maintain thei
 
 That is expected and correct — not everything needs to be an organisation-wide concern on day one.
 
-A contract, schema, or package should graduate from a product-level `shared/` into `nabhold/shared` when, and only when:
+A contract, schema, or package should graduate from a product-level `shared/` into `baobab-platform/shared` when, and only when:
 
 1. **A second repository** — not merely a second service inside the same repository — genuinely needs it; and
 2. The interface is stable enough to accept the versioning and backwards-compatibility discipline described in this document.
@@ -466,9 +466,9 @@ should be preferred over broad permissions unless additional access is demonstra
 
 GitHub Actions must be pinned to full-length commit SHAs. This is an
 organisation-wide requirement and applies to every `uses:` reference without
-exception — third-party actions (`actions/checkout`), and **nabhold/shared's
+exception — third-party actions (`actions/checkout`), and **baobab-platform/shared's
 own reusable workflows and composite actions**, wherever they're consumed
-from another repository (`uses: nabhold/shared/...@<sha>`). A floating tag,
+from another repository (`uses: baobab-platform/shared/...@<sha>`). A floating tag,
 a branch name, or `@main` are all disallowed as the checked-in reference,
 regardless of source.
 
@@ -479,7 +479,7 @@ uses: actions/checkout@v4
 ```
 
 ```
-uses: nabhold/shared/.github/workflows/python-ci.yml@v1
+uses: baobab-platform/shared/.github/workflows/python-ci.yml@v1
 ```
 
 Prefer:
@@ -489,18 +489,18 @@ uses: actions/checkout@<40-character-commit-sha> # v4.x.x
 ```
 
 ```
-uses: nabhold/shared/.github/workflows/python-ci.yml@<40-character-commit-sha> # v1.x.x
+uses: baobab-platform/shared/.github/workflows/python-ci.yml@<40-character-commit-sha> # v1.x.x
 ```
 
-with the release version (or, if no tag exists yet for `nabhold/shared`,
+with the release version (or, if no tag exists yet for `baobab-platform/shared`,
 "main HEAD" and the verification date) documented in a comment. Verify the
 SHA live against the upstream tag rather than trusting a marketplace
 listing or a previous PR — see `templates/caller-*.yml` for examples of
 this comment style in practice.
 
 A repository can enforce this automatically in CI rather than relying on
-review alone — see [`enforce-action-pinning.yml`](https://github.com/nabhold/shared/blob/main/.github/workflows/enforce-action-pinning.yml) and `templates/caller-enforce-action-pinning.yml`. This repository dogfoods
-its own check via [`ci.yml`](https://github.com/nabhold/shared/blob/main/.github/workflows/ci.yml), which calls `enforce-action-pinning.yml` locally on every push/PR touching `.github/workflows/` or `.github/actions/` — nothing here is exempt just
+review alone — see [`enforce-action-pinning.yml`](https://github.com/baobab-platform/shared/blob/main/.github/workflows/enforce-action-pinning.yml) and `templates/caller-enforce-action-pinning.yml`. This repository dogfoods
+its own check via [`ci.yml`](https://github.com/baobab-platform/shared/blob/main/.github/workflows/ci.yml), which calls `enforce-action-pinning.yml` locally on every push/PR touching `.github/workflows/` or `.github/actions/` — nothing here is exempt just
 because it's the source of the policy rather than a consumer of it.
 
 Published packages under `packages/` follow the analogous discipline for
@@ -528,10 +528,10 @@ there's no `workflow_call`-equivalent import mechanism, and no `uses:` syntax a 
 Given that constraint, this repository provides the closest practical
 equivalent:
 
-- [`templates/dependabot.yml`](https://github.com/nabhold/shared/blob/main/templates/dependabot.yml) — the canonical
+- [`templates/dependabot.yml`](https://github.com/baobab-platform/shared/blob/main/templates/dependabot.yml) — the canonical
 config, copied into a consuming repo's `.github/dependabot.yml` and
 adjusted for TODOs (timezone, default branch).
-- [`enforce-dependabot-config.yml`](https://github.com/nabhold/shared/blob/main/.github/workflows/enforce-dependabot-config.yml) — a reusable **workflow** (this part *can* use `workflow_call`, since
+- [`enforce-dependabot-config.yml`](https://github.com/baobab-platform/shared/blob/main/.github/workflows/enforce-dependabot-config.yml) — a reusable **workflow** (this part *can* use `workflow_call`, since
 it's an Actions check, not a Dependabot config) that validates a
 consuming repo's actual `.github/dependabot.yml` still satisfies the
 org's structural requirements — `version: 2`, a `github-actions` ecosystem entry present, and every declared entry having a schedule,
@@ -542,7 +542,7 @@ completeness is checked. Adopt it via
 `templates/caller-enforce-dependabot-config.yml`.
 
 This repository dogfoods that check too, via the `dependabot-config` job
-in [`ci.yml`](https://github.com/nabhold/shared/blob/main/.github/workflows/ci.yml).
+in [`ci.yml`](https://github.com/baobab-platform/shared/blob/main/.github/workflows/ci.yml).
 
 ---
 
@@ -576,7 +576,7 @@ that release's commit SHA (for workflows/actions) or exact version (for
 packages) rather than the floating tag or range:
 
 ```
-uses: nabhold/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
+uses: baobab-platform/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
 ```
 
 while major-version branches/tags are maintained deliberately as the
@@ -641,7 +641,7 @@ the reference actually checked into a caller's workflow file must resolve
 that tag to its full-length commit SHA at the time of pinning:
 
 ```
-uses: nabhold/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
+uses: baobab-platform/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
 ```
 
 not the floating tag itself. Consumers re-pin (bump the SHA and comment)
@@ -827,7 +827,7 @@ on:
 
 jobs:
   ci:
-    uses: nabhold/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
+    uses: baobab-platform/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
 ```
 
 If inputs are required:
@@ -835,7 +835,7 @@ If inputs are required:
 ```
 jobs:
   ci:
-    uses: nabhold/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
+    uses: baobab-platform/shared/.github/workflows/python-ci.yml@<sha-for-v1.x.x> # v1.x.x
     with:
       python-version: "3.13"
       test-command: "pytest"
@@ -853,8 +853,8 @@ Packages under `packages/` are consumed as ordinary versioned npm/pnpm dependenc
 
 ```
 "dependencies": {
-  "@nabhold/types": "^1.x.x",
-  "@nabhold/api-client": "^1.x.x"
+  "@baobab-platform/types": "^1.x.x",
+  "@baobab-platform/api-client": "^1.x.x"
 }
 ```
 
@@ -990,15 +990,15 @@ Critical files and directories should be covered by `CODEOWNERS`.
 Example:
 
 ```
-/.github/              @nabhold/platform-engineering
-/actions/              @nabhold/platform-engineering
-/scripts/              @nabhold/platform-engineering
-/contracts/            @nabhold/platform-engineering @nabhold/architecture
-/packages/             @nabhold/platform-engineering
-/observability/        @nabhold/platform-engineering
-/compliance/           @nabhold/security @nabhold/legal
-/infrastructure/       @nabhold/platform-engineering
-/security/             @nabhold/security
+/.github/              @baobab-platform/platform-engineering
+/actions/              @baobab-platform/platform-engineering
+/scripts/              @baobab-platform/platform-engineering
+/contracts/            @baobab-platform/platform-engineering @baobab-platform/architecture
+/packages/             @baobab-platform/platform-engineering
+/observability/        @baobab-platform/platform-engineering
+/compliance/           @baobab-platform/security @baobab-platform/legal
+/infrastructure/       @baobab-platform/platform-engineering
+/security/             @baobab-platform/security
 ```
 
 The actual teams should be substituted for the organisation's real GitHub teams.
@@ -1009,7 +1009,7 @@ The actual teams should be substituted for the organisation's real GitHub teams.
 
 Contributors should ask one question before adding anything:
 
-> **Is this genuinely reusable across multiple NABHOLD repositories?**
+> **Is this genuinely reusable across multiple BAOBAB-PLATFORM repositories?**
 
 If the answer is no, the code — or contract — probably belongs in the consuming project (see [Relationship With Product-Level Shared Directories](#relationship-with-product-level-shared-directories)).
 
@@ -1048,7 +1048,7 @@ Security fixes should be prioritised appropriately and may require expedited rel
 
 # Recommended Repository Labels
 
-The following labels are recommended for issues and pull requests in `nabhold/shared`.
+The following labels are recommended for issues and pull requests in `baobab-platform/shared`.
 
 ## Type
 
@@ -1191,18 +1191,18 @@ The repository should favour **predictability over novelty**.
 
 ---
 
-# Relationship With NABHOLD Projects
+# Relationship With BAOBAB-PLATFORM Projects
 
-`nabhold/shared` is intended to sit beneath the organisation's application and product repositories as a common engineering and interface layer.
+`baobab-platform/shared` is intended to sit beneath the organisation's application and product repositories as a common engineering and interface layer.
 
 Conceptually:
 
 ```
-           NABHOLD ORGANISATION
+           BAOBAB-PLATFORM ORGANISATION
                      │
                      ▼
          ┌───────────────────────┐
-         │     nabhold/shared     │
+         │     baobab-platform/shared     │
          │                        │
          │ CI/CD                  │
          │ Security               │
@@ -1230,12 +1230,12 @@ The shared repository should provide the **common engineering and interface foun
 
 # Repository Classification
 
-`nabhold/shared` should be considered:
+`baobab-platform/shared` should be considered:
 
 **Category:** Internal Platform / Engineering Infrastructure
 **Visibility:** Private
 **Criticality:** High
-**Consumers:** NABHOLD repositories and approved organisation projects
+**Consumers:** BAOBAB-PLATFORM repositories and approved organisation projects
 **Primary Function:** Reusable engineering automation, contracts, and governance
 
 ---
@@ -1262,7 +1262,7 @@ The repository may progressively evolve toward the following capabilities.
 - [ ] Audit-log event schema
 - [ ] Data-classification taxonomy
 - [ ] AsyncAPI contracts once multi-service events exist
-- [ ] `@nabhold/types` package generated from contracts
+- [ ] `@baobab-platform/types` package generated from contracts
 
 ### Developer Experience
 
@@ -1271,7 +1271,7 @@ The repository may progressively evolve toward the following capabilities.
 - [ ] Container build templates
 - [ ] Release automation
 - [ ] Dependency update automation
-- [ ] `@nabhold/eslint-config`, `@nabhold/tsconfig` packages
+- [ ] `@baobab-platform/eslint-config`, `@baobab-platform/tsconfig` packages
 
 ### Security
 
@@ -1311,7 +1311,7 @@ If a component cannot satisfy those characteristics, it should probably remain l
 
 ## Maintainers
 
-**NABHOLD Engineering / Platform Team**
+**BAOBAB-PLATFORM Engineering / Platform Team**
 
 For changes affecting organisation-wide workflows, security controls, deployment infrastructure, contracts, or reusable workflow interfaces, obtain appropriate maintainer review before merging.
 
@@ -1319,14 +1319,14 @@ For changes affecting organisation-wide workflows, security controls, deployment
 
 ## License
 
-This repository is private and proprietary to **NABHOLD**.
+This repository is private and proprietary to **BAOBAB-PLATFORM**.
 
-No content in this repository should be copied, redistributed, or reused outside authorised NABHOLD projects without explicit permission.
+No content in this repository should be copied, redistributed, or reused outside authorised BAOBAB-PLATFORM projects without explicit permission.
 
 ---
 
 ## Internal Use
 
-This repository is intended for authorised NABHOLD personnel, systems, and repositories.
+This repository is intended for authorised BAOBAB-PLATFORM personnel, systems, and repositories.
 
 Because workflows, contracts, and packages contained here may execute with elevated privileges — or be relied upon as interfaces — across other repositories, treat changes to this repository as changes to **shared organisational infrastructure**.

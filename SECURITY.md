@@ -1,8 +1,8 @@
 # Security Policy
 
-## NABHOLD Shared
+## BAOBAB-PLATFORM Shared
 
-`nabhold/shared` contains organisation-wide engineering infrastructure used by NABHOLD repositories.
+`baobab-platform/shared` contains organisation-wide engineering infrastructure used by BAOBAB-PLATFORM repositories.
 
 This may include:
 
@@ -16,7 +16,7 @@ This may include:
 * authentication and OIDC configuration;
 * dependency and supply-chain controls.
 
-A security defect in this repository may therefore affect **multiple NABHOLD systems simultaneously**.
+A security defect in this repository may therefore affect **multiple BAOBAB-PLATFORM systems simultaneously**.
 
 For that reason, security issues must be handled carefully and, where appropriate, confidentially.
 
@@ -24,7 +24,7 @@ For that reason, security issues must be handled carefully and, where appropriat
 
 # 1. Security Principles
 
-Security in `nabhold/shared` follows these principles:
+Security in `baobab-platform/shared` follows these principles:
 
 ### Least Privilege
 
@@ -37,8 +37,8 @@ Reusable components should provide safe defaults rather than requiring every con
 ### Immutable Dependencies
 
 Every GitHub Action reference must be pinned to a full-length commit SHA —
-NABHOLD policy applies this organisation-wide, with no exception for
-`nabhold/shared`'s own reusable workflows/actions when consumed by another
+BAOBAB-PLATFORM policy applies this organisation-wide, with no exception for
+`baobab-platform/shared`'s own reusable workflows/actions when consumed by another
 repository.
 
 ### No Embedded Credentials
@@ -121,11 +121,11 @@ The following changes should be treated as security-sensitive.
 
 If you discover a security vulnerability, **do not disclose exploitable details in a public GitHub issue**.
 
-This is particularly important for `nabhold/shared` because a vulnerability may affect multiple downstream repositories.
+This is particularly important for `baobab-platform/shared` because a vulnerability may affect multiple downstream repositories.
 
 Where GitHub Private Vulnerability Reporting or Security Advisories are enabled for this repository, use that mechanism.
 
-If private reporting is unavailable, contact the designated NABHOLD security or platform engineering maintainers through an authorised private communication channel.
+If private reporting is unavailable, contact the designated BAOBAB-PLATFORM security or platform engineering maintainers through an authorised private communication channel.
 
 Do not use a public issue for the initial disclosure of a potentially exploitable vulnerability.
 
@@ -304,7 +304,7 @@ When a vulnerability affects a shared workflow or action, maintainers should ide
 For example:
 
 ```text
-nabhold/shared
+baobab-platform/shared
        │
        ├── Repository A
        ├── Repository B
@@ -360,7 +360,7 @@ unless there is a documented and unavoidable requirement.
 
 ## Pin Actions
 
-All actions — third-party and `nabhold/shared`'s own reusable
+All actions — third-party and `baobab-platform/shared`'s own reusable
 workflows/composite actions alike — must be referenced using immutable
 full-length commit SHAs. This is an organisation-wide requirement, not a
 per-repository option.
@@ -474,10 +474,10 @@ Avoid introducing dependencies simply because they make a small task marginally 
 
 Action pinning is especially important for this repository because shared
 workflows can propagate a compromised dependency to multiple consumers —
-and because this repository's own `nabhold/shared/...@<ref>` references,
+and because this repository's own `baobab-platform/shared/...@<ref>` references,
 consumed by every repo in the org, are themselves subject to the same
 requirement. There is no third-party-only carve-out: a floating `@v1` on
-a `nabhold/shared` reference is exactly as unpinned as a floating `@v4` on
+a `baobab-platform/shared` reference is exactly as unpinned as a floating `@v4` on
 a third-party action.
 
 A mutable reference such as:
@@ -658,7 +658,7 @@ Do not wait for proof of exploitation before rotating an exposed credential.
 
 # 24. Security Incident Records
 
-Security incidents should be documented according to NABHOLD's applicable incident-management procedures.
+Security incidents should be documented according to BAOBAB-PLATFORM's applicable incident-management procedures.
 
 Records should capture, where appropriate:
 
@@ -680,7 +680,7 @@ Sensitive incident information should remain appropriately restricted.
 
 # 25. Responsible Disclosure
 
-NABHOLD encourages responsible disclosure.
+BAOBAB-PLATFORM encourages responsible disclosure.
 
 Researchers and contributors who identify vulnerabilities are asked to:
 
@@ -697,15 +697,15 @@ Researchers and contributors who identify vulnerabilities are asked to:
 
 ### Primary
 
-**NABHOLD Security Team**
+**BAOBAB-PLATFORM Security Team**
 
-`@nabhold/security`
+`@baobab-platform/security`
 
 ### Platform
 
-**NABHOLD Platform Engineering**
+**BAOBAB-PLATFORM Platform Engineering**
 
-`@nabhold/platform-engineering`
+`@baobab-platform/platform-engineering`
 
 These teams are responsible for coordinating the assessment and remediation of security issues affecting shared engineering infrastructure.
 
@@ -715,13 +715,13 @@ These teams are responsible for coordinating the assessment and remediation of s
 
 This policy applies to:
 
-* the `nabhold/shared` repository;
+* the `baobab-platform/shared` repository;
 * reusable workflows maintained by the repository;
 * composite actions;
 * shared scripts;
 * security automation;
 * templates distributed from the repository;
-* downstream NABHOLD repositories consuming shared components where the issue originates in `shared`.
+* downstream BAOBAB-PLATFORM repositories consuming shared components where the issue originates in `shared`.
 
 ---
 

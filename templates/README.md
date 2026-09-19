@@ -1,4 +1,4 @@
-<!-- Target path: nabhold/shared/templates/README.md -->
+<!-- Target path: baobab-platform/shared/templates/README.md -->
 
 <!-- FIX 2026-09-05: v1.2.0 was cut 2026-09-04 (commit 38defb1) and covers
 foundation-repository-gates.yml, closing the gap the 2026-09-04 fix note
@@ -26,13 +26,13 @@ Most files here are thin wrappers for a consuming repository's own
 `.github/workflows/`. Reusable workflows can only carry a `workflow_call`
 trigger — the real trigger (`push`, `pull_request`, `issues`, ...) and any
 job-level `permissions:` elevation always live in the caller repo, not in
-`nabhold/shared`. The one exception is `dependabot.yml`, which isn't a
+`baobab-platform/shared`. The one exception is `dependabot.yml`, which isn't a
 workflow at all — see its own entry below for why it's copied differently.
 
 - `caller-greetings.yml` — org-standard first-interaction bot. Toolchain-
   agnostic, works for any repo.
 - `caller-pages-zensical.yml` — docs build/deploy. Assumes uv + Zensical
-  (the NABHOLD default). A repo on a different documentation toolchain
+  (the BAOBAB-PLATFORM default). A repo on a different documentation toolchain
   needs a different reusable workflow, not a modified copy of this one —
   raise that as a new shared/ addition rather than forking this template.
 - `caller-enforce-action-pinning.yml` — CI check that fails if any
@@ -65,9 +65,9 @@ workflow at all — see its own entry below for why it's copied differently.
 - `caller-security-python.yml` — runs Bandit (SAST) and pip-audit
   (dependency vulnerability audit) for a uv-managed Python repo. Assumes
   the "security" dependency-group convention documented in
-  nabhold/baobab's pyproject.toml.
+  baobab-platform/baobab's pyproject.toml.
 - `caller-foundation-repository-gates.yml` — enforces this org's
-  Foundation baseline (the `.nabhold/environment.yaml` / devcontainer
+  Foundation baseline (the `.baobab/environment.yaml` / devcontainer
   profile checks — see `contracts/development-environment/schema.yaml`
   for what each profile requires). Recommended for every repo that uses
   `baobab-dev`. Its underlying workflow is covered as of `v1.2.0` — see
@@ -77,13 +77,13 @@ Steps:
 
 1. Copy the relevant `caller-*.yml` into `<repo>/.github/workflows/<name>.yml`.
 2. Resolve every `TODO`.
-3. Pin the `nabhold/shared/...@<sha>` reference to a full-length commit
+3. Pin the `baobab-platform/shared/...@<sha>` reference to a full-length commit
    SHA — this is required by org policy, not optional, and applies to
-   `nabhold/shared` references exactly as it does to third-party actions
+   `baobab-platform/shared` references exactly as it does to third-party actions
    (see README.md's "Immutable Dependencies" section). Verify the SHA
    live against the upstream tag/branch rather than trusting what's
    already in the template, since it may be stale by the time you copy
-   it. **As of 2026-09-05, `nabhold/shared` has three tagged releases:**
+   it. **As of 2026-09-05, `baobab-platform/shared` has three tagged releases:**
    `v1.0.0` (2026-08-25), `v1.1.0` (2026-08-25, same day — a security
    fix that added `release.yml` and the three `security-*.yml`
    workflows), and `v1.2.0` (2026-09-04, commit `38defb1`, which adds
@@ -103,7 +103,7 @@ Steps:
    `git ls-tree <tag> -- .github/workflows/<file>`, not just that the tag
    resolves).
 4. Confirm the consuming repo's Settings → Actions → General → Actions
-   permissions allows `nabhold/shared` (only relevant if that repo has an
+   permissions allows `baobab-platform/shared` (only relevant if that repo has an
    explicit allow-list rather than "Allow all actions").
 
 `dependabot.yml` follows a different, simpler process: copy it into

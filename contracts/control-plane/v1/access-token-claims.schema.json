@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/access-token-claims.schema.json",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/access-token-claims.schema.json",
   "title": "Baobab control-plane access-token claims",
   "type": "object",
   "required": ["iss", "sub", "aud", "exp", "iat", "jti", "scope", "actor_type"],

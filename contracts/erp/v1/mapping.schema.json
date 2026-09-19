@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/erp/v1/mapping.schema.json",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/mapping.schema.json",
   "title": "Canonical-to-ERP mapping",
   "description": "Public, temporal mapping metadata. Vendor bindings remain private to the ERP adapter and are deliberately absent.",
   "type": "object",

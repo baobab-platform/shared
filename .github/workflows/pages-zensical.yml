@@ -1,12 +1,12 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
 # Reusable Workflow: Build & Deploy Documentation (uv + Zensical)
 #
 # File: .github/workflows/pages-zensical.yml
 #
 # PURPOSE:
 #   Builds a Zensical documentation site and deploys it to GitHub Pages.
-#   Zensical is the de facto documentation toolchain across NABHOLD as of
+#   Zensical is the de facto documentation toolchain across BAOBAB-PLATFORM as of
 #   this workflow's creation — see README.md's toolchain-per-reusable-
 #   workflow policy: a future different toolchain gets its own reusable
 #   workflow rather than a conditional branch in this one. This workflow

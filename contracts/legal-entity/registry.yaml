@@ -1,13 +1,13 @@
 # ==============================================================================
-# NABHOLD GROUP AFRICA
+# BAOBAB-PLATFORM GROUP AFRICA
 # Canonical Legal Entity Registry
 #
-# Target path: nabhold/shared/contracts/legal-entity/registry.yaml
+# Target path: baobab-platform/shared/contracts/legal-entity/registry.yaml
 #
 # Purpose
 # -------
 # This is the single source of truth for legal-entity identity across every
-# Nabhold system. It exists to prevent the same entity acquiring different
+# Baobab-Platform system. It exists to prevent the same entity acquiring different
 # names in different repositories (e.g. "thamani", "THAMANI", "thamani-global",
 # "THG", "tenant-002" all referring to the same company).
 #
@@ -16,9 +16,9 @@
 #
 # Consumers of this contract
 # ---------------------------
-#   nabhold/baobab           -> tenant.entity_id references an `id` below
-#   nabhold/infrastructure   -> resource ownership tags reference an `id` below
-#   nabhold/{nabhold,zuribeans,thamani,equator-estate}
+#   baobab-platform/baobab           -> tenant.entity_id references an `id` below
+#   baobab-platform/infrastructure   -> resource ownership tags reference an `id` below
+#   baobab-platform/{baobab-platform,zuribeans,thamani,equator-estate}
 #                             -> each repo's own config declares which `id`
 #                                it represents (self-reference, exactly one)
 #
@@ -45,11 +45,11 @@
 # this contract is relied upon for compliance, billing, or regulatory purposes.
 # No value has been guessed or fabricated to fill these fields.
 #
-# Governing decision record: ADR-0001 (nabhold/shared/docs/adr/)
+# Governing decision record: ADR-0001 (baobab-platform/shared/docs/adr/)
 # ==============================================================================
 
 schema:
-  name: "nabhold-legal-entity-registry"
+  name: "baobab-platform-legal-entity-registry"
   version: "1.1"
 
 # ------------------------------------------------------------------------------
@@ -59,8 +59,8 @@ schema:
 entities:
 
   # ---------------------------------------------------------------------------
-  - id: "NABHOLD"
-    legal_name: "Nabhold Group Africa"
+  - id: "BAOBAB-PLATFORM"
+    legal_name: "Baobab-Platform Group Africa"
     role: "holding_company"
 
     jurisdiction: null            # TBD — pending Legal / Company Secretarial
@@ -75,7 +75,7 @@ entities:
                                    # does not make entity_id a tenant identity.
 
     digital_estate:
-      repository: "nabhold/nabhold"
+      repository: "baobab-platform/baobab-platform"
       status: "planned"           # repository created, implementation pending
 
     baobab_products:
@@ -97,7 +97,7 @@ entities:
     baobab_tenant: true
 
     digital_estate:
-      repository: "nabhold/zuribeans"
+      repository: "baobab-platform/zuribeans"
       status: "active"
 
     baobab_products:
@@ -120,7 +120,7 @@ entities:
     baobab_tenant: true
 
     digital_estate:
-      repository: "nabhold/thamani"
+      repository: "baobab-platform/thamani"
       status: "planned"
 
     baobab_products:
@@ -142,7 +142,7 @@ entities:
     baobab_tenant: true
 
     digital_estate:
-      repository: "nabhold/equator-estate"
+      repository: "baobab-platform/equator-estate"
       status: "planned"
 
     baobab_products:
@@ -174,17 +174,17 @@ cross_cutting_products:
 notes:
   - >
     `baobab_tenant` records approved platform-consumption intent for bootstrap
-    and reconciliation. It is not runtime tenant state. `nabhold/baobab-cp`
+    and reconciliation. It is not runtime tenant state. `baobab-platform/baobab-cp`
     owns the provisioned tenant_id, lifecycle and enforced product
     entitlements, and must map them explicitly to an entity id in this registry.
   - >
-    A digital estate does not confer tenancy. NABHOLD is tenant-eligible because
-    it consumes Baobab ERP, not because `nabhold/nabhold` exists. The estate and
+    A digital estate does not confer tenancy. BAOBAB-PLATFORM is tenant-eligible because
+    it consumes Baobab ERP, not because `baobab-platform/baobab-platform` exists. The estate and
     ERP tenant may be deployed, released and secured independently.
   - >
     This registry declares identity, not infrastructure. It must not be
     extended with cloud resource identifiers, connection strings, or
-    deployment topology — those belong in `nabhold/infrastructure`, which
+    deployment topology — those belong in `baobab-platform/infrastructure`, which
     references entities here by `id` only.
   - >
     "confirmed: false" markers are not placeholders to be silently flipped

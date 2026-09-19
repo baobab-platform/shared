@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/erp/v1/payment-outcome.schema.json",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/payment-outcome.schema.json",
   "title": "ERP payment accounting outcome",
   "description": "Accounting/allocation result for a provider or Trade-owned capture. It does not alter provider capture authority.",
   "type": "object",

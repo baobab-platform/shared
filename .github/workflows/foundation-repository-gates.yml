@@ -1,14 +1,14 @@
 # ==============================================================================
-# NABHOLD GROUP AFRICA
+# BAOBAB-PLATFORM GROUP AFRICA
 # Reusable — Foundation Repository Gates
 #
-# Target path: nabhold/shared/.github/workflows/foundation-repository-gates.yml
+# Target path: baobab-platform/shared/.github/workflows/foundation-repository-gates.yml
 #
 # Purpose
 # -------
 # workflow_call gate every repo's own .github/workflows/foundation.yml calls
-# (see nabhold/baobab-dev's for the calling convention). Validates a
-# repo's .nabhold/environment.yaml + .devcontainer/devcontainer.json against
+# (see baobab-platform/baobab-dev's for the calling convention). Validates a
+# repo's .baobab/environment.yaml + .devcontainer/devcontainer.json against
 # the Development Environment Contract, checks reproducibility inputs
 # (lockfiles, SHA-pinned Actions, no floating base-image tags), and runs a
 # Trivy dependency/secret/container scan.
@@ -17,7 +17,7 @@
 # added "infra" (baobab-dev's new Terraform+AWS CLI profile) and fixed
 # "frontend-e2e" (previously missing from the profile whitelist entirely,
 # so frontend-e2e repos could never actually pass this job). See
-# nabhold/shared's contracts/development-environment/schema.yaml for the
+# baobab-platform/shared's contracts/development-environment/schema.yaml for the
 # profile definitions this file's PROFILE_BASELINES map mirrors.
 #
 # 2026-09-05: repository-contract job's minimum_version check fixed —
@@ -26,15 +26,15 @@
 # `minimum_version` newer than a baseline's exact string (e.g. "1.3.0"
 # against the "full" profile's "1.2.6" floor) failed this job outright,
 # even though nothing was actually incompatible — confirmed against
-# nabhold/baobab-pulse, whose Foundation Repository Gates run has failed
+# baobab-platform/baobab-pulse, whose Foundation Repository Gates run has failed
 # on every push since it legitimately moved to baobab-dev 1.3.0. Now a
 # real Gem::Version `>=` comparison, so any release at or above a
 # profile's floor passes, not only ones whose string happens to start
 # with the floor's exact text.
 #
 # 2026-09-05 (later same day): the Gem::Version `>=` fix above broke every
-# `frontend`-profile repo instead. nabhold/nabhold, nabhold/zuribeans,
-# nabhold/thamani, and nabhold/shared's own declaration (this repo) all
+# `frontend`-profile repo instead. baobab-platform/baobab-platform, baobab-platform/zuribeans,
+# baobab-platform/thamani, and baobab-platform/shared's own declaration (this repo) all
 # follow the documented convention (see engine-template's
 # environment.yaml.example: "use the SAME version in both minimum_version
 # here and the image tag") of writing `minimum_version` WITH the profile
@@ -42,18 +42,18 @@
 # PROFILE_BASELINES design assumed. Gem::Version treats the "-frontend"
 # text as a prerelease marker, so "1.2.6-frontend" sorts BELOW "1.2.6" and
 # the floor check failed for all four, identically, confirmed by
-# reproducing this job's exact failure against nabhold/shared's own
+# reproducing this job's exact failure against baobab-platform/shared's own
 # checkout. Fixed by normalizing `minimum_version` to its bare numeric
 # core (stripping the profile's own suffix if present) before the floor
 # comparison, and building `expected` from that bare core plus the
 # suffix — which now works whether a repo's declared `minimum_version`
 # already carries the suffix (frontend/frontend-e2e's real convention) or
-# doesn't (full/infra's real convention, e.g. nabhold/infrastructure's
+# doesn't (full/infra's real convention, e.g. baobab-platform/infrastructure's
 # bare "1.4.0-rc.0").
 #
 # 2026-09-16: repository-contract job gained a NEW check — after
 # confirming the devcontainer file's TEXT contains the expected
-# `ghcr.io/nabhold/baobab-dev:<tag>` string (the check above), it now also
+# `ghcr.io/baobab-platform/baobab-dev:<tag>` string (the check above), it now also
 # confirms that tag actually RESOLVES on GHCR. Root cause for adding this:
 # every check above only proves internal consistency between a repo's own
 # environment.yaml and its own devcontainer file — it says nothing about
@@ -128,21 +128,21 @@ jobs:
           require "yaml"
           require "rubygems/version"
 
-          declaration_path = ".nabhold/environment.yaml"
+          declaration_path = ".baobab/environment.yaml"
           devcontainer_path = ".devcontainer/devcontainer.json"
           abort "#{declaration_path} is required" unless File.file?(declaration_path)
           abort "#{devcontainer_path} is required" unless File.file?(devcontainer_path)
 
           declaration = YAML.safe_load_file(declaration_path, aliases: true)
-          abort "invalid environment contract name" unless declaration.dig("schema", "name") == "nabhold-development-environment-contract"
+          abort "invalid environment contract name" unless declaration.dig("schema", "name") == "baobab-platform-development-environment-contract"
           abort "unsupported environment contract version" unless declaration.dig("schema", "version").to_s == "1.0"
           abort "environment provider must be baobab-dev" unless declaration.dig("environment", "provider") == "baobab-dev"
 
           # Per-profile floor: the minimum baobab-dev version each profile must declare, and
-          # the image tag suffix baobab-dev publishes for it (mirrors nabhold/shared's own
+          # the image tag suffix baobab-dev publishes for it (mirrors baobab-platform/shared's own
           # contracts/development-environment/schema.yaml `profiles.*.image_tag_pattern`,
           # duplicated here because this job only checks out the *calling* repo, not
-          # nabhold/shared itself, so it cannot read that file at runtime).
+          # baobab-platform/shared itself, so it cannot read that file at runtime).
           #
           # A repo's declared `minimum_version` may or may not already carry the profile's
           # own suffix (e.g. "1.2.6-frontend" vs. bare "1.2.6") — both conventions are in
@@ -172,7 +172,7 @@ jobs:
           abort "profile '#{profile}' declares an unparseable minimum_version: #{declared.inspect}" unless Gem::Version.correct?(bare)
           abort "profile '#{profile}' requires baobab-dev >= v#{baseline[:minimum]}, got v#{declared}" unless Gem::Version.new(bare) >= Gem::Version.new(baseline[:minimum])
 
-          expected = "ghcr.io/nabhold/baobab-dev:#{bare}#{baseline[:suffix]}"
+          expected = "ghcr.io/baobab-platform/baobab-dev:#{bare}#{baseline[:suffix]}"
           devcontainer = Dir.glob(".devcontainer/**/*").select { |path| File.file?(path) }.map { |path| File.read(path) }.join("\n")
           abort "devcontainer must use #{expected}" unless devcontainer.include?(expected)
 
@@ -226,7 +226,7 @@ jobs:
       # exact `expected_image` the contract step above already computed.
       #
       # docker/login-action + a checksummed crane binary, same pattern
-      # nabhold/baobab-dev's own publish.yml and registry-integrity.yml
+      # baobab-platform/baobab-dev's own publish.yml and registry-integrity.yml
       # use — kept identical rather than inventing a second convention.
       # GHCR auth here only needs `packages: read` (this job's own
       # permissions: block above); it is a registry API call scoped to
@@ -260,7 +260,7 @@ jobs:
         run: |
           set -euo pipefail
           if ! digest=$(crane digest "${EXPECTED_IMAGE}" 2>&1); then
-            echo "::error::${EXPECTED_IMAGE} is declared in .nabhold/environment.yaml and referenced in .devcontainer/**, but GHCR cannot resolve it: ${digest}"
+            echo "::error::${EXPECTED_IMAGE} is declared in .baobab/environment.yaml and referenced in .devcontainer/**, but GHCR cannot resolve it: ${digest}"
             echo "::error::This is the exact failure mode that leaves Codespaces stuck in recovery mode and 'docker pull' failing locally for every developer on this repo — the contract says this tag exists, but it doesn't (yet, or anymore)."
             exit 1
           fi

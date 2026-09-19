@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/market.schema.json",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/market.schema.json",
   "title": "Baobab Market Registry",
   "description": "Commercial operating contexts that are not synonymous with country, region, or estate. A market is a business-defined operational boundary (§11, §22, §30).",
   "$defs": {

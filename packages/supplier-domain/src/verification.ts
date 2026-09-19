@@ -2,7 +2,7 @@ import { z } from "zod"
 
 /**
  * Shared by capabilities and certifications: declared != verified.
- * Generalized from nabhold/zuribeans' `verification_status` enum
+ * Generalized from baobab-platform/zuribeans' `verification_status` enum
  * (ADR-0006).
  */
 export const verificationStatusSchema = z.enum(["declared", "verified", "rejected"])

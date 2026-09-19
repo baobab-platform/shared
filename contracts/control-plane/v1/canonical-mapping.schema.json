@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/canonical-mapping.schema.json",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/canonical-mapping.schema.json",
   "title": "Canonical Mapping Registry",
   "description": "Governed relationships between canonical identities and external representations, scoped by tenant, market, estate, and other dimensions. Implements the Baobab Canonical Mapping Model (section 9).",
   "$defs": {

@@ -5,7 +5,7 @@
 # BCP-003 SS16, ADR-BCP-004 SS115, ADR-BCP-006 SS21, ADR-BCP-009 SS17)
 # states this "SHALL be defined in Shared" and left only an illustrative,
 # explicitly-non-canonical scoring table. This file is that canonical
-# definition. nabhold/baobab-cp's resolver SHALL implement exactly this
+# definition. baobab-platform/baobab-cp's resolver SHALL implement exactly this
 # algorithm, not an approximation of it.
 #
 # Design goal: a strict, tie-avoiding ordering by dimension tier, so that

@@ -1,13 +1,13 @@
 openapi: 3.1.0
 info:
-  title: Nabhold Baobab ERP Boundary API
+  title: Baobab-Platform Baobab ERP Boundary API
   version: 1.0.0
   description: Vendor-neutral synchronous provisioning and query contract. Business state propagation uses the ERP AsyncAPI contract.
   license:
     name: Apache-2.0
     identifier: Apache-2.0
 servers:
-  - url: https://erp.nabhold.com/v1
+  - url: https://erp.baobab-platform.com/v1
     description: Production placeholder; activation requires an approved domain binding.
 security:
   - workloadOidc: [erp:read]
@@ -220,5 +220,5 @@ components:
   securitySchemes:
     workloadOidc:
       type: openIdConnect
-      openIdConnectUrl: https://identity.nabhold.com/.well-known/openid-configuration
+      openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
       description: Short-lived workload or delegated identity token transported over the infrastructure-owned mTLS path. The resolved tenant claim is authoritative; any tenant_id in a request must match it.

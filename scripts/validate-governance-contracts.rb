@@ -113,10 +113,10 @@ fail_contract("registration response and provisioning event use different operat
 documented_registration_response = openapi.dig("paths", "/tenants", "post", "responses", "202", "content", "application/json", "examples", "controlPlaneMintedTenant", "value")
 fail_contract("OpenAPI registration response example has drifted from its fixture") unless documented_registration_response == registration_response_example
 
-nabhold = entities.find { |entity| entity.fetch("id") == "NABHOLD" }
-fail_contract("NABHOLD registry entry is required") unless nabhold
-fail_contract("NABHOLD must declare approved tenant intent") unless nabhold["baobab_tenant"] == true
-nabhold_erp = nabhold.fetch("baobab_products").find { |entry| entry["product"] == "baobab-erp" }
-fail_contract("NABHOLD must declare confirmed baobab-erp consumption") unless nabhold_erp&.fetch("confirmed") == true
+baobab_platform = entities.find { |entity| entity.fetch("id") == "BAOBAB-PLATFORM" }
+fail_contract("BAOBAB-PLATFORM registry entry is required") unless baobab_platform
+fail_contract("BAOBAB-PLATFORM must declare approved tenant intent") unless baobab_platform["baobab_tenant"] == true
+baobab_platform_erp = baobab_platform.fetch("baobab_products").find { |entry| entry["product"] == "baobab-erp" }
+fail_contract("BAOBAB-PLATFORM must declare confirmed baobab-erp consumption") unless baobab_platform_erp&.fetch("confirmed") == true
 
 puts "Governance contract validation passed"

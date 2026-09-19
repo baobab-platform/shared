@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/erp/v1/inventory-availability.schema.json",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/inventory-availability.schema.json",
   "title": "ERP physical inventory availability projection",
   "description": "ERP-owned physical availability for a mapped SKU and warehouse. Trade reservations are not overwritten by this projection.",
   "type": "object",

@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { verificationStatusSchema } from "./verification"
 
-/** Generalized from nabhold/zuribeans' `supplier_certifications` table (ADR-0006). */
+/** Generalized from baobab-platform/zuribeans' `supplier_certifications` table (ADR-0006). */
 export const supplierCertificationSchema = z.object({
   id: z.string().optional(),
   supplierOrganisationId: z.string(),

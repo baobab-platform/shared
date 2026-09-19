@@ -1,20 +1,20 @@
-# Target path: nabhold/shared/templates/caller-security-python.yml
+# Target path: baobab-platform/shared/templates/caller-security-python.yml
 #
 # FIX 2026-09-04: replaces the all-zeros placeholder SHA
 # (0000000000000000000000000000000000000000) that shipped on 2026-08-25
 # with a TODO claiming "security-python.yml does not exist in
-# nabhold/shared yet as of this writing." Stale since later that same
+# baobab-platform/shared yet as of this writing." Stale since later that same
 # day: security-python.yml shipped in the v1.1.0 tag. As checked in
 # before this fix, copying this template verbatim would fail immediately
 # at the first `uses:` step with an "unable to resolve action" error.
 # Verified live via `git ls-remote --tags
-# https://github.com/nabhold/shared.git v1.1.0` and `git cat-file -e
+# https://github.com/baobab-platform/shared.git v1.1.0` and `git cat-file -e
 # f8df9b90ffe8fef5cbf6d14a9bcf868f723d1464:.github/workflows/security-python.yml`
 # on 2026-09-04.
 #
 # Copy into <repo>/.github/workflows/security-python.yml
 # Assumes a uv-managed project with a "security" dependency-group that
-# installs bandit and pip-audit (see nabhold/baobab's pyproject.toml for
+# installs bandit and pip-audit (see baobab-platform/baobab's pyproject.toml for
 # the convention), plus a bandit.yaml at the repo root. Adjust the
 # `with:` block's paths for a repo that differs, resolve the TODO below,
 # then delete this comment block.
@@ -52,12 +52,12 @@ jobs:
   scan:
     permissions:
       contents: read
-    # Pin is nabhold/shared's v1.1.0 tag (annotated — peeled commit, not
+    # Pin is baobab-platform/shared's v1.1.0 tag (annotated — peeled commit, not
     # the tag object's own SHA). Re-verify before merging if this file is
     # more than a few weeks old: `git ls-remote --tags
-    # https://github.com/nabhold/shared.git` and prefer the newest tag
+    # https://github.com/baobab-platform/shared.git` and prefer the newest tag
     # that actually contains security-python.yml.
-    uses: nabhold/shared/.github/workflows/security-python.yml@f8df9b90ffe8fef5cbf6d14a9bcf868f723d1464 # v1.1.0
+    uses: baobab-platform/shared/.github/workflows/security-python.yml@f8df9b90ffe8fef5cbf6d14a9bcf868f723d1464 # v1.1.0
     with:
       bandit-config-path: "bandit.yaml"
       bandit-target: "."

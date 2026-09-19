@@ -3,7 +3,7 @@
 #
 # Assumes: uv-managed pyproject.toml with a "docs" dependency group
 # containing the `zensical` package, and native zensical.toml
-# configuration (Zensical is the NABHOLD org default — see
+# configuration (Zensical is the BAOBAB-PLATFORM org default — see
 # pages-zensical.yml's own header for why a different toolchain gets its
 # own reusable workflow rather than a branch in this one).
 
@@ -44,16 +44,16 @@ jobs:
       version: ${{ steps.resolve.outputs.value }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      # SHA is nabhold/shared's v1.0.0 tag, verified live via
-      # `git ls-remote --tags https://github.com/nabhold/shared.git v1.0.0`
+      # SHA is baobab-platform/shared's v1.0.0 tag, verified live via
+      # `git ls-remote --tags https://github.com/baobab-platform/shared.git v1.0.0`
       # on 2026-08-25 — v1.0.0 is an ANNOTATED tag, so this is the
       # PEELED commit, not the tag object's own SHA (same distinction as
       # astral-sh/setup-uv@v6 above in pages-zensical.yml). Re-verify and
-      # re-pin on each new nabhold/shared release; Dependabot should pick
+      # re-pin on each new baobab-platform/shared release; Dependabot should pick
       # this up automatically going forward now that a real tag exists to
       # track (see enforce-dependabot-config.yml).
       - id: resolve
-        uses: nabhold/shared/.github/actions/derive-value-from-yaml@ad5cdb028023cd6b9c48cd8d7e6151ef4ab0cd73 # v1.0.0
+        uses: baobab-platform/shared/.github/actions/derive-value-from-yaml@ad5cdb028023cd6b9c48cd8d7e6151ef4ab0cd73 # v1.0.0
         with:
           manifest-path: config/versions.yaml   # TODO: adjust if this repo's manifest differs
           query: ".languages.python.version"    # TODO: adjust query path if schema differs
@@ -65,7 +65,7 @@ jobs:
       pages: write
       id-token: write
     # Same pin/rationale as resolve-python-version's step above.
-    uses: nabhold/shared/.github/workflows/pages-zensical.yml@ad5cdb028023cd6b9c48cd8d7e6151ef4ab0cd73 # v1.0.0
+    uses: baobab-platform/shared/.github/workflows/pages-zensical.yml@ad5cdb028023cd6b9c48cd8d7e6151ef4ab0cd73 # v1.0.0
     with:
       python-version: ${{ needs.resolve-python-version.outputs.version }}
       # TODO: uncomment and set if this repo's docs live in a subdirectory

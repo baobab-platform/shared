@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/domain.schema.json",
-  "title": "Nabhold control-plane domain identifiers",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json",
+  "title": "Baobab-Platform control-plane domain identifiers",
   "$defs": {
     "resourceId": {
       "type": "string",

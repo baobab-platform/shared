@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/membership.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/membership.schema.json",
   "title": "Membership",
   "description": "A relationship between a principal and a platform resource (tenant, organisation, legal entity, etc.).",
   "type": "object",

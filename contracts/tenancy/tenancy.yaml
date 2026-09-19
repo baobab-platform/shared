@@ -1,12 +1,12 @@
 # ==============================================================================
-# NABHOLD GROUP AFRICA
+# BAOBAB-PLATFORM GROUP AFRICA
 # Tenancy Contract
 #
-# Target path: nabhold/shared/contracts/tenancy/tenancy.yaml
+# Target path: baobab-platform/shared/contracts/tenancy/tenancy.yaml
 #
 # Purpose
 # -------
-# Declares what NABHOLD considers a "tenant" of the Baobab platform, and the
+# Declares what BAOBAB-PLATFORM considers a "tenant" of the Baobab platform, and the
 # obligations that MUST hold for any system that provisions, serves, or
 # decommissions one. This is a GOVERNANCE contract (ADR-0001 section 2.5):
 # it states obligations, not implementation.
@@ -40,7 +40,7 @@
 # The contract schema is versioned independently of Control Plane and
 # product-engine implementations and of any individual tenant's data.
 #
-# Governing decision records: ADR-0001 and ADR-0003 (nabhold/shared/docs/adr/)
+# Governing decision records: ADR-0001 and ADR-0003 (baobab-platform/shared/docs/adr/)
 # ==============================================================================
 
 schema:
@@ -245,16 +245,16 @@ security:
 ownership:
 
   contract_schema:
-    owner: "nabhold/shared"
+    owner: "baobab-platform/shared"
 
   tenancy_model_implementation:
-    owner: "nabhold/baobab-cp"
+    owner: "baobab-platform/baobab-cp"
 
   tenant_boundary_enforcement:
     owner: "each Baobab product engine"
 
   physical_isolation_enforcement:
-    owner: "nabhold/infrastructure"
+    owner: "baobab-platform/infrastructure"
 
 # ------------------------------------------------------------------------------
 # Notes

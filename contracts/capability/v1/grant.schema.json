@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/grant.schema.json",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/grant.schema.json",
   "title": "CapabilityGrant",
   "description": "Answers exactly one question: may this tenant, in this scope, consume this capability? A grant never determines which provider or engine instance serves the request -- that is CapabilityBinding's job. Multiple independent grants for the same tenant/capability/scope may coexist; revoking one source's grant never revokes another source's grant for the same capability.",
   "$defs": {

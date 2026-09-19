@@ -4,8 +4,8 @@
 |---|---|
 | **Status** | Accepted |
 | **Date** | 2026-09-01 |
-| **Owner** | Chief Software Engineer, Nabhold Group Africa |
-| **Repository** | `nabhold/shared` |
+| **Owner** | Chief Software Engineer, Baobab-Platform Group Africa |
+| **Repository** | `baobab-platform/shared` |
 | **Depends on** | ADR-0002; ADR-0003; Shared contract-versioning policy |
 | **Applies to** | `baobab-cp`, Baobab engines, infrastructure adapters, and authorised digital-estate backends |
 

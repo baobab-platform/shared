@@ -1,10 +1,10 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold Baobab buyer-organisation lifecycle events
+  title: Baobab-Platform Baobab buyer-organisation lifecycle events
   version: 1.0.0
   description: >
     BuyerOrganisation lifecycle events (Gate ZB-01, ADR-SHARED-008 SS5). Uses
-    the same canonical event envelope and com.nabhold.<context>.<...>.v<N>
+    the same canonical event envelope and com.baobab-platform.<context>.<...>.v<N>
     naming convention already shipped for identity, ERP, supplier-onboarding,
     capability and product events. No message broker exists yet anywhere in
     this ecosystem to carry these; this contract exists so producers and
@@ -12,7 +12,7 @@ info:
 defaultContentType: application/json
 channels:
   buyerOrganisationEvents:
-    address: nabhold.buyer-organisation.events.v1
+    address: baobab-platform.buyer-organisation.events.v1
     messages:
       buyerOrganisationRegistered: { $ref: "#/components/messages/BuyerOrganisationRegistered" }
       buyerOrganisationStatusChanged: { $ref: "#/components/messages/BuyerOrganisationStatusChanged" }
@@ -23,7 +23,7 @@ operations:
 components:
   messages:
     BuyerOrganisationRegistered:
-      name: com.nabhold.customer.buyer-organisation.registered.v1
+      name: com.baobab-platform.customer.buyer-organisation.registered.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -31,7 +31,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/buyerOrganisationRegisteredEventData }
     BuyerOrganisationStatusChanged:
-      name: com.nabhold.customer.buyer-organisation.status-changed.v1
+      name: com.baobab-platform.customer.buyer-organisation.status-changed.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/erp/v1/warehouse-projection.schema.json",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/warehouse-projection.schema.json",
   "title": "ERP warehouse projection",
   "type": "object",
   "additionalProperties": false,

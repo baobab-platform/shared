@@ -3,7 +3,7 @@
 **Document Type:** Platform Architecture Specification  
 **Status:** Proposed Canonical Architecture  
 **Architecture Domain:** Control Plane / Canonical Identity / Context / Mapping / Engine Integration  
-**Applies To:** Baobab Platform, all Baobab engines, all digital estates, `nabhold/shared`, integration services, future products and external integrations  
+**Applies To:** Baobab Platform, all Baobab engines, all digital estates, `baobab-platform/shared`, integration services, future products and external integrations  
 **Target Maturity:** Production-grade, multi-tenant, multi-market, multi-region, polyrepo, polyglot enterprise platform
 
 ---
@@ -934,7 +934,7 @@ Examples:
 ```text
 Thamani B2C Estate
 ZuriBeans Estate
-Nabhold Corporate Estate
+Baobab-Platform Corporate Estate
 future mobile commerce estate
 dealer portal
 supplier portal
@@ -2028,7 +2028,7 @@ Example:
 | Accounting posting | iDempiere | iDempiere |
 | ERP inventory | iDempiere | iDempiere |
 | Cross-system mapping | Control Plane | Mapping Registry |
-| Capability contracts | `nabhold/shared` | `nabhold/shared` |
+| Capability contracts | `baobab-platform/shared` | `baobab-platform/shared` |
 | Capability runtime binding | Control Plane | Control Plane |
 
 A source-of-truth matrix MUST exist before integrating a new domain.
@@ -2037,14 +2037,14 @@ A source-of-truth matrix MUST exist before integrating a new domain.
 
 # 35. Contract Ownership
 
-`nabhold/shared` owns the **grammar**.
+`baobab-platform/shared` owns the **grammar**.
 
 The Control Plane owns **runtime state**.
 
 Therefore:
 
 ```text
-nabhold/shared
+baobab-platform/shared
     └── says what a Mapping is
 
 Control Plane
@@ -2058,7 +2058,7 @@ Shared contracts MUST NOT contain live tenant credentials, mutable mappings or o
 
 ---
 
-# 36. Recommended `nabhold/shared` Structure
+# 36. Recommended `baobab-platform/shared` Structure
 
 ```text
 shared/
@@ -3002,7 +3002,7 @@ context propagation tests
 
 No repository should silently copy canonical schemas.
 
-They should consume published versions from `nabhold/shared`.
+They should consume published versions from `baobab-platform/shared`.
 
 ---
 
@@ -3096,7 +3096,7 @@ The following decision SHOULD be adopted as an ADR:
                                  │
           ┌──────────────────────┼──────────────────────┐
           │                      │                      │
-      Thamani Estate       ZuriBeans Estate       Nabhold Estate
+      Thamani Estate       ZuriBeans Estate       Baobab-Platform Estate
           │                      │                      │
           └──────────────────────┼──────────────────────┘
                                  │
@@ -3106,7 +3106,7 @@ The following decision SHOULD be adopted as an ADR:
 
 ────────────────────────────────────────────────────────────────────
 
-                       nabhold/shared
+                       baobab-platform/shared
 
  Canonical Contracts • JSON Schema • OpenAPI • AsyncAPI • Events
  Versioning • Compatibility • Security Standards • ADRs • Workflows
@@ -3115,7 +3115,7 @@ The following decision SHOULD be adopted as an ADR:
 The relationship between the two is deliberately simple:
 
 ```text
-nabhold/shared
+baobab-platform/shared
         │
         │ defines
         ▼

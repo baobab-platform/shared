@@ -1,10 +1,10 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold Baobab Shipment lifecycle events
+  title: Baobab-Platform Baobab Shipment lifecycle events
   version: 1.0.0
   description: >
     Shipment lifecycle events (Gate ZB-01, ADR-SHARED-008 SS5). Uses the
-    same canonical event envelope and com.nabhold.<context>.<...>.v<N>
+    same canonical event envelope and com.baobab-platform.<context>.<...>.v<N>
     naming convention already shipped for identity, ERP, supplier-onboarding,
     capability and product events. No message broker exists yet anywhere in
     this ecosystem to carry these; this contract exists so producers and
@@ -12,7 +12,7 @@ info:
 defaultContentType: application/json
 channels:
   shipmentEvents:
-    address: nabhold.shipment.events.v1
+    address: baobab-platform.shipment.events.v1
     messages:
       shipmentCreated: { $ref: "#/components/messages/ShipmentCreated" }
       shipmentStatusChanged: { $ref: "#/components/messages/ShipmentStatusChanged" }
@@ -24,7 +24,7 @@ operations:
 components:
   messages:
     ShipmentCreated:
-      name: com.nabhold.trade.shipment.created.v1
+      name: com.baobab-platform.trade.shipment.created.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -32,7 +32,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/shipmentCreatedEventData }
     ShipmentStatusChanged:
-      name: com.nabhold.trade.shipment.status-changed.v1
+      name: com.baobab-platform.trade.shipment.status-changed.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -40,7 +40,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/shipmentStatusChangedEventData }
     ShipmentDelivered:
-      name: com.nabhold.trade.shipment.delivered.v1
+      name: com.baobab-platform.trade.shipment.delivered.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json

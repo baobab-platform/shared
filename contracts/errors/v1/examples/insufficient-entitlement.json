@@ -1,5 +1,5 @@
 {
-  "type": "https://docs.nabhold.com/problems/insufficient-entitlement",
+  "type": "https://docs.baobab-platform.com/problems/insufficient-entitlement",
   "title": "Insufficient entitlement",
   "status": 403,
   "detail": "The resolved tenant is not entitled to use the requested product.",

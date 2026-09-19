@@ -1,5 +1,5 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
 # Reusable Workflow: Enforce Dependabot Config
 #
 # File: .github/workflows/enforce-dependabot-config.yml

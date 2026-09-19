@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/scope.schema.json",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/scope.schema.json",
   "title": "CapabilityScope",
   "description": "The applicability dimensions of one CapabilityGrant or CapabilityBinding. An unspecified dimension means \"not further restricted on this axis\" -- it is never a wildcard bypass of dimensions that ARE specified elsewhere. Deliberately distinct from contracts/control-plane/v1/canonical-mapping.schema.json's mappingScope: the two share dimension vocabulary but are evaluated by different resolvers for different purposes (ADR-SHARED-007 SS25).",
   "$defs": {

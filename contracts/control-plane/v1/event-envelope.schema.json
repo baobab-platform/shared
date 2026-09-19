@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/event-envelope.schema.json",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/event-envelope.schema.json",
   "title": "Baobab Control Plane event-envelope profile",
   "description": "Compatibility path for Control Plane consumers. The organisation-wide envelope is canonical; this file must not diverge from it.",
   "$ref": "../../events/v1/envelope.schema.json"

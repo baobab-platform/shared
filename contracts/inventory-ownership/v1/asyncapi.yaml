@@ -1,10 +1,10 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold Baobab InventoryOwnershipRecord events
+  title: Baobab-Platform Baobab InventoryOwnershipRecord events
   version: 1.0.0
   description: >
     InventoryOwnershipRecord events (Gate ZB-01, ADR-SHARED-008 SS5). Uses
-    the same canonical event envelope and com.nabhold.<context>.<...>.v<N>
+    the same canonical event envelope and com.baobab-platform.<context>.<...>.v<N>
     naming convention already shipped for identity, ERP, supplier-onboarding,
     capability and product events. No message broker exists yet anywhere in
     this ecosystem to carry these; this contract exists so producers and
@@ -12,7 +12,7 @@ info:
 defaultContentType: application/json
 channels:
   inventoryOwnershipEvents:
-    address: nabhold.inventory-ownership.events.v1
+    address: baobab-platform.inventory-ownership.events.v1
     messages:
       inventoryOwnershipRecorded: { $ref: "#/components/messages/InventoryOwnershipRecorded" }
       inventoryOwnershipTransferred: { $ref: "#/components/messages/InventoryOwnershipTransferred" }
@@ -23,7 +23,7 @@ operations:
 components:
   messages:
     InventoryOwnershipRecorded:
-      name: com.nabhold.inventory.inventory-ownership.recorded.v1
+      name: com.baobab-platform.inventory.inventory-ownership.recorded.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -31,7 +31,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/inventoryOwnershipRecordedEventData }
     InventoryOwnershipTransferred:
-      name: com.nabhold.inventory.inventory-ownership.transferred.v1
+      name: com.baobab-platform.inventory.inventory-ownership.transferred.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
