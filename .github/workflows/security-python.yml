@@ -1,12 +1,12 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
 # Reusable Workflow: Python SAST (Bandit) + Dependency Audit (pip-audit)
 #
 # File: .github/workflows/security-python.yml
 #
 # PURPOSE:
 #   Runs the two Python-specific security checks already established as
-#   local convention in nabhold/baobab (see its bandit.yaml and its
+#   local convention in baobab-platform/baobab (see its bandit.yaml and its
 #   Makefile's `security` target) as an actual CI gate — previously
 #   neither ran anywhere except a developer's own machine. uv-specific:
 #   assumes a `uv`-managed project with a `[dependency-groups]` entry

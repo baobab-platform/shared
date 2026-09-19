@@ -1,5 +1,5 @@
 {
-  "name": "@nabhold/shared-root",
+  "name": "@baobab-platform/shared-root",
   "private": true,
   "packageManager": "pnpm@11.24.0",
   "engines": {

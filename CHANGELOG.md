@@ -1,8 +1,8 @@
 # Changelog
 
-All notable changes to `nabhold/shared` are documented in this file.
+All notable changes to `baobab-platform/shared` are documented in this file.
 
-This changelog records changes to the shared engineering infrastructure used across the NABHOLD organisation, including:
+This changelog records changes to the shared engineering infrastructure used across the BAOBAB-PLATFORM organisation, including:
 
 * reusable GitHub Actions workflows;
 * composite actions;
@@ -44,7 +44,7 @@ Changes that have been merged but have not yet been included in a released versi
 - `identity.suspended` and `identity.reactivated` events
   (`contracts/identity-events/v1/identity-suspended.schema.json`,
   `identity-reactivated.schema.json`), 2 of the 6 lifecycle events ADR-0016
-  §90 anticipated but `nabhold/shared` had not yet defined.
+  §90 anticipated but `baobab-platform/shared` had not yet defined.
 - `entitlement.revoked`, `credential.compromised`, and `session.revoked`
   events (`contracts/identity-events/v1/entitlement-revoked.schema.json`,
   `credential-compromised.schema.json`, `session-revoked.schema.json`), 3
@@ -63,7 +63,7 @@ Changes that have been merged but have not yet been included in a released versi
   `baobab-trade` ADR-0021's customs/trade-compliance model and
   ADR-0018 + its Addendum's multi-jurisdiction tax model. Added per
   ADR-SHARED-008.
-- ADR-SHARED-008, confirming `com.nabhold.<context>.<...>.v<N>`
+- ADR-SHARED-008, confirming `com.baobab-platform.<context>.<...>.v<N>`
   (`contracts/events/v1/envelope.schema.json`) as the sole canonical
   event-type convention and registering the four domains above.
 - A new `contracts/product/v1` package: `Product`, `ProductVersion`
@@ -85,7 +85,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 - Control Plane lifecycle events and error responses now consume the canonical
   cross-engine contracts instead of defining local metadata shapes.
-- Nabhold now declares confirmed `baobab-erp` consumption. Its digital estate
+- Baobab-Platform now declares confirmed `baobab-erp` consumption. Its digital estate
   remains independent from its separately provisioned tenant boundary.
 - Tenant identifiers are opaque `tn_` resource IDs, legal entities retain the
   uppercase registry grammar, and canonical product IDs prefer kebab case.
@@ -130,7 +130,7 @@ Nothing yet.
 - `baobab-cp` ADR-BCP-015 and its own Technical Specification (CR-003) had
   independently declared `baobab.<bounded-context>.<aggregate>.<event>.v<major>`
   as the canonical event-type format, contradicting the
-  `com.nabhold.<context>.<...>.v<N>` pattern this repository already enforces
+  `com.baobab-platform.<context>.<...>.v<N>` pattern this repository already enforces
   in `contracts/events/v1/envelope.schema.json` and ships in every real
   identity/ERP/supplier-onboarding event. ADR-SHARED-008 confirms Shared's
   shipped convention as authoritative; both `baobab-cp` documents are
@@ -502,7 +502,7 @@ Where a shared workflow or action is consumed through a version tag, the release
 For example:
 
 ```yaml
-uses: nabhold/shared/.github/workflows/python-ci.yml@v1
+uses: baobab-platform/shared/.github/workflows/python-ci.yml@v1
 ```
 
 The changelog should make clear when the behaviour associated with `v1` changes and when consumers should move to `v2`.
@@ -622,7 +622,7 @@ Prefer:
 
 The goal is not to produce a diary of commits.
 
-The goal is to provide a reliable historical record of **what changed in shared NABHOLD engineering infrastructure and what those changes mean for its consumers**.
+The goal is to provide a reliable historical record of **what changed in shared BAOBAB-PLATFORM engineering infrastructure and what those changes mean for its consumers**.
 
 ---
 
@@ -638,6 +638,6 @@ Future releases will be recorded below the `Unreleased` section in reverse chron
 
 * Keep a Changelog
 * Semantic Versioning
-* NABHOLD `CONTRIBUTING.md`
-* NABHOLD `SECURITY.md`
-* NABHOLD `CODEOWNERS`
+* BAOBAB-PLATFORM `CONTRIBUTING.md`
+* BAOBAB-PLATFORM `SECURITY.md`
+* BAOBAB-PLATFORM `CODEOWNERS`

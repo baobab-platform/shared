@@ -1,12 +1,12 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold control-plane events
+  title: Baobab-Platform control-plane events
   version: 1.1.0
   description: Versioned tenant lifecycle events using the canonical Baobab cross-engine envelope.
 defaultContentType: application/json
 channels:
   tenantLifecycle:
-    address: nabhold.control-plane.tenant.v1
+    address: baobab-platform.control-plane.tenant.v1
     messages:
       provisioningStarted:
         $ref: "#/components/messages/ProvisioningStarted"
@@ -20,7 +20,7 @@ operations:
 components:
   messages:
     ProvisioningStarted:
-      name: com.nabhold.control-plane.tenant.provisioning-started.v1
+      name: com.baobab-platform.control-plane.tenant.provisioning-started.v1
       payload:
         allOf:
           - $ref: ./event-envelope.schema.json
@@ -29,7 +29,7 @@ components:
               data:
                 $ref: ./provisioning-started.schema.json
     ProvisioningStateChanged:
-      name: com.nabhold.control-plane.tenant.provisioning-state-changed.v1
+      name: com.baobab-platform.control-plane.tenant.provisioning-state-changed.v1
       payload:
         allOf:
           - $ref: ./event-envelope.schema.json

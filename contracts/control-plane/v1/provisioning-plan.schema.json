@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/provisioning-plan.schema.json",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/provisioning-plan.schema.json",
   "title": "TenantProvisioning",
   "description": "The tenant onboarding process aggregate (Technical Specification SS21). It does not replace Tenant; it tracks onboarding orchestration. `state` is the coarse, already-implemented provisioning-state-machine.yaml lifecycle (requested/accepted/provisioning/reconciling/active/suspended/failed/decommissioning/cancelled); `current_phase` is the finer-grained orchestration phase within it (domain.schema.json#/$defs/tenantProvisioningPhase) that plan-before-apply (SS25-27) and the onboarding workflow (SS28) require and that the coarse state machine alone cannot express.",
   "$defs": {

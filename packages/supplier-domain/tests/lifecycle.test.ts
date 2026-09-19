@@ -22,7 +22,7 @@ describe("createLifecycle (generic mechanism)", () => {
   })
 })
 
-describe("supplierApplicationLifecycle (proven default, from nabhold/zuribeans ADR-0006)", () => {
+describe("supplierApplicationLifecycle (proven default, from baobab-platform/zuribeans ADR-0006)", () => {
   it("allows submitting a draft application", () => {
     expect(supplierApplicationLifecycle.canTransition("draft", "submitted")).toBe(true)
   })

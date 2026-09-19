@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/rfq/v1/domain.schema.json",
-  "title": "Nabhold RFQ (Request for Quotation) domain identifiers, enumerations and resource",
+  "$id": "https://contracts.baobab-platform.com/rfq/v1/domain.schema.json",
+  "title": "Baobab-Platform RFQ (Request for Quotation) domain identifiers, enumerations and resource",
   "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a buyer-initiated request for supplier pricing on one or more line items. Governed under the capability/v1 namespace registry's `commercial` domain (\"RFQ, quotation and contract negotiation capabilities not specific to one engine\").",
   "$defs": {
     "rfqId": {

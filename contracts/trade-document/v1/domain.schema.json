@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/trade-document/v1/domain.schema.json",
-  "title": "Nabhold TradeDocument domain identifiers, enumerations and resource",
+  "$id": "https://contracts.baobab-platform.com/trade-document/v1/domain.schema.json",
+  "title": "Baobab-Platform TradeDocument domain identifiers, enumerations and resource",
   "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a trade, inspection or proof-of-delivery document's metadata and lifecycle. Governed under the capability/v1 namespace registry's `documents` domain.",
   "$defs": {
     "tradeDocumentId": {

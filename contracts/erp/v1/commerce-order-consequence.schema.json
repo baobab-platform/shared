@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/erp/v1/commerce-order-consequence.schema.json",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/commerce-order-consequence.schema.json",
   "title": "Commerce order requiring ERP consequences",
   "description": "An immutable Trade-owned order version accepted for eventual ERP processing. It requests business consequences, not journal lines or vendor operations.",
   "type": "object",

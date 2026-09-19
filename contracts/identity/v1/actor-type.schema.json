@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/actor-type.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/actor-type.schema.json",
   "title": "ActorType",
   "description": "Categorisation of the principal for authentication and authorization purposes.",
   "type": "string",

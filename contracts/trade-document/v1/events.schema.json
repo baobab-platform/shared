@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/trade-document/v1/events.schema.json",
+  "$id": "https://contracts.baobab-platform.com/trade-document/v1/events.schema.json",
   "title": "TradeDocument lifecycle event payloads",
   "description": "Data payloads for TradeDocument lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
   "$defs": {

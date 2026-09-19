@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/product/v1/events.schema.json",
+  "$id": "https://contracts.baobab-platform.com/product/v1/events.schema.json",
   "title": "Product and subscription lifecycle event payloads",
   "description": "Data payloads for product/subscription lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field. Mirrors capability/v1/events.schema.json's one-payload-per-aggregate-type pattern.",
   "$defs": {

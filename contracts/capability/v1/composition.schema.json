@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/composition.schema.json",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/composition.schema.json",
   "title": "CapabilityComposition and CapabilityCompositionMember",
-  "description": "Declarative grouping of capabilities into platform/product/profile/add-on packages. Compositions carry no business logic and mint no runtime service; ProductSubscription -> CapabilityComposition -> CapabilityGrant expansion is a nabhold/baobab-cp runtime responsibility (ADR-BCP-005).",
+  "description": "Declarative grouping of capabilities into platform/product/profile/add-on packages. Compositions carry no business logic and mint no runtime service; ProductSubscription -> CapabilityComposition -> CapabilityGrant expansion is a baobab-platform/baobab-cp runtime responsibility (ADR-BCP-005).",
   "$defs": {
     "composition": {
       "type": "object",

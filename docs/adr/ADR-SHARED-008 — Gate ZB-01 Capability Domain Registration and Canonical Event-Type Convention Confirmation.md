@@ -2,9 +2,9 @@
 
 **Status:** Accepted — Normative Contract Amendment
 **Date:** 2026-09-13
-**Decision Owners:** NABHOLD / Baobab Platform Architecture
-**Primary Repository:** `nabhold/shared`
-**Affected Repositories:** `nabhold/shared`, `nabhold/baobab-cp`, `nabhold/baobab-trade`
+**Decision Owners:** BAOBAB-PLATFORM / Baobab Platform Architecture
+**Primary Repository:** `baobab-platform/shared`
+**Affected Repositories:** `baobab-platform/shared`, `baobab-platform/baobab-cp`, `baobab-platform/baobab-trade`
 **Reference Tenant:** ZuriBeans
 **Trigger:** ZuriBeans Go-Live Implementation Plan, **Gate ZB-01 — Contract Convergence** ("reconcile canonical IDs; reconcile event envelopes").
 
@@ -27,7 +27,7 @@
 Gate ZB-01 (Contract Convergence) requires canonical IDs and event envelopes to be reconciled across repositories before further implementation. Auditing `baobab-cp` ADR-BCP-015 (Gate ZB-00's own conflict-resolution ADR) against Shared's actual shipped contracts — not just its own ADR text — surfaced two defects that block that reconciliation:
 
 1. ADR-BCP-015's CR-006 resolved eight ADRs' capability vocabulary onto the masterplan's §10 taxonomy, but four of the resulting top-level capability domains (`market`, `internal-trade`, `customs`, `tax`) do not exist in Shared's governed namespace registry. Per ADR-SHARED-007 §11, a new top-level domain requires architectural review — a registry edit alone is insufficient.
-2. ADR-BCP-015's CR-006 and its own parent Technical Specification's CR-003 both declared `baobab.<bounded-context>.<aggregate>.<event>.v<major>` as the canonical event-type format. This contradicts `contracts/events/v1/envelope.schema.json`, which already enforces (via JSON Schema pattern) and every shipped identity/ERP/supplier-onboarding event already uses `com.nabhold.<context>.<...>.v<N>`. Per this package's own README, an earlier `baobab.*` proposal was already considered and rejected during a prior Phase-0 audit — `baobab-cp`'s Technical Specification appears to have been written without checking Shared's shipped state.
+2. ADR-BCP-015's CR-006 and its own parent Technical Specification's CR-003 both declared `baobab.<bounded-context>.<aggregate>.<event>.v<major>` as the canonical event-type format. This contradicts `contracts/events/v1/envelope.schema.json`, which already enforces (via JSON Schema pattern) and every shipped identity/ERP/supplier-onboarding event already uses `com.baobab-platform.<context>.<...>.v<N>`. Per this package's own README, an earlier `baobab.*` proposal was already considered and rejected during a prior Phase-0 audit — `baobab-cp`'s Technical Specification appears to have been written without checking Shared's shipped state.
 
 This ADR resolves both.
 
@@ -52,13 +52,13 @@ Both `namespace-registry.yaml` and `domain.schema.json` have been updated togeth
 
 ## 3. Decision — Canonical Event-Type Convention
 
-`com.nabhold.<context>.<...>.v<N>` — the pattern already enforced by `contracts/events/v1/envelope.schema.json` (`^com\.nabhold\.[a-z0-9]+(?:[.-][a-z0-9]+)*\.v[1-9][0-9]*$`) and already used by every shipped event in `contracts/identity-events/v1/`, `contracts/erp/v1/`, and `contracts/supplier-onboarding/v1/` — is confirmed as the **sole** canonical event-type convention for the entire Baobab platform.
+`com.baobab-platform.<context>.<...>.v<N>` — the pattern already enforced by `contracts/events/v1/envelope.schema.json` (`^com\.baobab-platform\.[a-z0-9]+(?:[.-][a-z0-9]+)*\.v[1-9][0-9]*$`) and already used by every shipped event in `contracts/identity-events/v1/`, `contracts/erp/v1/`, and `contracts/supplier-onboarding/v1/` — is confirmed as the **sole** canonical event-type convention for the entire Baobab platform.
 
 Consequently:
 
-- `baobab-cp`'s Tenant Onboarding & Provisioning Technical Specification, CR-003 ("Baobab SHALL standardise canonical event names as `baobab.<bounded-context>.<aggregate>.<event>.v<major>`") is **superseded**. Its stated examples (e.g. `baobab.tenant.tenant.created.v1`) are invalid; the equivalent canonical form is `com.nabhold.tenant.tenant.created.v1`.
-- `baobab-cp` ADR-BCP-015 §2.2 item 5 and its event-renaming examples in §2.1 (which renamed several ADRs' ad hoc event names to the `baobab.*` form) target the wrong convention. The correct target is `com.nabhold.*`. Example corrections: `supplier.registered` → `com.nabhold.procurement.supplier.registered.v1` (not `baobab.procurement.supplier.registered.v1`); `commercial-price.resolved` → `com.nabhold.commercial.price.resolved.v1`; `shipment.created` → `com.nabhold.trade.shipment.created.v1`; `counterparty.merged` → `com.nabhold.counterparty.counterparty.merged.v1`.
-- ADR-BCP-011 and ADR-BCP-013, which the Gate ZB-00 audit found to correctly follow the (wrongly specified) `baobab.*` convention, in fact need the same correction to `com.nabhold.*` to match what Shared actually ships.
+- `baobab-cp`'s Tenant Onboarding & Provisioning Technical Specification, CR-003 ("Baobab SHALL standardise canonical event names as `baobab.<bounded-context>.<aggregate>.<event>.v<major>`") is **superseded**. Its stated examples (e.g. `baobab.tenant.tenant.created.v1`) are invalid; the equivalent canonical form is `com.baobab-platform.tenant.tenant.created.v1`.
+- `baobab-cp` ADR-BCP-015 §2.2 item 5 and its event-renaming examples in §2.1 (which renamed several ADRs' ad hoc event names to the `baobab.*` form) target the wrong convention. The correct target is `com.baobab-platform.*`. Example corrections: `supplier.registered` → `com.baobab-platform.procurement.supplier.registered.v1` (not `baobab.procurement.supplier.registered.v1`); `commercial-price.resolved` → `com.baobab-platform.commercial.price.resolved.v1`; `shipment.created` → `com.baobab-platform.trade.shipment.created.v1`; `counterparty.merged` → `com.baobab-platform.counterparty.counterparty.merged.v1`.
+- ADR-BCP-011 and ADR-BCP-013, which the Gate ZB-00 audit found to correctly follow the (wrongly specified) `baobab.*` convention, in fact need the same correction to `com.baobab-platform.*` to match what Shared actually ships.
 - This ADR does not re-litigate ADR-SHARED-007 §42/§43, which already left the exact event-type string format to "the existing canonical event-envelope principles in Shared" without spelling it out; this ADR makes that reference concrete and closes the ambiguity CR-003 introduced by re-specifying it differently.
 
 Neither `baobab-cp` nor `baobab-trade` document is rewritten by this ADR. Each carries a pointer at its next revision: *"Event-type strings in this document are superseded where they conflict with ADR-SHARED-008 §3."*
@@ -74,6 +74,6 @@ Per ADR-SHARED-007 §11 and this package's own architectural role (contract auth
 ## 5. Consequences
 
 - No new capability keys under `market.*`, `internal-trade.*`, `customs.*`, or `tax.*` may be declared in any `CapabilityGrant`, `CapabilityBinding`, or `CapabilityProvider` record until `baobab-cp`'s runtime capability registry picks up this revision of `domain.schema.json`.
-- No schema, migration, or event publisher SHALL be written against the `baobab.*` event-type format in any repository from this point forward; all new event types use `com.nabhold.*` and are validated against `contracts/events/v1/envelope.schema.json`'s pattern.
+- No schema, migration, or event publisher SHALL be written against the `baobab.*` event-type format in any repository from this point forward; all new event types use `com.baobab-platform.*` and are validated against `contracts/events/v1/envelope.schema.json`'s pattern.
 - `baobab-cp` carries an action item to add a short pointer to ADR-BCP-015 (§2.2) and to the Technical Specification (CR-003) noting supersession by this ADR, without re-deriving the resolution there.
 - Gate ZB-01's "reconcile canonical IDs; reconcile event envelopes" task is satisfied for the vocabulary and event-format dimensions; the remaining Gate ZB-01 tasks (publishing buyer-organisation, RFQ, quotation, procurement, shipment, trade-lane, inventory-ownership, trade-document, and intercompany contracts as versioned Shared packages) are separate, larger contract-authoring efforts not addressed by this ADR.

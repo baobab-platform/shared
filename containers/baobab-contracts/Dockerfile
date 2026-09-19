@@ -18,10 +18,10 @@ ARG REVISION
 
 LABEL org.opencontainers.image.title="Baobab Platform Contracts"
 LABEL org.opencontainers.image.description="Canonical language-neutral contracts for the Baobab Platform"
-LABEL org.opencontainers.image.source="https://github.com/nabhold/shared"
+LABEL org.opencontainers.image.source="https://github.com/baobab-platform/shared"
 LABEL org.opencontainers.image.version="${VERSION}"
 LABEL org.opencontainers.image.revision="${REVISION}"
-LABEL org.opencontainers.image.vendor="Nabhold Group Africa"
+LABEL org.opencontainers.image.vendor="Baobab-Platform Group Africa"
 
 # ---------------------------------------------------------------------------
 # Canonical Baobab platform contracts

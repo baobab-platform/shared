@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity-events/v1/identity-disabled.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity-events/v1/identity-disabled.schema.json",
   "title": "IdentityDisabledEvent",
   "description": "Emitted when a canonical identity is disabled (ADR-0016 §9 -- no longer permitted to establish ordinary Baobab access; the record itself is normally retained for audit/history). Suspension (temporary, reversible restriction) is the separate identity.suspended event, not a new_status value here -- previously this schema's new_status also allowed SUSPENDED, which meant the same ACTIVE-to-SUSPENDED transition could be reported under two different event types; narrowed to DISABLED only once identity.suspended existed to own that transition. This is the event envelope's `data` payload — see asyncapi.yaml for how it composes with contracts/events/v1/envelope.schema.json.",
   "type": "object",

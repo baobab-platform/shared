@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/human-identity.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/human-identity.schema.json",
   "title": "HumanIdentity",
   "description": "Additional attributes for a human principal.",
   "type": "object",

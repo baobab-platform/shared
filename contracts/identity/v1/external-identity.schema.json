@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/external-identity.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/external-identity.schema.json",
   "title": "ExternalIdentity",
   "description": "An identity asserted by an external identity provider, mapped to a canonical principal.",
   "type": "object",

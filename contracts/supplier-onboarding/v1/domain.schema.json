@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/supplier-onboarding/v1/domain.schema.json",
+  "$id": "https://contracts.baobab-platform.com/supplier-onboarding/v1/domain.schema.json",
   "title": "Baobab supplier-onboarding domain types",
   "$defs": {
     "estateResourceId": {
@@ -8,14 +8,14 @@
       "pattern": "^sup_[a-z0-9]+$",
       "minLength": 8,
       "maxLength": 63,
-      "description": "Public identifier minted by the digital estate hosting the supplier intake (e.g. nabhold/thamani, nabhold/zuribeans); never a database primary key."
+      "description": "Public identifier minted by the digital estate hosting the supplier intake (e.g. baobab-platform/thamani, baobab-platform/zuribeans); never a database primary key."
     },
     "canonicalOrganisationId": {
       "type": ["string", "null"],
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
       "minLength": 3,
       "maxLength": 128,
-      "description": "Reserved for the canonical Organisation identifier once nabhold/baobab-cp implements one and contracts/erp/v1/system-of-record.yaml's Organisation concept is assigned an owner. Null until then; no producer of this contract may mint a value here."
+      "description": "Reserved for the canonical Organisation identifier once baobab-platform/baobab-cp implements one and contracts/erp/v1/system-of-record.yaml's Organisation concept is assigned an owner. Null until then; no producer of this contract may mint a value here."
     },
     "applicationStatus": {
       "type": "string",
@@ -32,7 +32,7 @@
         "suspended",
         "offboarded"
       ],
-      "description": "The proven lifecycle from nabhold/zuribeans ADR-0006, reused as the canonical wire-level status set. A hosting estate whose process genuinely differs may propose extending this enum via a versioned contract change; it must not invent parallel status strings out of band."
+      "description": "The proven lifecycle from baobab-platform/zuribeans ADR-0006, reused as the canonical wire-level status set. A hosting estate whose process genuinely differs may propose extending this enum via a versioned contract change; it must not invent parallel status strings out of band."
     },
     "rejectionReasonCode": {
       "type": "string",

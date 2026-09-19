@@ -1,7 +1,7 @@
-# Route all @nabhold scoped packages to GitHub Packages (GHCR npm registry).
+# Route all @baobab-platform scoped packages to GitHub Packages (GHCR npm registry).
 # NOTE: the correct GHCR npm endpoint is npm.pkg.github.com — NOT github.com.
 # An earlier draft of this config pointed at the wrong host; do not reuse it.
-@nabhold:registry=https://npm.pkg.github.com
+@baobab-platform:registry=https://npm.pkg.github.com
 
 # Authentication via environment variable — never commit a token here.
 //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}

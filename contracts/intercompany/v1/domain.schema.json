@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/intercompany/v1/domain.schema.json",
-  "title": "Nabhold IntercompanyTransaction domain identifiers, enumerations and resource",
+  "$id": "https://contracts.baobab-platform.com/intercompany/v1/domain.schema.json",
+  "title": "Baobab-Platform IntercompanyTransaction domain identifiers, enumerations and resource",
   "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a movement between legal entities of the same tenant -- transfer pricing, mirrored documents, stock transfer or elimination (ADR-BCP-012's internal-trade model). Governed under the capability/v1 namespace registry's `internal-trade` domain.",
   "$defs": {
     "intercompanyTransactionId": {

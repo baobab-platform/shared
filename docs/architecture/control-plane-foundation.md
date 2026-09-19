@@ -1,6 +1,6 @@
 # Control-plane foundation contract
 
-This document is the canonical Foundation 0 architecture for the Nabhold
+This document is the canonical Foundation 0 architecture for the Baobab-Platform
 control plane. Runtime repositories may explain their implementation, but must
 reference these contracts rather than copy and alter them.
 

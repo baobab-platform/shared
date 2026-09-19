@@ -1,16 +1,16 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
-# Repository CI: nabhold/shared's own checks
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
+# Repository CI: baobab-platform/shared's own checks
 #
 # File: .github/workflows/ci.yml
 #
 # PURPOSE:
 #   Unlike every other file in .github/workflows/, this one is NOT a
 #   reusable workflow for consumers to call — it's this repository's own
-#   CI, verifying nabhold/shared's own files stay compliant with the
+#   CI, verifying baobab-platform/shared's own files stay compliant with the
 #   policies it hands out to everyone else.
 #
-#   Before this file existed, nothing actually ran on nabhold/shared's own
+#   Before this file existed, nothing actually ran on baobab-platform/shared's own
 #   commits: greetings.yml, pages-zensical.yml, enforce-action-pinning.yml,
 #   and enforce-dependabot-config.yml all declare only `on: workflow_call`,
 #   since a called workflow can't own a real repository-event trigger.
@@ -23,7 +23,7 @@
 # WHY LOCAL PATH REFERENCES BELOW
 # (./.github/workflows/enforce-action-pinning.yml,
 # ./.github/workflows/enforce-dependabot-config.yml) RATHER THAN PINNED
-# nabhold/shared/...@<sha> REFERENCES:
+# baobab-platform/shared/...@<sha> REFERENCES:
 #   Calling a reusable workflow by relative path within the SAME
 #   repository always resolves to the exact commit currently checked
 #   out — it is not a separate fetch of a possibly-different ref, so
@@ -43,7 +43,7 @@
 # * Added a dependabot-config job dogfooding enforce-dependabot-config.yml
 #   against this repository's own .github/dependabot.yml, alongside the
 #   existing action-pinning self-check.
-# * Initial version — added after discovering nabhold/shared had no CI on
+# * Initial version — added after discovering baobab-platform/shared had no CI on
 #   itself, following a corrupted enforce-action-pinning.yml reaching
 #   main undetected.
 # ==============================================================================

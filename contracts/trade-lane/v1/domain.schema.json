@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/trade-lane/v1/domain.schema.json",
-  "title": "Nabhold TradeLane domain identifiers, enumerations and resource",
+  "$id": "https://contracts.baobab-platform.com/trade-lane/v1/domain.schema.json",
+  "title": "Baobab-Platform TradeLane domain identifiers, enumerations and resource",
   "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a governed origin/destination market relationship a tenant may trade along (ADR-BCP-011's cross-market trading model). Governed under the capability/v1 namespace registry's `market` domain.",
   "$defs": {
     "tradeLaneId": {

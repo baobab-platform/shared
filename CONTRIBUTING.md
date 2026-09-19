@@ -1,8 +1,8 @@
-# Contributing to NABHOLD Shared
+# Contributing to BAOBAB-PLATFORM Shared
 
-Thank you for contributing to `nabhold/shared`.
+Thank you for contributing to `baobab-platform/shared`.
 
-This repository provides shared engineering infrastructure for the NABHOLD organisation, including reusable GitHub Actions workflows, composite actions, CI/CD pipelines, automation scripts, security controls, templates, and engineering standards.
+This repository provides shared engineering infrastructure for the BAOBAB-PLATFORM organisation, including reusable GitHub Actions workflows, composite actions, CI/CD pipelines, automation scripts, security controls, templates, and engineering standards.
 
 Because changes made here may affect multiple repositories simultaneously, contributions must be approached as **platform changes**, not ordinary project-level changes.
 
@@ -12,11 +12,11 @@ Because changes made here may affect multiple repositories simultaneously, contr
 
 # 1. Before You Contribute
 
-Before adding or modifying anything, determine whether the proposed change genuinely belongs in `nabhold/shared`.
+Before adding or modifying anything, determine whether the proposed change genuinely belongs in `baobab-platform/shared`.
 
 A good candidate is something that:
 
-* is required by multiple NABHOLD repositories;
+* is required by multiple BAOBAB-PLATFORM repositories;
 * implements an organisation-wide engineering standard;
 * eliminates meaningful duplication;
 * provides reusable CI/CD functionality;
@@ -59,7 +59,7 @@ Contributions should:
 * avoid unnecessary write access;
 * use OIDC where appropriate;
 * pin all actions to full-length commit SHAs — third-party actions AND
-  `nabhold/shared`'s own reusable workflows/composite actions when
+  `baobab-platform/shared`'s own reusable workflows/composite actions when
   consumed from another repository;
 * validate untrusted inputs;
 * avoid exposing credentials to untrusted code;
@@ -248,9 +248,9 @@ Avoid hard-coding values that consumers reasonably need to configure.
 
 # 8. GitHub Actions Security
 
-Every GitHub Action reference must comply with NABHOLD's action-pinning
+Every GitHub Action reference must comply with BAOBAB-PLATFORM's action-pinning
 policy — this is organisation-wide and has no third-party carve-out. It
-applies equally to third-party actions and to `uses: nabhold/shared/...`
+applies equally to third-party actions and to `uses: baobab-platform/shared/...`
 references from consuming repositories.
 
 Use a complete 40-character commit SHA for every `uses:` reference.
@@ -264,7 +264,7 @@ uses: actions/checkout@<full-commit-sha> # v4.x.x
 and
 
 ```yaml
-uses: nabhold/shared/.github/workflows/python-ci.yml@<full-commit-sha> # v1.x.x
+uses: baobab-platform/shared/.github/workflows/python-ci.yml@<full-commit-sha> # v1.x.x
 ```
 
 over:
@@ -274,7 +274,7 @@ uses: actions/checkout@v4
 ```
 
 ```yaml
-uses: nabhold/shared/.github/workflows/python-ci.yml@v1
+uses: baobab-platform/shared/.github/workflows/python-ci.yml@v1
 ```
 
 and never use floating references such as:
@@ -738,7 +738,7 @@ unless there is a documented reason not to.
 
 Before submitting a pull request, confirm:
 
-* [ ] The change genuinely belongs in `nabhold/shared`.
+* [ ] The change genuinely belongs in `baobab-platform/shared`.
 * [ ] The implementation is reusable.
 * [ ] Inputs and outputs are documented.
 * [ ] Required permissions are explicit.
@@ -846,7 +846,7 @@ The objective is to build reliable infrastructure, not to win arguments.
 
 # 31. Final Principle
 
-`nabhold/shared` exists to make NABHOLD engineering **more consistent, secure, maintainable, and efficient**.
+`baobab-platform/shared` exists to make BAOBAB-PLATFORM engineering **more consistent, secure, maintainable, and efficient**.
 
 Every contribution should therefore pass a simple test:
 

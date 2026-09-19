@@ -56,7 +56,7 @@ not because one does.
 
 ## History
 
-ADR-0016 §90 ("Event Examples") suggested `nabhold/shared` define versioned
+ADR-0016 §90 ("Event Examples") suggested `baobab-platform/shared` define versioned
 events including `identity.suspended`, `identity.reactivated`,
 `entitlement.revoked`, `credential.compromised`, `session.revoked`, and
 `workload.revoked`, in addition to the `identity.disabled` and

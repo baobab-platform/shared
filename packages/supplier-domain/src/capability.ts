@@ -2,7 +2,7 @@ import { z } from "zod"
 import { verificationStatusSchema } from "./verification"
 
 /**
- * Generalized from nabhold/zuribeans' `supplier_capabilities` table
+ * Generalized from baobab-platform/zuribeans' `supplier_capabilities` table
  * (ADR-0006). `category` is a key into the consuming estate's own
  * SupplierCategoryRegistry (see category.ts) — this package does not fix
  * the category list.

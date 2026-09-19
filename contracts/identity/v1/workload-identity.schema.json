@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/workload-identity.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/workload-identity.schema.json",
   "title": "WorkloadIdentity",
   "description": "Identity for a machine‑to‑machine actor (service, job, or automation).",
   "type": "object",

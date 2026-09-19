@@ -1,50 +1,50 @@
 # ==============================================================================
-# NABHOLD GROUP AFRICA
+# BAOBAB-PLATFORM GROUP AFRICA
 # Development Environment Contract — Schema
 #
-# Target path: nabhold/shared/contracts/development-environment/schema.yaml
+# Target path: baobab-platform/shared/contracts/development-environment/schema.yaml
 #
 # Purpose
 # -------
 # Defines the STRUCTURE that every repository's own environment declaration
-# (`.nabhold/environment.yaml`) must conform to, and defines the named
+# (`.baobab-platform/environment.yaml`) must conform to, and defines the named
 # PROFILES available to declare against. This file is the schema; it is not
 # itself a declaration for any single repository.
 #
 # This is a GOVERNANCE contract (ADR-0001 section 2.5): it fixes structure
 # and validation rules, not specific tool versions. Specific versions live in
-# `nabhold/baobab-dev`'s `config/versions.yaml` -> `versions.lock`, which
+# `baobab-platform/baobab-dev`'s `config/versions.yaml` -> `versions.lock`, which
 # remains the single source of truth for "what baobab-dev actually provides."
 #
 # Relationship between the pieces
 # ---------------------------------
 #   this schema                  -> "what may a declaration say?"
-#   <repo>/.nabhold/environment.yaml
+#   <repo>/.baobab-platform/environment.yaml
 #                                 -> "what does THIS repo require?"
 #   baobab-dev/config/versions.lock
 #                                 -> "what does baobab-dev actually provide?"
 #
-# A compatibility validator (CI, to be implemented in nabhold/shared) reads
+# A compatibility validator (CI, to be implemented in baobab-platform/shared) reads
 # a consuming repo's declaration, resolves its declared `profile`, and checks
 # each required capability against versions.lock, filtered to that profile's
 # capability domain subset (see `profiles` below).
 #
 # Consuming repositories (six, per ADR-0001 section 2.8a)
 # -----------------------------------------------------------
-#   nabhold/baobab            -> profile: full
-#   nabhold/nabhold            \
-#   nabhold/zuribeans           |
-#   nabhold/thamani             |-> profile: frontend
-#   nabhold/equator-estate     /
-#   nabhold/infrastructure     -> profile: infra
+#   baobab-platform/baobab            -> profile: full
+#   baobab-platform/baobab-platform            \
+#   baobab-platform/zuribeans           |
+#   baobab-platform/thamani             |-> profile: frontend
+#   baobab-platform/equator-estate     /
+#   baobab-platform/infrastructure     -> profile: infra
 #
-# `nabhold/infrastructure` joined 2026-09-03 — it previously declared
+# `baobab-platform/infrastructure` joined 2026-09-03 — it previously declared
 # `profile: "full"` for lack of anything better (see `profiles.infra` below
 # for why that was wrong for what it actually runs). Update ADR-0001 section
 # 2.8a to match if it still enumerates only five.
 #
 # Every declaration file, regardless of repo, MUST live at the same relative
-# path: `.nabhold/environment.yaml`. This is what allows one validator
+# path: `.baobab-platform/environment.yaml`. This is what allows one validator
 # implementation to serve all six repos.
 #
 # Versioning
@@ -52,11 +52,11 @@
 # This schema is versioned independently of `baobab-dev`'s toolchain version
 # and independently of any individual repo's declaration.
 #
-# Governing decision record: ADR-0001 (nabhold/shared/docs/adr/)
+# Governing decision record: ADR-0001 (baobab-platform/shared/docs/adr/)
 # ==============================================================================
 
 schema:
-  name: "nabhold-development-environment-contract"
+  name: "baobab-platform-development-environment-contract"
   version: "1.0"
 
 # ------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ schema:
 
 provider:
   name: "baobab-dev"
-  repository: "nabhold/baobab-dev"
+  repository: "baobab-platform/baobab-dev"
   source_of_truth: "config/versions.yaml -> config/versions.lock"
 
 # ------------------------------------------------------------------------------
@@ -88,8 +88,8 @@ profiles:
   full:
     description: >
       Everything baobab-dev provides. Used by repositories that build and
-      run the full BAOBAB application stack (currently: nabhold/baobab only).
-    image_tag_pattern: "ghcr.io/nabhold/baobab-dev:{version}"
+      run the full BAOBAB application stack (currently: baobab-platform/baobab only).
+    image_tag_pattern: "ghcr.io/baobab-platform/baobab-dev:{version}"
     capability_domains:
       - "platform"           # e.g. ubuntu base
       - "languages"          # python, node, flutter
@@ -106,8 +106,8 @@ profiles:
       Node/pnpm/Turborepo only — no browser binaries. Used for day-to-day
       interactive development (Codespaces) in customer-facing product
       frontends. Does not need Python, Flutter, or a PostgreSQL client
-      locally (currently: nabhold/nabhold, zuribeans, thamani, equator-estate).
-    image_tag_pattern: "ghcr.io/nabhold/baobab-dev:{version}-frontend"
+      locally (currently: baobab-platform/baobab-platform, zuribeans, thamani, equator-estate).
+    image_tag_pattern: "ghcr.io/baobab-platform/baobab-dev:{version}-frontend"
     capability_domains:
       - "platform"                # shared base layer
       - "languages.node"          # node only — NOT python, NOT flutter
@@ -127,7 +127,7 @@ profiles:
       binaries or their CVE surface — that cost is paid only in CI test
       jobs that actually need it.
     extends: "frontend"
-    image_tag_pattern: "ghcr.io/nabhold/baobab-dev:{version}-frontend-e2e"
+    image_tag_pattern: "ghcr.io/baobab-platform/baobab-dev:{version}-frontend-e2e"
     capability_domains:
       - "frontend_tooling.playwright"
       - "frontend_tooling.sharp"
@@ -146,11 +146,11 @@ profiles:
       Terraform + AWS CLI only — no application language runtimes at all
       (no Python, Node, Flutter, or Java). Used for local development and
       testing of Terraform-managed AWS infrastructure (currently:
-      nabhold/infrastructure only). Does NOT extend `full` or `frontend` —
+      baobab-platform/infrastructure only). Does NOT extend `full` or `frontend` —
       it shares no language/package-manager domain with either; it is a
       sibling branch off baobab-dev's shared base layer, not a subset or
       superset of another profile.
-    image_tag_pattern: "ghcr.io/nabhold/baobab-dev:{version}-infra"
+    image_tag_pattern: "ghcr.io/baobab-platform/baobab-dev:{version}-infra"
     capability_domains:
       - "platform"                  # shared base layer
       - "utilities"                 # generic CLI tools, same subset as `full`/`frontend`
@@ -165,13 +165,13 @@ profiles:
     notes:
       - >
         `kubectl`/Helm are deliberately NOT part of this profile —
-        nabhold/infrastructure's own README defers Kubernetes/Helm/Temporal
+        baobab-platform/infrastructure's own README defers Kubernetes/Helm/Temporal
         "until operational need justifies their additional machinery." Add
         them here only if that decision changes, not preemptively.
 
 # ------------------------------------------------------------------------------
 # Required structure of a per-repository declaration
-# (`<repo>/.nabhold/environment.yaml`)
+# (`<repo>/.baobab-platform/environment.yaml`)
 #
 # This section defines what fields a declaration file MUST contain. It is
 # schema, not an example for any specific repository.
@@ -262,7 +262,7 @@ declaration_requirements:
 
 validator_obligations:
   description: >
-    A repository's `.nabhold/environment.yaml` MUST be validated against
+    A repository's `.baobab-platform/environment.yaml` MUST be validated against
     baobab-dev's `versions.lock`, filtered to the declared profile's
     `capability_domains`, on every CI run that could affect environment
     compatibility (at minimum: any change to the declaration file itself,
@@ -281,15 +281,15 @@ validator_obligations:
 
 ownership:
   contract_schema:
-    owner: "nabhold/shared"
+    owner: "baobab-platform/shared"
   toolchain_implementation:
-    owner: "nabhold/baobab-dev"
+    owner: "baobab-platform/baobab-dev"
   full_profile_declaration:
-    owner: "nabhold/baobab"
+    owner: "baobab-platform/baobab"
   frontend_profile_declarations:
-    owner: "nabhold/nabhold, nabhold/zuribeans, nabhold/thamani, nabhold/equator-estate"
+    owner: "baobab-platform/baobab-platform, baobab-platform/zuribeans, baobab-platform/thamani, baobab-platform/equator-estate"
   infra_profile_declaration:
-    owner: "nabhold/infrastructure"
+    owner: "baobab-platform/infrastructure"
 
 # ------------------------------------------------------------------------------
 # Notes
@@ -313,17 +313,17 @@ notes:
     the other three repos.
   - >
     `frontend-e2e` is a CI-only profile, not a devcontainer profile. A
-    digital-estate repo's `.nabhold/environment.yaml` declares
+    digital-estate repo's `.baobab-platform/environment.yaml` declares
     `profile: frontend` for its everyday Codespaces environment; its CI
     workflow separately references the `*-frontend-e2e` image tag for
     end-to-end test jobs specifically. Do not set a repo's primary
     declaration to `frontend-e2e` — that would put browser binaries in
     every developer's daily container for no reason.
   - >
-    [2026-09-03] Added the `infra` profile and its `nabhold/infrastructure`
+    [2026-09-03] Added the `infra` profile and its `baobab-platform/infrastructure`
     consumer. `infra` was verified satisfiable against baobab-dev's own
     versions.yaml/capabilities.yaml (v1.4.0-rc.0) at the time this note was
     written — confirm that release actually shipped before treating
-    `nabhold/infrastructure`'s own declaration as CI-validated, same
+    `baobab-platform/infrastructure`'s own declaration as CI-validated, same
     caution already applied to `frontend` above while it waited on
     Turborepo/Playwright.

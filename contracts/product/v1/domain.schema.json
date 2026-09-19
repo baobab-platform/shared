@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/product/v1/domain.schema.json",
-  "title": "Nabhold product and subscription domain identifiers and enumerations",
-  "description": "Canonical identifiers and enumerations for Product, ProductVersion, ProductSubscription and EntitlementProjection (Technical Specification SS31, SS88, SS91). This package defines vocabulary only; nabhold/baobab-cp is the runtime authority that persists, evaluates and materialises these concepts into CapabilityGrant records.",
+  "$id": "https://contracts.baobab-platform.com/product/v1/domain.schema.json",
+  "title": "Baobab-Platform product and subscription domain identifiers and enumerations",
+  "description": "Canonical identifiers and enumerations for Product, ProductVersion, ProductSubscription and EntitlementProjection (Technical Specification SS31, SS88, SS91). This package defines vocabulary only; baobab-platform/baobab-cp is the runtime authority that persists, evaluates and materialises these concepts into CapabilityGrant records.",
   "$defs": {
     "productVersionId": {
       "type": "string",

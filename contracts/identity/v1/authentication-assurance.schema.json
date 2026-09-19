@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/authentication-assurance.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/authentication-assurance.schema.json",
   "title": "AuthenticationAssurance",
   "description": "Descriptive information about how a principal authenticated for the current context -- not a business authorization grant (ADR-0015 §180). Consumers use this to decide whether a risk-sensitive operation's AssuranceRequirement (assurance-requirement.schema.json) is met, not to authorize the operation itself.",
   "type": "object",

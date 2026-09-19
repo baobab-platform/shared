@@ -476,7 +476,7 @@
 ### ❌ What's Missing
 
 - No published versioning scheme (semantic versioning for contracts)
-- No package.json version strategy for @nabhold/contracts-ts
+- No package.json version strategy for @baobab-platform/contracts-ts
 - No compatibility matrix documentation
 - No dependency constraint rules (e.g., can Payload use contracts v1.1 with control-plane v1.0?)
 - No CI pipeline for polyrepo contract validation
@@ -694,7 +694,7 @@
 - **Deliverable:** Deployment manifests ready; DR tested
 
 **Week 12: Polyrepo Contract & First Engine**
-- [ ] Publish @nabhold/contracts-ts v1.0
+- [ ] Publish @baobab-platform/contracts-ts v1.0
 - [ ] Validate first engine adapter (Payload/Medusa/iDempiere)
 - [ ] Add contract compatibility tests to CI
 - [ ] Document polyrepo dependency model
@@ -785,7 +785,7 @@
   - Backup/restore validated
 
 ✅ **Contract maturity:**
-  - @nabhold/contracts-ts v1.0 published
+  - @baobab-platform/contracts-ts v1.0 published
   - Semantic versioning enforced
   - Breaking changes detected in CI
   - First engine adapter integrated

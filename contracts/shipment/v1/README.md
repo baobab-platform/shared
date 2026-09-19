@@ -5,7 +5,7 @@ movement of goods: mode, tracking events, planned/in-transit/customs-hold/
 delivered/exception lifecycle. Governed under the `logistics` domain in
 `contracts/capability/v1/namespace-registry.yaml`. Event types use the
 `trade` bounded context (ADR-SHARED-008 SS3's own worked example:
-`shipment.created` -> `com.nabhold.trade.shipment.created.v1`).
+`shipment.created` -> `com.baobab-platform.trade.shipment.created.v1`).
 
 ## Contract surfaces
 

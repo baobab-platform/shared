@@ -3,7 +3,7 @@
 This package defines the estate-owned supplier intake and qualification
 domain: applications, decisions, qualification status changes, and
 capability verification outcomes. It generalizes the concrete contract
-`nabhold/zuribeans` has already proved in production code (ADR-0006,
+`baobab-platform/zuribeans` has already proved in production code (ADR-0006,
 `supplier_organisations` / `supplier_status_events` / `supplier_capabilities`)
 so any digital estate hosting a supplier-facing intake can build against a
 stable shape instead of reinventing it.
