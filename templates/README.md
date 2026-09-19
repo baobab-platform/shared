@@ -67,7 +67,7 @@ workflow at all — see its own entry below for why it's copied differently.
   the "security" dependency-group convention documented in
   baobab-platform/baobab's pyproject.toml.
 - `caller-foundation-repository-gates.yml` — enforces this org's
-  Foundation baseline (the `.baobab-platform/environment.yaml` / devcontainer
+  Foundation baseline (the `.baobab/environment.yaml` / devcontainer
   profile checks — see `contracts/development-environment/schema.yaml`
   for what each profile requires). Recommended for every repo that uses
   `baobab-dev`. Its underlying workflow is covered as of `v1.2.0` — see

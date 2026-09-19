@@ -251,7 +251,7 @@ Both `baobab` and the four digital-estate repos need a development-environment c
 - `frontend` — Node, pnpm and Turborepo, sourced from `baobab-dev`'s `--target frontend` stage (§2.8).
 - `frontend-e2e` — the CI-only browser profile extending `frontend` with Playwright and browser binaries; it is never the daily development declaration.
 
-Each consuming repository (`baobab`, `baobab-platform`, `zuribeans`, `thamani`, `equator-estate`) carries its own declaration at a **consistently named path across all five repos: `.baobab-platform/environment.yaml`** — superseding the earlier draft's `.baobab/environment.yaml` naming. Consistency here is what allows one generic validator in `baobab-platform/shared` to check all five repos the same way instead of five bespoke checks. The four frontend repos' declarations are expected to be short (`profile: frontend` + minimum `baobab-dev` version), not a full re-declaration of tooling versions.
+Each consuming repository (`baobab`, `baobab-platform`, `zuribeans`, `thamani`, `equator-estate`) carries its own declaration at a **consistently named path across all five repos: `.baobab/environment.yaml`** — restoring the earlier draft's `.baobab/environment.yaml` naming. Consistency here is what allows one generic validator in `baobab-platform/shared` to check all five repos the same way instead of five bespoke checks. The four frontend repos' declarations are expected to be short (`profile: frontend` + minimum `baobab-dev` version), not a full re-declaration of tooling versions.
 
 **Known gap, not yet resolved:** `versions.yaml` does not currently contain Turborepo or Playwright entries. The `frontend` profile is defined at the contract-schema level now, but is not yet realizable against the actual `baobab-dev` build until those entries are added — this is `baobab-dev` implementation work, sequenced at rollout step 3, not a `shared`-repo blocker.
 
@@ -271,7 +271,7 @@ No new repository. `baobab-dev`'s existing Dockerfile gains a `--target frontend
 | Date | Change | Reason |
 |---|---|---|
 | 2026-08-26 | §2.8 added; open item #1 resolved to "extend `baobab-dev` Dockerfile with `--target frontend`, no new repo" | Explicit decision: avoid a second devcontainer repo; prefer lower maintenance burden over pipeline isolation |
-| 2026-08-26 | §2.8a added; development-environment contract adopts a `profile` concept (`full`/`frontend`); per-repo declaration renamed to `.baobab-platform/environment.yaml` across all five consuming repos | Explicit decision: consistency enables one shared validator instead of five bespoke checks; avoids four digital-estate repos each independently declaring (and drifting on) identical frontend tooling versions |
+| 2026-08-26 | §2.8a added; development-environment contract adopts a `profile` concept (`full`/`frontend`); per-repo declaration renamed to `.baobab/environment.yaml` across all five consuming repos | Explicit decision: consistency enables one shared validator instead of five bespoke checks; avoids four digital-estate repos each independently declaring (and drifting on) identical frontend tooling versions |
 | 2026-09-01 | §§2.1–2.3 amended and ADR-0003 added | Baobab-Platform consumes Baobab ERP; estate ownership, legal-entity identity and platform tenancy are independent concerns |
 
 ---

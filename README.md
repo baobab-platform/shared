@@ -16,7 +16,7 @@ across all eleven Baobab-Platform repositories. Its Codespaces environment uses 
 `baobab-dev` v1.2.6 `frontend` profile because Shared builds Node-based contract
 packages but no deployable service.
 
-Every consuming repository must provide a `.baobab-platform/environment.yaml`, use an
+Every consuming repository must provide a `.baobab/environment.yaml`, use an
 exact v1.2.6 development profile, commit dependency lockfiles, pin GitHub
 Actions to full commit SHAs, and call the reusable Foundation Repository Gates.
 Those gates perform dependency review, source/dependency/secret scanning,

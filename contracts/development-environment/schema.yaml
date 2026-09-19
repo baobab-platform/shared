@@ -7,7 +7,7 @@
 # Purpose
 # -------
 # Defines the STRUCTURE that every repository's own environment declaration
-# (`.baobab-platform/environment.yaml`) must conform to, and defines the named
+# (`.baobab/environment.yaml`) must conform to, and defines the named
 # PROFILES available to declare against. This file is the schema; it is not
 # itself a declaration for any single repository.
 #
@@ -19,7 +19,7 @@
 # Relationship between the pieces
 # ---------------------------------
 #   this schema                  -> "what may a declaration say?"
-#   <repo>/.baobab-platform/environment.yaml
+#   <repo>/.baobab/environment.yaml
 #                                 -> "what does THIS repo require?"
 #   baobab-dev/config/versions.lock
 #                                 -> "what does baobab-dev actually provide?"
@@ -44,7 +44,7 @@
 # 2.8a to match if it still enumerates only five.
 #
 # Every declaration file, regardless of repo, MUST live at the same relative
-# path: `.baobab-platform/environment.yaml`. This is what allows one validator
+# path: `.baobab/environment.yaml`. This is what allows one validator
 # implementation to serve all six repos.
 #
 # Versioning
@@ -171,7 +171,7 @@ profiles:
 
 # ------------------------------------------------------------------------------
 # Required structure of a per-repository declaration
-# (`<repo>/.baobab-platform/environment.yaml`)
+# (`<repo>/.baobab/environment.yaml`)
 #
 # This section defines what fields a declaration file MUST contain. It is
 # schema, not an example for any specific repository.
@@ -262,7 +262,7 @@ declaration_requirements:
 
 validator_obligations:
   description: >
-    A repository's `.baobab-platform/environment.yaml` MUST be validated against
+    A repository's `.baobab/environment.yaml` MUST be validated against
     baobab-dev's `versions.lock`, filtered to the declared profile's
     `capability_domains`, on every CI run that could affect environment
     compatibility (at minimum: any change to the declaration file itself,
@@ -313,7 +313,7 @@ notes:
     the other three repos.
   - >
     `frontend-e2e` is a CI-only profile, not a devcontainer profile. A
-    digital-estate repo's `.baobab-platform/environment.yaml` declares
+    digital-estate repo's `.baobab/environment.yaml` declares
     `profile: frontend` for its everyday Codespaces environment; its CI
     workflow separately references the `*-frontend-e2e` image tag for
     end-to-end test jobs specifically. Do not set a repo's primary

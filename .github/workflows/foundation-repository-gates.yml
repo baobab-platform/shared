@@ -8,7 +8,7 @@
 # -------
 # workflow_call gate every repo's own .github/workflows/foundation.yml calls
 # (see baobab-platform/baobab-dev's for the calling convention). Validates a
-# repo's .baobab-platform/environment.yaml + .devcontainer/devcontainer.json against
+# repo's .baobab/environment.yaml + .devcontainer/devcontainer.json against
 # the Development Environment Contract, checks reproducibility inputs
 # (lockfiles, SHA-pinned Actions, no floating base-image tags), and runs a
 # Trivy dependency/secret/container scan.
@@ -128,7 +128,7 @@ jobs:
           require "yaml"
           require "rubygems/version"
 
-          declaration_path = ".baobab-platform/environment.yaml"
+          declaration_path = ".baobab/environment.yaml"
           devcontainer_path = ".devcontainer/devcontainer.json"
           abort "#{declaration_path} is required" unless File.file?(declaration_path)
           abort "#{devcontainer_path} is required" unless File.file?(devcontainer_path)
@@ -260,7 +260,7 @@ jobs:
         run: |
           set -euo pipefail
           if ! digest=$(crane digest "${EXPECTED_IMAGE}" 2>&1); then
-            echo "::error::${EXPECTED_IMAGE} is declared in .baobab-platform/environment.yaml and referenced in .devcontainer/**, but GHCR cannot resolve it: ${digest}"
+            echo "::error::${EXPECTED_IMAGE} is declared in .baobab/environment.yaml and referenced in .devcontainer/**, but GHCR cannot resolve it: ${digest}"
             echo "::error::This is the exact failure mode that leaves Codespaces stuck in recovery mode and 'docker pull' failing locally for every developer on this repo — the contract says this tag exists, but it doesn't (yet, or anymore)."
             exit 1
           fi
