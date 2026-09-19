@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/trade-lane/v1/events.schema.json",
+  "title": "TradeLane lifecycle event payloads",
+  "description": "Data payloads for TradeLane lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "tradeLaneActivatedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trade_lane_id", "tenant_id", "origin_market_id", "destination_market_id", "direction", "status"],
+      "properties": {
+        "trade_lane_id": { "$ref": "domain.schema.json#/$defs/tradeLaneId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "origin_market_id": { "type": "string", "maxLength": 128 },
+        "destination_market_id": { "type": "string", "maxLength": 128 },
+        "direction": { "$ref": "domain.schema.json#/$defs/tradeLaneDirection" },
+        "status": { "$ref": "domain.schema.json#/$defs/tradeLaneStatus" }
+      }
+    },
+    "tradeLaneSuspendedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trade_lane_id", "tenant_id", "status"],
+      "properties": {
+        "trade_lane_id": { "$ref": "domain.schema.json#/$defs/tradeLaneId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/tradeLaneStatus" },
+        "reason": { "type": "string", "maxLength": 500 }
+      }
+    }
+  }
+}

@@ -6,22 +6,35 @@
 # SHALL not expose sensitive information indiscriminately to external
 # clients").
 #
-# Two categories exist for two different moments, not two different
+# Three categories exist for three different moments, not three different
 # vocabularies for the same thing:
 #
-#   authorization_denial  -- decision.schema.json's `reason_code`, returned
-#                             synchronously on a DENY authorization decision
-#                             (ADR-0008 §45's own example list).
-#   lifecycle_revocation   -- the `reason` field on identity-lifecycle event
-#                             payloads (contracts/identity-events/v1/
-#                             *.schema.json), published asynchronously when
-#                             a principal/membership is revoked or disabled
-#                             (ADR-0016 §141 "Reason Codes").
+#   authorization_denial          -- decision.schema.json's `reason_code`,
+#                                     returned synchronously on a DENY
+#                                     authorization decision (ADR-0008 §45's
+#                                     own example list).
+#   lifecycle_revocation           -- the `reason` field on identity-lifecycle
+#                                     event payloads (contracts/identity-events/v1/
+#                                     *.schema.json), published asynchronously
+#                                     when a principal/membership is revoked
+#                                     or disabled (ADR-0016 §141 "Reason Codes").
+#   capability_resolution_denial   -- contracts/capability/v1/resolution.schema.json's
+#                                     `reason_code`, returned synchronously on a
+#                                     non-RESOLVED CapabilityResolution decision
+#                                     (ADR-BCP-003 §21, ADR-BCP-007 §21, ADR-SHARED-007
+#                                     §40). This is a richer, capability-resolution-
+#                                     specific vocabulary than authorization_denial's
+#                                     coarser decision.schema.json codes.
 #
 # TENANT_SUSPENDED (authorization_denial) and TENANT_SUSPENSION
 # (lifecycle_revocation) are deliberately two distinct, near-identical-
 # looking codes, not a typo: each is the literal wording its own governing
-# ADR uses, for its own category. Do not merge them.
+# ADR uses, for its own category. Do not merge them. The same pattern
+# applies to CAPABILITY_NOT_BOUND (authorization_denial, the coarse
+# decision.schema.json code) and BINDING_NOT_FOUND (capability_resolution_denial,
+# the same real-world condition surfaced with more specific sibling codes
+# through the richer CapabilityResolution decision object) -- do not merge
+# those either.
 
 reason_codes:
   # -- authorization_denial (ADR-0008 §45) ------------------------------
@@ -75,3 +88,50 @@ reason_codes:
   - code: ADMINISTRATIVE_ACTION
     category: lifecycle_revocation
     description: "Revoked by an administrator for a reason not covered by a more specific code in this category."
+
+  # -- capability_resolution_denial (ADR-BCP-003 §21, ADR-BCP-007 §21, ADR-SHARED-007 §40) --
+  - code: CAPABILITY_UNKNOWN
+    category: capability_resolution_denial
+    description: "The requested capability_key is not registered."
+  - code: CAPABILITY_INACTIVE
+    category: capability_resolution_denial
+    description: "The requested capability is registered but not in an ACTIVE lifecycle state."
+  - code: GRANT_NOT_FOUND
+    category: capability_resolution_denial
+    description: "No effective CapabilityGrant authorises this tenant, scope and capability."
+  - code: GRANT_SUSPENDED
+    category: capability_resolution_denial
+    description: "The applicable CapabilityGrant exists but is suspended."
+  - code: GRANT_REVOKED
+    category: capability_resolution_denial
+    description: "The applicable CapabilityGrant exists but has been revoked."
+  - code: GRANT_EXPIRED
+    category: capability_resolution_denial
+    description: "The applicable CapabilityGrant's effective period has ended."
+  - code: DEPENDENCY_UNSATISFIED
+    category: capability_resolution_denial
+    description: "A REQUIRED capability dependency is not itself resolvable."
+  - code: BINDING_NOT_FOUND
+    category: capability_resolution_denial
+    description: "No eligible CapabilityBinding matches the requested capability and scope."
+  - code: BINDING_AMBIGUOUS
+    category: capability_resolution_denial
+    description: "More than one eligible CapabilityBinding remains after applying scope-specificity.yaml's full ordering; resolution fails closed rather than guessing."
+  - code: PROVIDER_UNAVAILABLE
+    category: capability_resolution_denial
+    description: "The bound CapabilityProvider or engine instance is not currently healthy enough to serve the request."
+  - code: PROVIDER_INCOMPATIBLE
+    category: capability_resolution_denial
+    description: "The bound provider does not declare support for the requested capability's contract version."
+  - code: CONTRACT_VERSION_UNSUPPORTED
+    category: capability_resolution_denial
+    description: "No eligible binding supports the caller's required_contract_version."
+  - code: ISOLATION_POLICY_MISMATCH
+    category: capability_resolution_denial
+    description: "No eligible binding's provider satisfies the scope's required isolation profile."
+  - code: RESIDENCY_POLICY_MISMATCH
+    category: capability_resolution_denial
+    description: "No eligible binding's provider satisfies the scope's data-residency requirements."
+  - code: CONTEXT_INVALID
+    category: capability_resolution_denial
+    description: "The referenced context_id is missing, expired, or was resolved for a different capability's operation scope requirements."

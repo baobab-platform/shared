@@ -1,0 +1,19 @@
+{
+  "specversion": "1.0",
+  "id": "5e6f7a8b-9c0d-4e1f-2a3b-4c5d6e7f8a9b",
+  "type": "com.nabhold.capability.binding.changed.v1",
+  "source": "urn:nabhold:service:baobab-cp",
+  "subject": "binding:bind_01k4z9j3n2",
+  "time": "2026-09-11T09:10:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.nabhold.com/capability/v1/events.schema.json#/$defs/bindingLifecycleEventData",
+  "baobabscope": "platform",
+  "correlationid": "6f7a8b9c-0d1e-4f2a-3b4c-5d6e7f8a9b0c",
+  "data": {
+    "binding_id": "bind_01k4z9j3n2",
+    "capability_key": "commerce.order.create",
+    "provider_id": "provider_01k4z1a2b3",
+    "binding_mode": "PRIMARY",
+    "status": "ACTIVE"
+  }
+}

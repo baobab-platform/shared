@@ -1,0 +1,21 @@
+{
+  "specversion": "1.0",
+  "id": "1e2f3a4b-5c6d-4e1f-9a7b-8c9daebfc0d1",
+  "type": "com.nabhold.market.trade-lane.activated.v1",
+  "source": "urn:nabhold:service:baobab-cp",
+  "subject": "trade-lane:tlane_01k4ztl001",
+  "time": "2026-09-16T09:35:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.nabhold.com/trade-lane/v1/events.schema.json#/$defs/tradeLaneActivatedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "2f3a4b5c-6d7e-4f1a-8b8c-9daebfc0d1e2",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "trade_lane_id": "tlane_01k4ztl001",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "origin_market_id": "market-kenya",
+    "destination_market_id": "market-south-africa",
+    "direction": "CROSS_MARKET",
+    "status": "ACTIVE"
+  }
+}

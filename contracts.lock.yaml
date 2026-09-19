@@ -34,3 +34,24 @@ contracts:
       - credential-compromised.schema.json
       - session-revoked.schema.json
       - workload-revoked.schema.json
+  - domain: capability
+    version: v1
+    schemas:
+      - domain.schema.json
+      - capability.schema.json
+      - composition.schema.json
+      - scope.schema.json
+      - grant.schema.json
+      - provider.schema.json
+      - binding.schema.json
+      - resolution.schema.json
+      - events.schema.json
+      - namespace-registry.yaml
+      - scope-specificity.yaml
+  - domain: product
+    version: v1
+    schemas:
+      - domain.schema.json
+      - product.schema.json
+      - subscription.schema.json
+      - events.schema.json

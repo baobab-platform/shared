@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/capability/v1/grant.schema.json",
+  "title": "CapabilityGrant",
+  "description": "Answers exactly one question: may this tenant, in this scope, consume this capability? A grant never determines which provider or engine instance serves the request -- that is CapabilityBinding's job. Multiple independent grants for the same tenant/capability/scope may coexist; revoking one source's grant never revokes another source's grant for the same capability.",
+  "$defs": {
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grant_id", "tenant_id", "capability_key", "scope_id", "source", "status", "effective_from", "version"],
+      "properties": {
+        "grant_id": { "$ref": "domain.schema.json#/$defs/capabilityGrantId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "capability_key": { "$ref": "domain.schema.json#/$defs/capabilityKey" },
+        "scope_id": { "$ref": "domain.schema.json#/$defs/capabilityScopeId" },
+        "source": { "$ref": "domain.schema.json#/$defs/capabilityGrantSource" },
+        "source_reference": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Opaque reference to the originating record, e.g. a subscription_id when source=PRODUCT_SUBSCRIPTION. Required whenever source is not PLATFORM_BASELINE."
+        },
+        "status": { "$ref": "domain.schema.json#/$defs/capabilityGrantStatus" },
+        "effective_from": { "type": "string", "format": "date-time" },
+        "effective_to": { "type": ["string", "null"], "format": "date-time" },
+        "constraints": {
+          "type": "object",
+          "description": "Platform-level entitlement constraints only (e.g. usage ceiling, allowed markets/channels, trial limits, environment restriction). Constraints SHALL NOT encode domain business-authorization rules -- e.g. \"may issue invoices only below a threshold\" belongs to the domain engine, not here."
+        },
+        "granted_by": { "type": "string", "maxLength": 128 },
+        "revoked_at": { "type": ["string", "null"], "format": "date-time" },
+        "revoked_by": { "type": ["string", "null"], "maxLength": 128 },
+        "revocation_reason": { "type": ["string", "null"], "maxLength": 500 },
+        "version": { "type": "integer", "minimum": 1 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      },
+      "if": {
+        "properties": { "source": { "not": { "const": "PLATFORM_BASELINE" } } }
+      },
+      "then": { "required": ["source_reference"] }
+    }
+  }
+}

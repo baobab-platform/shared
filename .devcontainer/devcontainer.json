@@ -3,7 +3,7 @@
   "image": "ghcr.io/nabhold/baobab-dev:1.4.2-frontend",
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
-  "updateContentCommand": "corepack enable && pnpm install --frozen-lockfile --ignore-scripts",
+  "updateContentCommand": "pnpm install --frozen-lockfile --ignore-scripts",
   "postCreateCommand": "baobab-verify --contract && pnpm lint",
   "customizations": {
     "vscode": {

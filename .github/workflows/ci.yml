@@ -37,6 +37,9 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/validate-capability-contracts.rb to the governance-contracts
+#   job, covering the new contracts/capability/v1 package (ADR-BCP-002 through
+#   ADR-BCP-009, ADR-SHARED-007 Phase 1).
 # * Added a dependabot-config job dogfooding enforce-dependabot-config.yml
 #   against this repository's own .github/dependabot.yml, alongside the
 #   existing action-pinning self-check.
@@ -62,6 +65,8 @@ on:
       - "scripts/validate-erp-contracts.rb"
       - "scripts/validate-identity-events-contracts.rb"
       - "scripts/validate-authorization-contracts.rb"
+      - "scripts/validate-capability-contracts.rb"
+      - "scripts/validate-trade-contracts.rb"
   pull_request:
     paths:
       - ".github/workflows/**"
@@ -75,6 +80,8 @@ on:
       - "scripts/validate-erp-contracts.rb"
       - "scripts/validate-identity-events-contracts.rb"
       - "scripts/validate-authorization-contracts.rb"
+      - "scripts/validate-capability-contracts.rb"
+      - "scripts/validate-trade-contracts.rb"
   workflow_dispatch:
 
 permissions:
@@ -99,6 +106,10 @@ jobs:
         run: ruby scripts/validate-identity-events-contracts.rb
       - name: Validate reason-code registry, assurance and delegation contracts
         run: ruby scripts/validate-authorization-contracts.rb
+      - name: Validate capability-centric contracts
+        run: ruby scripts/validate-capability-contracts.rb
+      - name: Validate Trade B2B boundary contracts
+        run: ruby scripts/validate-trade-contracts.rb
 
   action-pinning:
     name: Enforce action pinning (self-check)

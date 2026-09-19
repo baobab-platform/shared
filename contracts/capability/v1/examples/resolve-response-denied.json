@@ -1,0 +1,10 @@
+{
+  "resolution_id": "res_01k4z8k9q1",
+  "context_id": "ctx_01k4z7g1h0",
+  "capability_key": "logistics.dispatch.manage",
+  "decision": "UNAVAILABLE",
+  "reason_code": "BINDING_NOT_FOUND",
+  "resolved_at": "2026-09-11T09:14:00Z",
+  "expires_at": "2026-09-11T09:14:30Z",
+  "correlation_id": "8b9c0d1e-2f3a-4b4c-5d6e-7f8a9b0c1d2e"
+}

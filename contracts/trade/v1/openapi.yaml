@@ -1,0 +1,186 @@
+openapi: 3.1.0
+info:
+  title: Baobab Trade B2B API
+  version: 1.0.0
+  description: Provider-neutral buyer-context, purchasing, RFQ and quotation boundary. Trade remains the business-authorization authority.
+security:
+  - humanOidc: [trade:buy]
+x-baobab-platform-context: ../../authorization/v1/context.schema.json
+paths:
+  /buyer-context:
+    post:
+      operationId: resolveBuyerContext
+      summary: Resolve active Trade membership for requested platform and buyer context
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ./domain.schema.json#/$defs/buyerContext }
+      responses:
+        "200":
+          description: Authorized buyer context; private and non-cacheable
+          headers:
+            Cache-Control: { schema: { type: string, const: "private, no-store" } }
+          content:
+            application/json: { schema: { $ref: ./buyer-context.schema.json } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /quick-orders/validate:
+    post:
+      operationId: validateQuickOrder
+      summary: Validate a bounded batch without committing a cart or order
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: ./quick-order.schema.json#/$defs/request } }
+      responses:
+        "200":
+          description: Advisory validation; cart mutation and checkout revalidate
+          headers:
+            Cache-Control: { schema: { type: string, const: "private, no-store" } }
+          content:
+            application/json: { schema: { $ref: ./quick-order.schema.json#/$defs/response } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /rfqs:
+    get:
+      operationId: listRfqs
+      summary: List RFQs visible in the authorized buyer context
+      responses:
+        "200":
+          description: Private buyer RFQ collection
+          content:
+            application/json: { schema: { $ref: "#/components/schemas/RfqCollection" } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+    post:
+      operationId: createRfq
+      summary: Create an RFQ in the authorized buyer context
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { $ref: ./rfq-create.schema.json } }
+      responses:
+        "201":
+          description: RFQ created, or the prior idempotent outcome returned
+          content:
+            application/json: { schema: { $ref: ./rfq.schema.json } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /rfqs/{rfq_id}:
+    get:
+      operationId: getRfq
+      summary: Read one RFQ inside the authorized buyer context
+      parameters: [{ $ref: "#/components/parameters/RfqId" }]
+      responses:
+        "200":
+          description: RFQ found
+          content:
+            application/json: { schema: { $ref: ./rfq.schema.json } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /quotations:
+    get:
+      operationId: listQuotations
+      summary: List quotations visible in the authorized buyer context
+      responses:
+        "200":
+          description: Restricted commercial quotation collection
+          content:
+            application/json: { schema: { $ref: "#/components/schemas/QuotationCollection" } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /quotations/{quotation_id}:
+    get:
+      operationId: getQuotation
+      summary: Read one quotation inside the authorized buyer context
+      parameters: [{ $ref: "#/components/parameters/QuotationId" }]
+      responses:
+        "200":
+          description: Quotation found
+          content:
+            application/json: { schema: { $ref: ./quotation.schema.json } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /quotations/{quotation_id}/accept:
+    post:
+      operationId: acceptQuotation
+      summary: Accept one unexpired quotation version; order conversion remains a separate authorized command
+      parameters:
+        - { $ref: "#/components/parameters/QuotationId" }
+        - { $ref: "#/components/parameters/IdempotencyKey" }
+        - { $ref: "#/components/parameters/IfMatch" }
+      responses:
+        "200":
+          description: Accepted quotation
+          content:
+            application/json: { schema: { $ref: ./quotation.schema.json } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+components:
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$", minLength: 16, maxLength: 128 }
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      schema: { type: string, pattern: '^"[1-9][0-9]*"$' }
+    RfqId:
+      name: rfq_id
+      in: path
+      required: true
+      schema: { $ref: ./domain.schema.json#/$defs/resourceId }
+    QuotationId:
+      name: quotation_id
+      in: path
+      required: true
+      schema: { $ref: ./domain.schema.json#/$defs/resourceId }
+  schemas:
+    ProblemDetails: { $ref: ../../errors/v1/problem-details.schema.json }
+    RfqCollection:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties: { items: { type: array, maxItems: 100, items: { $ref: ./rfq.schema.json } } }
+    QuotationCollection:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties: { items: { type: array, maxItems: 100, items: { $ref: ./quotation.schema.json } } }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } }
+    Unauthorized:
+      description: Valid authentication is required
+      content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } }
+    Forbidden:
+      description: Platform context, active membership or business authority denied
+      content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } }
+    NotFound:
+      description: Resource absent from the authorized buyer context
+      content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } }
+    Conflict:
+      description: Incompatible lifecycle, optimistic version or idempotency replay
+      content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } }
+  securitySchemes:
+    humanOidc:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://iam.nabhold.com/realms/nabhold/protocol/openid-connect/auth
+          tokenUrl: https://iam.nabhold.com/realms/nabhold/protocol/openid-connect/token
+          scopes:
+            trade:buy: Request B2B buying operations; domain authority is still evaluated by Trade

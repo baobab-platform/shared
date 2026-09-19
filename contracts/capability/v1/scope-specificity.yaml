@@ -1,0 +1,93 @@
+# scope-specificity.yaml
+#
+# The canonical, deterministic algorithm for ranking competing eligible
+# CapabilityBindings. Every ADR in the capability-centric series (ADR-
+# BCP-003 SS16, ADR-BCP-004 SS115, ADR-BCP-006 SS21, ADR-BCP-009 SS17)
+# states this "SHALL be defined in Shared" and left only an illustrative,
+# explicitly-non-canonical scoring table. This file is that canonical
+# definition. nabhold/baobab-cp's resolver SHALL implement exactly this
+# algorithm, not an approximation of it.
+#
+# Design goal: a strict, tie-avoiding ordering by dimension tier, so that
+# no combination of lower-tier dimension matches can ever outrank a
+# single higher-tier dimension match. Weights are chosen so that the sum
+# of every dimension's maximum contribution in a tier is strictly less
+# than one unit of the next tier up (see `weight_derivation` below).
+
+algorithm_version: 1
+
+# ---------------------------------------------------------------------
+# Step 1: eligibility gate (out of scope for this file -- see
+# binding.schema.json and resolution.schema.json). A binding must already
+# be ACTIVE, temporally effective, contract-compatible, environment-
+# matched, residency-compatible, isolation-compatible, and pass health
+# policy before it is a candidate for specificity scoring at all.
+# Exclusion lists (scope.exclude_countries) are evaluated here, as a
+# hard eligibility gate -- a country match against exclude_countries
+# makes a binding ineligible, it does not merely lower its specificity
+# score. Inclusion lists (scope.include_countries) work the same way in
+# reverse: absence from a non-empty include_countries list is a hard
+# ineligibility, not a scoring penalty.
+# ---------------------------------------------------------------------
+
+# Step 2: specificity scoring, applied only to eligible candidates.
+# For each dimension a candidate binding's scope populates AND which
+# matches the request context on that dimension, add the dimension's
+# weight to the candidate's total score. An unpopulated dimension on the
+# binding's scope contributes 0 -- it never matches "by omission".
+scoring_tiers:
+  - tier: 1
+    weight_per_dimension: 1
+    dimensions: [tenant_id, organisation_id, business_unit_id]
+    rationale: "Broadest applicability dimensions; present on nearly every scope and so must not dominate ranking on their own."
+  - tier: 2
+    weight_per_dimension: 4
+    dimensions: [currency_code, customer_segment_id, catalogue_id]
+    rationale: "Commercial refinement dimensions."
+  - tier: 3
+    weight_per_dimension: 16
+    dimensions: [digital_property_id, channel_id, jurisdiction, operating_region_id, geographic_region_id, environment, deployment_region]
+    rationale: "Structural/technical refinement dimensions."
+  - tier: 4
+    weight_per_dimension: 128
+    dimensions: [legal_entity_id, digital_estate_id, market_id, isolation_profile_id]
+    rationale: "The dimensions most likely to be the actual reason one binding should override another (e.g. a South-Africa-specific override of a tenant-wide default)."
+
+weight_derivation: >
+  Weights double from tier N to tier N+1 in effect, but more precisely:
+  each tier's per-dimension weight is chosen so that
+  (sum of all lower tiers' maximum possible contribution) < (one unit of
+  this tier's weight). Tier 1 max = 3 (3 dims x 1). Tier 2 weight (4) >
+  3, tier 2 max = 12 (3 dims x 4). Tier 3 weight (16) > 3 + 12 = 15,
+  tier 3 max = 112 (7 dims x 16). Tier 4 weight (128) > 3 + 12 + 112 =
+  127, tier 4 max = 512 (4 dims x 128). This guarantees a single tier-4
+  dimension match always outranks every possible combination of tier 1-3
+  matches, and so on down the tiers -- there is no weight combination
+  that produces an unintended cross-tier tie by accident. A genuine tie
+  can still occur between two candidates whose matched-dimension sets are
+  identical; see Step 5.
+
+# Step 3: binding mode preference, applied only among candidates tied
+# after Step 2's score.
+binding_mode_preference:
+  order: [PRIMARY, FALLBACK, SHADOW, MIGRATION]
+  note: >
+    SHADOW never becomes the authoritative resolution result even if it
+    wins this ordering; a SHADOW-only candidate set resolves as if no
+    eligible binding existed. FALLBACK is only compared against PRIMARY
+    when PRIMARY is ineligible (see the eligibility gate) -- this table
+    governs ties among an already-eligible candidate set, not general
+    preference for PRIMARY over an otherwise-eligible FALLBACK. DISABLED
+    is never a candidate; it is excluded at the eligibility gate.
+
+# Step 4: explicit priority, applied only among candidates still tied
+# after Step 3.
+priority_rule: "Higher binding.priority wins. Priority is an explicit administrative override of last resort, never a substitute for correct scope design."
+
+# Step 5: deterministic ambiguity detection. If candidates remain tied
+# after Steps 2-4 (identical score, identical binding_mode tier,
+# identical priority), resolution SHALL fail with decision=AMBIGUOUS and
+# reason_code=BINDING_AMBIGUOUS. There is no Step 6. The resolver SHALL
+# NOT apply any further tie-breaker (not insertion order, not lowest ID,
+# not random selection) to force a single winner.
+ambiguity_is_terminal: true

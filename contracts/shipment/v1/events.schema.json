@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/shipment/v1/events.schema.json",
+  "title": "Shipment lifecycle event payloads",
+  "description": "Data payloads for Shipment lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "shipmentCreatedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shipment_id", "tenant_id", "status", "mode"],
+      "properties": {
+        "shipment_id": { "$ref": "domain.schema.json#/$defs/shipmentId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "trade_lane_id": { "type": ["string", "null"] },
+        "mode": { "$ref": "domain.schema.json#/$defs/shipmentMode" },
+        "status": { "$ref": "domain.schema.json#/$defs/shipmentStatus" }
+      }
+    },
+    "shipmentStatusChangedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shipment_id", "tenant_id", "status"],
+      "properties": {
+        "shipment_id": { "$ref": "domain.schema.json#/$defs/shipmentId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/shipmentStatus" },
+        "previous_status": { "$ref": "domain.schema.json#/$defs/shipmentStatus" }
+      }
+    },
+    "shipmentDeliveredEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shipment_id", "tenant_id", "delivered_at"],
+      "properties": {
+        "shipment_id": { "$ref": "domain.schema.json#/$defs/shipmentId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "delivered_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "resolution_id": "res_01k4z8k4p5",
+  "context_id": "ctx_01k4z7g1h0",
+  "capability_key": "commerce.order.create",
+  "contract_version": 1,
+  "decision": "RESOLVED",
+  "grant_id": "grant_01k4z8h2m1",
+  "binding_id": "bind_01k4z9j3n2",
+  "invocation": {
+    "service_reference": "service://baobab-trade/orders",
+    "route_reference": "/v1/orders",
+    "protocol": "http",
+    "contract_version": 1,
+    "provider_id": "provider_01k4z1a2b3",
+    "engine_instance_id": "ei_medusaprodza01"
+  },
+  "resolved_at": "2026-09-11T09:12:00Z",
+  "expires_at": "2026-09-11T09:13:00Z",
+  "correlation_id": "7a8b9c0d-1e2f-4a3b-4c5d-6e7f8a9b0c1d"
+}

@@ -1,0 +1,142 @@
+asyncapi: 3.1.0
+info:
+  title: Nabhold Baobab capability-centric lifecycle events
+  version: 1.0.0
+  description: >
+    Capability, grant, provider, binding and composition lifecycle events for
+    the capability-centric platform (ADR-BCP-002 through ADR-BCP-009). Uses
+    the same canonical event envelope and com.nabhold.<context>.<...>.v<N>
+    naming convention already shipped for identity, ERP and
+    supplier-onboarding events — this package does not introduce a
+    different naming scheme. As with contracts/erp/v1 and
+    contracts/supplier-onboarding/v1, no message broker exists yet anywhere
+    in this ecosystem to carry these; this contract exists so producers and
+    future consumers have a stable shape to build against once one does.
+defaultContentType: application/json
+channels:
+  capabilityEvents:
+    address: nabhold.capability.events.v1
+    messages:
+      capabilityRegistered: { $ref: "#/components/messages/CapabilityRegistered" }
+      capabilityDeprecated: { $ref: "#/components/messages/CapabilityDeprecated" }
+      capabilityRetired: { $ref: "#/components/messages/CapabilityRetired" }
+      grantCreated: { $ref: "#/components/messages/GrantCreated" }
+      grantSuspended: { $ref: "#/components/messages/GrantSuspended" }
+      grantRevoked: { $ref: "#/components/messages/GrantRevoked" }
+      providerRegistered: { $ref: "#/components/messages/ProviderRegistered" }
+      providerSuspended: { $ref: "#/components/messages/ProviderSuspended" }
+      providerRetired: { $ref: "#/components/messages/ProviderRetired" }
+      bindingCreated: { $ref: "#/components/messages/BindingCreated" }
+      bindingChanged: { $ref: "#/components/messages/BindingChanged" }
+      bindingRetired: { $ref: "#/components/messages/BindingRetired" }
+      compositionUpdated: { $ref: "#/components/messages/CompositionUpdated" }
+operations:
+  publishCapabilityEvents:
+    action: send
+    channel: { $ref: "#/channels/capabilityEvents" }
+components:
+  messages:
+    CapabilityRegistered:
+      name: com.nabhold.capability.registered.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/capabilityLifecycleEventData }
+    CapabilityDeprecated:
+      name: com.nabhold.capability.deprecated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/capabilityLifecycleEventData }
+    CapabilityRetired:
+      name: com.nabhold.capability.retired.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/capabilityLifecycleEventData }
+    GrantCreated:
+      name: com.nabhold.capability.grant.created.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/grantLifecycleEventData }
+    GrantSuspended:
+      name: com.nabhold.capability.grant.suspended.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/grantLifecycleEventData }
+    GrantRevoked:
+      name: com.nabhold.capability.grant.revoked.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/grantLifecycleEventData }
+    ProviderRegistered:
+      name: com.nabhold.capability.provider.registered.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/providerLifecycleEventData }
+    ProviderSuspended:
+      name: com.nabhold.capability.provider.suspended.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/providerLifecycleEventData }
+    ProviderRetired:
+      name: com.nabhold.capability.provider.retired.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/providerLifecycleEventData }
+    BindingCreated:
+      name: com.nabhold.capability.binding.created.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/bindingLifecycleEventData }
+    BindingChanged:
+      name: com.nabhold.capability.binding.changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/bindingLifecycleEventData }
+    BindingRetired:
+      name: com.nabhold.capability.binding.retired.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/bindingLifecycleEventData }
+    CompositionUpdated:
+      name: com.nabhold.capability.composition.updated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/compositionLifecycleEventData }

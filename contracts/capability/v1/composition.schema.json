@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/capability/v1/composition.schema.json",
+  "title": "CapabilityComposition and CapabilityCompositionMember",
+  "description": "Declarative grouping of capabilities into platform/product/profile/add-on packages. Compositions carry no business logic and mint no runtime service; ProductSubscription -> CapabilityComposition -> CapabilityGrant expansion is a nabhold/baobab-cp runtime responsibility (ADR-BCP-005).",
+  "$defs": {
+    "composition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["composition_id", "composition_key", "composition_type", "version", "members"],
+      "properties": {
+        "composition_id": { "$ref": "domain.schema.json#/$defs/capabilityCompositionId" },
+        "composition_key": { "$ref": "domain.schema.json#/$defs/capabilityCompositionKey" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "composition_type": { "$ref": "domain.schema.json#/$defs/capabilityCompositionType" },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version of this composition. Published composition versions are immutable; a change is a new version, never an in-place edit (ADR-BCP-005 §114)."
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/compositionMember" }
+        },
+        "includes_compositions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["composition_key"],
+            "properties": {
+              "composition_key": { "$ref": "domain.schema.json#/$defs/capabilityCompositionKey" },
+              "version_constraint": { "type": "string" }
+            }
+          },
+          "default": [],
+          "description": "Other compositions this one includes wholesale, e.g. solution.baobab-xbt includes platform.core. The composition graph must be acyclic."
+        },
+        "incompatible_with": {
+          "type": "array",
+          "items": { "$ref": "domain.schema.json#/$defs/capabilityCompositionKey" },
+          "default": []
+        },
+        "lifecycle": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" },
+        "metadata": { "type": "object" }
+      }
+    },
+    "compositionMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_key", "criticality"],
+      "properties": {
+        "capability_key": { "$ref": "domain.schema.json#/$defs/capabilityKey" },
+        "criticality": { "$ref": "domain.schema.json#/$defs/capabilityMembershipCriticality" },
+        "version_constraint": { "type": "string" },
+        "activation_condition": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Machine-evaluable condition under which this member becomes required within the composition, e.g. \"channel == B2B\"."
+        }
+      }
+    }
+  }
+}

@@ -39,3 +39,52 @@ scopes:
     description: "Allows publishing canonical events."
     audience: ["event-broker"]
     allowed_actors: ["workload"]
+
+  - name: "mapping:read"
+    description: "Read a canonical mapping by ID."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
+  - name: "mapping:write"
+    description: "Create, update, or retire a canonical mapping (privileged)."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "mapping:approve"
+    description: "Transition a mapping from VALIDATED to ACTIVE (privileged)."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "mapping:resolve"
+    description: "Resolve a canonical entity to its external representation(s)."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
+  - name: "market:read"
+    description: "Read market configuration."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
+  - name: "market:write"
+    description: "Create or update market configuration (privileged)."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "market:approve"
+    description: "Transition a market from VALIDATED to ACTIVE (privileged)."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "erp:integrate"
+    description: >-
+      Allows a workload to call baobab-erp's own application-service integration
+      boundary (context/mapping resolution, inbound events) rather than
+      baobab-control-plane. Distinct from context:resolve/mapping:resolve, whose
+      audience is baobab-control-plane -- a token scoped for the Control Plane SHALL
+      NOT also work against ERP (ADR-0007 §§24-25; ADR-0014 §111).
+    audience: ["baobab-erp"]
+    allowed_actors: ["workload"]

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/capability/v1/binding.schema.json",
+  "title": "CapabilityBinding",
+  "description": "Connects a Capability, in a given CapabilityScope, to exactly the CapabilityProvider and EngineInstance that serves it -- when the binding wins deterministic resolution (resolution.schema.json). A binding never itself grants entitlement; entitlement is CapabilityGrant's responsibility.",
+  "$defs": {
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_id", "capability_key", "provider_id", "engine_instance_id", "scope_id", "binding_mode", "priority", "status", "required_contract_version", "effective_from", "version"],
+      "properties": {
+        "binding_id": { "$ref": "domain.schema.json#/$defs/capabilityBindingId" },
+        "capability_key": { "$ref": "domain.schema.json#/$defs/capabilityKey" },
+        "provider_id": { "$ref": "domain.schema.json#/$defs/capabilityProviderId" },
+        "engine_instance_id": {
+          "type": "string",
+          "pattern": "^ei_[a-z0-9]+$",
+          "maxLength": 63,
+          "description": "Concrete runtime deployment. binding.provider_id's engine_key must equal this engine instance's engine_key; validated by the Control Plane before activation, not by this schema alone."
+        },
+        "scope_id": { "$ref": "domain.schema.json#/$defs/capabilityScopeId" },
+        "binding_mode": { "$ref": "domain.schema.json#/$defs/bindingMode" },
+        "priority": {
+          "type": "integer",
+          "default": 0,
+          "description": "Explicit ordered priority used only after scope specificity is compared (see scope-specificity.yaml). Never a substitute for specificity."
+        },
+        "status": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" },
+        "required_contract_version": { "type": "integer", "minimum": 1 },
+        "effective_from": { "type": "string", "format": "date-time" },
+        "effective_to": { "type": ["string", "null"], "format": "date-time" },
+        "configuration": {
+          "type": "object",
+          "description": "Binding-level provider configuration overrides (e.g. sales_channel_id, warehouse_reference). Never a place for secret values -- reference them instead."
+        },
+        "version": { "type": "integer", "minimum": 1 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

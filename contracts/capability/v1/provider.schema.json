@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/capability/v1/provider.schema.json",
+  "title": "CapabilityProvider and ProviderCapabilitySupport",
+  "description": "A provider declares what it can implement; a binding (binding.schema.json) declares where it does so. Engine identity (technology family) is distinct from provider identity (canonical implementation); support for a capability is never inferred merely from engine association.",
+  "$defs": {
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_id", "provider_key", "provider_type", "engine_key", "lifecycle"],
+      "properties": {
+        "provider_id": { "$ref": "domain.schema.json#/$defs/capabilityProviderId" },
+        "provider_key": { "$ref": "domain.schema.json#/$defs/capabilityProviderKey" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "provider_type": { "$ref": "domain.schema.json#/$defs/capabilityProviderType" },
+        "engine_key": { "$ref": "domain.schema.json#/$defs/engineKey" },
+        "lifecycle": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" },
+        "ownership": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "maxLength": 63,
+          "description": "Repository operating this provider, e.g. \"baobab-trade\"."
+        },
+        "supported_regions": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 63 }
+        },
+        "supported_isolation_profiles": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 128 }
+        },
+        "configuration_schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "description": "Reference to this provider's own configuration schema. Never contains secrets -- secret values are referenced (e.g. secret://...), not embedded."
+        },
+        "metadata": { "type": "object" }
+      }
+    },
+    "capabilitySupport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_id", "capability_key", "contract_versions", "status", "effective_from"],
+      "properties": {
+        "provider_id": { "$ref": "domain.schema.json#/$defs/capabilityProviderId" },
+        "capability_key": { "$ref": "domain.schema.json#/$defs/capabilityKey" },
+        "contract_versions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "integer", "minimum": 1 },
+          "description": "Major contract versions of this capability the provider actually implements. A binding to a contract version not listed here is invalid."
+        },
+        "status": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" },
+        "effective_from": { "type": "string", "format": "date-time" },
+        "effective_to": { "type": ["string", "null"], "format": "date-time" },
+        "metadata": { "type": "object" }
+      }
+    }
+  }
+}

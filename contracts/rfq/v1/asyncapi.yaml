@@ -1,0 +1,41 @@
+asyncapi: 3.1.0
+info:
+  title: Nabhold Baobab RFQ lifecycle events
+  version: 1.0.0
+  description: >
+    RFQ (Request for Quotation) lifecycle events (Gate ZB-01, ADR-SHARED-008
+    SS5). Uses the same canonical event envelope and
+    com.nabhold.<context>.<...>.v<N> naming convention already shipped for
+    identity, ERP, supplier-onboarding, capability and product events. No
+    message broker exists yet anywhere in this ecosystem to carry these;
+    this contract exists so producers and future consumers have a stable
+    shape to build against once one does.
+defaultContentType: application/json
+channels:
+  rfqEvents:
+    address: nabhold.rfq.events.v1
+    messages:
+      rfqPublished: { $ref: "#/components/messages/RfqPublished" }
+      rfqClosed: { $ref: "#/components/messages/RfqClosed" }
+operations:
+  publishRfqEvents:
+    action: send
+    channel: { $ref: "#/channels/rfqEvents" }
+components:
+  messages:
+    RfqPublished:
+      name: com.nabhold.commercial.rfq.published.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/rfqPublishedEventData }
+    RfqClosed:
+      name: com.nabhold.commercial.rfq.closed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/rfqClosedEventData }

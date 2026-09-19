@@ -1,0 +1,78 @@
+# namespace-registry.yaml
+#
+# Governs the first segment of every capability_key (domain.schema.json's
+# capabilityKey pattern: <domain>.<resource>.<action>). A capability_key's
+# domain segment MUST be one of the values in `domains` below AND must
+# match domain.schema.json's capabilityDomain enum -- the two are kept in
+# sync by hand today; scripts/validate-capability-contracts.rb checks they
+# agree on every CI run.
+#
+# Adding a new top-level domain requires an architecture review (ADR-
+# SHARED-007 SS11), not just a schema edit here.
+#
+# Capability keys must never contain:
+#   - a vendor/engine name (medusa, idempiere, payload, haystack)
+#   - a tenant name (zuribeans, thamani, ...)
+#   - a region or country name
+# because capability identity must survive both provider replacement and
+# use by tenants not yet onboarded. Invalid examples, for illustration
+# only (never register these): medusa.order.create, zuribeans.supplier.create,
+# south-africa-medusa-order.
+
+domains:
+  - key: identity
+    description: "Principal, authentication and workload-identity capabilities."
+  - key: tenant
+    description: "Tenant lifecycle and platform-baseline capabilities."
+  - key: organisation
+    description: "Organisation and business-unit management."
+  - key: counterparty
+    description: "Cross-domain counterparty (customer or supplier, undetermined) relationship management."
+  - key: supplier
+    description: "Supplier onboarding, qualification and lifecycle."
+  - key: customer
+    description: "Customer / buyer relationship management."
+  - key: market
+    description: "Market participation capabilities (sourcing, procurement, selling, importing, exporting, warehousing, distribution, fulfilment) and cross-market trade-lane relationships. Added per ADR-SHARED-008 to register ADR-BCP-011's market-participation model."
+  - key: internal-trade
+    description: "Inter-branch and intercompany movement between legal entities of the same tenant (transfer pricing, mirrored documents, in-transit ownership, elimination). Added per ADR-SHARED-008 to register ADR-BCP-012's internal-trade model."
+  - key: commercial
+    description: "RFQ, quotation and contract negotiation capabilities not specific to one engine."
+  - key: contract
+    description: "Contract lifecycle capabilities."
+  - key: commerce
+    description: "Order, cart and checkout capabilities (e.g. baobab-trade/MedusaJS)."
+  - key: catalogue
+    description: "Product and catalogue capabilities."
+  - key: pricing
+    description: "Pricing, price-list and negotiated-pricing capabilities."
+  - key: inventory
+    description: "Inventory and availability capabilities."
+  - key: procurement
+    description: "Purchasing and procurement capabilities."
+  - key: trade
+    description: "Cross-border trade execution capabilities."
+  - key: customs
+    description: "Customs declaration, duty/import-tax calculation and clearance capabilities. Added per ADR-SHARED-008 to register baobab-trade ADR-0021's customs/trade-compliance model."
+  - key: tax
+    description: "Multi-jurisdiction tax registration, calculation and reconciliation capabilities. Added per ADR-SHARED-008 to register baobab-trade ADR-0018 and its Addendum."
+  - key: logistics
+    description: "Shipment, dispatch and route capabilities."
+  - key: fulfilment
+    description: "Order fulfilment and delivery capabilities."
+  - key: documents
+    description: "Trade, inspection and proof-of-delivery document capabilities."
+  - key: finance
+    description: "Invoicing, receivables and settlement capabilities (e.g. baobab-erp/iDempiere)."
+  - key: payment
+    description: "Payment authorization and processing capabilities."
+  - key: settlement
+    description: "Financial settlement capabilities."
+  - key: content
+    description: "Content publishing and management capabilities (e.g. baobab-cms/Payload)."
+  - key: intelligence
+    description: "Market, FX, commodity and risk intelligence capabilities (e.g. baobab-pulse/Haystack)."
+  - key: audit
+    description: "Cross-cutting audit and evidence capabilities."
+  - key: integration
+    description: "Cross-engine integration capabilities not owned by a single business domain."

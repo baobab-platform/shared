@@ -1,0 +1,21 @@
+{
+  "specversion": "1.0",
+  "id": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+  "type": "com.nabhold.capability.grant.created.v1",
+  "source": "urn:nabhold:service:baobab-cp",
+  "subject": "grant:grant_01k4z8h2m1",
+  "time": "2026-09-11T09:05:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.nabhold.com/capability/v1/events.schema.json#/$defs/grantLifecycleEventData",
+  "baobabscope": "tenant",
+  "correlationid": "3c4d5e6f-7a8b-4c9d-0e1f-2a3b4c5d6e7f",
+  "causationid": "4d5e6f7a-8b9c-4d0e-1f2a-3b4c5d6e7f8a",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "grant_id": "grant_01k4z8h2m1",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "capability_key": "commerce.order.create",
+    "status": "ACTIVE",
+    "source": "PRODUCT_SUBSCRIPTION"
+  }
+}

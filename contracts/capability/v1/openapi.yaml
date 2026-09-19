@@ -1,0 +1,179 @@
+openapi: 3.1.0
+info:
+  title: Nabhold Baobab capability-centric platform API
+  version: 1.0.0
+  description: >
+    Capability registry and runtime resolution contract. nabhold/baobab-cp
+    is the sole runtime authority implementing this contract; this package
+    defines shape only. Consumers resolve context first
+    (contracts/control-plane/v1/context-resolution.schema.json today, its
+    Phase 2+ successor once implemented) and pass the resulting context_id
+    into capability resolution -- callers never supply raw tenant/estate
+    identity directly to these endpoints.
+  license:
+    name: Apache-2.0
+    identifier: Apache-2.0
+servers:
+  - url: https://control-plane.nabhold.com/v1
+    description: Production placeholder; activation requires an approved domain binding.
+security:
+  - workloadOidc: [context:resolve]
+x-baobab-context-contract: ../../control-plane/v1/access-token-claims.schema.json
+paths:
+  /capabilities/resolve:
+    post:
+      operationId: resolveCapability
+      summary: Resolve a single capability for an already-resolved context
+      security:
+        - workloadOidc: [capability:resolve]
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ./resolution.schema.json#/$defs/resolutionRequest }
+      responses:
+        "200":
+          description: Resolution decision. A non-RESOLVED decision is a normal 200, not an error status -- ambiguity and denial are business outcomes, not failures.
+          content:
+            application/json:
+              schema: { $ref: ./resolution.schema.json#/$defs/resolution }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /capabilities/resolve-batch:
+    post:
+      operationId: resolveCapabilityBatch
+      summary: Resolve up to 50 capabilities for one context in a single call
+      description: Each capability in the batch is decided independently; a batch has no transactional atomicity across its members.
+      security:
+        - workloadOidc: [capability:resolve]
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ./resolution.schema.json#/$defs/batchResolutionRequest }
+      responses:
+        "200":
+          description: Per-capability resolution decisions
+          content:
+            application/json:
+              schema: { $ref: ./resolution.schema.json#/$defs/batchResolution }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /capabilities:
+    get:
+      operationId: listCapabilities
+      summary: List registered capabilities visible to the caller
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Capability collection
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CapabilityCollection" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /capabilities/{capability_key}:
+    get:
+      operationId: getCapability
+      summary: Get one capability's definition
+      parameters:
+        - $ref: "#/components/parameters/CapabilityKey"
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Capability definition
+          content:
+            application/json:
+              schema: { $ref: ./capability.schema.json#/$defs/capability }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /capability-providers/{provider_key}/capabilities:
+    get:
+      operationId: getProviderCapabilitySupport
+      summary: List the capabilities and contract versions a provider declares support for
+      parameters:
+        - $ref: "#/components/parameters/ProviderKey"
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Declared capability support
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: ./provider.schema.json#/$defs/capabilitySupport }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        minLength: 16
+        maxLength: 128
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      schema:
+        type: string
+        pattern: "^00-(?!00000000000000000000000000000000)[0-9a-f]{32}-(?!0000000000000000)[0-9a-f]{16}-[0-9a-f]{2}$"
+    CapabilityKey:
+      name: capability_key
+      in: path
+      required: true
+      schema: { $ref: ./domain.schema.json#/$defs/capabilityKey }
+    ProviderKey:
+      name: provider_key
+      in: path
+      required: true
+      schema: { $ref: ./domain.schema.json#/$defs/capabilityProviderKey }
+  schemas:
+    ProblemDetails: { $ref: ../../errors/v1/problem-details.schema.json }
+    CapabilityCollection:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          maxItems: 200
+          items: { $ref: ./capability.schema.json#/$defs/capability }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Resource not found or context not visible to the caller
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+  securitySchemes:
+    workloadOidc:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.nabhold.com/.well-known/openid-configuration
+      description: Short-lived workload or delegated identity token. The resolved tenant claim is authoritative; capability resolution never accepts a caller-selected provider_id or engine_instance_id override for ordinary business requests.

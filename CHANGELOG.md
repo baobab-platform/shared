@@ -52,6 +52,34 @@ Changes that have been merged but have not yet been included in a released versi
 - `workload.revoked` event (`contracts/identity-events/v1/workload-revoked.schema.json`),
   the last of the 6 lifecycle events ADR-0016 §90 anticipated -- all 9
   identity-events events it and ADR-0016 §139 call for now exist.
+- `market` and `internal-trade` capability domains
+  (`contracts/capability/v1/namespace-registry.yaml`,
+  `domain.schema.json`'s `capabilityDomain` enum), registering
+  `baobab-cp` ADR-BCP-011's market-participation/trade-lane model and
+  ADR-BCP-012's internal-trade model so their capability keys (e.g.
+  `market.export`, `internal-trade.mirror-document.create`) can be
+  declared against a governed namespace. Added per ADR-SHARED-008.
+- `customs` and `tax` capability domains (same files), registering
+  `baobab-trade` ADR-0021's customs/trade-compliance model and
+  ADR-0018 + its Addendum's multi-jurisdiction tax model. Added per
+  ADR-SHARED-008.
+- ADR-SHARED-008, confirming `com.nabhold.<context>.<...>.v<N>`
+  (`contracts/events/v1/envelope.schema.json`) as the sole canonical
+  event-type convention and registering the four domains above.
+- A new `contracts/product/v1` package: `Product`, `ProductVersion`
+  (`product.schema.json`), `ProductSubscription`, `EntitlementProjection`
+  (`subscription.schema.json`), lifecycle events and AsyncAPI contract,
+  closing 5 of Programme Gate P1's previously-absent items.
+- `TenantProvisioning` (`contracts/control-plane/v1/provisioning-plan.schema.json`),
+  the onboarding process aggregate Technical Specification §21 requires,
+  additive to (not replacing) the already-shipped coarse
+  provisioning-state-machine.yaml lifecycle.
+- `ReadinessSnapshot` (`contracts/control-plane/v1/readiness.schema.json`)
+  and `Drift` (`drift.schema.json`), the last 2 of Programme Gate P1's
+  previously-absent items, both reusing the existing
+  `capability_resolution_denial` reason-code vocabulary rather than
+  introducing a new one.
+- ADR-SHARED-009, closing Programme Gate P1 — Shared Contract Foundation.
 
 ## Changed
 
@@ -99,6 +127,14 @@ Nothing yet.
   boundaries; responses and persisted contracts require registry identifiers.
 - Control Plane product-entitlement examples now reference products declared
   by the canonical legal-entity registry.
+- `baobab-cp` ADR-BCP-015 and its own Technical Specification (CR-003) had
+  independently declared `baobab.<bounded-context>.<aggregate>.<event>.v<major>`
+  as the canonical event-type format, contradicting the
+  `com.nabhold.<context>.<...>.v<N>` pattern this repository already enforces
+  in `contracts/events/v1/envelope.schema.json` and ships in every real
+  identity/ERP/supplier-onboarding event. ADR-SHARED-008 confirms Shared's
+  shipped convention as authoritative; both `baobab-cp` documents are
+  corrected by reference rather than re-drafted here.
 
 ## Security
 

@@ -1,0 +1,12 @@
+{
+  "capability_key": "commerce.order.create",
+  "required_contract_version": 1,
+  "context_id": "ctx_01k4z7g1h0",
+  "operation_scope": {
+    "origin_country": "UG",
+    "destination_country": "ZA",
+    "currency": "USD",
+    "transaction_type": "GOODS"
+  },
+  "correlation_id": "7a8b9c0d-1e2f-4a3b-4c5d-6e7f8a9b0c1d"
+}

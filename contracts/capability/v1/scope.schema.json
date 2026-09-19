@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/capability/v1/scope.schema.json",
+  "title": "CapabilityScope",
+  "description": "The applicability dimensions of one CapabilityGrant or CapabilityBinding. An unspecified dimension means \"not further restricted on this axis\" -- it is never a wildcard bypass of dimensions that ARE specified elsewhere. Deliberately distinct from contracts/control-plane/v1/canonical-mapping.schema.json's mappingScope: the two share dimension vocabulary but are evaluated by different resolvers for different purposes (ADR-SHARED-007 SS25).",
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_id", "tenant_id"],
+      "properties": {
+        "scope_id": { "$ref": "domain.schema.json#/$defs/capabilityScopeId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "organisation_id": { "type": "string", "maxLength": 128 },
+        "business_unit_id": { "type": "string", "maxLength": 128 },
+        "digital_estate_id": { "type": "string", "maxLength": 128 },
+        "digital_property_id": { "type": "string", "maxLength": 128 },
+        "channel_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
+          "maxLength": 63
+        },
+        "market_id": { "type": "string", "maxLength": 128 },
+        "jurisdiction": { "type": "string", "maxLength": 63 },
+        "currency_code": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code."
+        },
+        "customer_segment_id": { "type": "string", "maxLength": 128 },
+        "catalogue_id": { "type": "string", "maxLength": 128 },
+        "operating_region_id": { "type": "string", "maxLength": 128 },
+        "geographic_region_id": { "type": "string", "maxLength": 128 },
+        "deployment_region": { "type": "string", "maxLength": 63 },
+        "environment": {
+          "type": "string",
+          "enum": ["local", "development", "staging", "production"]
+        },
+        "isolation_profile_id": { "type": "string", "maxLength": 128 },
+        "include_countries": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Z]{2}$" },
+          "description": "ISO 3166-1 alpha-2 codes. Exclusion always takes precedence over inclusion when both are present."
+        },
+        "exclude_countries": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[A-Z]{2}$" }
+        },
+        "metadata": { "type": "object" }
+      }
+    }
+  }
+}

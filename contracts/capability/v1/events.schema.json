@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.nabhold.com/capability/v1/events.schema.json",
+  "title": "Capability lifecycle event payloads",
+  "description": "Data payloads for capability-centric lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field. One payload shape per aggregate type is reused across that aggregate's lifecycle events (created/updated/revoked/etc.) for v1; a field only applies to the events for which it is meaningful.",
+  "$defs": {
+    "capabilityLifecycleEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_key"],
+      "properties": {
+        "capability_key": { "$ref": "domain.schema.json#/$defs/capabilityKey" },
+        "lifecycle": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" },
+        "previous_lifecycle": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" },
+        "reason": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "grantLifecycleEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grant_id", "tenant_id", "capability_key"],
+      "properties": {
+        "grant_id": { "$ref": "domain.schema.json#/$defs/capabilityGrantId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "capability_key": { "$ref": "domain.schema.json#/$defs/capabilityKey" },
+        "status": { "$ref": "domain.schema.json#/$defs/capabilityGrantStatus" },
+        "source": { "$ref": "domain.schema.json#/$defs/capabilityGrantSource" },
+        "revocation_reason": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "providerLifecycleEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_id", "provider_key"],
+      "properties": {
+        "provider_id": { "$ref": "domain.schema.json#/$defs/capabilityProviderId" },
+        "provider_key": { "$ref": "domain.schema.json#/$defs/capabilityProviderKey" },
+        "lifecycle": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" },
+        "reason": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "bindingLifecycleEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_id", "capability_key"],
+      "properties": {
+        "binding_id": { "$ref": "domain.schema.json#/$defs/capabilityBindingId" },
+        "capability_key": { "$ref": "domain.schema.json#/$defs/capabilityKey" },
+        "provider_id": { "$ref": "domain.schema.json#/$defs/capabilityProviderId" },
+        "binding_mode": { "$ref": "domain.schema.json#/$defs/bindingMode" },
+        "status": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" }
+      }
+    },
+    "compositionLifecycleEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["composition_key", "version"],
+      "properties": {
+        "composition_key": { "$ref": "domain.schema.json#/$defs/capabilityCompositionKey" },
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "lifecycle": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" }
+      }
+    }
+  }
+}
