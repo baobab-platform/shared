@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node -e 'const fs=require("fs"); JSON.parse(fs.readFileSync("package.json","utf8"))'
+          node -e 'const fs=require("fs"),path=require("path"); let n=0; function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){if([".git","node_modules",".next","dist"].includes(e.name))continue; const p=path.join(d,e.name); if(e.isDirectory())walk(p); else if(e.name==="package.json"){JSON.parse(fs.readFileSync(p,"utf8")); n++;}}} walk("."); if(!n)throw new Error("no package.json found")'
           manager=$(ruby -rjson -e 'puts JSON.parse(ENV.fetch("PACKAGE_MANAGERS")).fetch("node", "")')
           if [[ -n "$manager" ]]; then corepack "$manager" --version >/dev/null; fi
           while IFS= read -r -d '' file; do node --check "$file"; done < <(find . -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -not -path '*/node_modules/*' -not -path '*/.next/*' -not -path '*/dist/*' -print0)
@@ -65,14 +65,15 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@e626ada899467caf4efc6cfd0484b965da944ce8
         with:
-          go-version-file: go.mod
-          cache: true
+          go-version: stable
+          cache: false
       - name: Verify, vet and test Go modules
         run: |
           set -euo pipefail
-          go mod verify
-          go vet ./...
-          go test ./...
+          while IFS= read -r module; do
+            directory=$(dirname "$module")
+            (cd "$directory" && go mod verify && go vet ./... && go test ./...)
+          done < <(find . -name go.mod -not -path '*/vendor/*' -not -path '*/.git/*' | sort)
 
   java:
     if: inputs.java && fromJSON(inputs.exceptions).runtime == null
@@ -83,19 +84,21 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
-          cache: "${{ fromJSON(inputs.package_managers).java == 'gradle' && 'gradle' || 'maven' }}"
       - name: Verify Java project through committed wrapper
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -x ./mvnw ]]; then
-            ./mvnw --batch-mode --no-transfer-progress -DskipTests verify
-          elif [[ -x ./gradlew ]]; then
-            ./gradlew --no-daemon check
-          else
-            echo "::error::Java runtime gate requires a committed executable wrapper"
-            exit 1
-          fi
+          found=0
+          while IFS= read -r wrapper; do
+            found=1
+            directory=$(dirname "$wrapper")
+            if [[ $(basename "$wrapper") == mvnw ]]; then
+              (cd "$directory" && ./mvnw --batch-mode --no-transfer-progress -DskipTests verify)
+            else
+              (cd "$directory" && ./gradlew --no-daemon check)
+            fi
+          done < <(find . -type f \( -name mvnw -o -name gradlew \) -perm -u+x -not -path '*/.git/*' | sort)
+          [[ "$found" == 1 ]] || { echo "::error::Java runtime gate requires a committed executable wrapper"; exit 1; }
 
   rust:
     if: inputs.rust && fromJSON(inputs.exceptions).runtime == null
