@@ -1,0 +1,31 @@
+name: Reusable — Foundation Security
+on:
+  workflow_call:
+    inputs:
+      dependency_review_enabled: { type: boolean, default: false }
+permissions:
+  contents: read
+jobs:
+  security:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Explain dependency-review coverage
+        if: github.event_name == 'pull_request' && inputs.dependency_review_enabled && github.event.repository.visibility == 'private'
+        run: echo "::notice::Dependency review is unavailable for this private repository unless GitHub Advanced Security is enabled; language-independent filesystem scanning remains active."
+      - name: Dependency review
+        if: github.event_name == 'pull_request' && inputs.dependency_review_enabled && github.event.repository.visibility != 'private'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+      - name: Install checksum-verified Trivy
+        env:
+          TRIVY_VERSION: "0.73.0"
+          TRIVY_SHA256: "2edd39da482bb4e9831962487b68f68e3928ec3137794757f54d00383d79547b"
+        run: |
+          set -euo pipefail
+          asset="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          curl -fsSL -o "$asset" "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/${asset}"
+          echo "${TRIVY_SHA256}  ${asset}" | sha256sum -c -
+          tar -xzf "$asset" trivy
+          sudo install -m 0755 trivy /usr/local/bin/trivy
+      - name: Scan repository
+        run: trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .

@@ -1,0 +1,44 @@
+name: Reusable — Foundation Reproducibility
+on:
+  workflow_call:
+    inputs:
+      python: { type: boolean, default: false }
+      node: { type: boolean, default: false }
+      go: { type: boolean, default: false }
+      java: { type: boolean, default: false }
+permissions:
+  contents: read
+jobs:
+  reproducibility:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate capability-specific reproducibility inputs
+        env:
+          PYTHON: "${{ inputs.python }}"
+          NODE: "${{ inputs.node }}"
+          GO: "${{ inputs.go }}"
+          JAVA: "${{ inputs.java }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$NODE" == true ]]; then
+            [[ -f pnpm-lock.yaml || -f package-lock.json || -f yarn.lock ]] || { echo "::error::Node capability requires a lockfile"; exit 1; }
+            if [[ -f package.json ]]; then
+              manager=$(ruby -rjson -e 'puts(JSON.parse(File.read("package.json"))["packageManager"].to_s.split("@").first)')
+              case "$manager" in
+                pnpm) [[ -f pnpm-lock.yaml ]] ;;
+                npm) [[ -f package-lock.json ]] ;;
+                yarn) [[ -f yarn.lock ]] ;;
+                "") : ;;
+                *) echo "::error::Unsupported packageManager: $manager"; exit 1 ;;
+              esac || { echo "::error::packageManager does not match committed lockfile"; exit 1; }
+            fi
+          fi
+          if [[ "$GO" == true && -f go.mod ]]; then [[ -f go.sum ]] || { echo "::error::Go capability requires go.sum"; exit 1; }; fi
+          if [[ "$PYTHON" == true && -f pyproject.toml ]]; then
+            [[ -f uv.lock || -f poetry.lock || -f requirements.txt ]] || { echo "::error::Python capability requires a supported lock or requirements file"; exit 1; }
+          fi
+          if [[ "$JAVA" == true ]]; then
+            [[ -f pom.xml || -n "$(find . -name pom.xml -print -quit)" || -f gradlew ]] || { echo "::error::Java capability requires Maven metadata or the Gradle wrapper"; exit 1; }
+          fi

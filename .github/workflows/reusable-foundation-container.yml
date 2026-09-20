@@ -1,0 +1,34 @@
+name: Reusable — Foundation Container
+on:
+  workflow_call:
+    inputs:
+      enabled: { type: boolean, default: false }
+      dockerfile: { type: string, default: "Dockerfile" }
+      build_context: { type: string, default: "." }
+permissions:
+  contents: read
+jobs:
+  container:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate container declaration
+        if: inputs.enabled
+        env:
+          DOCKERFILE: "${{ inputs.dockerfile }}"
+        run: |
+          set -euo pipefail
+          [[ -f "$DOCKERFILE" ]] || { echo "::error::Container artifact declared but $DOCKERFILE does not exist"; exit 1; }
+          ! grep -Eq '^FROM[[:space:]]+[^[:space:]]+:(latest|edge)([[:space:]]|$)' "$DOCKERFILE" || { echo "::error::Container base images must not use latest or edge"; exit 1; }
+      - name: Build container
+        if: inputs.enabled
+        env:
+          DOCKERFILE: "${{ inputs.dockerfile }}"
+          BUILD_CONTEXT: "${{ inputs.build_context }}"
+        run: docker build --file "$DOCKERFILE" --tag "foundation-scan:${{ github.sha }}" "$BUILD_CONTEXT"
+      - name: Generate SBOM
+        if: inputs.enabled
+        uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
+        with:
+          image: "foundation-scan:${{ github.sha }}"
+          artifact-name: foundation-sbom.spdx.json

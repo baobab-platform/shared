@@ -1,0 +1,17 @@
+schema_version: 1
+repository:
+  lifecycle: active
+capabilities:
+  - node
+  - container
+  - contracts
+  - github-actions
+  - library
+environment:
+  baobab_dev:
+    required: true
+    profile: frontend
+package_managers:
+  node: pnpm
+artifacts:
+  container: true
