@@ -15,6 +15,7 @@ jobs:
   foundation:
     uses: ./.github/workflows/foundation-repository-gates.yml
     with:
+      foundation_ref: "${{ github.sha }}"
       dependency_review_enabled: false
       advanced_security_enabled: false
       legacy_metadata_enabled: false
