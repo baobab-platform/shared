@@ -17,7 +17,7 @@ jobs:
         if: fromJSON(inputs.exceptions).baseline != null
         run: echo "::warning::Repository baseline waived by an approved repository exception"
       - name: Validate repository baseline
-        if: ${{ !fromJSON(inputs.exceptions).baseline != null }}
+        if: ${{ fromJSON(inputs.exceptions).baseline == null }}
         env:
           VISIBILITY: "${{ github.event.repository.visibility }}"
         shell: ruby {0}
