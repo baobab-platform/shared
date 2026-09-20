@@ -138,7 +138,7 @@ jobs:
             abort "container artifact requires container capability" if container_artifact && !declared.include?("container")
 
             exceptions = contract["exceptions"] || {}
-            assert_keys!(exceptions, %w[baseline reproducibility environment dependency-review sast dependency-audit secret-scan container-policy container-scan sbom], "exceptions")
+            assert_keys!(exceptions, %w[baseline reproducibility runtime environment dependency-review sast dependency-audit secret-scan container-policy container-scan sbom], "exceptions")
             exceptions.each do |control, exception|
               assert_keys!(exception, %w[reason expires approved_by], "exceptions.#{control}")
               abort "exception #{control} reason must be at least 12 characters" unless exception["reason"].to_s.length >= 12
