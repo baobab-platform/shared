@@ -80,7 +80,7 @@
     "exceptions": {
       "type": "object",
       "propertyNames": {
-        "enum": ["baseline", "reproducibility", "environment", "dependency-review", "sast", "dependency-audit", "secret-scan", "container-policy", "container-scan", "sbom"]
+        "enum": ["baseline", "reproducibility", "runtime", "environment", "dependency-review", "sast", "dependency-audit", "secret-scan", "container-policy", "container-scan", "sbom"]
       },
       "additionalProperties": {
         "type": "object",
