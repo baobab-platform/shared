@@ -11,7 +11,7 @@ That separate admission lifecycle is governed by `baobab-cp` ADR-BCP-017.
 | Concern | Authority |
 | --- | --- |
 | Buyer application and commercial approval | Baobab Trade |
-| Canonical `BUYER_ORGANISATION` identity and tenant/context attestation | Baobab Control Plane |
+| Registration and verification of a `BUYER_ORGANISATION` canonical entity; tenant/context attestation | Baobab Control Plane (bounded ADR-BCP-016 role) |
 | Human authentication and principal lifecycle | Baobab IAM |
 | Buyer membership, roles and purchasing authority | Baobab Trade |
 | Customer/Business Partner projection, credit and accounting consequences | Baobab ERP |
@@ -40,13 +40,14 @@ DRAFT
   -> APPROVED | REJECTED
 ```
 
-Approval may create an engine-owned buyer organisation only after the Control Plane
-has minted or verified the canonical `BUYER_ORGANISATION` identity. Rejection,
+Approval creates the Trade-owned buyer relationship. Canonical linkage remains nullable until a
+Control Plane `BUYER_ORGANISATION` entity is registered and verified; ADR-BCP-016 does not settle
+platform-wide Organisation lifecycle ownership. Rejection,
 withdrawal and suspension preserve audit history.
 
 ## Guardrails
 
-- Browser input never selects `tenant_id`, canonical IDs, credit decisions or roles.
+- Browser input never selects `tenant_id`, canonical IDs, credit decisions or privileged roles.
 - Keycloak organisation IDs and Medusa/ERP native IDs are external references, not
   canonical business identity.
 - Trade may project ERP credit/payment-term facts but may not become their accounting
@@ -58,6 +59,6 @@ withdrawal and suspension preserve audit history.
 
 ## Compatibility
 
-The v1 resource keeps the existing buyer-organisation lifecycle values while adding
+The v1 resource preserves all existing required fields and event payloads while adding
 the application and membership vocabulary required by ZB-04. Consumers must reject
 unknown enum values safely and pin this package through their contracts lock.
