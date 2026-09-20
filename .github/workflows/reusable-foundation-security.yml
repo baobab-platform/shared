@@ -32,16 +32,16 @@ jobs:
           tar -xzf "$asset" trivy
           sudo install -m 0755 trivy /usr/local/bin/trivy
       - name: Audit dependencies
-        if: ${{ !contains(fromJSON(inputs.exceptions), 'dependency-audit') }}
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null }}
         run: trivy fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
       - name: Record dependency-audit exception
-        if: contains(fromJSON(inputs.exceptions), 'dependency-audit')
+        if: fromJSON(inputs.exceptions)['dependency-audit'] != null
         run: echo "::warning::Dependency audit waived by an approved repository exception"
       - name: Scan infrastructure and configuration
         run: trivy fs --scanners misconfig --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
 
   secrets:
-    if: ${{ !contains(fromJSON(inputs.exceptions), 'secret-scan') }}
+    if: ${{ fromJSON(inputs.exceptions)['secret-scan'] == null }}
     uses: ./.github/workflows/security-secrets-scan.yml
 
   dependency-review:
