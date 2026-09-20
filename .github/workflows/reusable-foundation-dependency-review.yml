@@ -1,0 +1,45 @@
+name: Reusable — Foundation Dependency Review
+
+on:
+  workflow_call:
+    inputs:
+      enabled: { type: boolean, default: false }
+      advanced_security_enabled: { type: boolean, default: false }
+      exceptions: { type: string, default: "{}" }
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Determine coverage
+        id: coverage
+        env:
+          ENABLED: "${{ inputs.enabled }}"
+          GHAS: "${{ inputs.advanced_security_enabled }}"
+          VISIBILITY: "${{ github.event.repository.visibility }}"
+          EVENT: "${{ github.event_name }}"
+          WAIVED: "${{ contains(fromJSON(inputs.exceptions), 'dependency-review') }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          applicable=false
+          if [[ "$EVENT" == pull_request && "$ENABLED" == true ]]; then applicable=true; fi
+          available=false
+          if [[ "$VISIBILITY" != private || "$GHAS" == true ]]; then available=true; fi
+          if [[ "$WAIVED" == true ]]; then
+            echo "::warning::Dependency review waived by an approved repository exception"
+            applicable=false
+          fi
+          if [[ "$applicable" == true && "$available" != true ]]; then
+            echo "::error::Dependency review is required but unavailable; enable GitHub Advanced Security or declare a reviewed exception"
+            exit 1
+          fi
+          echo "run=$([[ "$applicable" == true && "$available" == true ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.coverage.outputs.run == 'true'
+      - name: Dependency review
+        if: steps.coverage.outputs.run == 'true'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
