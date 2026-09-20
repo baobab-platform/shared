@@ -345,14 +345,22 @@
           "$ref": "#/$defs/buyerOrganisationId"
         },
         "principal_id": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "minLength": 1,
-          "maxLength": 128
+          "maxLength": 128,
+          "description": "Nullable only while status is INVITED; populated from the canonical Principal mapping on acceptance."
         },
         "customer_id": {
-          "type": "string",
+          "type": [
+            "string",
+            "null"
+          ],
           "minLength": 1,
-          "maxLength": 128
+          "maxLength": 128,
+          "description": "Nullable only while status is INVITED; populated from the authenticated Trade customer on acceptance."
         },
         "status": {
           "$ref": "#/$defs/buyerMembershipStatus"
@@ -364,8 +372,51 @@
           "items": {
             "$ref": "#/$defs/buyerRole"
           }
+        },
+        "invited_email": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "email",
+          "maxLength": 320
+        },
+        "invitation_expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "INVITED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "else": {
+            "properties": {
+              "principal_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "customer_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            }
+          }
+        }
+      ]
     },
     "buyerSite": {
       "type": "object",
