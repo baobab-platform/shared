@@ -45,3 +45,5 @@ jobs:
           abort "repository schema must use JSON Schema 2020-12" unless schema["$schema"]&.include?("2020-12")
           abort "repository schema must reject unknown top-level fields" unless schema["additionalProperties"] == false
           puts "Validated #{paths.length} workflows and repository schema"
+      - name: Run Foundation policy fixtures
+        run: ruby .github/foundation-tests/test_policy.rb

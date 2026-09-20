@@ -24,7 +24,10 @@ jobs:
     with:
       legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
   baseline:
+    needs: classify
     uses: ./.github/workflows/reusable-foundation-baseline.yml
+    with:
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
   reproducibility:
     needs: classify
     uses: ./.github/workflows/reusable-foundation-reproducibility.yml
@@ -81,6 +84,6 @@ jobs:
         run: |
           require "json"
           needs = JSON.parse(ENV.fetch("RESULTS"))
-          failed = needs.select { |_, value| !%w[success skipped].include?(value.fetch("result")) }
+          failed = needs.select { |_, value| value.fetch("result") != "success" }
           puts needs.map { |name, value| "#{name}=#{value.fetch('result')}" }.join("\n")
           abort "required Foundation gates failed: #{failed.keys.join(', ')}" unless failed.empty?
