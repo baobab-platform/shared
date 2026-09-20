@@ -26,7 +26,7 @@ jobs:
           EXCEPTION: "${{ toJSON(fromJSON(inputs.exceptions).reproducibility) }}"
         run: echo "::warning::Reproducibility control waived by approved exception — $EXCEPTION"
       - name: Validate workspace reproducibility
-        if: ${{ !fromJSON(inputs.exceptions).reproducibility != null }}
+        if: ${{ fromJSON(inputs.exceptions).reproducibility == null }}
         env:
           PYTHON: "${{ inputs.python }}"
           NODE: "${{ inputs.node }}"
