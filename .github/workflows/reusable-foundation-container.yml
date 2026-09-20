@@ -34,7 +34,7 @@ jobs:
             echo "::error::Container base images must not use latest or edge"
             exit 1
           fi
-          if grep -Eiq '^FROM[[:space:]]+[^[:space:]@:]+([[:space:]]|$)' "$DOCKERFILE"; then
+          if grep -Ei '^FROM[[:space:]]+[^[:space:]@:]+([[:space:]]|$)' "$DOCKERFILE" | grep -Eiv '^FROM[[:space:]]+scratch([[:space:]]|$)' >/dev/null; then
             echo "::error::Container base images require an explicit tag or digest"
             exit 1
           fi
