@@ -24,7 +24,10 @@ jobs:
     with:
       legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
   baseline:
+    needs: classify
     uses: ./.github/workflows/reusable-foundation-baseline.yml
+    with:
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
   reproducibility:
     needs: classify
     uses: ./.github/workflows/reusable-foundation-reproducibility.yml
