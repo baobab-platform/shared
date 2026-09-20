@@ -3,6 +3,10 @@ name: Reusable — Foundation Classification
 on:
   workflow_call:
     inputs:
+      foundation_ref:
+        description: Immutable shared commit containing the canonical policy files.
+        type: string
+        required: true
       legacy_metadata_enabled:
         type: boolean
         default: false
@@ -48,7 +52,24 @@ jobs:
       exceptions: "${{ steps.resolve.outputs.exceptions }}"
       metadata_mode: "${{ steps.resolve.outputs.metadata_mode }}"
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout caller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout canonical Foundation policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: baobab-platform/shared
+          ref: "${{ inputs.foundation_ref }}"
+          path: .foundation
+          persist-credentials: false
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4
+        if: hashFiles('.baobab/repository.yaml') != ''
+        with:
+          python-version: "3.13"
+      - name: Validate repository declaration against JSON Schema
+        if: hashFiles('.baobab/repository.yaml') != ''
+        run: |
+          python -m pip install --disable-pip-version-check "check-jsonschema==0.38.0"
+          check-jsonschema --schemafile .foundation/.baobab/repository.schema.json .baobab/repository.yaml
       - id: resolve
         name: Validate contract and resolve capabilities
         env:

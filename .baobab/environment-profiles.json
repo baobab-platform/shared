@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "provider": "baobab-dev",
+  "image_repository": "ghcr.io/baobab-platform/baobab-dev",
+  "profiles": {
+    "full": {
+      "minimum_version": "1.2.6",
+      "tag_suffix": ""
+    },
+    "frontend": {
+      "minimum_version": "1.2.6",
+      "tag_suffix": "-frontend"
+    },
+    "frontend-e2e": {
+      "minimum_version": "1.2.6",
+      "tag_suffix": "-frontend-e2e"
+    },
+    "infra": {
+      "minimum_version": "1.4.0-rc.0",
+      "tag_suffix": "-infra"
+    }
+  }
+}
