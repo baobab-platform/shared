@@ -40,6 +40,18 @@ jobs:
       infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
       package_managers: "${{ needs.classify.outputs.package_managers }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
+  runtime:
+    needs: classify
+    uses: ./.github/workflows/reusable-foundation-runtime.yml
+    with:
+      python: "${{ needs.classify.outputs.python == 'true' }}"
+      node: "${{ needs.classify.outputs.node == 'true' }}"
+      go: "${{ needs.classify.outputs.go == 'true' }}"
+      java: "${{ needs.classify.outputs.java == 'true' }}"
+      rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
+      package_managers: "${{ needs.classify.outputs.package_managers }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
   environment:
     needs: classify
     uses: ./.github/workflows/reusable-foundation-environment.yml
@@ -74,7 +86,7 @@ jobs:
   result:
     name: Foundation / Result
     if: always()
-    needs: [classify, baseline, reproducibility, environment, security, container]
+    needs: [classify, baseline, reproducibility, runtime, environment, security, container]
     runs-on: ubuntu-26.04
     steps:
       - name: Evaluate activated gates
