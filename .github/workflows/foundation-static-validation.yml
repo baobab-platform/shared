@@ -1,0 +1,47 @@
+name: Foundation Static Validation
+
+on:
+  pull_request:
+    paths:
+      - ".baobab/**"
+      - ".github/workflows/foundation*.yml"
+      - ".github/workflows/reusable-foundation-*.yml"
+      - ".github/foundation-tests/**"
+      - "docs/governance/foundation-ci-*.md"
+  push:
+    branches: [main]
+    paths:
+      - ".baobab/**"
+      - ".github/workflows/foundation*.yml"
+      - ".github/workflows/reusable-foundation-*.yml"
+      - ".github/foundation-tests/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Foundation definitions
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Parse workflow YAML and repository schema
+        shell: ruby {0}
+        run: |
+          require "json"
+          require "yaml"
+
+          paths = Dir[".github/workflows/{foundation,reusable-foundation}*.{yml,yaml}"]
+          abort "no Foundation workflows found" if paths.empty?
+          paths.each do |path|
+            document = YAML.safe_load_file(path, aliases: true)
+            abort "#{path}: workflow must be an object" unless document.is_a?(Hash)
+            abort "#{path}: name is required" if document["name"].to_s.empty?
+            abort "#{path}: on is required" unless document.key?("on") || document.key?(true)
+            abort "#{path}: jobs are required" unless document["jobs"].is_a?(Hash)
+          end
+
+          schema = JSON.parse(File.read(".baobab/repository.schema.json"))
+          abort "repository schema must use JSON Schema 2020-12" unless schema["$schema"]&.include?("2020-12")
+          abort "repository schema must reject unknown top-level fields" unless schema["additionalProperties"] == false
+          puts "Validated #{paths.length} workflows and repository schema"
