@@ -13,7 +13,9 @@ cases = {
   "failure" => [{ classify: "success", security: "failure" }, false],
   "cancelled" => [{ classify: "success", security: "cancelled" }, false],
   "unexplained skip" => [{ classify: "success", security: "skipped" }, false],
-  "missing/misconfigured" => [{ classify: "success", security: "action_required" }, false]
+  "missing/misconfigured" => [{ classify: "success", security: "action_required" }, false],
+  "timed out" => [{ classify: "success", runtime: "timed_out" }, false],
+  "neutral is not success" => [{ classify: "success", security: "neutral" }, false]
 }
 
 cases.each do |name, (results, expected)|
@@ -30,13 +32,14 @@ abort "container runtime semantics are absent" unless object_variant.dig("proper
 
 entry = File.read(".github/workflows/foundation-repository-gates.yml")
 abort "aggregator still accepts arbitrary skipped gates" if entry.include?("%w[success skipped]")
-%w[classify baseline reproducibility environment security container].each do |gate|
+%w[classify baseline reproducibility runtime environment security container].each do |gate|
   abort "result does not depend on #{gate}" unless entry.include?(gate)
 end
 
 %w[
   reusable-foundation-dependency-review.yml
   reusable-foundation-sast.yml
+  reusable-foundation-runtime.yml
   reusable-foundation-security.yml
   reusable-foundation-container.yml
 ].each do |workflow|
