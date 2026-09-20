@@ -4,8 +4,8 @@ info:
   version: 1.1.0
   description: >
     Gate ZB-04 buyer application, organisation, membership and commercial-profile events.
-    Trade owns the commercial lifecycle; Control Plane owns canonical organisation identity
-    and tenant/context attestation; IAM owns authentication; ERP owns authoritative credit
+    Trade owns the commercial lifecycle; Control Plane registers and verifies bounded canonical organisation entities
+    and owns tenant/context attestation; broader Organisation lifecycle ownership remains unresolved; IAM owns authentication; ERP owns authoritative credit
     and accounting consequences.
 defaultContentType: application/json
 channels:
