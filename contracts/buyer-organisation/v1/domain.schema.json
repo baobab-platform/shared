@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.baobab-platform.com/buyer-organisation/v1/domain.schema.json",
   "title": "Baobab BuyerOrganisation onboarding and trading-account domain",
-  "description": "Gate ZB-04 contract for a tenant-owned B2B buyer counterparty. Trade owns the commercial application and trading-account lifecycle. Control Plane owns the canonical BUYER_ORGANISATION identity and tenant/context attestation; IAM authenticates people; ERP owns authoritative credit and accounting consequences.",
+  "description": "Backward-compatible Gate ZB-04 extension of the v1 buyer-counterparty contract. Trade owns the tenant-scoped commercial relationship. Control Plane may register and verify a BUYER_ORGANISATION canonical entity under ADR-BCP-016, but that bounded mechanism does not settle platform-wide Organisation lifecycle ownership.",
   "$defs": {
     "buyerOrganisationId": {
       "type": "string",
@@ -232,8 +232,7 @@
       "required": [
         "buyer_organisation_id",
         "tenant_id",
-        "canonical_organisation_id",
-        "legal_name",
+        "name",
         "status"
       ],
       "properties": {
@@ -247,18 +246,38 @@
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId"
         },
         "canonical_organisation_id": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128,
-          "description": "Control Plane canonical entity ID of kind BUYER_ORGANISATION; never a Keycloak or engine-native ID."
+          "anyOf": [
+            {
+              "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Optional Control Plane canonical entity reference registered under ADR-BCP-016. Nullable because that ADR does not assign platform-wide Organisation lifecycle ownership."
         },
         "source_application_id": {
-          "$ref": "#/$defs/buyerApplicationId"
+          "anyOf": [
+            {
+              "$ref": "#/$defs/buyerApplicationId"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
-        "legal_name": {
+        "name": {
           "type": "string",
           "minLength": 1,
           "maxLength": 200
+        },
+        "legal_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200,
+          "description": "Optional legal name. The existing v1 `name` field remains required for compatibility."
         },
         "trading_name": {
           "type": [
@@ -276,6 +295,10 @@
         },
         "status": {
           "$ref": "#/$defs/buyerOrganisationStatus"
+        },
+        "market_id": {
+          "type": "string",
+          "maxLength": 128
         },
         "default_market_id": {
           "type": [
