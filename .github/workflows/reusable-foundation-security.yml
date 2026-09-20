@@ -1,21 +1,25 @@
 name: Reusable — Foundation Security
+
 on:
   workflow_call:
     inputs:
       dependency_review_enabled: { type: boolean, default: false }
+      advanced_security_enabled: { type: boolean, default: false }
+      python: { type: boolean, default: false }
+      node: { type: boolean, default: false }
+      go: { type: boolean, default: false }
+      java: { type: boolean, default: false }
+      rust: { type: boolean, default: false }
+      exceptions: { type: string, default: "{}" }
+
 permissions:
   contents: read
+
 jobs:
-  security:
+  portable:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Explain dependency-review coverage
-        if: github.event_name == 'pull_request' && inputs.dependency_review_enabled && github.event.repository.visibility == 'private'
-        run: echo "::notice::Dependency review is unavailable for this private repository unless GitHub Advanced Security is enabled; language-independent filesystem scanning remains active."
-      - name: Dependency review
-        if: github.event_name == 'pull_request' && inputs.dependency_review_enabled && github.event.repository.visibility != 'private'
-        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
       - name: Install checksum-verified Trivy
         env:
           TRIVY_VERSION: "0.73.0"
@@ -27,5 +31,52 @@ jobs:
           echo "${TRIVY_SHA256}  ${asset}" | sha256sum -c -
           tar -xzf "$asset" trivy
           sudo install -m 0755 trivy /usr/local/bin/trivy
-      - name: Scan repository
-        run: trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
+      - name: Audit dependencies
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null }}
+        run: trivy fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
+      - name: Record dependency-audit exception
+        if: fromJSON(inputs.exceptions)['dependency-audit'] != null
+        run: echo "::warning::Dependency audit waived by an approved repository exception"
+      - name: Scan infrastructure and configuration
+        run: trivy fs --scanners misconfig --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
+
+  secrets:
+    if: ${{ fromJSON(inputs.exceptions)['secret-scan'] == null }}
+    uses: ./.github/workflows/security-secrets-scan.yml
+
+  dependency-review:
+    uses: ./.github/workflows/reusable-foundation-dependency-review.yml
+    with:
+      enabled: "${{ inputs.dependency_review_enabled }}"
+      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
+      exceptions: "${{ inputs.exceptions }}"
+
+  sast:
+    uses: ./.github/workflows/reusable-foundation-sast.yml
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    with:
+      enabled: "${{ inputs.advanced_security_enabled }}"
+      python: "${{ inputs.python }}"
+      node: "${{ inputs.node }}"
+      go: "${{ inputs.go }}"
+      java: "${{ inputs.java }}"
+      rust: "${{ inputs.rust }}"
+      exceptions: "${{ inputs.exceptions }}"
+
+  result:
+    name: Security / Result
+    if: always()
+    needs: [portable, secrets, dependency-review, sast]
+    runs-on: ubuntu-26.04
+    steps:
+      - env:
+          RESULTS: "${{ toJSON(needs) }}"
+        shell: ruby {0}
+        run: |
+          require "json"
+          results = JSON.parse(ENV.fetch("RESULTS"))
+          failed = results.select { |_, value| !%w[success skipped].include?(value.fetch("result")) }
+          abort "security controls failed: #{failed.keys.join(', ')}" unless failed.empty?

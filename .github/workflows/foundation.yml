@@ -9,6 +9,8 @@ on:
 permissions:
   contents: read
   packages: read
+  actions: read
+  security-events: write
 jobs:
   foundation:
     uses: ./.github/workflows/foundation-repository-gates.yml
@@ -16,4 +18,5 @@ jobs:
       dockerfile: "containers/baobab-contracts/Dockerfile"
       build_context: "."
       dependency_review_enabled: false
+      advanced_security_enabled: false
       legacy_metadata_enabled: false
