@@ -83,8 +83,7 @@
       "required": [
         "buyer_organisation_id",
         "tenant_id",
-        "canonical_organisation_id",
-        "legal_name",
+        "name",
         "status"
       ],
       "properties": {
@@ -95,16 +94,35 @@
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
         },
         "canonical_organisation_id": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 128
+          "anyOf": [
+            {
+              "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "source_application_id": {
-          "$ref": "domain.schema.json#/$defs/buyerApplicationId"
+          "anyOf": [
+            {
+              "$ref": "domain.schema.json#/$defs/buyerApplicationId"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
-        "legal_name": {
+        "name": {
           "type": "string",
           "minLength": 1,
+          "maxLength": 200
+        },
+        "legal_name": {
+          "type": [
+            "string",
+            "null"
+          ],
           "maxLength": 200
         },
         "status": {
@@ -118,9 +136,7 @@
       "required": [
         "buyer_organisation_id",
         "tenant_id",
-        "previous_status",
-        "status",
-        "changed_by_principal_id"
+        "status"
       ],
       "properties": {
         "buyer_organisation_id": {
@@ -157,6 +173,7 @@
         "buyer_organisation_id",
         "tenant_id",
         "principal_id",
+        "customer_id",
         "status",
         "roles"
       ],
@@ -185,6 +202,11 @@
           "items": {
             "$ref": "domain.schema.json#/$defs/buyerRole"
           }
+        },
+        "customer_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
         }
       }
     },
@@ -195,6 +217,8 @@
         "buyer_organisation_id",
         "tenant_id",
         "source_system",
+        "credit_status",
+        "currency_code",
         "as_of"
       ],
       "properties": {
@@ -231,6 +255,25 @@
         "as_of": {
           "type": "string",
           "format": "date-time"
+        },
+        "credit_limit_minor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "currency_code": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "profile_reference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128,
+          "description": "Retrievable authoritative snapshot reference when a consumer needs fields beyond this event."
         }
       }
     }
