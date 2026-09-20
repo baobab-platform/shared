@@ -27,6 +27,10 @@ jobs:
       node: "${{ needs.classify.outputs.node == 'true' }}"
       go: "${{ needs.classify.outputs.go == 'true' }}"
       java: "${{ needs.classify.outputs.java == 'true' }}"
+      rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
+      package_managers: "${{ needs.classify.outputs.package_managers }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
   environment:
     needs: classify
     uses: ./.github/workflows/reusable-foundation-environment.yml
