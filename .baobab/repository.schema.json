@@ -65,11 +65,12 @@
             {
               "type": "object",
               "additionalProperties": false,
-              "required": ["enabled", "dockerfile", "context"],
+              "required": ["enabled", "dockerfile", "context", "runtime"],
               "properties": {
                 "enabled": { "const": true },
                 "dockerfile": { "type": "string", "minLength": 1 },
-                "context": { "type": "string", "minLength": 1 }
+                "context": { "type": "string", "minLength": 1 },
+                "runtime": { "type": "boolean" }
               }
             }
           ]

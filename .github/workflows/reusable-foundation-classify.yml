@@ -17,6 +17,7 @@ on:
       container_artifact: { value: "${{ jobs.classify.outputs.container_artifact }}" }
       container_dockerfile: { value: "${{ jobs.classify.outputs.container_dockerfile }}" }
       container_context: { value: "${{ jobs.classify.outputs.container_context }}" }
+      container_runtime: { value: "${{ jobs.classify.outputs.container_runtime }}" }
       environment_required: { value: "${{ jobs.classify.outputs.environment_required }}" }
       environment_profile: { value: "${{ jobs.classify.outputs.environment_profile }}" }
       package_managers: { value: "${{ jobs.classify.outputs.package_managers }}" }
@@ -40,6 +41,7 @@ jobs:
       container_artifact: "${{ steps.resolve.outputs.container_artifact }}"
       container_dockerfile: "${{ steps.resolve.outputs.container_dockerfile }}"
       container_context: "${{ steps.resolve.outputs.container_context }}"
+      container_runtime: "${{ steps.resolve.outputs.container_runtime }}"
       environment_required: "${{ steps.resolve.outputs.environment_required }}"
       environment_profile: "${{ steps.resolve.outputs.environment_profile }}"
       package_managers: "${{ steps.resolve.outputs.package_managers }}"
@@ -73,6 +75,7 @@ jobs:
           container_artifact = false
           container_dockerfile = ""
           container_context = "."
+          container_runtime = true
 
           if File.file?(contract_path)
             contract = YAML.safe_load_file(contract_path, permitted_classes: [Date], aliases: false)
@@ -121,11 +124,13 @@ jobs:
               container_artifact = container
               container_dockerfile = "Dockerfile" if container
             elsif container.is_a?(Hash)
-              assert_keys!(container, %w[enabled dockerfile context], "artifacts.container")
+              assert_keys!(container, %w[enabled dockerfile context runtime], "artifacts.container")
               abort "artifacts.container.enabled must be true for an object declaration" unless container["enabled"] == true
               container_dockerfile = container["dockerfile"].to_s
               container_context = container["context"].to_s
               abort "container dockerfile and context are required" if container_dockerfile.empty? || container_context.empty?
+              container_runtime = container["runtime"]
+              abort "artifacts.container.runtime must be boolean" unless [true, false].include?(container_runtime)
               container_artifact = true
             else
               abort "artifacts.container must be boolean or an artifact object"
@@ -182,6 +187,7 @@ jobs:
             "container_artifact" => container_artifact,
             "container_dockerfile" => container_dockerfile,
             "container_context" => container_context,
+            "container_runtime" => container_runtime,
             "environment_required" => environment_required,
             "environment_profile" => environment_profile,
             "package_managers" => JSON.generate(managers),

@@ -14,4 +14,8 @@ environment:
 package_managers:
   node: pnpm
 artifacts:
-  container: true
+  container:
+    enabled: true
+    dockerfile: containers/baobab-contracts/Dockerfile
+    context: .
+    runtime: false
