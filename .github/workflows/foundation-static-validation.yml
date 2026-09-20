@@ -37,7 +37,7 @@ jobs:
             document = YAML.safe_load_file(path, aliases: true)
             abort "#{path}: workflow must be an object" unless document.is_a?(Hash)
             abort "#{path}: name is required" if document["name"].to_s.empty?
-            abort "#{path}: on is required" unless document.key?("on")
+            abort "#{path}: on is required" unless document.key?("on") || document.key?(true)
             abort "#{path}: jobs are required" unless document["jobs"].is_a?(Hash)
           end
 
