@@ -6,10 +6,10 @@
   "$defs": {
     "buyerOrganisationId": {
       "type": "string",
-      "pattern": "^buyerorg_[a-z0-9]+$",
+      "pattern": "^(buyerorg|b2borg)_[a-z0-9]+$",
       "minLength": 10,
       "maxLength": 63,
-      "description": "Opaque BuyerOrganisation identifier used by the cross-engine contract."
+      "description": "Opaque tenant-scoped BuyerOrganisation identifier minted by the Trade authority. It is distinct from canonical_organisation_id."
     },
     "buyerApplicationId": {
       "type": "string",
@@ -19,13 +19,13 @@
     },
     "buyerMembershipId": {
       "type": "string",
-      "pattern": "^buyermem_[a-z0-9]+$",
+      "pattern": "^(buyermem|b2bmem)_[a-z0-9]+$",
       "minLength": 10,
       "maxLength": 63
     },
     "buyerSiteId": {
       "type": "string",
-      "pattern": "^buyersite_[a-z0-9]+$",
+      "pattern": "^(buyersite|b2bsite)_[a-z0-9]+$",
       "minLength": 10,
       "maxLength": 63
     },
@@ -35,8 +35,10 @@
         "PENDING",
         "ACTIVE",
         "SUSPENDED",
+        "CLOSED",
         "ARCHIVED"
-      ]
+      ],
+      "description": "Tenant-scoped Trade lifecycle. CLOSED is the current engine terminal state; ARCHIVED is retained for v1 contract compatibility."
     },
     "buyerApplicationStatus": {
       "type": "string",
