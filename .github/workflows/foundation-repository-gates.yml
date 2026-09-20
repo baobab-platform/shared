@@ -81,6 +81,6 @@ jobs:
         run: |
           require "json"
           needs = JSON.parse(ENV.fetch("RESULTS"))
-          failed = needs.select { |_, value| !%w[success skipped].include?(value.fetch("result")) }
+          failed = needs.select { |_, value| value.fetch("result") != "success" }
           puts needs.map { |name, value| "#{name}=#{value.fetch('result')}" }.join("\n")
           abort "required Foundation gates failed: #{failed.keys.join(', ')}" unless failed.empty?
