@@ -1,27 +1,83 @@
 name: Reusable — Foundation Baseline
+
 on:
   workflow_call:
+    inputs:
+      exceptions: { type: string, default: "{}" }
+
 permissions:
   contents: read
+
 jobs:
   baseline:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Record baseline exception
+        if: contains(fromJSON(inputs.exceptions), 'baseline')
+        run: echo "::warning::Repository baseline waived by an approved repository exception"
       - name: Validate repository baseline
-        shell: bash
+        if: ${{ !contains(fromJSON(inputs.exceptions), 'baseline') }}
+        env:
+          VISIBILITY: "${{ github.event.repository.visibility }}"
+        shell: ruby {0}
         run: |
-          set -euo pipefail
-          [[ -f README.md ]] || { echo "::error::README.md is required"; exit 1; }
-          [[ -f SECURITY.md ]] || { echo "::error::SECURITY.md is required"; exit 1; }
-          [[ -f .gitignore ]] || { echo "::error::.gitignore is required"; exit 1; }
-          [[ -f .github/CODEOWNERS ]] || { echo "::error::.github/CODEOWNERS is required"; exit 1; }
-          violations=0
-          while IFS= read -r line; do
-            reference=$(sed -E 's/.*uses:[[:space:]]*//' <<< "$line" | awk '{print $1}')
-            [[ "$reference" == ./* || "$reference" =~ @[0-9a-f]{40}$ ]] || {
-              echo "::error::Action or reusable workflow is not pinned to a full commit SHA: $reference"
-              violations=$((violations + 1))
-            }
-          done < <(find .github -type f \( -name '*.yml' -o -name '*.yaml' \) -exec grep -hE '^[[:space:]]*(-[[:space:]]*)?uses:[[:space:]]*' {} + 2>/dev/null || true)
-          (( violations == 0 ))
+          require "yaml"
+
+          errors = []
+          required = %w[README.md SECURITY.md .gitignore .github/CODEOWNERS]
+          required << "LICENSE" unless ENV["VISIBILITY"] == "private"
+          required.each do |path|
+            errors << "#{path} is required and must not be empty" unless File.file?(path) && File.size?(path)
+          end
+
+          if File.file?(".github/CODEOWNERS")
+            rules = File.readlines(".github/CODEOWNERS", chomp: true).map(&:strip).reject { |line| line.empty? || line.start_with?("#") }
+            errors << ".github/CODEOWNERS requires at least one ownership rule" if rules.empty?
+            errors << ".github/CODEOWNERS requires a repository-wide '*' rule" unless rules.any? { |line| line.split.first == "*" }
+          end
+
+          trusted = %w[actions github docker anchore astral-sh aquasecurity codecov sigstore softprops baobab-platform]
+          workflows = Dir[".github/workflows/*.{yml,yaml}"]
+          errors << "at least one GitHub Actions workflow is required" if workflows.empty?
+
+          visit = lambda do |value, path|
+            case value
+            when Hash
+              value.each do |key, child|
+                if key.to_s == "uses"
+                  reference = child.to_s
+                  unless reference.start_with?("./")
+                    target, version = reference.split("@", 2)
+                    owner = target.split("/").first
+                    errors << "#{path}: action owner #{owner.inspect} is not trusted" unless trusted.include?(owner)
+                    errors << "#{path}: #{reference} is not pinned to a full commit SHA" unless version&.match?(/\A[0-9a-f]{40}\z/)
+                  end
+                end
+                visit.call(child, "#{path}.#{key}")
+              end
+            when Array
+              value.each_with_index { |child, index| visit.call(child, "#{path}[#{index}]") }
+            end
+          end
+
+          workflows.each do |path|
+            begin
+              document = YAML.safe_load_file(path, aliases: true)
+            rescue Psych::SyntaxError => error
+              errors << "#{path}: invalid YAML: #{error.message.lines.first.strip}"
+              next
+            end
+            unless document.is_a?(Hash) && document["jobs"].is_a?(Hash)
+              errors << "#{path}: workflow must define jobs"
+              next
+            end
+            permissions = document["permissions"]
+            errors << "#{path}: explicit top-level permissions are required" if permissions.nil?
+            errors << "#{path}: write-all is forbidden" if permissions == "write-all"
+            visit.call(document, path)
+          end
+
+          errors.each { |error| warn "::error::#{error}" }
+          abort "repository baseline failed with #{errors.length} error(s)" unless errors.empty?
+          puts "Repository baseline and workflow trust policy passed"
