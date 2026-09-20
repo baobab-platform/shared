@@ -5,6 +5,10 @@ on:
       dockerfile: { type: string, default: "Dockerfile" }
       build_context: { type: string, default: "." }
       dependency_review_enabled: { type: boolean, default: false }
+      advanced_security_enabled:
+        description: Set true only when GitHub Advanced Security is enabled for the caller.
+        type: boolean
+        default: false
       legacy_metadata_enabled:
         description: Temporary cohort-migration bridge for .nabhold/environment.yaml; remove after Gate 11.
         type: boolean
@@ -12,6 +16,8 @@ on:
 permissions:
   contents: read
   packages: read
+  actions: read
+  security-events: write
 jobs:
   classify:
     uses: ./.github/workflows/reusable-foundation-classify.yml
@@ -38,9 +44,21 @@ jobs:
       required: "${{ needs.classify.outputs.environment_required == 'true' }}"
       legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
   security:
+    needs: classify
     uses: ./.github/workflows/reusable-foundation-security.yml
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     with:
       dependency_review_enabled: "${{ inputs.dependency_review_enabled }}"
+      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
+      python: "${{ needs.classify.outputs.python == 'true' }}"
+      node: "${{ needs.classify.outputs.node == 'true' }}"
+      go: "${{ needs.classify.outputs.go == 'true' }}"
+      java: "${{ needs.classify.outputs.java == 'true' }}"
+      rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
   container:
     needs: classify
     uses: ./.github/workflows/reusable-foundation-container.yml
