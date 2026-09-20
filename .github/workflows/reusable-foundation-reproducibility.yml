@@ -21,12 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Record approved exception
-        if: contains(fromJSON(inputs.exceptions), 'reproducibility')
+        if: fromJSON(inputs.exceptions).reproducibility != null
         env:
           EXCEPTION: "${{ toJSON(fromJSON(inputs.exceptions).reproducibility) }}"
         run: echo "::warning::Reproducibility control waived by approved exception — $EXCEPTION"
       - name: Validate workspace reproducibility
-        if: ${{ !contains(fromJSON(inputs.exceptions), 'reproducibility') }}
+        if: ${{ !fromJSON(inputs.exceptions).reproducibility != null }}
         env:
           PYTHON: "${{ inputs.python }}"
           NODE: "${{ inputs.node }}"
