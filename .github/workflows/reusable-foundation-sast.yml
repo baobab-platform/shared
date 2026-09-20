@@ -1,0 +1,69 @@
+name: Reusable — Foundation CodeQL
+
+on:
+  workflow_call:
+    inputs:
+      enabled: { type: boolean, default: false }
+      python: { type: boolean, default: false }
+      node: { type: boolean, default: false }
+      go: { type: boolean, default: false }
+      java: { type: boolean, default: false }
+      rust: { type: boolean, default: false }
+      exceptions: { type: string, default: "{}" }
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-26.04
+    outputs:
+      matrix: "${{ steps.matrix.outputs.matrix }}"
+      applicable: "${{ steps.matrix.outputs.applicable }}"
+    steps:
+      - id: matrix
+        env:
+          ENABLED: "${{ inputs.enabled }}"
+          PYTHON: "${{ inputs.python }}"
+          NODE: "${{ inputs.node }}"
+          GO: "${{ inputs.go }}"
+          JAVA: "${{ inputs.java }}"
+          RUST: "${{ inputs.rust }}"
+          WAIVED: "${{ contains(fromJSON(inputs.exceptions), 'sast') }}"
+        shell: ruby {0}
+        run: |
+          require "json"
+          entries = []
+          entries << { language: "python", mode: "none" } if ENV["PYTHON"] == "true"
+          entries << { language: "javascript-typescript", mode: "none" } if ENV["NODE"] == "true"
+          entries << { language: "go", mode: "autobuild" } if ENV["GO"] == "true"
+          entries << { language: "java-kotlin", mode: "autobuild" } if ENV["JAVA"] == "true"
+          entries << { language: "rust", mode: "none" } if ENV["RUST"] == "true"
+          applicable = ENV["ENABLED"] == "true" && ENV["WAIVED"] != "true" && !entries.empty?
+          warn "::warning::CodeQL waived by an approved repository exception" if ENV["WAIVED"] == "true"
+          File.open(ENV.fetch("GITHUB_OUTPUT"), "a") do |output|
+            output.puts "matrix=#{JSON.generate({ include: entries })}"
+            output.puts "applicable=#{applicable}"
+          end
+
+  analyze:
+    if: needs.plan.outputs.applicable == 'true'
+    needs: plan
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: github/codeql-action/init@37f2634a92ba38a0926ef79a0748ac8ae7d95ab2 # v4.37.8
+        with:
+          languages: "${{ matrix.language }}"
+          build-mode: "${{ matrix.mode }}"
+      - uses: github/codeql-action/analyze@37f2634a92ba38a0926ef79a0748ac8ae7d95ab2 # v4.37.8
+        with:
+          category: "/language:${{ matrix.language }}"
