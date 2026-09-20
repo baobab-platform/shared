@@ -29,7 +29,7 @@ jobs:
           GO: "${{ inputs.go }}"
           JAVA: "${{ inputs.java }}"
           RUST: "${{ inputs.rust }}"
-          WAIVED: "${{ contains(fromJSON(inputs.exceptions), 'sast') }}"
+          WAIVED: "${{ fromJSON(inputs.exceptions).sast != null }}"
         shell: ruby {0}
         run: |
           require "json"
