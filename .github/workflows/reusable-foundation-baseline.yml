@@ -1,0 +1,27 @@
+name: Reusable — Foundation Baseline
+on:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  baseline:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate repository baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ -f README.md ]] || { echo "::error::README.md is required"; exit 1; }
+          [[ -f SECURITY.md ]] || { echo "::error::SECURITY.md is required"; exit 1; }
+          [[ -f .gitignore ]] || { echo "::error::.gitignore is required"; exit 1; }
+          [[ -f .github/CODEOWNERS ]] || { echo "::error::.github/CODEOWNERS is required"; exit 1; }
+          violations=0
+          while IFS= read -r line; do
+            reference=$(sed -E 's/.*uses:[[:space:]]*//' <<< "$line" | awk '{print $1}')
+            [[ "$reference" == ./* || "$reference" =~ @[0-9a-f]{40}$ ]] || {
+              echo "::error::Action or reusable workflow is not pinned to a full commit SHA: $reference"
+              violations=$((violations + 1))
+            }
+          done < <(find .github -type f \( -name '*.yml' -o -name '*.yaml' \) -exec grep -hE '^[[:space:]]*(-[[:space:]]*)?uses:[[:space:]]*' {} + 2>/dev/null || true)
+          (( violations == 0 ))

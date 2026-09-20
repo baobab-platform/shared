@@ -1,5 +1,4 @@
 name: Foundation Repository Gates
-
 on:
   pull_request:
   push:
@@ -7,12 +6,13 @@ on:
   schedule:
     - cron: "23 5 * * 1"
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   foundation:
     uses: ./.github/workflows/foundation-repository-gates.yml
     with:
-      dockerfile: ""
+      dockerfile: "containers/baobab-contracts/Dockerfile"
+      build_context: "."
+      dependency_review_enabled: false
+      legacy_metadata_enabled: false

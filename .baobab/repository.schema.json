@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baobab-platform.github.io/shared/schemas/repository-v1.json",
+  "title": "Baobab Foundation Repository Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "repository", "capabilities", "environment", "artifacts"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lifecycle"],
+      "properties": {
+        "lifecycle": { "enum": ["experimental", "active", "maintenance", "deprecated"] }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["python", "node", "go", "java", "container", "infrastructure", "documentation", "contracts", "github-actions", "digital-estate", "engine", "library", "development-environment"] }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baobab_dev"],
+      "properties": {
+        "baobab_dev": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required"],
+          "properties": {
+            "required": { "type": "boolean" },
+            "profile": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "package_managers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "node": { "enum": ["pnpm", "npm", "yarn"] },
+        "python": { "enum": ["uv", "pip", "poetry"] },
+        "java": { "enum": ["maven", "gradle"] }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["container"],
+      "properties": { "container": { "type": "boolean" } }
+    },
+    "exceptions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["reason", "expires"],
+        "properties": {
+          "reason": { "type": "string", "minLength": 12 },
+          "expires": { "type": "string", "format": "date" }
+        }
+      }
+    }
+  }
+}
