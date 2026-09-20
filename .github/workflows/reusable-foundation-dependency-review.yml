@@ -21,7 +21,7 @@ jobs:
           GHAS: "${{ inputs.advanced_security_enabled }}"
           VISIBILITY: "${{ github.event.repository.visibility }}"
           EVENT: "${{ github.event_name }}"
-          WAIVED: "${{ contains(fromJSON(inputs.exceptions), 'dependency-review') }}"
+          WAIVED: "${{ fromJSON(inputs.exceptions)['dependency-review'] != null }}"
         shell: bash
         run: |
           set -euo pipefail
