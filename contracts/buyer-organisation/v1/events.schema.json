@@ -274,6 +274,25 @@
           ],
           "maxLength": 128,
           "description": "Retrievable authoritative snapshot reference when a consumer needs fields beyond this event."
+        },
+        "legal_entity_id": {
+          "anyOf": [
+            {
+              "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "ERP legal-entity scope; ERP producers populate it, retained optional for v1 compatibility."
+        },
+        "business_partner_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^erp_[a-z0-9]+$",
+          "description": "Public ERP identifier; never a native C_BPartner_ID."
         }
       }
     },
