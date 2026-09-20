@@ -37,7 +37,7 @@ jobs:
             errors << ".github/CODEOWNERS requires a repository-wide '*' rule" unless rules.any? { |line| line.split.first == "*" }
           end
 
-          trusted = %w[actions github docker anchore astral-sh aquasecurity codecov sigstore softprops baobab-platform]
+          trusted = %w[actions github docker anchore astral-sh aquasecurity codecov sigstore softprops hashicorp dtolnay baobab-platform]
           workflows = Dir[".github/workflows/*.{yml,yaml}"]
           errors << "at least one GitHub Actions workflow is required" if workflows.empty?
 

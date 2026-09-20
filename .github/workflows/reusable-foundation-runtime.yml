@@ -1,0 +1,177 @@
+name: Reusable — Foundation Runtime Quality
+
+on:
+  workflow_call:
+    inputs:
+      python: { type: boolean, default: false }
+      node: { type: boolean, default: false }
+      go: { type: boolean, default: false }
+      java: { type: boolean, default: false }
+      rust: { type: boolean, default: false }
+      infrastructure: { type: boolean, default: false }
+      package_managers: { type: string, default: "{}" }
+      exceptions: { type: string, default: "{}" }
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    if: inputs.python && fromJSON(inputs.exceptions).runtime == null
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4
+        with:
+          python-version: "3.13"
+      - name: Validate Python metadata and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib, tomllib
+          manifests = [p for p in pathlib.Path(".").rglob("pyproject.toml") if not any(x in p.parts for x in (".git", ".venv", "vendor"))]
+          if not manifests:
+              raise SystemExit("Python capability has no pyproject.toml")
+          for manifest in manifests:
+              with manifest.open("rb") as stream:
+                  tomllib.load(stream)
+          PY
+          python -m compileall -q -x '/(\.git|\.venv|vendor|node_modules)/' .
+
+  node:
+    if: inputs.node && fromJSON(inputs.exceptions).runtime == null
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@db0fb3a98ed314b69026b6e8c9be26a7e2fe65a8
+        with:
+          node-version: "24"
+      - name: Validate Node metadata and source syntax
+        env:
+          PACKAGE_MANAGERS: "${{ inputs.package_managers }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e 'const fs=require("fs"),path=require("path"); let n=0; function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){if([".git","node_modules",".next","dist"].includes(e.name))continue; const p=path.join(d,e.name); if(e.isDirectory())walk(p); else if(e.name==="package.json"){JSON.parse(fs.readFileSync(p,"utf8")); n++;}}} walk("."); if(!n)throw new Error("no package.json found")'
+          manager=$(ruby -rjson -e 'puts JSON.parse(ENV.fetch("PACKAGE_MANAGERS")).fetch("node", "")')
+          if [[ -n "$manager" ]]; then corepack "$manager" --version >/dev/null; fi
+          while IFS= read -r -d '' file; do node --check "$file"; done < <(find . -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -not -path '*/node_modules/*' -not -path '*/.next/*' -not -path '*/dist/*' -print0)
+
+  go:
+    if: inputs.go && fromJSON(inputs.exceptions).runtime == null
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@e626ada899467caf4efc6cfd0484b965da944ce8
+        with:
+          go-version: stable
+          cache: false
+      - name: Verify, vet and test Go modules
+        run: |
+          set -euo pipefail
+          while IFS= read -r module; do
+            directory=$(dirname "$module")
+            (cd "$directory" && go mod verify && go vet ./... && go test ./...)
+          done < <(find . -name go.mod -not -path '*/vendor/*' -not -path '*/.git/*' | sort)
+
+  java:
+    if: inputs.java && fromJSON(inputs.exceptions).runtime == null
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@1aa87b638dacaa70f1c903fa9ec9cbd91058e2ff
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Verify Java project through committed wrapper
+        shell: bash
+        run: |
+          set -euo pipefail
+          found=0
+          while IFS= read -r wrapper; do
+            found=1
+            directory=$(dirname "$wrapper")
+            if [[ $(basename "$wrapper") == mvnw ]]; then
+              (cd "$directory" && ./mvnw --batch-mode --no-transfer-progress -DskipTests verify)
+            else
+              (cd "$directory" && ./gradlew --no-daemon check)
+            fi
+          done < <(find . -type f \( -name mvnw -o -name gradlew \) -perm -u+x -not -path '*/.git/*' | sort)
+          [[ "$found" == 1 ]] || { echo "::error::Java runtime gate requires a committed executable wrapper"; exit 1; }
+
+  rust:
+    if: inputs.rust && fromJSON(inputs.exceptions).runtime == null
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - name: Format, lint and test Rust workspace
+        run: |
+          set -euo pipefail
+          cargo fmt --all --check
+          cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+          cargo test --workspace --all-features --locked
+
+  terraform:
+    if: inputs.infrastructure && fromJSON(inputs.exceptions).runtime == null
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: hashicorp/setup-terraform@b75000b53e9ce4de2b4712237bbdb711bdc92aba
+        with:
+          terraform_wrapper: false
+      - name: Format and validate Terraform modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          terraform fmt -check -recursive
+          while IFS= read -r module; do
+            terraform -chdir="$module" init -backend=false -input=false
+            terraform -chdir="$module" validate
+          done < <(find . -name '*.tf' -not -path '*/.terraform/*' -printf '%h\n' | sort -u)
+
+  exception:
+    if: fromJSON(inputs.exceptions).runtime != null
+    runs-on: ubuntu-26.04
+    steps:
+      - run: echo "::warning::Runtime quality controls waived by an approved repository exception"
+
+  result:
+    name: Runtime / Result
+    if: always()
+    needs: [python, node, go, java, rust, terraform, exception]
+    runs-on: ubuntu-26.04
+    steps:
+      - env:
+          RESULTS: "${{ toJSON(needs) }}"
+          PYTHON: "${{ inputs.python }}"
+          NODE: "${{ inputs.node }}"
+          GO: "${{ inputs.go }}"
+          JAVA: "${{ inputs.java }}"
+          RUST: "${{ inputs.rust }}"
+          TERRAFORM: "${{ inputs.infrastructure }}"
+          WAIVED: "${{ fromJSON(inputs.exceptions).runtime != null }}"
+        shell: ruby {0}
+        run: |
+          require "json"
+          results = JSON.parse(ENV.fetch("RESULTS")).transform_values { |value| value.fetch("result") }
+          expected = {
+            "python" => ENV["PYTHON"] == "true",
+            "node" => ENV["NODE"] == "true",
+            "go" => ENV["GO"] == "true",
+            "java" => ENV["JAVA"] == "true",
+            "rust" => ENV["RUST"] == "true",
+            "terraform" => ENV["TERRAFORM"] == "true"
+          }
+          if ENV["WAIVED"] == "true"
+            abort "runtime exception job failed" unless results["exception"] == "success"
+          else
+            expected.each do |gate, applicable|
+              wanted = applicable ? "success" : "skipped"
+              abort "#{gate} expected #{wanted}, got #{results[gate]}" unless results[gate] == wanted
+            end
+          end
