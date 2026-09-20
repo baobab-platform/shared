@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Validate artifact coordinates and Dockerfile policy
-        if: inputs.enabled && !contains(fromJSON(inputs.exceptions), 'container-policy')
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-policy'] == null
         env:
           DOCKERFILE: "${{ inputs.dockerfile }}"
           BUILD_CONTEXT: "${{ inputs.build_context }}"
@@ -40,7 +40,7 @@ jobs:
           fi
 
       - name: Record container-policy exception
-        if: inputs.enabled && contains(fromJSON(inputs.exceptions), 'container-policy')
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-policy'] != null
         run: echo "::warning::Container policy waived by an approved repository exception"
 
       - name: Build container
@@ -52,7 +52,7 @@ jobs:
           docker build             --file "$DOCKERFILE"             --build-arg VERSION="0.0.0-ci"             --build-arg REVISION="${{ github.sha }}"             --tag "foundation-scan:${{ github.sha }}"             "$BUILD_CONTEXT"
 
       - name: Validate OCI metadata and runtime safety
-        if: inputs.enabled && !contains(fromJSON(inputs.exceptions), 'container-policy')
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-policy'] == null
         env:
           IMAGE: "foundation-scan:${{ github.sha }}"
           RUNTIME: "${{ inputs.runtime }}"
@@ -73,7 +73,7 @@ jobs:
           end
 
       - name: Install checksum-verified Trivy
-        if: inputs.enabled && !contains(fromJSON(inputs.exceptions), 'container-scan')
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
         env:
           TRIVY_VERSION: "0.73.0"
           TRIVY_SHA256: "2edd39da482bb4e9831962487b68f68e3928ec3137794757f54d00383d79547b"
@@ -86,20 +86,20 @@ jobs:
           sudo install -m 0755 trivy /usr/local/bin/trivy
 
       - name: Scan built image
-        if: inputs.enabled && !contains(fromJSON(inputs.exceptions), 'container-scan')
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
         run: trivy image --severity HIGH,CRITICAL --exit-code 1 --skip-version-check "foundation-scan:${{ github.sha }}"
 
       - name: Record container-scan exception
-        if: inputs.enabled && contains(fromJSON(inputs.exceptions), 'container-scan')
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] != null
         run: echo "::warning::Container vulnerability scan waived by an approved repository exception"
 
       - name: Generate SPDX SBOM
-        if: inputs.enabled && !contains(fromJSON(inputs.exceptions), 'sbom')
+        if: inputs.enabled && fromJSON(inputs.exceptions).sbom == null
         uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
         with:
           image: "foundation-scan:${{ github.sha }}"
           artifact-name: foundation-sbom.spdx.json
 
       - name: Record SBOM exception
-        if: inputs.enabled && contains(fromJSON(inputs.exceptions), 'sbom')
+        if: inputs.enabled && fromJSON(inputs.exceptions).sbom != null
         run: echo "::warning::SBOM generation waived by an approved repository exception"
