@@ -64,8 +64,10 @@ jobs:
     uses: ./.github/workflows/reusable-foundation-container.yml
     with:
       enabled: "${{ needs.classify.outputs.container_artifact == 'true' }}"
-      dockerfile: "${{ inputs.dockerfile }}"
-      build_context: "${{ inputs.build_context }}"
+      dockerfile: "${{ needs.classify.outputs.container_dockerfile }}"
+      build_context: "${{ needs.classify.outputs.container_context }}"
+      runtime: "${{ needs.classify.outputs.container_runtime == 'true' }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
   result:
     name: Foundation / Result
     if: always()
