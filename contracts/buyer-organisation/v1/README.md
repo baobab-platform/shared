@@ -62,3 +62,12 @@ withdrawal and suspension preserve audit history.
 The v1 resource preserves all existing required fields and event payloads while adding
 the application and membership vocabulary required by ZB-04. Consumers must reject
 unknown enum values safely and pin this package through their contracts lock.
+
+
+### Invitation identity transition
+
+An `INVITED` membership reserves organisation-scoped role authority for an intended email
+recipient but is not yet a Trade customer or canonical Principal relationship. Therefore
+`customer_id` and `principal_id` are present as `null` until the one-time invitation is
+accepted. Every non-`INVITED` membership requires both identifiers. Implementations must not
+manufacture placeholder identities to satisfy the contract.
