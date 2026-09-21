@@ -95,7 +95,7 @@ jobs:
 
       - name: Generate SPDX SBOM
         if: inputs.enabled && fromJSON(inputs.exceptions).sbom == null
-        uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
         with:
           image: "foundation-scan:${{ github.sha }}"
           artifact-name: foundation-sbom.spdx.json
