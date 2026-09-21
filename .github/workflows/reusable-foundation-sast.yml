@@ -3,7 +3,15 @@ name: Reusable — Foundation CodeQL
 on:
   workflow_call:
     inputs:
-      enabled: { type: boolean, default: false }
+      enabled:
+        description: >
+          Caller opt-in for CodeQL. Must be true only when GitHub Advanced
+          Security is licensed and enabled for private repositories (public
+          repositories may opt in without GHAS). Never set true on a private
+          repo without GHAS — the planner will refuse CodeQL and emit
+          SAST / Not available instead of attempting an upload that fails.
+        type: boolean
+        default: false
       python: { type: boolean, default: false }
       node: { type: boolean, default: false }
       go: { type: boolean, default: false }
@@ -19,7 +27,9 @@ jobs:
     runs-on: ubuntu-26.04
     outputs:
       matrix: "${{ steps.matrix.outputs.matrix }}"
-      applicable: "${{ steps.matrix.outputs.applicable }}"
+      mode: "${{ steps.matrix.outputs.mode }}"
+      status_name: "${{ steps.matrix.outputs.status_name }}"
+      reason: "${{ steps.matrix.outputs.reason }}"
     steps:
       - id: matrix
         env:
@@ -30,24 +40,86 @@ jobs:
           JAVA: "${{ inputs.java }}"
           RUST: "${{ inputs.rust }}"
           WAIVED: "${{ fromJSON(inputs.exceptions).sast != null }}"
+          VISIBILITY: "${{ github.event.repository.visibility }}"
         shell: ruby {0}
         run: |
           require "json"
+
           entries = []
           entries << { language: "python", mode: "none" } if ENV["PYTHON"] == "true"
           entries << { language: "javascript-typescript", mode: "none" } if ENV["NODE"] == "true"
           entries << { language: "go", mode: "autobuild" } if ENV["GO"] == "true"
           entries << { language: "java-kotlin", mode: "autobuild" } if ENV["JAVA"] == "true"
           entries << { language: "rust", mode: "none" } if ENV["RUST"] == "true"
-          applicable = ENV["ENABLED"] == "true" && ENV["WAIVED"] != "true" && !entries.empty?
-          warn "::warning::CodeQL waived by an approved repository exception" if ENV["WAIVED"] == "true"
+
+          enabled = ENV["ENABLED"] == "true"
+          waived = ENV["WAIVED"] == "true"
+          visibility = (ENV["VISIBILITY"] || "").strip
+          # Public repos get CodeQL without GHAS; private require the caller
+          # opt-in as a GHAS-backed assertion. We cannot query entitlement
+          # APIs from Actions, so private + enabled remains a trusted claim.
+          private = visibility == "private"
+          ghas_claim = enabled
+          codeql_available = !private || ghas_claim
+
+          mode =
+            if waived
+              "waived"
+            elsif entries.empty?
+              "no_languages"
+            elsif !enabled
+              "not_available"
+            elsif !codeql_available
+              "not_available"
+            else
+              "codeql"
+            end
+
+          status_name =
+            case mode
+            when "waived" then "Waived"
+            when "no_languages" then "No languages"
+            when "not_available" then "Not available"
+            else "CodeQL"
+            end
+
+          reason =
+            case mode
+            when "waived"
+              "CodeQL waived by an approved repository exception"
+            when "no_languages"
+              "No CodeQL-supported languages were classified for this repository"
+            when "not_available"
+              if private && !enabled
+                "CodeQL not available: private repository without advanced_security_enabled (GHAS) opt-in; portable Trivy remains the baseline SAST path"
+              elsif private && enabled && !codeql_available
+                "CodeQL not available for this private repository under current policy"
+              elsif !enabled
+                "CodeQL not requested (advanced_security_enabled=false); portable Trivy remains the baseline SAST path"
+              else
+                "CodeQL not available"
+              end
+            else
+              if private
+                "CodeQL enabled for private repository; caller asserts GitHub Advanced Security is licensed and enabled"
+              else
+                "CodeQL enabled for public repository"
+              end
+            end
+
+          warn "::warning::#{reason}" if mode == "waived"
+          puts "::notice::SAST decision: mode=#{mode} visibility=#{visibility.empty? ? 'unknown' : visibility} enabled=#{enabled} languages=#{entries.map { |e| e[:language] }.join(',')}"
+          puts "::notice::#{reason}"
+
           File.open(ENV.fetch("GITHUB_OUTPUT"), "a") do |output|
             output.puts "matrix=#{JSON.generate({ include: entries })}"
-            output.puts "applicable=#{applicable}"
+            output.puts "mode=#{mode}"
+            output.puts "status_name=#{status_name}"
+            output.puts "reason=#{reason.gsub("\n", " ")}"
           end
 
   analyze:
-    if: needs.plan.outputs.applicable == 'true'
+    if: needs.plan.outputs.mode == 'codeql'
     needs: plan
     name: CodeQL (${{ matrix.language }})
     runs-on: ubuntu-26.04
@@ -67,3 +139,23 @@ jobs:
       - uses: github/codeql-action/analyze@37f2634a92ba38a0926ef79a0748ac8ae7d95ab2 # v4.37.8
         with:
           category: "/language:${{ matrix.language }}"
+
+  # Visible coverage decision when CodeQL does not run. Ensures branch
+  # protection and operators see an explicit SAST result instead of a silent skip.
+  status:
+    if: always() && needs.plan.outputs.mode != 'codeql'
+    needs: plan
+    name: SAST / ${{ needs.plan.outputs.status_name }}
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Record SAST coverage decision
+        env:
+          MODE: "${{ needs.plan.outputs.mode }}"
+          REASON: "${{ needs.plan.outputs.reason }}"
+        run: |
+          set -euo pipefail
+          echo "::notice::${REASON}"
+          echo "SAST mode=${MODE}"
+          echo "${REASON}"
+          # Non-CodeQL paths are successful coverage decisions, not failures.
+          # Portable Trivy (security/portable) remains the language-independent baseline.

@@ -4,7 +4,14 @@ on:
   workflow_call:
     inputs:
       dependency_review_enabled: { type: boolean, default: false }
-      advanced_security_enabled: { type: boolean, default: false }
+      advanced_security_enabled:
+        description: >
+          Opt-in for GHAS-backed controls (CodeQL and private dependency review).
+          Set true only when GitHub Advanced Security is licensed and enabled for
+          the calling repository. Private repositories without GHAS must leave
+          this false; SAST then emits SAST / Not available and portable Trivy remains the baseline.
+        type: boolean
+        default: false
       python: { type: boolean, default: false }
       node: { type: boolean, default: false }
       go: { type: boolean, default: false }
