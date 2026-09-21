@@ -22,10 +22,26 @@ A Foundation revision is promotable only after all of the following are green:
 
 The stable reusable entry point remains `.github/workflows/foundation-repository-gates.yml`. Consumers must not reference its internal component workflows directly.
 
+### Current promotion candidate
+
+See `docs/governance/foundation-ci-promotion-v2.0.0.md`.
+
+- **Candidate SHA:** `1f39f6871a0f832127c0a44e3111807320f29b46` (Phase 1 + Phase 2 on `main`)
+- **Proposed tag:** `v2.0.0`
+- **Tag status:** not cut — self-consumer and static validation were red on the candidate push; do not treat `main` HEAD as a supported release until that record is updated to **promoted**.
+
 ## Required check
 
 The consumer's caller job id becomes part of GitHub's displayed check context. Use a consistent caller job id of `foundation`. Rulesets must be configured from the check emitted by a successful pilot run, rather than from a guessed display name.
 
+Expected aggregate name pattern (self-consumer):
+
+```text
+foundation / Foundation / Result
+```
+
 ## Failure ownership
 
 A run that does not create jobs is a Foundation distribution or GitHub configuration defect. A started gate reporting `misconfigured` is a repository contract defect. A started applicable gate reporting `failed` is a policy or repository defect. Only an explicit classifier decision may make a control not applicable.
+
+For SAST: a private repository without `advanced_security_enabled` must receive an explicit **SAST / Not available** (or equivalent) coverage decision, not a CodeQL upload failure. That is a Foundation distribution defect if CodeQL still runs.

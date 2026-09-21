@@ -1,13 +1,9 @@
 <!-- Target path: baobab-platform/shared/templates/README.md -->
 
-<!-- FIX 2026-09-22: Phase 1 consumer readiness — caller-foundation-repository-gates.yml
-was not executable as published (missing required foundation_ref input and
-insufficient permissions). Template now supplies foundation_ref, full minimum
-permissions, and explicit advanced_security_enabled / legacy_metadata_enabled.
-A validation fixture lives at .github/foundation-tests/test_caller_template.py.
-Tag table updated: latest tag remains v1.4.0; the audited main revision that
-includes the corrected Foundation topology is not yet promoted — pin the SHA
-from the uses: line after promotion, not a stale tag that predates the fix. -->
+<!-- FIX 2026-09-22: Phase 3 promotion candidate documented. Latest cut tag remains
+v1.4.0 until v2.0.0 is promoted after green self-consumer. Candidate SHA for
+Foundation consumer readiness (executable template + visibility-aware SAST):
+1f39f6871a0f832127c0a44e3111807320f29b46 — see docs/governance/foundation-ci-promotion-v2.0.0.md -->
 
 # Caller Templates
 
@@ -76,34 +72,28 @@ Steps:
    (see README.md's "Immutable Dependencies" section). Verify the SHA
    live against the upstream tag/branch rather than trusting what's
    already in the template, since it may be stale by the time you copy
-   it. **As of 2026-09-22, `baobab-platform/shared` has tagged releases through
-   `v1.4.0`.** The Foundation topology that includes the corrected caller
-   contract is on `main` and is not yet published under a new tag; after the
-   consumer-readiness promotion lands, pin to that new tag's peeled SHA.
-   Until then:
-   - Prefer the full-length SHA of the commit that contains the workflow you
-     need (confirm with `git cat-file -e <sha>:.github/workflows/<file>`).
-   - Historical coverage:
-     - `v1.0.0` covers `greetings.yml`, `pages-zensical.yml`,
-       `enforce-action-pinning.yml`, `enforce-dependabot-config.yml`.
-     - `v1.1.0` covers everything `v1.0.0` covers, plus `release.yml`,
-       `security-secrets-scan.yml`, `security-codeql.yml`,
-       `security-python.yml`.
-     - `v1.2.0` and later cover `foundation-repository-gates.yml` at the
-       revisions present when those tags were cut. Re-verify before pinning
-       that the tag includes the inputs and permissions you expect.
+   it.
 
-   Don't trust a tag name alone — a template pinned to a real, resolvable
-   tag can still be wrong if that tag predates the file (confirm with
-   `git ls-tree <tag> -- .github/workflows/<file>`, not just that the tag
-   resolves).
+   **Release tags (historical):** `v1.0.0` … `v1.4.0`. Latest cut tag is still
+   **`v1.4.0`** until **`v2.0.0`** is promoted.
+
+   **Foundation consumer-readiness candidate (Phase 1+2, not yet tagged):**
+   `1f39f6871a0f832127c0a44e3111807320f29b46`
+   See `docs/governance/foundation-ci-promotion-v2.0.0.md` for status. Do not
+   treat this SHA as a supported release until that document says **promoted**
+   and the `v2.0.0` tag exists.
+
+   Don't trust a tag name alone — confirm with
+   `git cat-file -e <sha>:.github/workflows/<file>`.
 4. Confirm the consuming repo's Settings → Actions → General → Actions
    permissions allows `baobab-platform/shared` (only relevant if that repo has an
    explicit allow-list rather than "Allow all actions").
 5. For Foundation specifically: set `advanced_security_enabled: true` only
    when GHAS is enabled for the repository. Leave `legacy_metadata_enabled`
    true only while migrating from `.nabhold/environment.yaml`; new adopters
-   with `.baobab/repository.yaml` should set it false.
+   with `.baobab/repository.yaml` should set it false. Branch protection should
+   require the check emitted as **`foundation / Foundation / Result`** (caller
+   job id must be `foundation`).
 
 `dependabot.yml` follows a different, simpler process: copy it into
 `<repo>/.github/dependabot.yml`, resolve its TODOs, and that's it — there's
