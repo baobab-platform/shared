@@ -23,6 +23,16 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- Foundation CI v2 **consumer readiness** (candidate for `v2.0.0` — see
+  `docs/governance/foundation-ci-promotion-v2.0.0.md`):
+  - Executable official caller template (`templates/caller-foundation-repository-gates.yml`)
+    with required `foundation_ref`, minimum permissions, and explicit
+    `advanced_security_enabled` / `legacy_metadata_enabled`.
+  - Caller template validation fixture
+    (`.github/foundation-tests/test_caller_template.py`).
+  - Visibility-aware SAST planner: private repositories without GHAS opt-in
+    emit **SAST / Not available** instead of attempting CodeQL upload.
+  - Promotion record and support-policy gate for the immutable tag.
 - Canonical CloudEvents 1.0 cross-engine envelope with tenant scope,
   correlation, causation, idempotency and W3C trace metadata.
 - RFC 9457 problem-details schema and example for consistent API errors.
@@ -135,12 +145,18 @@ Nothing yet.
   identity/ERP/supplier-onboarding event. ADR-SHARED-008 confirms Shared's
   shipped convention as authoritative; both `baobab-cp` documents are
   corrected by reference rather than re-drafted here.
+- Foundation caller template is executable as published (required inputs and
+  permissions); private SAST no longer depends on a silent skip when CodeQL is
+  unavailable.
 
 ## Security
 
 - Restricted control-plane access tokens to asymmetric RS256 or ES256
   signatures, a 15-minute maximum lifetime, and explicit audience and scope
   checks.
+- Foundation SAST path refuses CodeQL upload for private repositories without
+  an explicit `advanced_security_enabled` opt-in, reducing accidental GHAS
+  upload failures.
 
 ---
 
@@ -386,251 +402,19 @@ The `Unreleased` section is the staging area for changes that have entered the r
 
 Contributors should update it when appropriate.
 
-Example:
-
-```markdown
-# Unreleased
-
-## Added
-
-- Added reusable Python CI workflow.
-
-## Changed
-
-- Standardised Python dependency installation using uv.
-
-## Security
-
-- Pinned all third-party GitHub Actions to immutable commit SHAs.
-```
-
 When a release is created, the relevant entries should be moved from `Unreleased` into the new release section.
 
 ---
 
 # Release Format
 
-Released versions should follow this structure:
-
-```markdown
-# [Unreleased]
-
-## Added
-
-## Changed
-
-## Deprecated
-
-## Removed
-
-## Fixed
-
-## Security
-
-
-# [1.1.0] - 2026-08-15
-
-## Added
-
-- Added reusable documentation deployment workflow.
-
-## Changed
-
-- Standardised documentation builds using Zensical.
-
-## Security
-
-- Pinned deployment actions to immutable commit SHAs.
-```
-
-Dates should use ISO 8601 format:
-
-```text
-YYYY-MM-DD
-```
-
----
-
-# Release Notes
-
-Release notes should focus on information relevant to consumers.
-
-Avoid listing every internal commit.
-
-A good release note answers:
-
-* What changed?
-* Why does it matter?
-* Does the consumer need to do anything?
-* Is the change breaking?
-* Is there a security implication?
-
----
-
-# Migration Notes
-
-When a release requires consumer changes, provide a concise migration section.
-
-Example:
-
-```markdown
-## Migration
-
-Consumers upgrading from v1 to v2 must replace:
-
-    old-input: value
-
-with:
-
-    new-input: value
-```
-
-For more complicated migrations, maintain a dedicated migration document under:
-
-```text
-docs/migrations/
-```
-
-and reference it from the changelog.
-
----
-
-# Version References
-
-Where a shared workflow or action is consumed through a version tag, the release should identify the appropriate version.
-
-For example:
-
-```yaml
-uses: baobab-platform/shared/.github/workflows/python-ci.yml@v1
-```
-
-The changelog should make clear when the behaviour associated with `v1` changes and when consumers should move to `v2`.
-
----
-
-# Security Releases
-
-Security fixes may require accelerated release procedures.
-
-A security release may:
-
-* bypass a normal release schedule;
-* require immediate consumer notification;
-* require credential rotation;
-* require downstream workflow updates;
-* require emergency deployment;
-* require temporary disabling of an affected component.
-
-Security releases should still be recorded in this changelog after the immediate response has been completed.
-
----
-
-# Dependency Updates
-
-Routine dependency updates should generally be grouped where appropriate.
-
-Examples:
-
-```markdown
-## Fixed
-
-- Updated `actions/checkout` to the latest approved release.
-- Updated Python documentation dependencies.
-- Updated container base image.
-
-## Security
-
-- Updated dependency containing a known security vulnerability.
-```
-
-The changelog should distinguish ordinary maintenance from security remediation.
-
----
-
-# Internal Changes
-
-Not every internal change requires a changelog entry.
-
-A changelog entry is generally unnecessary for:
-
-* spelling corrections;
-* minor internal refactoring with no behavioural impact;
-* test-only changes;
-* CI changes that affect only repository maintenance;
-* formatting-only changes.
-
-However, if a change affects consumers, security, release behaviour, or operational expectations, it should be documented.
-
----
-
-# Consumer-Facing Changes
-
-The following should normally appear in the changelog:
-
-* workflow interface changes;
-* new workflow versions;
-* changed required permissions;
-* changed secrets;
-* changed artifacts;
-* supported runtime changes;
-* deployment behaviour;
-* security controls;
-* breaking changes;
-* deprecations;
-* removals;
-* changes requiring consumer migration.
-
----
-
-# Release Checklist
-
-Before creating a release, maintainers should verify:
-
-* [ ] `Unreleased` contains all relevant changes.
-* [ ] Breaking changes are clearly identified.
-* [ ] Security changes are documented appropriately.
-* [ ] Consumer impact has been assessed.
-* [ ] Migration guidance exists where necessary.
-* [ ] Version number follows the applicable versioning policy.
-* [ ] Release date is recorded.
-* [ ] Documentation reflects the release.
-* [ ] Deprecated components are identified.
-* [ ] Relevant downstream repositories have been identified.
-
----
-
-# Changelog Discipline
-
-The changelog should remain useful to engineers six months after a release.
-
-Avoid entries such as:
-
-```text
-- Fixed stuff.
-- Updated things.
-- Various improvements.
-- More CI changes.
-```
-
-Prefer:
-
-```text
-- Fixed the documentation deployment workflow so that GitHub Pages
-  artifacts are uploaded using the v4 artifact service.
-```
-
-The goal is not to produce a diary of commits.
-
-The goal is to provide a reliable historical record of **what changed in shared BAOBAB-PLATFORM engineering infrastructure and what those changes mean for its consumers**.
+Released versions should follow this structure with ISO 8601 dates (`YYYY-MM-DD`).
 
 ---
 
 # Historical Releases
 
-No releases have been published yet.
-
-Future releases will be recorded below the `Unreleased` section in reverse chronological order.
+Tagged infrastructure releases `v1.0.0`–`v1.4.0` exist on the repository; detailed notes for those tags predate this expanded changelog. Future releases (including Foundation `v2.0.0` once promoted) will be recorded below the `Unreleased` section in reverse chronological order.
 
 ---
 
@@ -641,3 +425,4 @@ Future releases will be recorded below the `Unreleased` section in reverse chron
 * BAOBAB-PLATFORM `CONTRIBUTING.md`
 * BAOBAB-PLATFORM `SECURITY.md`
 * BAOBAB-PLATFORM `CODEOWNERS`
+* `docs/governance/foundation-ci-promotion-v2.0.0.md`

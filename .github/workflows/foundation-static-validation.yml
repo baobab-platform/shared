@@ -7,6 +7,7 @@ on:
       - ".github/workflows/foundation*.yml"
       - ".github/workflows/reusable-foundation-*.yml"
       - ".github/foundation-tests/**"
+      - "templates/caller-foundation-repository-gates.yml"
       - "docs/governance/foundation-ci-*.md"
   push:
     branches: [main]
@@ -15,6 +16,7 @@ on:
       - ".github/workflows/foundation*.yml"
       - ".github/workflows/reusable-foundation-*.yml"
       - ".github/foundation-tests/**"
+      - "templates/caller-foundation-repository-gates.yml"
 
 permissions:
   contents: read
@@ -54,5 +56,7 @@ jobs:
         run: python .github/foundation-tests/test_contracts.py
       - name: Run workflow wiring fixtures
         run: python .github/foundation-tests/test_workflow_wiring.py
+      - name: Run caller template fixture
+        run: python .github/foundation-tests/test_caller_template.py
       - name: Run Foundation policy fixtures
         run: ruby .github/foundation-tests/test_policy.rb
