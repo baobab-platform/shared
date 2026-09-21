@@ -16,8 +16,12 @@
 #   dockerfile, build_context — container build paths (defaults shown)
 #   dependency_review_enabled — set true only when dependency review is available
 #   advanced_security_enabled — set true ONLY when GitHub Advanced Security
-#     (CodeQL upload) is licensed and enabled for this repository. Private
-#     repos without GHAS must leave this false or the SAST path will fail.
+#     is licensed and enabled for this repository:
+#       • public + true  → CodeQL runs
+#       • public + false → SAST / Not available (Trivy baseline remains)
+#       • private + false → SAST / Not available (does not attempt CodeQL)
+#       • private + true  → CodeQL runs; you assert GHAS is actually on
+#     Private repos without GHAS must leave this false.
 #   legacy_metadata_enabled — temporary cohort-migration bridge; prefer false
 #     for new adopters once .baobab/repository.yaml is in place.
 #
@@ -59,7 +63,8 @@ jobs:
       build_context: "."
       dependency_review_enabled: false
       # Set true only when GHAS / CodeQL is enabled for this repository.
-      # Private repositories without Advanced Security must keep this false.
+      # Private repositories without Advanced Security must keep this false;
+      # Foundation then emits SAST / Not available instead of failing on upload.
       advanced_security_enabled: false
       # Prefer false for new adopters with .baobab/repository.yaml present.
       legacy_metadata_enabled: true

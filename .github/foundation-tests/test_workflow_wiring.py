@@ -67,6 +67,19 @@ assert "security-secrets-scan.yml" in security_text
 assert "--scanners vuln" in security_text
 assert "--scanners misconfig" in security_text
 
+sast, sast_text = load("reusable-foundation-sast.yml")
+assert {"plan", "analyze", "status"} <= set(sast["jobs"])
+assert "github.event.repository.visibility" in sast_text
+assert "not_available" in sast_text
+assert "SAST /" in sast_text
+assert sast["jobs"]["analyze"].get("if") == "needs.plan.outputs.mode == 'codeql'"
+assert "mode != 'codeql'" in str(sast["jobs"]["status"].get("if", ""))
+
+dep_review, dep_review_text = load("reusable-foundation-dependency-review.yml")
+assert "github.event.repository.visibility" in dep_review_text
+assert "advanced_security_enabled" in dep_review_text
+assert "available" in dep_review_text
+
 container, container_text = load("reusable-foundation-container.yml")
 for requirement in ("container-policy", "container-scan", "sbom", "Healthcheck", "Config"):
     assert requirement in container_text

@@ -24,6 +24,21 @@ The classifier publishes Boolean workflow outputs. Downstream jobs use those out
 
 GitHub dependency review is activated only for pull requests in repositories where the feature is available. A private repository without GitHub Advanced Security receives an explicit notice and retains the language-independent Trivy filesystem, secret, and misconfiguration scan. This is an availability distinction, not a false claim of equivalent CodeQL or dependency-review coverage.
 
+### SAST / CodeQL decision matrix
+
+| Repository visibility | `advanced_security_enabled` | Languages classified | Result |
+|---|---|---|---|
+| public | `true` | yes | CodeQL runs per language |
+| public | `false` | any | **SAST / Not available** (portable Trivy remains baseline) |
+| private | `false` | any | **SAST / Not available** — does not attempt CodeQL upload |
+| private | `true` | yes | CodeQL runs; caller asserts GHAS is licensed and enabled |
+| any | any | none | **SAST / No languages** |
+| any | any | waived exception | **SAST / Waived** |
+
+Private repositories must not set `advanced_security_enabled: true` unless GitHub Advanced Security is actually enabled. The planner uses visibility plus the caller opt-in so a private repo without the opt-in cannot accidentally invoke CodeQL and fail on SARIF upload. When CodeQL does not run, the workflow emits a visible `SAST / Not available` (or Waived / No languages) check instead of a silent skip.
+
+Dependency review uses the same visibility rule: available on public repositories, or on private repositories only when `advanced_security_enabled` is true. If a PR enables dependency review on a private repo without that claim, the job fails with an actionable error.
+
 The `shared` repository may remain private. Organisation Actions access must permit Baobab repositories to call reusable workflows from it. Consumers continue to pin the exact `shared` commit SHA; they must not replace immutable pins with `main`.
 
 ## Stable result

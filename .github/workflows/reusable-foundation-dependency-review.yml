@@ -4,7 +4,13 @@ on:
   workflow_call:
     inputs:
       enabled: { type: boolean, default: false }
-      advanced_security_enabled: { type: boolean, default: false }
+      advanced_security_enabled:
+        description: >
+          Caller assertion that GitHub Advanced Security is enabled. Required
+          for dependency review on private repositories. Public repositories
+          do not need GHAS for dependency review.
+        type: boolean
+        default: false
       exceptions: { type: string, default: "{}" }
 
 permissions:
@@ -27,16 +33,28 @@ jobs:
           set -euo pipefail
           applicable=false
           if [[ "$EVENT" == pull_request && "$ENABLED" == true ]]; then applicable=true; fi
+
+          # Public: dependency review available without GHAS.
+          # Private: requires advanced_security_enabled as GHAS-backed claim.
           available=false
           if [[ "$VISIBILITY" != private || "$GHAS" == true ]]; then available=true; fi
+
           if [[ "$WAIVED" == true ]]; then
             echo "::warning::Dependency review waived by an approved repository exception"
             applicable=false
-          fi
-          if [[ "$applicable" == true && "$available" != true ]]; then
-            echo "::error::Dependency review is required but unavailable; enable GitHub Advanced Security or declare a reviewed exception"
+            echo "decision=waived" >> "$GITHUB_OUTPUT"
+          elif [[ "$applicable" == true && "$available" != true ]]; then
+            echo "::error::Dependency review is required but unavailable on this private repository; enable GitHub Advanced Security or set dependency_review_enabled=false and declare a reviewed exception"
+            echo "decision=unavailable" >> "$GITHUB_OUTPUT"
             exit 1
+          elif [[ "$applicable" == true && "$available" == true ]]; then
+            echo "::notice::Dependency review will run (event=pull_request, visibility=${VISIBILITY}, ghas_claim=${GHAS})"
+            echo "decision=run" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Dependency review not applicable (event=${EVENT}, enabled=${ENABLED}, visibility=${VISIBILITY})"
+            echo "decision=not_applicable" >> "$GITHUB_OUTPUT"
           fi
+
           echo "run=$([[ "$applicable" == true && "$available" == true ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: steps.coverage.outputs.run == 'true'
