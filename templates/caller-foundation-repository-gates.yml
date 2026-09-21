@@ -1,3 +1,32 @@
+# Target path: baobab-platform/shared/templates/caller-foundation-repository-gates.yml
+#
+# Copy into <repo>/.github/workflows/foundation.yml (or foundation-repository-gates.yml).
+# Resolve every TODO, then delete this comment block.
+#
+# This template is the supported distribution path for Foundation Repository
+# Gates. It must remain a valid, executable caller: every required input of
+# foundation-repository-gates.yml is supplied, and the permission set is a
+# superset of what the reusable workflow and its children demand.
+#
+# Required inputs (from foundation-repository-gates.yml):
+#   foundation_ref (string, required) — exact shared commit used by the caller;
+#     policy files are loaded from this ref. Pin to a full-length SHA (or a
+#     promoted tag once one covers this revision).
+# Optional inputs with safe defaults:
+#   dockerfile, build_context — container build paths (defaults shown)
+#   dependency_review_enabled — set true only when dependency review is available
+#   advanced_security_enabled — set true ONLY when GitHub Advanced Security
+#     (CodeQL upload) is licensed and enabled for this repository. Private
+#     repos without GHAS must leave this false or the SAST path will fail.
+#   legacy_metadata_enabled — temporary cohort-migration bridge; prefer false
+#     for new adopters once .baobab/repository.yaml is in place.
+#
+# Minimum caller permissions (must match or exceed the reusable workflow):
+#   contents: read, packages: read, actions: read, security-events: write
+#
+# After copying, confirm Settings → Actions → General allows
+# baobab-platform/shared if the repo uses an explicit allow-list.
+
 name: Foundation Repository Gates
 
 on:
@@ -10,11 +39,27 @@ on:
 
 permissions:
   contents: read
+  packages: read
+  actions: read
+  security-events: write
 
 jobs:
   foundation:
+    # TODO: replace REPLACE_WITH_FULL_SHARED_COMMIT_SHA with the full-length
+    # commit SHA of the promoted Foundation revision (prefer a release tag
+    # once one covers foundation-repository-gates.yml at this revision).
+    # Verify live: git ls-remote --tags https://github.com/baobab-platform/shared.git
+    # and git cat-file -e <sha>:.github/workflows/foundation-repository-gates.yml
     uses: baobab-platform/shared/.github/workflows/foundation-repository-gates.yml@REPLACE_WITH_FULL_SHARED_COMMIT_SHA
     with:
+      # Required: exact shared commit so policy files load from a known ref.
+      # Use the same SHA as the uses: pin above (or the peeled commit of a tag).
+      foundation_ref: "REPLACE_WITH_FULL_SHARED_COMMIT_SHA"
       dockerfile: "Dockerfile"
       build_context: "."
       dependency_review_enabled: false
+      # Set true only when GHAS / CodeQL is enabled for this repository.
+      # Private repositories without Advanced Security must keep this false.
+      advanced_security_enabled: false
+      # Prefer false for new adopters with .baobab/repository.yaml present.
+      legacy_metadata_enabled: true
