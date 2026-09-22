@@ -20,6 +20,34 @@ During the organisation rollout only, consumers without the new contract may use
 
 The classifier publishes Boolean workflow outputs. Downstream jobs use those outputs to activate only relevant controls.
 
+## Product separation (Phase 4)
+
+`foundation-repository-gates.yml` remains the **stable compatibility orchestrator**. It accepts a `profile` input and activates only the matching gate family. Distinct product entrypoints call the same orchestrator so consumers can adopt one family without the full aggregate.
+
+| Product | Workflow | Profile | Gate families |
+|---|---|---|---|
+| Compatibility (all) | `foundation-repository-gates.yml` | `full` (default) | contract + security + container |
+| Contract | `foundation-product-contract.yml` | `contract` | classify, baseline, reproducibility, runtime, environment |
+| Security (PR) | `foundation-product-security.yml` (`mode: pr`) | `security-pr` | classify, security (portable Trivy, secrets, dependency review, SAST) |
+| Security (deep) | `foundation-product-security.yml` (`mode: deep`) | `security-deep` | same jobs; intended for schedule / monitoring |
+| Container / release | `foundation-product-container.yml` | `container` | classify, container policy, build, scan, SBOM |
+
+Branch protection may still require **`Foundation / Result`** from a caller whose job id is `foundation`. Product-only callers emit the same aggregate name when they use the orchestrator’s `result` job; configure rulesets from a successful pilot emission.
+
+Existing callers that omit `profile` continue to receive `full` behaviour.
+
+### Security trigger matrix
+
+| Trigger | Authoritative product | Typical inputs |
+|---|---|---|
+| `pull_request` | Security PR and/or Contract | `dependency_review_enabled: true` when available; `advanced_security_enabled` only with GHAS |
+| `push` to default branch | Contract and/or full compatibility | Match repository policy |
+| `schedule` (weekly) | Security deep | Prefer `foundation-product-security.yml` with `mode: deep`; do not treat a deep-scan failure as a PR regression without triage |
+| Release / tag pipeline | Container | `foundation-product-container.yml` when `container_artifact` is true |
+| Manual `workflow_dispatch` | Any product | Operator chooses profile or product workflow |
+
+Dedicated org security templates (CodeQL, Bandit, secrets scan) remain available. Foundation security is the governance baseline; language-specific templates may add depth but must not contradict Foundation availability rules for private repositories.
+
 ## Visibility-aware behaviour
 
 GitHub dependency review is activated only for pull requests in repositories where the feature is available. A private repository without GitHub Advanced Security receives an explicit notice and retains the language-independent Trivy filesystem, secret, and misconfiguration scan. This is an availability distinction, not a false claim of equivalent CodeQL or dependency-review coverage.
@@ -43,7 +71,7 @@ The `shared` repository may remain private. Organisation Actions access must per
 
 ## Stable result
 
-Branch protection should require `Foundation / Result`. The aggregator succeeds only when every activated required job succeeds or is legitimately skipped. A failure, cancellation, or configuration failure remains a failure.
+Branch protection should require `Foundation / Result`. The aggregator succeeds only when every activated required job succeeds or is legitimately skipped. A failure, cancellation, or configuration failure remains a failure. Profile-gated jobs that are skipped because they are outside the selected product do not fail the aggregate.
 
 ## Ownership boundary
 
@@ -62,6 +90,5 @@ Branch protection should require `Foundation / Result`. The aggregator succeeds 
 3. Pilot one Go engine, one Node service, one Python service, one digital estate, and one infrastructure repository.
 4. Add `.baobab/repository.yaml`, rename legacy `.nabhold/` metadata, and update the pinned workflow SHA in each pilot.
 5. Correct genuine repository defects without weakening Foundation policy.
-6. Migrate remaining repositories in cohorts.
+6. Migrate remaining repositories in cohorts; adopt product entrypoints where PR latency or schedule semantics require separation.
 7. Disable and then remove the legacy metadata bridge.
-

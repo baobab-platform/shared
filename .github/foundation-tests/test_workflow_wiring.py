@@ -32,8 +32,40 @@ assert set(entry["jobs"]["result"]["needs"]) == expected_jobs - {"result"}
 assert entry["jobs"]["classify"]["with"]["foundation_ref"]
 assert entry["jobs"]["environment"]["with"]["foundation_ref"]
 
+# Phase 4: profile input and conditional gate families
+on_call = entry[True]["workflow_call"] if True in entry else entry["on"]["workflow_call"]
+# PyYAML may parse `on:` as True
+workflow_call = entry.get(True, entry.get("on", {})).get("workflow_call") or entry["on"]["workflow_call"]
+profile_input = workflow_call["inputs"]["profile"]
+assert profile_input["default"] == "full"
+assert "contract" in profile_input["description"]
+assert "security-pr" in profile_input["description"]
+assert entry["jobs"]["baseline"].get("if")
+assert entry["jobs"]["security"].get("if")
+assert entry["jobs"]["container"].get("if")
+assert "skipped" in entry_text  # aggregator treats profile skips as non-failures
+
+# Product entrypoints
+for product, profile in (
+    ("foundation-product-contract.yml", "contract"),
+    ("foundation-product-container.yml", "container"),
+):
+    product_doc, product_text = load(product)
+    assert "foundation-repository-gates.yml" in product_text
+    assert f"profile: {profile}" in product_text
+
+security_product, security_product_text = load("foundation-product-security.yml")
+assert "foundation-repository-gates.yml" in security_product_text
+assert "security-deep" in security_product_text
+assert "security-pr" in security_product_text
+
+self_consumer, self_consumer_text = load("foundation.yml")
+assert "profile:" in self_consumer_text
+assert "security-deep" in self_consumer_text
+
 classifier, classifier_text = load("reusable-foundation-classify.yml")
-outputs = classifier[True]["workflow_call"]["outputs"]
+on_block = classifier.get(True, classifier.get("on", {}))
+outputs = on_block["workflow_call"]["outputs"]
 for output in (
     "python",
     "node",
