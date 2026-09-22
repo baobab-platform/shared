@@ -6,6 +6,14 @@ on:
         description: Exact shared commit used by the caller; policy files are loaded from this ref.
         type: string
         required: true
+      profile:
+        description: >
+          Product profile selecting which gate families run. full is the
+          compatibility default (all families). Prefer distinct product
+          entrypoints (foundation-product-*.yml) when only one family is needed.
+          Values: full | contract | security-pr | security-deep | container
+        type: string
+        default: full
       dockerfile: { type: string, default: "Dockerfile" }
       build_context: { type: string, default: "." }
       dependency_review_enabled: { type: boolean, default: false }
@@ -33,11 +41,13 @@ jobs:
       foundation_ref: "${{ inputs.foundation_ref }}"
       legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
   baseline:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-baseline.yml
     with:
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   reproducibility:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-reproducibility.yml
     with:
@@ -50,6 +60,7 @@ jobs:
       package_managers: "${{ needs.classify.outputs.package_managers }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   runtime:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-runtime.yml
     with:
@@ -62,6 +73,7 @@ jobs:
       package_managers: "${{ needs.classify.outputs.package_managers }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   environment:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-environment.yml
     with:
@@ -69,6 +81,7 @@ jobs:
       required: "${{ needs.classify.outputs.environment_required == 'true' }}"
       legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
   security:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'security-pr' || inputs.profile == 'security-deep' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-security.yml
     permissions:
@@ -85,6 +98,7 @@ jobs:
       rust: "${{ needs.classify.outputs.rust == 'true' }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   container:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'container' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-container.yml
     with:
@@ -97,15 +111,21 @@ jobs:
     name: Foundation / Result
     if: always()
     needs: [classify, baseline, reproducibility, runtime, environment, security, container]
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Evaluate activated gates
         env:
           RESULTS: "${{ toJSON(needs) }}"
+          PROFILE: "${{ inputs.profile }}"
         shell: ruby {0}
         run: |
           require "json"
           needs = JSON.parse(ENV.fetch("RESULTS"))
-          failed = needs.select { |_, value| value.fetch("result") != "success" }
+          profile = ENV.fetch("PROFILE")
+          allowed = %w[full contract security-pr security-deep container]
+          abort "unsupported Foundation profile: #{profile.inspect}" unless allowed.include?(profile)
+          # Skipped jobs (profile-gated) are success for the aggregator.
+          failed = needs.select { |_, value| !%w[success skipped].include?(value.fetch("result")) }
+          puts "profile=#{profile}"
           puts needs.map { |name, value| "#{name}=#{value.fetch('result')}" }.join("\n")
           abort "required Foundation gates failed: #{failed.keys.join(', ')}" unless failed.empty?

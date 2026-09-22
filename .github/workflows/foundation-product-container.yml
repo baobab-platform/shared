@@ -1,0 +1,23 @@
+name: Reusable — Foundation Product: Container
+# Container policy, image build/scan, and SBOM for release validation.
+# Call from release pipelines or when container_artifact is the primary gate.
+on:
+  workflow_call:
+    inputs:
+      foundation_ref:
+        description: Exact shared commit used by the caller; policy files are loaded from this ref.
+        type: string
+        required: true
+      legacy_metadata_enabled: { type: boolean, default: true }
+permissions:
+  contents: read
+  packages: read
+  actions: read
+  security-events: write
+jobs:
+  foundation:
+    uses: ./.github/workflows/foundation-repository-gates.yml
+    with:
+      foundation_ref: "${{ inputs.foundation_ref }}"
+      profile: container
+      legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
