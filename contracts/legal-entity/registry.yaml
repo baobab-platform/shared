@@ -1,5 +1,5 @@
 # ==============================================================================
-# BAOBAB-PLATFORM GROUP AFRICA
+# NABHOLD GROUP AFRICA
 # Canonical Legal Entity Registry
 #
 # Target path: baobab-platform/shared/contracts/legal-entity/registry.yaml
@@ -16,9 +16,9 @@
 #
 # Consumers of this contract
 # ---------------------------
-#   baobab-platform/baobab           -> tenant.entity_id references an `id` below
+#   baobab-platform/baobab-cp        -> tenant.entity_id references an `id` below
 #   baobab-platform/infrastructure   -> resource ownership tags reference an `id` below
-#   baobab-platform/{baobab-platform,zuribeans,thamani,equator-estate}
+#   baobab-platform/{nabhold,zuribeans,thamani,equator-estate}
 #                             -> each repo's own config declares which `id`
 #                                it represents (self-reference, exactly one)
 #
@@ -59,8 +59,8 @@ schema:
 entities:
 
   # ---------------------------------------------------------------------------
-  - id: "BAOBAB-PLATFORM"
-    legal_name: "Baobab-Platform Group Africa"
+  - id: "NABHOLD"
+    legal_name: "Nabhold Group Africa"
     role: "holding_company"
 
     jurisdiction: null            # TBD — pending Legal / Company Secretarial
@@ -75,7 +75,7 @@ entities:
                                    # does not make entity_id a tenant identity.
 
     digital_estate:
-      repository: "baobab-platform/baobab-platform"
+      repository: "baobab-platform/nabhold"
       status: "planned"           # repository created, implementation pending
 
     baobab_products:
@@ -102,10 +102,10 @@ entities:
 
     baobab_products:
       - product: "baobab-trade"
-        confirmed: true            # confirmed by Chief Software Engineer,
+        confirmed: true            # confirmed by Chief Software Engineer
                                     # 2026-08-26
 
-    markets: []                    # populated only after the canonical market,
+    markets: []                    # populated only after the canonical market.
                                     # region and domain contract is approved
 
   # ---------------------------------------------------------------------------
@@ -125,7 +125,7 @@ entities:
 
     baobab_products:
       - product: "baobab-trade"
-        confirmed: true            # confirmed by Chief Software Engineer,
+        confirmed: true            # confirmed by Chief Software Engineer
                                     # 2026-08-26
 
     markets: []
@@ -175,12 +175,12 @@ notes:
   - >
     `baobab_tenant` records approved platform-consumption intent for bootstrap
     and reconciliation. It is not runtime tenant state. `baobab-platform/baobab-cp`
-    owns the provisioned tenant_id, lifecycle and enforced product
+    owns the provisioned tenant_id, lifecycle, and enforced product
     entitlements, and must map them explicitly to an entity id in this registry.
   - >
-    A digital estate does not confer tenancy. BAOBAB-PLATFORM is tenant-eligible because
-    it consumes Baobab ERP, not because `baobab-platform/baobab-platform` exists. The estate and
-    ERP tenant may be deployed, released and secured independently.
+    A digital estate does not confer tenancy. NABHOLD is tenant-eligible because
+    it consumes Baobab ERP, not because `baobab-platform/nabhold` exists. The estate and
+    ERP tenant may be deployed, released, and secured independently.
   - >
     This registry declares identity, not infrastructure. It must not be
     extended with cloud resource identifiers, connection strings, or
