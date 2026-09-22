@@ -130,7 +130,7 @@ jobs:
               ;;
           esac
 
-      - uses: actions/setup-go@4d34df0c2316fe8122ab82dc229b28c839c37442 # v6.0.0
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_go == 'true' }}
         with:
           go-version: "stable"
