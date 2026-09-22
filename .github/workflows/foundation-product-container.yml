@@ -1,6 +1,7 @@
 name: Reusable — Foundation Product: Container
 # Container policy, image build/scan, and SBOM for release validation.
 # Call from release pipelines or when container_artifact is the primary gate.
+# Defaults release_require_zero_exceptions so active waivers cannot ship unnoticed.
 on:
   workflow_call:
     inputs:
@@ -9,6 +10,7 @@ on:
         type: string
         required: true
       legacy_metadata_enabled: { type: boolean, default: true }
+      release_require_zero_exceptions: { type: boolean, default: true }
 permissions:
   contents: read
   packages: read
@@ -21,3 +23,4 @@ jobs:
       foundation_ref: "${{ inputs.foundation_ref }}"
       profile: container
       legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
+      release_require_zero_exceptions: "${{ inputs.release_require_zero_exceptions }}"

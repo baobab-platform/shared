@@ -48,7 +48,14 @@ assert "security-pr" in profile_input["description"]
 assert entry["jobs"]["baseline"].get("if")
 assert entry["jobs"]["security"].get("if")
 assert entry["jobs"]["container"].get("if")
-assert "skipped" in entry_text  # aggregator treats profile skips as non-failures
+assert "skipped" in entry_text
+
+# Phase 5: exception evidence + release policy input
+assert "release_require_zero_exceptions" in workflow_call_inputs(entry)
+assert "foundation-exceptions.json" in entry_text
+assert "foundation-exceptions" in entry_text
+assert entry["jobs"]["security"]["with"].get("package_managers")
+assert entry["jobs"]["security"]["with"].get("infrastructure") is not None
 
 # Product entrypoints
 for product, profile in (
@@ -58,6 +65,9 @@ for product, profile in (
     product_doc, product_text = load(product)
     assert "foundation-repository-gates.yml" in product_text
     assert f"profile: {profile}" in product_text
+
+container_product, container_product_text = load("foundation-product-container.yml")
+assert "release_require_zero_exceptions" in container_product_text
 
 security_product, security_product_text = load("foundation-product-security.yml")
 assert "foundation-repository-gates.yml" in security_product_text
@@ -69,7 +79,6 @@ assert "profile:" in self_consumer_text
 assert "security-deep" in self_consumer_text
 
 classifier, classifier_text = load("reusable-foundation-classify.yml")
-outputs = workflow_call_inputs(classifier) and None  # validate callable shape
 on_block = classifier.get(True, classifier.get("on"))
 outputs = on_block["workflow_call"]["outputs"]
 for output in (
@@ -100,16 +109,27 @@ assert "terraform fmt -check" in runtime_text
 assert "go vet ./..." in runtime_text
 
 security, security_text = load("reusable-foundation-security.yml")
-assert {"portable", "secrets", "dependency-review", "sast", "result"} <= set(security["jobs"])
+assert {"portable", "native-deps", "secrets", "dependency-review", "sast", "result"} <= set(
+    security["jobs"]
+)
 assert "security-secrets-scan.yml" in security_text
 assert "--scanners vuln" in security_text
 assert "--scanners misconfig" in security_text
+assert "reusable-foundation-dependency-adapters.yml" in security_text
+
+adapters, adapters_text = load("reusable-foundation-dependency-adapters.yml")
+assert "pnpm audit" in adapters_text
+assert "pip-audit" in adapters_text
+assert "govulncheck" in adapters_text
+assert "cargo-audit" in adapters_text
+assert "foundation-dependency-adapters" in adapters_text
 
 sast, sast_text = load("reusable-foundation-sast.yml")
 assert {"plan", "analyze", "status"} <= set(sast["jobs"])
 assert "github.event.repository.visibility" in sast_text
 assert "not_available" in sast_text
 assert "SAST /" in sast_text
+assert "foundation-sast-decision" in sast_text
 assert sast["jobs"]["analyze"].get("if") == "needs.plan.outputs.mode == 'codeql'"
 assert "mode != 'codeql'" in str(sast["jobs"]["status"].get("if", ""))
 
