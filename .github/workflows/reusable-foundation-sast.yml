@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   plan:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-24.04
     outputs:
       matrix: "${{ steps.matrix.outputs.matrix }}"
       mode: "${{ steps.matrix.outputs.mode }}"
@@ -55,9 +55,6 @@ jobs:
           enabled = ENV["ENABLED"] == "true"
           waived = ENV["WAIVED"] == "true"
           visibility = (ENV["VISIBILITY"] || "").strip
-          # Public repos get CodeQL without GHAS; private require the caller
-          # opt-in as a GHAS-backed assertion. We cannot query entitlement
-          # APIs from Actions, so private + enabled remains a trusted claim.
           private = visibility == "private"
           ghas_claim = enabled
           codeql_available = !private || ghas_claim
@@ -111,6 +108,17 @@ jobs:
           puts "::notice::SAST decision: mode=#{mode} visibility=#{visibility.empty? ? 'unknown' : visibility} enabled=#{enabled} languages=#{entries.map { |e| e[:language] }.join(',')}"
           puts "::notice::#{reason}"
 
+          decision = {
+            schema_version: 1,
+            mode: mode,
+            status_name: status_name,
+            reason: reason,
+            visibility: visibility.empty? ? "unknown" : visibility,
+            enabled: enabled,
+            languages: entries.map { |e| e[:language] }
+          }
+          File.write("foundation-sast-decision.json", JSON.pretty_generate(decision))
+
           File.open(ENV.fetch("GITHUB_OUTPUT"), "a") do |output|
             output.puts "matrix=#{JSON.generate({ include: entries })}"
             output.puts "mode=#{mode}"
@@ -118,11 +126,20 @@ jobs:
             output.puts "reason=#{reason.gsub("\n", " ")}"
           end
 
+      - name: Upload SAST decision evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: foundation-sast-decision
+          path: foundation-sast-decision.json
+          retention-days: 90
+          if-no-files-found: ignore
+
   analyze:
     if: needs.plan.outputs.mode == 'codeql'
     needs: plan
     name: CodeQL (${{ matrix.language }})
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       security-events: write
@@ -140,13 +157,11 @@ jobs:
         with:
           category: "/language:${{ matrix.language }}"
 
-  # Visible coverage decision when CodeQL does not run. Ensures branch
-  # protection and operators see an explicit SAST result instead of a silent skip.
   status:
     if: always() && needs.plan.outputs.mode != 'codeql'
     needs: plan
     name: SAST / ${{ needs.plan.outputs.status_name }}
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Record SAST coverage decision
         env:
@@ -157,5 +172,3 @@ jobs:
           echo "::notice::${REASON}"
           echo "SAST mode=${MODE}"
           echo "${REASON}"
-          # Non-CodeQL paths are successful coverage decisions, not failures.
-          # Portable Trivy (security/portable) remains the language-independent baseline.

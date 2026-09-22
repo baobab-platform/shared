@@ -29,6 +29,12 @@ on:
         description: Temporary cohort-migration bridge for .nabhold/environment.yaml; remove after Gate 11.
         type: boolean
         default: true
+      release_require_zero_exceptions:
+        description: >
+          When true, Foundation / Result fails if any repository exceptions are active.
+          Intended for release/container pipelines; default false preserves waiver behaviour.
+        type: boolean
+        default: false
 permissions:
   contents: read
   packages: read
@@ -96,6 +102,8 @@ jobs:
       go: "${{ needs.classify.outputs.go == 'true' }}"
       java: "${{ needs.classify.outputs.java == 'true' }}"
       rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
+      package_managers: "${{ needs.classify.outputs.package_managers }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   container:
     if: ${{ inputs.profile == 'full' || inputs.profile == 'container' }}
@@ -113,19 +121,72 @@ jobs:
     needs: [classify, baseline, reproducibility, runtime, environment, security, container]
     runs-on: ubuntu-24.04
     steps:
-      - name: Evaluate activated gates
+      - name: Evaluate activated gates and publish exception evidence
         env:
           RESULTS: "${{ toJSON(needs) }}"
           PROFILE: "${{ inputs.profile }}"
+          EXCEPTIONS: "${{ needs.classify.outputs.exceptions }}"
+          REQUIRE_ZERO: "${{ inputs.release_require_zero_exceptions }}"
         shell: ruby {0}
         run: |
           require "json"
+          require "fileutils"
+
           needs = JSON.parse(ENV.fetch("RESULTS"))
           profile = ENV.fetch("PROFILE")
           allowed = %w[full contract security-pr security-deep container]
           abort "unsupported Foundation profile: #{profile.inspect}" unless allowed.include?(profile)
-          # Skipped jobs (profile-gated) are success for the aggregator.
+
           failed = needs.select { |_, value| !%w[success skipped].include?(value.fetch("result")) }
           puts "profile=#{profile}"
           puts needs.map { |name, value| "#{name}=#{value.fetch('result')}" }.join("\n")
+
+          exceptions =
+            begin
+              JSON.parse(ENV.fetch("EXCEPTIONS", "{}") || "{}")
+            rescue JSON::ParserError
+              {}
+            end
+          exceptions = {} unless exceptions.is_a?(Hash)
+          count = exceptions.keys.length
+
+          FileUtils.mkdir_p(".foundation-evidence")
+          evidence = {
+            "schema_version" => 1,
+            "profile" => profile,
+            "exception_count" => count,
+            "exceptions" => exceptions,
+            "gate_results" => needs.transform_values { |v| v.fetch("result") }
+          }
+          File.write(".foundation-evidence/foundation-exceptions.json", JSON.pretty_generate(evidence))
+
+          summary = []
+          summary << "## Foundation / Result"
+          summary << ""
+          summary << "Profile: **#{profile}**"
+          summary << "Active exceptions: **#{count}**"
+          if count.positive?
+            summary << ""
+            summary << "| Control | Approver | Expires |"
+            summary << "|---|---|---|"
+            exceptions.each do |control, body|
+              next unless body.is_a?(Hash)
+              summary << "| #{control} | #{body['approved_by']} | #{body['expires']} |"
+            end
+          end
+          File.write(ENV.fetch("GITHUB_STEP_SUMMARY"), summary.join("\n") + "\n")
+
+          if ENV.fetch("REQUIRE_ZERO") == "true" && count.positive?
+            abort "release_require_zero_exceptions is set but #{count} exception(s) remain active: #{exceptions.keys.join(', ')}"
+          end
+
           abort "required Foundation gates failed: #{failed.keys.join(', ')}" unless failed.empty?
+
+      - name: Upload foundation-exceptions.json
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: foundation-exceptions
+          path: .foundation-evidence/foundation-exceptions.json
+          retention-days: 90
+          if-no-files-found: ignore
