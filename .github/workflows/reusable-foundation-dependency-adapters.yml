@@ -1,0 +1,202 @@
+name: Reusable — Foundation Dependency Adapters
+# Capability-driven package-manager audits. Trivy fs remains the language-
+# independent baseline in reusable-foundation-security; these adapters add
+# ecosystem-native signals (audit/govulncheck/cargo-audit).
+on:
+  workflow_call:
+    inputs:
+      python: { type: boolean, default: false }
+      node: { type: boolean, default: false }
+      go: { type: boolean, default: false }
+      java: { type: boolean, default: false }
+      rust: { type: boolean, default: false }
+      infrastructure: { type: boolean, default: false }
+      package_managers: { type: string, default: "{}" }
+      exceptions: { type: string, default: "{}" }
+
+permissions:
+  contents: read
+
+jobs:
+  adapters:
+    name: Dependency adapters
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Record dependency-audit exception
+        if: fromJSON(inputs.exceptions)['dependency-audit'] != null
+        env:
+          EXCEPTION: "${{ toJSON(fromJSON(inputs.exceptions)['dependency-audit']) }}"
+        run: |
+          echo "::warning::Native dependency adapters waived by approved exception — $EXCEPTION"
+          mkdir -p .foundation-evidence
+          echo '{"status":"waived","control":"dependency-audit"}' > .foundation-evidence/dependency-adapters.json
+
+      - name: Resolve package managers
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null }}
+        id: managers
+        env:
+          PACKAGE_MANAGERS: "${{ inputs.package_managers }}"
+          NODE: "${{ inputs.node }}"
+          PYTHON: "${{ inputs.python }}"
+          GO: "${{ inputs.go }}"
+          JAVA: "${{ inputs.java }}"
+          RUST: "${{ inputs.rust }}"
+          INFRA: "${{ inputs.infrastructure }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node_mgr=$(python3 -c "import json,os; m=json.loads(os.environ.get('PACKAGE_MANAGERS') or '{}'); print(m.get('node') or '')")
+          py_mgr=$(python3 -c "import json,os; m=json.loads(os.environ.get('PACKAGE_MANAGERS') or '{}'); print(m.get('python') or '')")
+          java_mgr=$(python3 -c "import json,os; m=json.loads(os.environ.get('PACKAGE_MANAGERS') or '{}'); print(m.get('java') or '')")
+          echo "node=${node_mgr:-pnpm}" >> "$GITHUB_OUTPUT"
+          echo "python=${py_mgr:-uv}" >> "$GITHUB_OUTPUT"
+          echo "java=${java_mgr:-}" >> "$GITHUB_OUTPUT"
+          echo "run_node=${NODE}" >> "$GITHUB_OUTPUT"
+          echo "run_python=${PYTHON}" >> "$GITHUB_OUTPUT"
+          echo "run_go=${GO}" >> "$GITHUB_OUTPUT"
+          echo "run_java=${JAVA}" >> "$GITHUB_OUTPUT"
+          echo "run_rust=${RUST}" >> "$GITHUB_OUTPUT"
+          echo "run_infra=${INFRA}" >> "$GITHUB_OUTPUT"
+
+      - name: Node dependency audit
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_node == 'true' }}
+        env:
+          NODE_MGR: "${{ steps.managers.outputs.node }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$NODE_MGR" in
+            pnpm)
+              corepack enable
+              pnpm install --frozen-lockfile
+              pnpm audit --audit-level high
+              ;;
+            npm)
+              npm ci
+              npm audit --audit-level=high
+              ;;
+            yarn)
+              corepack enable
+              yarn install --immutable
+              yarn npm audit --severity high
+              ;;
+            *)
+              echo "::error::Unsupported Node package manager: $NODE_MGR"
+              exit 1
+              ;;
+          esac
+
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_python == 'true' }}
+        with:
+          python-version: "3.13"
+
+      - name: Python dependency audit
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_python == 'true' }}
+        env:
+          PY_MGR: "${{ steps.managers.outputs.python }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check "pip-audit==2.9.0"
+          case "$PY_MGR" in
+            uv)
+              if [[ -f uv.lock ]]; then
+                pip-audit -l uv.lock || pip-audit
+              else
+                pip-audit
+              fi
+              ;;
+            poetry)
+              if [[ -f poetry.lock ]]; then
+                pip-audit -l poetry.lock || pip-audit
+              else
+                pip-audit
+              fi
+              ;;
+            pip)
+              if [[ -f requirements.txt ]]; then
+                pip-audit -r requirements.txt
+              elif [[ -f requirements.lock ]]; then
+                pip-audit -r requirements.lock
+              else
+                pip-audit
+              fi
+              ;;
+            *)
+              pip-audit
+              ;;
+          esac
+
+      - uses: actions/setup-go@4d34df0c2316fe8122ab82dc229b28c839c37442 # v6.0.0
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_go == 'true' }}
+        with:
+          go-version: "stable"
+
+      - name: Go vulnerability check
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_go == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+          govulncheck ./...
+
+      - name: Java dependency notice
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_java == 'true' }}
+        env:
+          JAVA_MGR: "${{ steps.managers.outputs.java }}"
+        run: |
+          echo "::notice::Java native CVE adapters are not yet wired for ${JAVA_MGR:-unspecified}; Trivy filesystem scan remains the baseline dependency control"
+
+      - name: Rust cargo-audit
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_rust == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://github.com/rustsec/rustsec/releases/download/cargo-audit%2Fv0.21.2/cargo-audit-x86_64-unknown-linux-gnu.tgz -o cargo-audit.tgz
+          tar -xzf cargo-audit.tgz
+          ./cargo-audit-x86_64-unknown-linux-gnu/cargo-audit audit
+
+      - name: Terraform provider lock evidence
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_infra == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! find . -name '.terraform.lock.hcl' -not -path './.git/*' | grep -q .; then
+            echo "::notice::No .terraform.lock.hcl found; reproducibility gate owns lockfile requirements"
+          else
+            echo "::notice::Terraform provider locks present; Trivy misconfig scan remains the portable infra control"
+            find . -name '.terraform.lock.hcl' -not -path './.git/*'
+          fi
+
+      - name: Write adapter evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .foundation-evidence
+          if [[ ! -f .foundation-evidence/dependency-adapters.json ]]; then
+            cat > .foundation-evidence/dependency-adapters.json <<EOF
+          {
+            "control": "dependency-adapters",
+            "status": "${{ job.status }}",
+            "node": "${{ steps.managers.outputs.run_node }}",
+            "python": "${{ steps.managers.outputs.run_python }}",
+            "go": "${{ steps.managers.outputs.run_go }}",
+            "java": "${{ steps.managers.outputs.run_java }}",
+            "rust": "${{ steps.managers.outputs.run_rust }}",
+            "infrastructure": "${{ steps.managers.outputs.run_infra }}"
+          }
+          EOF
+          fi
+
+      - name: Upload dependency adapter evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: foundation-dependency-adapters
+          path: .foundation-evidence/dependency-adapters.json
+          retention-days: 90
+          if-no-files-found: ignore
