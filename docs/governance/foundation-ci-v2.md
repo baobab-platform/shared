@@ -28,7 +28,7 @@ The classifier publishes Boolean workflow outputs. Downstream jobs use those out
 |---|---|---|---|
 | Compatibility (all) | `foundation-repository-gates.yml` | `full` (default) | contract + security + container |
 | Contract | `foundation-product-contract.yml` | `contract` | classify, baseline, reproducibility, runtime, environment |
-| Security (PR) | `foundation-product-security.yml` (`mode: pr`) | `security-pr` | classify, security (portable Trivy, secrets, dependency review, SAST) |
+| Security (PR) | `foundation-product-security.yml` (`mode: pr`) | `security-pr` | classify, security (portable Trivy, native adapters, secrets, dependency review, SAST) |
 | Security (deep) | `foundation-product-security.yml` (`mode: deep`) | `security-deep` | same jobs; intended for schedule / monitoring |
 | Container / release | `foundation-product-container.yml` | `container` | classify, container policy, build, scan, SBOM |
 
@@ -43,10 +43,34 @@ Existing callers that omit `profile` continue to receive `full` behaviour.
 | `pull_request` | Security PR and/or Contract | `dependency_review_enabled: true` when available; `advanced_security_enabled` only with GHAS |
 | `push` to default branch | Contract and/or full compatibility | Match repository policy |
 | `schedule` (weekly) | Security deep | Prefer `foundation-product-security.yml` with `mode: deep`; do not treat a deep-scan failure as a PR regression without triage |
-| Release / tag pipeline | Container | `foundation-product-container.yml` when `container_artifact` is true |
+| Release / tag pipeline | Container | `foundation-product-container.yml` when `container_artifact` is true; prefer `release_require_zero_exceptions: true` |
 | Manual `workflow_dispatch` | Any product | Operator chooses profile or product workflow |
 
 Dedicated org security templates (CodeQL, Bandit, secrets scan) remain available. Foundation security is the governance baseline; language-specific templates may add depth but must not contradict Foundation availability rules for private repositories.
+
+## Dependency adapters and evidence (Phase 5)
+
+Portable Trivy remains the language-independent dependency baseline. Phase 5 adds **ecosystem-native adapters** in `reusable-foundation-dependency-adapters.yml`, selected from classifier capabilities and `package_managers`:
+
+| Ecosystem | Adapter |
+|---|---|
+| Node (`pnpm` / `npm` / `yarn`) | manager `audit` at high severity |
+| Python (`uv` / `pip` / `poetry`) | `pip-audit` |
+| Go | `govulncheck` |
+| Rust | `cargo-audit` |
+| Java | notice only (Trivy remains baseline until a native adapter is wired) |
+| Terraform | lockfile presence notice; Trivy misconfig remains baseline |
+
+### Evidence artifacts
+
+| Artifact | Purpose |
+|---|---|
+| `foundation-exceptions` | Machine-readable exception summary + gate results |
+| `foundation-sast-decision` | Explicit SAST mode/reason when CodeQL does not run |
+| `foundation-dependency-adapters` | Adapter execution status |
+| Container SBOM | Existing SPDX upload from the container product |
+
+Retention is **90 days**. Foundation owns schemas; consumers own exception content. Release/container product defaults `release_require_zero_exceptions: true` so active waivers cannot ship without an explicit override.
 
 ## Visibility-aware behaviour
 
@@ -71,7 +95,7 @@ The `shared` repository may remain private. Organisation Actions access must per
 
 ## Stable result
 
-Branch protection should require `Foundation / Result`. The aggregator succeeds only when every activated required job succeeds or is legitimately skipped. A failure, cancellation, or configuration failure remains a failure. Profile-gated jobs that are skipped because they are outside the selected product do not fail the aggregate.
+Branch protection should require `Foundation / Result`. The aggregator succeeds only when every activated required job succeeds or is legitimately skipped. A failure, cancellation, or configuration failure remains a failure. Profile-gated jobs that are skipped because they are outside the selected product do not fail the aggregate. The aggregate job also publishes `foundation-exceptions.json` and fails when `release_require_zero_exceptions` is true and any exception remains active.
 
 ## Ownership boundary
 
