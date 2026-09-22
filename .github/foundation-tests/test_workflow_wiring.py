@@ -16,6 +16,14 @@ def load(name: str) -> tuple[dict, str]:
     return document, text
 
 
+def workflow_call_inputs(document: dict) -> dict:
+    """PyYAML may parse the key `on` as boolean True."""
+    on_block = document.get(True, document.get("on"))
+    assert isinstance(on_block, dict)
+    call = on_block["workflow_call"]
+    return call["inputs"]
+
+
 entry, entry_text = load("foundation-repository-gates.yml")
 expected_jobs = {
     "classify",
@@ -33,10 +41,7 @@ assert entry["jobs"]["classify"]["with"]["foundation_ref"]
 assert entry["jobs"]["environment"]["with"]["foundation_ref"]
 
 # Phase 4: profile input and conditional gate families
-on_call = entry[True]["workflow_call"] if True in entry else entry["on"]["workflow_call"]
-# PyYAML may parse `on:` as True
-workflow_call = entry.get(True, entry.get("on", {})).get("workflow_call") or entry["on"]["workflow_call"]
-profile_input = workflow_call["inputs"]["profile"]
+profile_input = workflow_call_inputs(entry)["profile"]
 assert profile_input["default"] == "full"
 assert "contract" in profile_input["description"]
 assert "security-pr" in profile_input["description"]
@@ -64,7 +69,8 @@ assert "profile:" in self_consumer_text
 assert "security-deep" in self_consumer_text
 
 classifier, classifier_text = load("reusable-foundation-classify.yml")
-on_block = classifier.get(True, classifier.get("on", {}))
+outputs = workflow_call_inputs(classifier) and None  # validate callable shape
+on_block = classifier.get(True, classifier.get("on"))
 outputs = on_block["workflow_call"]["outputs"]
 for output in (
     "python",
