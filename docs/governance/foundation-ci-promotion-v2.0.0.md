@@ -1,7 +1,8 @@
 # Foundation CI v2.0.0 promotion record
 
-**Status:** Candidate — **tag not yet cut** (self-consumer CI red on `main`).  
-**Candidate revision:** `1f39f6871a0f832127c0a44e3111807320f29b46` (merge of Phase 1 + Phase 2 on `main`).  
+**Status:** Candidate — **tag not yet cut** (self-consumer CI red; investigating runner/log infrastructure).  
+**Candidate revision (content):** `5fc8633d0357a36deb4a2fdc3e720c88960074d2` (includes Phase 1–3 docs on `main`).  
+**Phase 1+2 functional baseline:** `1f39f6871a0f832127c0a44e3111807320f29b46`  
 **Proposed tag:** `v2.0.0`  
 **Date opened:** 2026-09-22  
 **Policy reference:** `docs/governance/foundation-ci-support-policy.md`
@@ -19,61 +20,39 @@
 
 | # | Requirement | Status |
 |---|-------------|--------|
-| 1 | Workflow and contract static validation in `shared` | **Blocked** — `Foundation Static Validation` / `CI` runs on `main` conclude `failure` (runs complete in seconds; job logs unavailable via API 404). Investigate runner / org Actions health before treating as content failure. |
-| 2 | `shared` self-consumer Foundation run | **Blocked** — run [35669145507](https://github.com/baobab-platform/shared/actions/runs/35669145507): `foundation / classify / classify` failed; downstream gates skipped; `foundation / Foundation / Result` failed. |
-| 3 | Representative private consumers per activated class | **Pending** — after (1)(2) green: pilot `baobab-platform/zuribeans` (Node/digital-estate), `baobab-platform/baobab-dev` (infra/docs). Expand matrix per support policy. |
-| 4 | Exact emitted result check name verified | **Recorded from failed self-run naming** (structure is correct even when conclusion is failure): see below. Re-confirm on first green pilot. |
-| 5 | Consumer references pinned to promoted SHA | **Pending** — after tag: update pilots; template keeps `REPLACE_WITH_FULL_SHARED_COMMIT_SHA` until pin is verified, then consumers paste the tagged SHA. |
+| 1 | Workflow and contract static validation in `shared` | **Blocked** — jobs on `ubuntu-26.04` fail in ~4s; API log download returns HTTP 404 (matches GitHub Actions log BlobNotFound pattern). Mitigation branch switches Foundation static validation to `ubuntu-24.04`. |
+| 2 | `shared` self-consumer Foundation run | **Blocked** — same pattern: classify fails immediately; no recoverable logs. |
+| 3 | Representative private consumers | **Pending** greens on (1)(2) |
+| 4 | Exact emitted result check name | **Recorded:** `foundation / Foundation / Result` |
+| 5 | Consumer pins to promoted SHA | **Pending** tag cut |
 
-## Emitted check context (from self-consumer job names)
+## Finish Phase 3 (operator checklist)
 
-Use a caller job id of **`foundation`**. Observed nested check names on the self-consumer:
-
-- `foundation / classify / classify`
-- `foundation / baseline`
-- `foundation / reproducibility`
-- `foundation / runtime`
-- `foundation / environment`
-- `foundation / security`
-- `foundation / container`
-- **`foundation / Foundation / Result`** ← require this in branch protection / rulesets
-
-Rulesets must be configured from a **successful** pilot run’s emitted name, not only from this list.
-
-## Pilot matrix (to execute when CI is green)
-
-| Consumer | Class | Actions |
-|----------|--------|---------|
-| `baobab-platform/shared` | Self-consumer | Foundation green; record check names |
-| `baobab-platform/zuribeans` | Node / digital-estate / private | Pin candidate or `v2.0.0` SHA; `advanced_security_enabled: false` unless GHAS on; confirm **SAST / Not available** not CodeQL upload failure |
-| `baobab-platform/baobab-dev` | Docs / infra | Pin SHA; Foundation green |
-| (optional) one Python service | Python | Pin SHA |
-| (optional) one Go engine | Go | Pin SHA |
-
-## Tag cut procedure (after greens)
+When Foundation Static Validation + Foundation Repository Gates are **green** on `main`:
 
 ```bash
-# On main, after requirements 1–4 are green:
-git fetch origin
-git checkout main && git pull
-CANDIDATE=$(git rev-parse HEAD)   # or the verified pilot SHA
-git tag -a v2.0.0 -m "Foundation CI v2.0.0 — consumer readiness (executable template, visibility-aware SAST)"
+git fetch origin && git checkout main && git pull
+SHA=$(git rev-parse HEAD)
+git tag -a v2.0.0 -m "Foundation CI v2.0.0 — consumer readiness"
 git push origin v2.0.0
-# Peel annotated tag for consumers:
-git rev-list -n1 v2.0.0^{}
+echo "Consumers pin: $(git rev-list -n1 v2.0.0^{})"
 ```
 
-Consumers pin the **peeled commit SHA**, not the tag object SHA.
+Then:
 
-## Do not promote if
+1. Set this document **Status** to `Promoted` and record the peeled SHA.
+2. Pilot `baobab-platform/zuribeans` and `baobab-platform/baobab-dev` with that SHA.
+3. Move CHANGELOG Foundation entries under `# [2.0.0] - YYYY-MM-DD`.
 
-- `Foundation / Result` is red on `shared`
-- Static validation or policy fixtures fail
-- Private pilot still fails CodeQL upload with `advanced_security_enabled: false`
-- Check context names change without a docs update
+## Emitted check context
+
+```text
+foundation / Foundation / Result
+```
 
 ## Related PRs
 
 - Phase 1: #64 — executable caller template
-- Phase 2: #65 — visibility-aware SAST / CodeQL fallback
-- Phase 3: this promotion record
+- Phase 2: #65 — visibility-aware SAST
+- Phase 3 record: #66 — promotion gating docs
+- Runner mitigation: fix/foundation-runner-ubuntu-24.04
