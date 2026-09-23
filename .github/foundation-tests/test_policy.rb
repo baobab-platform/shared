@@ -105,7 +105,15 @@ dockerfiles = {
   "untagged base behind platform flag" => ["FROM --platform=linux/amd64 node AS build\n", false],
   "latest" => ["FROM node:latest\n", false],
   "latest behind platform flag" => ["FROM --platform=linux/amd64 node:latest\n", false],
-  "stage name used before declaration" => ["FROM build\nFROM node:24 AS build\n", false]
+  "stage name used before declaration" => ["FROM build\nFROM node:24 AS build\n", false],
+  "global ARG default with tag" => ["ARG BASE=node:24-alpine\nFROM ${BASE}\n", true],
+  "bare ARG reference" => ["ARG BASE=node:24\nFROM $BASE AS runtime\n", true],
+  "ARG concatenated with tag" => ["ARG IMAGE=node\nFROM $IMAGE:24\n", true],
+  "quoted ARG default" => ["ARG BASE=\"node:24\"\nARG OTHER='x'\nFROM ${BASE}\n", true],
+  "ARG without default" => ["ARG BASE\nFROM ${BASE}\n", false],
+  "ARG default without tag" => ["ARG BASE=node\nFROM ${BASE}\n", false],
+  "ARG default using latest" => ["ARG BASE=node:latest\nFROM ${BASE}\n", false],
+  "ARG after FROM is not global" => ["FROM node:24 AS first\nARG BASE=node:24\nFROM ${BASE}\n", false]
 }
 
 dockerfiles.each do |name, (content, expected)|
