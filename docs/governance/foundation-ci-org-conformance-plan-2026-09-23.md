@@ -15,7 +15,7 @@ The organisation is still **not conformant**, and the gap is larger than the bas
 2. **Foundation v2 has never passed a run.** Foundation Static Validation is 0/42. `v2.0.0` was tagged on a commit whose CI was red. This breaks the support policy, and the promotion record still says "tag not yet cut".
 3. **12 of 15 consumer repositories call `nabhold/shared/...`**, the path from before the organisation rename. GitHub treats those workflow files as invalid: runs have no jobs and no `referenced_workflows`. **These repositories have had no Foundation coverage at all**, even before the runner block. 61 workflow files across 13 repositories carry this path, including all 9 files in `engine-template`, so every new repository inherits it.
 4. **No consumer uses v2.** The live pins are 76 to 178 commits behind `main`, and all of them predate the `foundation_ref` input. The migration branches (`chore/foundation-ci-v2` in all 15 repositories) are well formed but pin `5d8445c`, which is 26 commits before `v2.0.0` and lacks the Phase 1 and Phase 2 fixes.
-5. **`shared` `main` has a real code failure as well.** Commit `f39afe5` ("Update registry.yaml", pushed directly to `main`) renamed the legal entity `BAOBAB-PLATFORM` back to `NABHOLD`. `scripts/validate-governance-contracts.rb` still requires `BAOBAB-PLATFORM`, so CI will stay red after the runner block is lifted.
+5. **`shared` `main` has a real code failure as well.** Commit `f39afe5` ("Update registry.yaml", pushed directly to `main`) renamed the legal entity `BAOBAB-PLATFORM` back to `NABHOLD`. `scripts/validate-governance-contracts.rb` still required `BAOBAB-PLATFORM`, so CI would have stayed red after the runner block was lifted. **Fixed on `claude/funny-darwin-ubfzsm`** (D1): the validator now requires `NABHOLD`.
 
 The milestone is still **Foundation CI v2 consumer readiness**. It now depends first on execution (Phase 0) and distribution (Phase 5), not on more workflow features.
 
@@ -30,7 +30,7 @@ The milestone is still **Foundation CI v2 consumer readiness**. It now depends f
 | M2 | Scheduled deep-security boundary | Open | **Nominal only** | `security-pr` and `security-deep` run the same jobs. There is no changed-scope or full-history split. |
 | M3 | No native dependency adapters | Open | **Addressed with defects** (§4) | The Python adapter does nothing. `cargo-audit` is not checksum-verified. |
 | M4 | Weak exception observability | Open | **Addressed** | `foundation-exceptions.json`, step summary, `release_require_zero_exceptions`. |
-| L1 | No single fixture command | Open | Open | `test_contracts.py` needs `jsonschema`, which is not declared anywhere. With it installed, all 4 fixtures pass locally. |
+| L1 | No single fixture command | **Fixed on `claude/funny-darwin-ubfzsm`** | — | `scripts/test-foundation.sh` plus `.github/foundation-tests/requirements.txt`. Before this, CI got `jsonschema` only indirectly through `check-jsonschema`, and local runs had nothing declared. |
 
 ## 3. Organisation inventory
 
@@ -59,7 +59,7 @@ Other drift:
 
 * Six repositories (erp, pulse, trade, equator-estate, infrastructure, nabhold) have open Dependabot branches that bump the `nabhold/shared` path. Merging them keeps the invalid reference. Close them.
 * In the four private repositories flagged above, a pull request will fail by design with "Dependency review is required but unavailable on this private repository". Each one needs `false` plus a reviewed `dependency-review` exception, or GHAS.
-* On `main`, 35 of 36 `runs-on` values are `ubuntu-26.04`. #67 changed only `foundation-static-validation.yml`. PR #68 moves seven more jobs and leaves 19 files mixed.
+* On `main`, 35 of 36 `runs-on` values were `ubuntu-26.04`. #67 changed only `foundation-static-validation.yml`, and PR #68 moves seven more jobs to `ubuntu-24.04`. The standard is now **`ubuntu-26.04`** (§6, D5). This branch moves the last job back and adds a fixture that rejects any other label.
 
 ## 4. PR #68 review: fix before merge
 
@@ -70,9 +70,9 @@ Other drift:
    * PR: gitleaks limited to the PR commit range, dependency review on, native adapters on changed manifests.
    * Deep: gitleaks over full history, dependency review off, full Trivy and container scan.
    * Both publish different result names, for example `Security / PR` and `Security / Deep`, so branch protection never depends on a check that only runs on a schedule.
-5. **Product wrappers change the check context.** Caller job `foundation` → wrapper job `foundation` → `Foundation / Result` is emitted as `foundation / foundation / Foundation / Result`. The docs say the name stays the same. Record the real emitted names from a pilot run, and do not tell consumers to switch branch protection until then.
+5. **Product wrappers change the check context.** Caller job `foundation` → wrapper job `foundation` → `Foundation / Result` is emitted as `foundation / foundation / Foundation / Result`, although the docs say the name stays the same. Branch protection will require only the single combined result from the compatibility entrypoint (D3). So the wrappers are optional extras, and the docs must say they do **not** produce the required check.
 6. **Nesting depth.** Caller → product → gates → security → adapters or secrets-scan is five levels of reusable workflows. Check this against GitHub's current nesting limit before merge, and add a wiring assertion for the depth.
-7. **Runner labels.** Finish the move to a single label across all 19 remaining files, or revert, but do not leave them mixed. See Phase 1.
+7. **Runner labels.** PR #68 changes seven jobs to `ubuntu-24.04`, and its new `reusable-foundation-dependency-adapters.yml` uses `ubuntu-24.04`. Change all of them to `ubuntu-26.04`. Once this branch is merged, the runner-label fixture will fail PR #68 until that is done.
 8. Minor: `actions/setup-python@ad3497a…` has no version comment. Add one so the pinning audit stays readable.
 
 ## 5. Implementation plan
@@ -83,16 +83,18 @@ Phases are ordered by dependency. Nothing after Phase 0 can be verified until jo
 
 The owner needs admin access to the `baobab-platform` organisation. This cannot be fixed from a pull request.
 
-* Check the organisation's **Billing & plans** page (Actions spending limit, failed payment, account lock) and **Settings → Actions → General** (Actions allowed, allowed-actions policy, runner-group access for GitHub-hosted runners). Compare with the pre-migration `nabhold` organisation, where the last green run was on 2026-09-19 22:44 UTC.
+* **Decision D2: subscribe `baobab-platform` to GitHub Team.** A Free organisation that the migration created without a payment method or spending limit fits these symptoms. After subscribing, set the Actions spending limit or budget so jobs are not stopped at the included-minutes quota.
+* If jobs still do not start after subscribing, check the organisation's **Billing & plans** page (Actions spending limit, failed payment, account lock) and **Settings → Actions → General** (Actions allowed, allowed-actions policy, runner-group access for GitHub-hosted runners). Compare with the pre-migration `nabhold` organisation, where the last green run was on 2026-09-19 22:44 UTC.
 * Open one failed job in the web UI. The job-level banner states the reason even when the API returns 404 for logs.
 * Set **Settings → Actions → General → Access** on `shared` so the organisation's repositories can use its reusable workflows. This matters if `shared` is ever made private again (#53 and #54 mention this).
 * **Done when:** a trivial `workflow_dispatch` job on `shared` runs on a runner and succeeds.
 
 ### Phase 1: `shared` `main` green
 
-1. Decide which legal-entity id is canonical (open decision D1), then align `contracts/legal-entity/registry.yaml` and `scripts/validate-governance-contracts.rb`. Then look for other places where the organisation rename's search-and-replace changed business identifiers instead of organisation paths (`git show 3017473`).
-2. Standardise on `ubuntu-24.04` in all 22 affected workflow files, and add a wiring assertion that allows only the approved label. Move to 26.04 later as one deliberate change.
-3. Add `.github/foundation-tests/requirements.txt` (`pyyaml`, `jsonschema`, pinned) and one entrypoint, `scripts/test-foundation.sh`. It runs all Python and Ruby fixtures and fails if `ruby` or `python3` is missing. `foundation-static-validation.yml` calls this script. This closes L1.
+1. ✅ *(this branch)* `scripts/validate-governance-contracts.rb` now requires legal entity `NABHOLD`, matching `contracts/legal-entity/registry.yaml` after `f39afe5` (D1).
+   * Still to review: other places where the rename's search-and-replace changed business identifiers instead of GitHub paths. From `git show 3017473`, suspects are `contracts/tenancy/tenancy.yaml` and `contracts/development-environment/schema.yaml` (both have "BAOBAB-PLATFORM GROUP AFRICA" headers), `contracts/identity/v1/workload-registry.yaml`, and the legal-entity/digital-estate separation ADR.
+2. ✅ *(this branch)* Every workflow runs on `ubuntu-26.04` (D5). `test_workflow_wiring.py` fails on any other `runs-on` label.
+3. ✅ *(this branch)* Added `.github/foundation-tests/requirements.txt` and `scripts/test-foundation.sh`. The script runs all Python and Ruby fixtures and fails if `ruby`, `python3` or the Python dependencies are missing. `foundation-static-validation.yml` calls it.
 4. Protect `main` with a ruleset (require PRs, plus Foundation Static Validation and CI). `f39afe5` went straight to `main`.
 5. **Done when:** CI, Foundation Static Validation and the Foundation Repository Gates self-consumer are all green on `main`.
 
@@ -108,6 +110,7 @@ Fix items 1 to 8 in §4. Add fixtures for the following:
 
 ### Phase 3: close H2 (SAST provider decided in the repository contract)
 
+* GitHub Team does not include Code Security (CodeQL and dependency review on private repositories); that is a separate paid add-on. So private repositories default to `fallback`. CodeQL runs only in the public repositories: `shared`, baobab-cp and zuribeans.
 * Add `security.sast_provider: codeql | fallback | disabled` to `.baobab/repository.schema.json`. The classifier resolves it together with `github.event.repository.visibility`:
   * `private` + `codeql` requires a `security.ghas` approval record (`approved_by`, `reason`, `expires`), validated like exceptions.
   * Private repositories default to `fallback`. The result is `SAST / Fallback`, and the portable Trivy evidence is uploaded as `foundation-sast-decision.json`.
@@ -118,7 +121,7 @@ Fix items 1 to 8 in §4. Add fixtures for the following:
 ### Phase 4: honest re-promotion
 
 * Do not move `v2.0.0`. Mark it in the promotion record and the CHANGELOG as *"tagged before promotion criteria were met; superseded"*.
-* Promote **`v2.1.0`**, following `foundation-ci-support-policy.md` exactly:
+* Promote **`v2.1.0`** (D4), following `foundation-ci-support-policy.md` exactly:
   1. Static validation passes.
   2. The self-consumer passes.
   3. The pilot cohort (Phase 5A) is green on the candidate SHA.
@@ -146,7 +149,7 @@ Every repository needs the same three changes:
 | Infrastructure | infrastructure (private) | Terraform capability. Confirm the classifier detects it, since nothing was found at the repository root. |
 
 **5B: remaining services:** baobab-cms, baobab-erp\*, baobab-iam\*, baobab-payments, baobab-pulse, baobab-subscriptions, baobab-trade\*, nabhold, thamani\*.
-\* Set `dependency_review_enabled: false` and declare a reviewed `dependency-review` exception (or license GHAS) before merging.
+\* Set `dependency_review_enabled: false` and declare a reviewed `dependency-review` exception before merging. GitHub Team alone does not make dependency review available on private repositories (D2).
 
 **5C: `engine-template`:**
 
@@ -159,9 +162,9 @@ Every repository needs the same three changes:
 
 ### Phase 6: enforcement
 
-* Add organisation rulesets that require the recorded result context: `foundation / Foundation / Result`, or the per-product names if repositories adopt product wrappers. Do not require any check that only runs on a schedule.
+* Add an organisation ruleset that requires the **single combined result** `foundation / Foundation / Result` (D3), emitted by the compatibility entrypoint with `profile: full` on `pull_request` and `push`. Do not require any product-wrapper check or any check that only runs on a schedule.
 * Remove the legacy metadata bridge (`legacy_metadata_enabled`, Gate 11) in the next minor version after Phase 5 completes.
-* Replace the per-repository weekly `full` schedule with `foundation-product-security.yml` in `mode: deep`.
+* Replace the per-repository weekly `full` schedule with `foundation-product-security.yml` in `mode: deep`. Its failures go to triage and never block merges.
 
 ### Phase 7: drift guard (prevents a repeat of this audit)
 
@@ -176,18 +179,22 @@ Add a scheduled `shared` workflow, `foundation-org-conformance.yml`. It reads ev
 
 It writes the report as a job summary and an artifact, and fails on High findings. This replaces the manual sweep done for this report.
 
-## 6. Open decisions
+## 6. Decisions
 
-| # | Decision | Needed by |
+Recorded 2026-09-23.
+
+| # | Decision | Outcome |
 |---|---|---|
-| D1 | Legal entity id in `contracts/legal-entity/registry.yaml`: `NABHOLD` (as in `f39afe5`) or `BAOBAB-PLATFORM` (as the validator expects)? | Phase 1 |
-| D2 | Is GHAS licensed, or planned, for any private repository? This decides between CodeQL and fallback, and whether dependency review can be enabled for erp, iam, trade and thamani. | Phase 3 / 5B |
-| D3 | Branch protection target: keep the single `full` aggregate, or require per-product results? | Phase 6 |
-| D4 | Version for re-promotion: `v2.1.0` (recommended, because the input surface grows with `profile` and `sast_provider`) or `v2.0.1`? | Phase 4 |
+| D1 | Organisation vs legal entity | `baobab-platform` is the GitHub organisation, replacing `nabhold`. The legal-entity id in `contracts/legal-entity/registry.yaml` stays `NABHOLD`, as restored by `f39afe5`, and the validator follows it. |
+| D2 | GitHub plan / GHAS | `baobab-platform` subscribes to **GitHub Team**. No Code Security add-on is assumed, so private repositories use SAST fallback and dependency review stays off with a reviewed exception. |
+| D3 | Branch protection | Require **only the single combined result**, `foundation / Foundation / Result`. |
+| D4 | Re-promotion version | **`v2.1.0`**. |
+| D5 | Runner label | All workflows run on **`ubuntu-26.04`**. A fixture enforces this. |
 
 ## 7. How this was verified
 
 * Shallow clones of all 16 repositories (default branch plus `chore/foundation-ci-v2`). References resolved against the full history of `shared`.
 * Workflow run and job metadata from the GitHub API for `shared`, `baobab-iam`, `baobab-dev` and `nabhold`. Runs of `shared` CI and Foundation Static Validation compared from 2026-08-25 onwards.
 * Local fixtures: `test_caller_template.py`, `test_workflow_wiring.py` and `test_policy.rb` pass. `test_contracts.py` passes once `jsonschema` is installed. All `scripts/validate-*.rb` pass except `validate-governance-contracts.rb`, which fails on `f39afe5` and passes with the `80d7f25` registry.
+* This branch: `scripts/test-foundation.sh` passes in a clean virtualenv built from `requirements.txt`. All seven `scripts/validate-*.rb` pass. A `runs-on: ubuntu-24.04` injected into a workflow makes the runner-label fixture fail.
 * Not verified: the exact reason for the organisation-level Actions block. The API returns no annotation and 404 for logs, so it needs an organisation admin (Phase 0).
