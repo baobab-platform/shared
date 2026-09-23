@@ -23,8 +23,17 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
-- Foundation CI v2 **consumer readiness** (candidate for `v2.0.0` — see
-  `docs/governance/foundation-ci-promotion-v2.0.0.md`):
+- Foundation CI **Phase 4 product separation**:
+  - Optional `profile` on `foundation-repository-gates.yml`
+    (`full` | `contract` | `security-pr` | `security-deep` | `container`; default `full`).
+  - Product entrypoints: `foundation-product-contract.yml`,
+    `foundation-product-security.yml` (`mode: pr|deep`),
+    `foundation-product-container.yml`.
+  - Security trigger matrix and product boundaries in
+    `docs/governance/foundation-ci-v2.md`.
+  - Self-consumer uses `security-deep` on schedule and `full` otherwise.
+- Foundation CI v2 **consumer readiness** (see
+  `docs/governance/foundation-ci-promotion-v2.0.0.md` and tag `v2.0.0`):
   - Executable official caller template (`templates/caller-foundation-repository-gates.yml`)
     with required `foundation_ref`, minimum permissions, and explicit
     `advanced_security_enabled` / `legacy_metadata_enabled`.
@@ -93,6 +102,15 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- Foundation aggregator accepts a skipped gate only when the selected profile
+  excludes it; gates inside the profile must succeed, so unexplained skips
+  still fail `Foundation / Result`. The policy fixture now executes the real
+  aggregator script.
+- Python dependency adapter audits exact pins derived from `uv.lock` /
+  `poetry.lock` (or `requirements.lock` / `requirements.txt`) instead of the
+  runner environment, and fails when the manifest is missing.
+- Rust dependency adapter uses checksum-verified `cargo-audit` 0.22.2 (0.21.2
+  cannot parse the current RustSec advisory database).
 - Control Plane lifecycle events and error responses now consume the canonical
   cross-engine contracts instead of defining local metadata shapes.
 - Baobab-Platform now declares confirmed `baobab-erp` consumption. Its digital estate

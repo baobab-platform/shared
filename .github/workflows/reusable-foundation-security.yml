@@ -17,6 +17,8 @@ on:
       go: { type: boolean, default: false }
       java: { type: boolean, default: false }
       rust: { type: boolean, default: false }
+      infrastructure: { type: boolean, default: false }
+      package_managers: { type: string, default: "{}" }
       exceptions: { type: string, default: "{}" }
 
 permissions:
@@ -47,6 +49,18 @@ jobs:
       - name: Scan infrastructure and configuration
         run: trivy fs --scanners misconfig --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
 
+  native-deps:
+    uses: ./.github/workflows/reusable-foundation-dependency-adapters.yml
+    with:
+      python: "${{ inputs.python }}"
+      node: "${{ inputs.node }}"
+      go: "${{ inputs.go }}"
+      java: "${{ inputs.java }}"
+      rust: "${{ inputs.rust }}"
+      infrastructure: "${{ inputs.infrastructure }}"
+      package_managers: "${{ inputs.package_managers }}"
+      exceptions: "${{ inputs.exceptions }}"
+
   secrets:
     if: ${{ fromJSON(inputs.exceptions)['secret-scan'] == null }}
     uses: ./.github/workflows/security-secrets-scan.yml
@@ -76,7 +90,7 @@ jobs:
   result:
     name: Security / Result
     if: always()
-    needs: [portable, secrets, dependency-review, sast]
+    needs: [portable, native-deps, secrets, dependency-review, sast]
     runs-on: ubuntu-26.04
     steps:
       - env:

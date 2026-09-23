@@ -20,7 +20,7 @@ A Foundation revision is promotable only after all of the following are green:
 4. verification of the exact emitted result check name; and
 5. consumer references pinned to the promoted commit SHA.
 
-The stable reusable entry point remains `.github/workflows/foundation-repository-gates.yml`. Consumers must not reference its internal component workflows directly.
+The stable reusable entry point remains `.github/workflows/foundation-repository-gates.yml`. Consumers must not reference its internal component workflows directly. Product entrypoints (`foundation-product-*.yml`) are supported wrappers over the same orchestrator.
 
 ### Current promotion candidate
 
@@ -39,6 +39,21 @@ Expected aggregate name pattern (self-consumer):
 ```text
 foundation / Foundation / Result
 ```
+
+## Evidence artifacts (Phase 5)
+
+Foundation uploads retained workflow artifacts so waived controls and fallback SAST decisions are inspectable after the run.
+
+| Artifact name | Produced by | Content |
+|---|---|---|
+| `foundation-exceptions` | `Foundation / Result` | `foundation-exceptions.json` — active exceptions, profile, gate results |
+| `foundation-sast-decision` | SAST planner | `foundation-sast-decision.json` — mode, visibility, reason |
+| `foundation-dependency-adapters` | Native dependency adapters | Adapter status per ecosystem |
+| Container SBOM (existing) | Container product | SPDX via anchore/sbom-action |
+
+**Retention:** 90 days (GitHub Actions default override on each upload).
+**Ownership:** Foundation maintainers own schema and retention policy; consuming repositories own the content of declared exceptions and must keep them current.
+**Release policy:** set `release_require_zero_exceptions: true` on container/release callers so active waivers cannot silently ship.
 
 ## Failure ownership
 
