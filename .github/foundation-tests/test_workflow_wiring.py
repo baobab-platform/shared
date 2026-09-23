@@ -128,6 +128,8 @@ assert "pip-audit -l" not in adapters_text and "|| pip-audit" not in adapters_te
 assert "--no-deps --disable-pip" in adapters_text
 assert "tomllib" in adapters_text
 assert "sha256sum --check --strict" in adapters_text
+# govulncheck v1.1.4 panics on Go 1.27 sources (x/tools v0.29.0 SSA builder).
+assert "govulncheck@v1.8.0" in adapters_text
 
 sast, sast_text = load("reusable-foundation-sast.yml")
 assert {"plan", "analyze", "status"} <= set(sast["jobs"])
