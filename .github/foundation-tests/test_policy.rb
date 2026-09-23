@@ -127,3 +127,33 @@ dockerfiles.each do |name, (content, expected)|
 end
 
 puts "Container base-image policy fixtures passed"
+
+# Executes the real reproducibility step against Node manifests. A
+# package.json without a packageManager field must not crash the check.
+reproducibility_workflow = YAML.safe_load_file(".github/workflows/reusable-foundation-reproducibility.yml", aliases: true)
+reproducibility_step = reproducibility_workflow["jobs"].values.flat_map { |job| job["steps"] }
+                                                   .find { |step| step["name"].to_s.start_with?("Validate workspace reproducibility") }
+abort "reproducibility step not found" unless reproducibility_step
+
+node_manifests = {
+  "no packageManager field" => [{ "name" => "app" }, true],
+  "matching packageManager" => [{ "name" => "app", "packageManager" => "npm@10.9.7" }, true],
+  "mismatched packageManager" => [{ "name" => "app", "packageManager" => "pnpm@11.24.0" }, false]
+}
+
+node_manifests.each do |name, (manifest, expected)|
+  passed = Dir.mktmpdir do |dir|
+    File.write(File.join(dir, "package.json"), JSON.generate(manifest))
+    File.write(File.join(dir, "package-lock.json"), "{}")
+    env = {
+      "PYTHON" => "false", "NODE" => "true", "GO" => "false", "JAVA" => "false",
+      "RUST" => "false", "INFRASTRUCTURE" => "false",
+      "PACKAGE_MANAGERS" => JSON.generate("node" => "npm")
+    }
+    _, status = Open3.capture2e(env, "ruby", "-e", reproducibility_step["run"], chdir: dir)
+    status.success?
+  end
+  abort "reproducibility #{name}: expected #{expected}, got #{passed}" unless passed == expected
+end
+
+puts "Reproducibility packageManager fixtures passed"
