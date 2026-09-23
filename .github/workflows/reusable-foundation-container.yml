@@ -30,12 +30,28 @@ jobs:
           [[ "$DOCKERFILE" != *".."* && "$BUILD_CONTEXT" != *".."* ]] || { echo "::error::Container paths must not escape the repository"; exit 1; }
           [[ -f "$DOCKERFILE" ]] || { echo "::error::$DOCKERFILE does not exist"; exit 1; }
           [[ -d "$BUILD_CONTEXT" ]] || { echo "::error::$BUILD_CONTEXT is not a directory"; exit 1; }
-          if grep -Eiq '^FROM[[:space:]]+[^[:space:]]+:(latest|edge)([[:space:]]|$)' "$DOCKERFILE"; then
-            echo "::error::Container base images must not use latest or edge"
+          # Classify each FROM image, skipping flags such as --platform and
+          # references to earlier build stages ("FROM build AS test").
+          violations="$(awk '
+            toupper($1) == "FROM" {
+              i = 2
+              while (i <= NF && $i ~ /^--/) i++
+              image = tolower($i)
+              if (image in stages || image == "scratch") {
+                # earlier stage or empty base
+              } else if (image ~ /:(latest|edge)(@|$)/) {
+                print "floating:" image
+              } else if (image !~ /[:@]/) {
+                print "untagged:" image
+              }
+              if (toupper($(i + 1)) == "AS") stages[tolower($(i + 2))] = 1
+            }' "$DOCKERFILE")"
+          if grep -q '^floating:' <<<"$violations"; then
+            echo "::error::Container base images must not use latest or edge: $(grep '^floating:' <<<"$violations" | cut -d: -f2- | paste -sd, -)"
             exit 1
           fi
-          if grep -Ei '^FROM[[:space:]]+[^[:space:]@:]+([[:space:]]|$)' "$DOCKERFILE" | grep -Eiv '^FROM[[:space:]]+scratch([[:space:]]|$)' >/dev/null; then
-            echo "::error::Container base images require an explicit tag or digest"
+          if grep -q '^untagged:' <<<"$violations"; then
+            echo "::error::Container base images require an explicit tag or digest: $(grep '^untagged:' <<<"$violations" | cut -d: -f2- | paste -sd, -)"
             exit 1
           fi
 

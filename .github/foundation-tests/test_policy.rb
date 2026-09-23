@@ -84,3 +84,38 @@ end
 end
 
 puts "Foundation policy fixtures passed"
+
+# Container base-image policy: run the real step against sample Dockerfiles.
+require "open3"
+require "tmpdir"
+
+container_workflow = YAML.safe_load_file(".github/workflows/reusable-foundation-container.yml", aliases: true)
+policy_step = container_workflow.dig("jobs", "container", "steps").find do |step|
+  step["name"] == "Validate artifact coordinates and Dockerfile policy"
+end
+abort "container policy step not found" unless policy_step
+
+dockerfiles = {
+  "stage reference" => ["FROM node:24-alpine AS dependencies\nFROM dependencies AS build\nFROM node:24-alpine\n", true],
+  "platform flag with tag" => ["FROM --platform=$BUILDPLATFORM golang:1.27 AS build\nFROM build\n", true],
+  "lowercase stage reference" => ["from golang:1.27 as build\nfrom build\n", true],
+  "scratch" => ["FROM scratch\n", true],
+  "digest" => ["FROM alpine@sha256:#{'a' * 64}\n", true],
+  "untagged base" => ["FROM node\n", false],
+  "untagged base behind platform flag" => ["FROM --platform=linux/amd64 node AS build\n", false],
+  "latest" => ["FROM node:latest\n", false],
+  "latest behind platform flag" => ["FROM --platform=linux/amd64 node:latest\n", false],
+  "stage name used before declaration" => ["FROM build\nFROM node:24 AS build\n", false]
+}
+
+dockerfiles.each do |name, (content, expected)|
+  passed = Dir.mktmpdir do |dir|
+    File.write(File.join(dir, "Dockerfile"), content)
+    env = { "DOCKERFILE" => "Dockerfile", "BUILD_CONTEXT" => "." }
+    _, status = Open3.capture2e(env, "bash", "-c", policy_step["run"], chdir: dir)
+    status.success?
+  end
+  abort "container policy #{name}: expected #{expected}, got #{passed}" unless passed == expected
+end
+
+puts "Container base-image policy fixtures passed"
