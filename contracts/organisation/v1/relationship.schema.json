@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baobab.platform/contracts/organisation/v1/relationship.schema.json",
+  "title": "Baobab Corporate Relationship and Corporate Group Contracts (ADR-BCP-018)",
+  "description": "Target path: baobab-platform/shared/contracts/organisation/v1/relationship.schema.json\n\nCorporateRelationship models ownership / control / affiliate relationships between Organisations.\n\nCRITICAL DISTINCTIONS (ADR-BCP-018 invariants):\n  CorporateRelationship != CounterpartyRelationship (ADR-BCP-014)\n  CorporateRelationship != ADR-BCP-012 operational LegalEntityRelationship\n  CorporateRelationship != PlatformRelationship\n  CorporateGroup != authorization boundary\n  Corporate ownership != authorization\n  same corporate group != cross-tenant access\n\nCorporateRelationship is platform-scoped and effective-dated. It is used for\nINTERNAL subscription eligibility (ADR-BCP-017), related-party treatment and\ncorporate reporting. It MUST NOT be used as a runtime authorization boundary.\n\nControl Plane is the runtime authority. Shared is the contract authority.",
+  "type": "object",
+  "$defs": {
+    "verificationState": {
+      "$ref": "domain.schema.json#/$defs/verificationState"
+    },
+    "corporateRelationshipType": {
+      "type": "string",
+      "description": "Ownership or control relationship type. Extensible. Does not include commercial roles (SUPPLIER_OF etc.).",
+      "enum": [
+        "OWNS",
+        "CONTROLS",
+        "PARENT_OF",
+        "SUBSIDIARY_OF",
+        "AFFILIATE_OF",
+        "JOINT_VENTURE",
+        "SISTER_OF",
+        "BRANCH_OF",
+        "RELATED_TO"
+      ]
+    },
+    "CorporateRelationship": {
+      "type": "object",
+      "description": "Effective-dated corporate ownership or control relationship between two Organisations. Fail-closed when verification_state is not VERIFIED for consequential decisions.",
+      "required": [
+        "id",
+        "source_organisation_id",
+        "target_organisation_id",
+        "relationship_type",
+        "verification_state",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable relationship identifier (Control Plane minted)."
+        },
+        "source_organisation_id": {
+          "type": "string",
+          "description": "CanonicalEntity / Organisation id of the source (e.g. parent)."
+        },
+        "target_organisation_id": {
+          "type": "string",
+          "description": "CanonicalEntity / Organisation id of the target (e.g. subsidiary)."
+        },
+        "relationship_type": {
+          "$ref": "#/$defs/corporateRelationshipType"
+        },
+        "ownership_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Optional ownership stake. Conflicting evidence MUST move verification_state to CONFLICTED rather than silently choosing a value."
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "SUSPENDED", "RETIRED", "CONFLICTED"]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_references": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "References to company registry filings, shareholder registers, board resolutions, legal opinions, etc. Binaries live in a document system."
+        },
+        "source_authority": {
+          "type": "string",
+          "description": "Who or what established this relationship record (e.g. nabhold-governance, admission-review, external-registry)."
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "CorporateGroup": {
+      "type": "object",
+      "description": "Projection of a governed economic / corporate group. Derived from the CorporateRelationship graph; not an independent authorization boundary.",
+      "required": [
+        "id",
+        "display_name",
+        "root_organisation_id",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "root_organisation_id": {
+          "type": "string",
+          "description": "Organisation that serves as the conventional root of the group (e.g. Nabhold Group Africa, Acme Holdings)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "SUSPENDED", "RETIRED"]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "CorporateGroupMembership": {
+      "type": "object",
+      "description": "Membership of an Organisation in a CorporateGroup. Membership is informational / reporting; it confers no runtime permission.",
+      "required": [
+        "id",
+        "corporate_group_id",
+        "organisation_id",
+        "membership_type",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "corporate_group_id": {
+          "type": "string"
+        },
+        "organisation_id": {
+          "type": "string"
+        },
+        "membership_type": {
+          "type": "string",
+          "enum": ["ROOT", "SUBSIDIARY", "AFFILIATE", "JOINT_VENTURE", "OTHER"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "SUSPENDED", "RETIRED"]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

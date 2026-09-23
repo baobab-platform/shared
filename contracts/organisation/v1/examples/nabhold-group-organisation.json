@@ -1,0 +1,142 @@
+{
+  "_comment": "Target path: baobab-platform/shared/contracts/organisation/v1/examples/nabhold-group-organisation.json\n\nIllustrative Organisation + LegalEntityProfile + CorporateRelationship graph for Nabhold Group Africa.\nThese are example instances only; runtime authority is Control Plane. First-party legal_entity_ids continue to match the Shared registry.",
+  "organisations": [
+    {
+      "canonical_entity_id": "ce_nabhold_root",
+      "display_name": "Nabhold Group Africa",
+      "official_name": "Nabhold Group Africa",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "ZA",
+      "verification_state": "VERIFIED",
+      "source_authority": "shared-registry",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z"
+    },
+    {
+      "canonical_entity_id": "ce_zuribeans",
+      "display_name": "ZuriBeans",
+      "official_name": "Zuribeans",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "ZA",
+      "verification_state": "VERIFIED",
+      "source_authority": "shared-registry",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z"
+    },
+    {
+      "canonical_entity_id": "ce_thamani_global",
+      "display_name": "Thamani Global",
+      "official_name": "Thamani Global",
+      "organisation_form": "COMPANY",
+      "verification_state": "VERIFIED",
+      "source_authority": "shared-registry",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z"
+    },
+    {
+      "canonical_entity_id": "ce_equator_estate",
+      "display_name": "Equator & Estate Co.",
+      "official_name": "Equator & Estate Co.",
+      "organisation_form": "COMPANY",
+      "verification_state": "VERIFIED",
+      "source_authority": "shared-registry",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z"
+    }
+  ],
+  "legal_entity_profiles": [
+    {
+      "legal_entity_id": "NABHOLD",
+      "organisation_id": "ce_nabhold_root",
+      "legal_name": "Nabhold Group Africa",
+      "jurisdiction_of_incorporation": "ZA",
+      "legal_status": "ACTIVE",
+      "source_authority": "shared-registry",
+      "verification_state": "VERIFIED",
+      "effective_from": "2020-01-01T00:00:00Z"
+    },
+    {
+      "legal_entity_id": "ZURIBEANS",
+      "organisation_id": "ce_zuribeans",
+      "legal_name": "Zuribeans",
+      "jurisdiction_of_incorporation": "ZA",
+      "legal_status": "ACTIVE",
+      "source_authority": "shared-registry",
+      "verification_state": "VERIFIED",
+      "effective_from": "2020-01-01T00:00:00Z"
+    },
+    {
+      "legal_entity_id": "THAMANI-GLOBAL",
+      "organisation_id": "ce_thamani_global",
+      "legal_name": "Thamani Global",
+      "legal_status": "ACTIVE",
+      "source_authority": "shared-registry",
+      "verification_state": "VERIFIED",
+      "effective_from": "2020-01-01T00:00:00Z"
+    },
+    {
+      "legal_entity_id": "EQUATOR-ESTATE",
+      "organisation_id": "ce_equator_estate",
+      "legal_name": "Equator & Estate Co.",
+      "legal_status": "ACTIVE",
+      "source_authority": "shared-registry",
+      "verification_state": "VERIFIED",
+      "effective_from": "2020-01-01T00:00:00Z"
+    }
+  ],
+  "corporate_relationships": [
+    {
+      "id": "cr_nabhold_owns_zuribeans",
+      "source_organisation_id": "ce_nabhold_root",
+      "target_organisation_id": "ce_zuribeans",
+      "relationship_type": "OWNS",
+      "ownership_percentage": 100,
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z",
+      "source_authority": "nabhold-governance"
+    },
+    {
+      "id": "cr_nabhold_owns_thamani",
+      "source_organisation_id": "ce_nabhold_root",
+      "target_organisation_id": "ce_thamani_global",
+      "relationship_type": "OWNS",
+      "ownership_percentage": 100,
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z",
+      "source_authority": "nabhold-governance"
+    },
+    {
+      "id": "cr_nabhold_owns_equator",
+      "source_organisation_id": "ce_nabhold_root",
+      "target_organisation_id": "ce_equator_estate",
+      "relationship_type": "OWNS",
+      "ownership_percentage": 100,
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z",
+      "source_authority": "nabhold-governance"
+    }
+  ],
+  "platform_relationships": [
+    {
+      "id": "pr_nabhold_owner",
+      "organisation_id": "ce_nabhold_root",
+      "relationship_type": "PLATFORM_OWNER",
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z",
+      "source_authority": "platform-governance"
+    },
+    {
+      "id": "pr_zuribeans_affiliate",
+      "organisation_id": "ce_zuribeans",
+      "relationship_type": "PLATFORM_GROUP_AFFILIATE",
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2020-01-01T00:00:00Z",
+      "source_authority": "platform-governance"
+    }
+  ]
+}

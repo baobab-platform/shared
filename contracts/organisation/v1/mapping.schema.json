@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baobab.platform/contracts/organisation/v1/mapping.schema.json",
+  "title": "Baobab Tenant–Organisation and Tenant–LegalEntity Mapping Contracts (ADR-BCP-018)",
+  "description": "Target path: baobab-platform/shared/contracts/organisation/v1/mapping.schema.json\n\nExplicit mappings that replace the implicit singular Tenant.LegalEntityID over time.\n\nCompatibility rule (ADR-BCP-018):\n  The current singular Tenant.LegalEntityID field is treated as a compatibility\n  projection of the default TenantLegalEntityMapping (is_default = true) until\n  all consumers migrate. It MUST NOT be removed or given a new meaning.\n\n  Existing BUYER_ORGANISATION and SUPPLIER_ORGANISATION CanonicalEntity records\n  migrate forward without destructive rewriting.\n\nIAM Organisation claims map only through ExternalReference / canonical mappings;\nnever as direct authorization input.\n\nControl Plane is the runtime authority for these mappings.",
+  "type": "object",
+  "$defs": {
+    "TenantOrganisationMapping": {
+      "type": "object",
+      "description": "Explicit association of a Tenant with one or more Organisations. A tenant may serve multiple organisations; an organisation may be represented in multiple tenants only when approved isolation requires it.",
+      "required": [
+        "id",
+        "tenant_id",
+        "organisation_id",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tenant_id": {
+          "type": "string",
+          "pattern": "^tn_[a-z0-9]+$",
+          "description": "Control Plane tenant identifier."
+        },
+        "organisation_id": {
+          "type": "string",
+          "description": "CanonicalEntity / Organisation identifier."
+        },
+        "is_default": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, this mapping is the conventional primary organisation for the tenant. At most one default per tenant is expected."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "SUSPENDED", "RETIRED"]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "TenantLegalEntityMapping": {
+      "type": "object",
+      "description": "Explicit association of a Tenant with one or more LegalEntityProfiles. The row with is_default = true is the compatibility projection of Tenant.LegalEntityID.",
+      "required": [
+        "id",
+        "tenant_id",
+        "legal_entity_id",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tenant_id": {
+          "type": "string",
+          "pattern": "^tn_[a-z0-9]+$"
+        },
+        "legal_entity_id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
+          "description": "LegalEntityProfile / registry identifier."
+        },
+        "is_default": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, this mapping is the value exposed as Tenant.LegalEntityID for v1 compatibility. Exactly one default mapping SHOULD exist for every active tenant."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "SUSPENDED", "RETIRED"]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

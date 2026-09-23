@@ -1,0 +1,140 @@
+{
+  "_comment": "Target path: baobab-platform/shared/contracts/organisation/v1/examples/acme-holdings-external.json\n\nIllustrative external enterprise group. No entries required in the Shared legal-entity registry. All identifiers are Control-Plane issued. Demonstrates that the same generic model serves both Nabhold Group and arbitrary external customers.",
+  "organisations": [
+    {
+      "canonical_entity_id": "ce_acme_holdings",
+      "display_name": "Acme Holdings Ltd",
+      "official_name": "Acme Holdings Limited",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "control-plane-admission",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z"
+    },
+    {
+      "canonical_entity_id": "ce_acme_foods",
+      "display_name": "Acme Foods Ltd",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "control-plane-admission",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z"
+    },
+    {
+      "canonical_entity_id": "ce_acme_logistics",
+      "display_name": "Acme Logistics Ltd",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "control-plane-admission",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z"
+    },
+    {
+      "canonical_entity_id": "ce_acme_retail",
+      "display_name": "Acme Retail Ltd",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "UG",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "applicant-submission",
+      "status": "DRAFT",
+      "effective_from": "2026-03-15T00:00:00Z"
+    }
+  ],
+  "legal_entity_profiles": [
+    {
+      "legal_entity_id": "ACME-HOLDINGS",
+      "organisation_id": "ce_acme_holdings",
+      "legal_name": "Acme Holdings Limited",
+      "jurisdiction_of_incorporation": "KE",
+      "registration_identifiers": [
+        {
+          "type": "COMPANY_REGISTRATION",
+          "value": "PVT-2020-123456",
+          "issuing_jurisdiction": "KE",
+          "verified": true
+        }
+      ],
+      "legal_status": "ACTIVE",
+      "source_authority": "control-plane-admission",
+      "verification_state": "VERIFIED",
+      "effective_from": "2026-03-15T00:00:00Z"
+    },
+    {
+      "legal_entity_id": "ACME-FOODS",
+      "organisation_id": "ce_acme_foods",
+      "legal_name": "Acme Foods Limited",
+      "jurisdiction_of_incorporation": "KE",
+      "legal_status": "ACTIVE",
+      "source_authority": "control-plane-admission",
+      "verification_state": "VERIFIED",
+      "effective_from": "2026-03-15T00:00:00Z"
+    }
+  ],
+  "corporate_relationships": [
+    {
+      "id": "cr_acme_owns_foods",
+      "source_organisation_id": "ce_acme_holdings",
+      "target_organisation_id": "ce_acme_foods",
+      "relationship_type": "OWNS",
+      "ownership_percentage": 100,
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "source_authority": "admission-review"
+    },
+    {
+      "id": "cr_acme_owns_logistics",
+      "source_organisation_id": "ce_acme_holdings",
+      "target_organisation_id": "ce_acme_logistics",
+      "relationship_type": "OWNS",
+      "ownership_percentage": 80,
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "source_authority": "admission-review"
+    }
+  ],
+  "platform_relationships": [
+    {
+      "id": "pr_acme_holdings_client",
+      "organisation_id": "ce_acme_holdings",
+      "relationship_type": "EXTERNAL_CLIENT",
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "source_authority": "control-plane-admission"
+    },
+    {
+      "id": "pr_acme_foods_client",
+      "organisation_id": "ce_acme_foods",
+      "relationship_type": "EXTERNAL_CLIENT",
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "source_authority": "control-plane-admission"
+    }
+  ],
+  "tenant_legal_entity_mappings": [
+    {
+      "id": "tlem_acme_foods_default",
+      "tenant_id": "tn_acme_foods_prod",
+      "legal_entity_id": "ACME-FOODS",
+      "is_default": true,
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z"
+    }
+  ],
+  "tenant_organisation_mappings": [
+    {
+      "id": "tom_acme_foods",
+      "tenant_id": "tn_acme_foods_prod",
+      "organisation_id": "ce_acme_foods",
+      "is_default": true,
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z"
+    }
+  ]
+}

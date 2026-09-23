@@ -1,4 +1,4 @@
-# ==============================================================================
+# =============================================================================
 # BAOBAB-PLATFORM GROUP AFRICA
 # Tenancy Contract
 #
@@ -29,9 +29,16 @@
 #
 # Relationship to other contracts
 # --------------------------------
-#   legal-entity/registry.yaml  -> supplies canonical legal-entity identity;
-#                                  a tenant mapping references it without
-#                                  becoming identical to it
+#   legal-entity/registry.yaml  -> remains the Nabhold first-party governance
+#                                  source for NABHOLD, ZURIBEANS, THAMANI-GLOBAL
+#                                  and EQUATOR-ESTATE identities (ADR-BCP-018).
+#                                  It is NOT a mandatory registry for external
+#                                  customer legal entities.
+#   organisation/v1/*           -> generic Organisation, LegalEntityProfile,
+#                                  CorporateRelationship, PlatformRelationship,
+#                                  TenantOrganisationMapping and
+#                                  TenantLegalEntityMapping contracts
+#                                  (ADR-BCP-018).
 #   security/ (not yet written) -> supplies the detailed encryption/auditing
 #                                  standards this contract only references
 #
@@ -40,12 +47,26 @@
 # The contract schema is versioned independently of Control Plane and
 # product-engine implementations and of any individual tenant's data.
 #
-# Governing decision records: ADR-0001 and ADR-0003 (baobab-platform/shared/docs/adr/)
-# ==============================================================================
+# Governing decision records:
+#   - ADR-0001 and ADR-0003 (baobab-platform/shared/docs/adr/)
+#   - ADR-BCP-018 — Canonical Organisation, Corporate Group, Platform Account
+#     and Tenant Relationship Model (baobab-platform/baobab-cp)
+#
+# Change history relevant to ADR-BCP-018
+# --------------------------------------
+# v1.1 (this revision):
+#   - External customers no longer require an entry in the source-controlled
+#     Nabhold legal-entity registry.
+#   - Default legal-entity mapping remains required for v1 compatibility, but
+#     its authoritative runtime source is Control Plane TenantLegalEntityMapping
+#     (with Tenant.LegalEntityID retained as a compatibility projection).
+#   - First-party Nabhold identities (NABHOLD, ZURIBEANS, THAMANI-GLOBAL,
+#     EQUATOR-ESTATE) continue to be governed by the Shared registry.
+# =============================================================================
 
 schema:
   name: "baobab-tenancy-contract"
-  version: "1.0"
+  version: "1.1"
 
 # ------------------------------------------------------------------------------
 # What constitutes a tenant
@@ -68,17 +89,36 @@ tenant_definition:
   legal_entity_is_tenant_synonym: false
   digital_estate_confers_tenancy: false
   product_consumption_requires_tenant: true
-  requires_default_legal_entity_registry_entry: true
-  registry_source: "shared/contracts/legal-entity/registry.yaml"
+
+  # ADR-BCP-018: External customers MUST NOT be required to appear in the
+  # source-controlled Nabhold legal-entity registry. The registry remains the
+  # governance source for first-party Nabhold Group identities only.
+  requires_default_legal_entity_registry_entry: false
+  first_party_registry_source: "shared/contracts/legal-entity/registry.yaml"
+  first_party_identities:
+    - "NABHOLD"
+    - "ZURIBEANS"
+    - "THAMANI-GLOBAL"
+    - "EQUATOR-ESTATE"
+
+  # Runtime authority for legal-entity and organisation mappings is the
+  # Control Plane (TenantLegalEntityMapping / TenantOrganisationMapping).
+  # Shared retains contract and first-party governance authority only.
+  runtime_mapping_authority: "baobab-platform/baobab-cp"
 
   cardinality:
     tenant_to_legal_entity: "one_or_more_by_explicit_mapping"
     legal_entity_to_tenant: "one_or_more_when_approved_isolation_requires_it"
+    tenant_to_organisation: "one_or_more_by_explicit_mapping"
     description: >
-      Version 1 requires one default legal-entity reference for compatibility,
-      but consumers must not encode a permanent one-to-one identity. Additional
-      mappings and stronger isolation topologies may be introduced without
-      changing either canonical identifier.
+      Version 1 still requires one default legal-entity reference for
+      compatibility (exposed as Tenant.LegalEntityID). Consumers must not
+      encode a permanent one-to-one identity. Additional mappings
+      (TenantLegalEntityMapping, TenantOrganisationMapping) and stronger
+      isolation topologies may be introduced without changing either
+      canonical identifier. The singular Tenant.LegalEntityID field is a
+      compatibility projection of the default TenantLegalEntityMapping
+      until all consumers migrate (ADR-BCP-018).
 
 # ------------------------------------------------------------------------------
 # Required identifiers
@@ -86,15 +126,25 @@ tenant_definition:
 
 identifiers:
 
+  # Default legal-entity identifier (compatibility projection).
+  # For first-party Nabhold tenants this continues to reference the Shared
+  # registry. For external tenants it is a Control-Plane-minted or
+  # Control-Plane-registered legal_entity_id that need not appear in the
+  # source-controlled registry.
   entity_id:
     required: true
-    source: "legal-entity registry"
+    source: "control-plane runtime TenantLegalEntityMapping (default); first-party identities also governed by shared legal-entity registry"
     description: >
-      The canonical, immutable identifier of the tenant's default legal entity
-      (e.g. "THAMANI-GLOBAL"). Every version-1 tenant record MUST carry this
-      mapping. It does not define the tenant and must not be reused as
-      tenant_id. No system may invent a local alias for it.
+      The identifier of the tenant's default legal entity (e.g. "THAMANI-GLOBAL"
+      for first-party, or a Control-Plane-issued identifier for external
+      customers). Every version-1 tenant record MUST carry this mapping. It
+      does not define the tenant and must not be reused as tenant_id. No
+      system may invent a local alias for a first-party registry id.
     format: "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$"
+    notes: >
+      ADR-BCP-018 treats the singular entity_id / Tenant.LegalEntityID as a
+      compatibility projection of the default TenantLegalEntityMapping.
+      New consumers SHOULD prefer the explicit mapping APIs.
 
   tenant_id:
     required: true
@@ -105,9 +155,10 @@ identifiers:
       Human-readable company names, country codes and market codes must not be
       embedded in a newly minted tenant_id.
     mapping_obligation: >
-      The mapping tenant_id -> entity_id MUST be resolvable at all times, in
-      every environment, without exception. Loss of this mapping is treated
-      as a data-integrity incident.
+      The mapping tenant_id -> default legal_entity_id (and any additional
+      TenantLegalEntityMapping / TenantOrganisationMapping rows) MUST be
+      resolvable at all times, in every environment, without exception. Loss
+      of this mapping is treated as a data-integrity incident.
     exact_format: "^tn_[a-z0-9]+$"
     schema_reference: "shared/contracts/control-plane/v1/domain.schema.json#/$defs/tenantId"
 
@@ -124,6 +175,9 @@ isolation:
       No tenant may read, write, or infer the existence of another tenant's
       data under any normal operating condition. This MUST hold regardless
       of the underlying storage isolation strategy chosen by `baobab`.
+      Corporate group membership, shared PlatformAccount, or common parent
+      organisation MUST NOT create an implicit cross-tenant access path
+      (ADR-BCP-018 security invariants).
     mechanism: null   # NOT specified here — baobab's own architecture
                        # documentation records the chosen strategy
                        # (e.g. row-level security, schema-per-tenant,
@@ -152,7 +206,9 @@ isolation:
 required_metadata:
 
   - field: "entity_id"
-    description: "Canonical default legal-entity identifier from the registry; not the tenant identifier"
+    description: >
+      Default legal-entity identifier (compatibility projection of the
+      default TenantLegalEntityMapping). Not the tenant identifier.
 
   - field: "tenant_id"
     description: "Platform-internal technical identifier"
@@ -167,9 +223,10 @@ required_metadata:
   - field: "products_enabled"
     description: >
       The set of Baobab products this tenant is entitled to consume.
-      MUST be cross-checked against `baobab_products` in the legal-entity
-      registry — the registry states intent, this field states enforced
-      entitlement, and the two SHOULD reconcile.
+      For first-party Nabhold tenants this SHOULD reconcile with
+      `baobab_products` in the legal-entity registry. For external tenants
+      the Control Plane ProductSubscription and CapabilityGrant records are
+      authoritative.
 
 # ------------------------------------------------------------------------------
 # Lifecycle events
@@ -180,9 +237,12 @@ lifecycle:
   events:
     - name: "provisioning"
       description: >
-        Tenant record created, `tenant_id` assigned, mapped to an `entity_id`
-        already present in the legal-entity registry. A tenant MUST NOT be
-        provisioned for an `entity_id` that does not exist in the registry.
+        Tenant record created, `tenant_id` assigned, and at least one
+        TenantLegalEntityMapping (default) established. For first-party
+        Nabhold identities the mapped legal_entity_id MUST exist in the
+        Shared registry. For external customers the legal_entity_id is
+        registered/issued by the Control Plane and need not appear in the
+        Shared registry (ADR-BCP-018).
 
     - name: "activation"
       description: "Tenant transitions to `active`; product access becomes live."
@@ -238,6 +298,15 @@ security:
       be recorded in an immutable audit log, attributable to an authenticated
       actor.
 
+  # ADR-BCP-018 security invariants (fail-closed)
+  relationship_isolation:
+    obligation: >
+      Same corporate group, same parent organisation, same PlatformAccount,
+      or PLATFORM_GROUP_AFFILIATE status MUST NOT confer cross-tenant data
+      access or administrative rights. All consequential relationship
+      resolution MUST fail closed when authoritative evidence is missing
+      or conflicted.
+
 # ------------------------------------------------------------------------------
 # Ownership
 # ------------------------------------------------------------------------------
@@ -255,6 +324,9 @@ ownership:
 
   physical_isolation_enforcement:
     owner: "baobab-platform/infrastructure"
+
+  organisation_and_relationship_runtime:
+    owner: "baobab-platform/baobab-cp"   # ADR-BCP-018
 
 # ------------------------------------------------------------------------------
 # Notes
@@ -275,3 +347,11 @@ notes:
     estate repository's deployment status. A subsidiary can have a live
     website while its Baobab tenant record is still `provisioning`, and
     vice versa.
+  - >
+    ADR-BCP-018 (2026-09-22): External customers are admitted and provisioned
+    without requiring an entry in the source-controlled Nabhold legal-entity
+    registry. The registry remains the first-party governance source for
+    NABHOLD, ZURIBEANS, THAMANI-GLOBAL and EQUATOR-ESTATE. Runtime authority
+    for Organisation, LegalEntityProfile, CorporateRelationship,
+    PlatformRelationship, PlatformAccount and the explicit tenant mappings
+    resides in the Control Plane.

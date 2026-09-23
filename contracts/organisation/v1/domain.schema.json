@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baobab.platform/contracts/organisation/v1/domain.schema.json",
+  "title": "Baobab Organisation Domain Contracts (ADR-BCP-018)",
+  "description": "Target path: baobab-platform/shared/contracts/organisation/v1/domain.schema.json\n\nContract authority for the generic Organisation and LegalEntityProfile models.\n\nShared is the contract/schema authority and Nabhold first-party governance source.\nControl Plane (baobab-cp) is the runtime authority for Organisation, LegalEntity\nruntime representation, and all relationship graphs (ADR-BCP-018).\n\nInvariants preserved:\n  Organisation != LegalEntity\n  Organisation != Tenant\n  Organisation != IAM Organisation\n  Corporate ownership != authorization\n\nCanonicalEntity remains the identity spine. Organisation is modelled as a\nprofile/extension of CanonicalEntity, not a parallel identity system.\nBUYER_ORGANISATION and SUPPLIER_ORGANISATION (ADR-BCP-016 / ADR-0006) remain\nvalid specialised EntityTypes and migrate forward without destructive rewrite.",
+  "type": "object",
+  "$defs": {
+    "organisationForm": {
+      "type": "string",
+      "description": "Organisational form (what sort of organisation this is). MUST NOT encode commercial role (SUPPLIER/CUSTOMER etc.). Those are relationships or CounterpartyRoles (ADR-BCP-014).",
+      "enum": [
+        "COMPANY",
+        "PARTNERSHIP",
+        "TRUST",
+        "ASSOCIATION",
+        "PUBLIC_BODY",
+        "NONPROFIT",
+        "UNINCORPORATED_ORGANISATION",
+        "SOLE_PROPRIETOR",
+        "COOPERATIVE",
+        "GOVERNMENT_ENTITY",
+        "FINANCIAL_INSTITUTION",
+        "OTHER"
+      ]
+    },
+    "verificationState": {
+      "type": "string",
+      "description": "Verification state for identity or relationship claims. Consequential decisions MUST fail closed when state is missing, UNVERIFIED, PENDING_REVIEW, CONFLICTED, REJECTED or EXPIRED.",
+      "enum": [
+        "UNVERIFIED",
+        "PENDING_REVIEW",
+        "VERIFIED",
+        "CONFLICTED",
+        "REJECTED",
+        "EXPIRED"
+      ]
+    },
+    "lifecycleStatus": {
+      "type": "string",
+      "description": "Lifecycle status aligned with CanonicalEntity status vocabulary where practical.",
+      "enum": [
+        "DRAFT",
+        "VALIDATED",
+        "ACTIVE",
+        "DEPRECATED",
+        "SUSPENDED",
+        "MIGRATING",
+        "QUARANTINED",
+        "RETIRED"
+      ]
+    },
+    "organisationIdentifier": {
+      "type": "object",
+      "description": "Jurisdiction-aware legal or regulatory identifier. Uniqueness is (type + jurisdiction + issuer? + value), not value alone.",
+      "required": ["type", "value"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "COMPANY_REGISTRATION",
+            "TAX_IDENTIFIER",
+            "VAT_IDENTIFIER",
+            "CUSTOMS_IDENTIFIER",
+            "IMPORTER_IDENTIFIER",
+            "EXPORTER_IDENTIFIER",
+            "LEI",
+            "OTHER"
+          ]
+        },
+        "value": { "type": "string", "minLength": 1 },
+        "issuing_jurisdiction": { "type": "string" },
+        "issuer": { "type": "string" },
+        "verified": { "type": "boolean", "default": false },
+        "valid_from": { "type": "string", "format": "date-time" },
+        "valid_to": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "organisationAddress": {
+      "type": "object",
+      "description": "Address associated with an Organisation. Address presence does not imply market participation or commercial approval.",
+      "required": ["address_type"],
+      "properties": {
+        "address_type": {
+          "type": "string",
+          "enum": [
+            "REGISTERED",
+            "BILLING",
+            "SHIPPING",
+            "WAREHOUSE",
+            "OPERATING",
+            "CORRESPONDENCE"
+          ]
+        },
+        "lines": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "locality": { "type": "string" },
+        "region": { "type": "string" },
+        "postal_code": { "type": "string" },
+        "country_code": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$",
+          "description": "ISO 3166-1 alpha-2"
+        },
+        "verified": { "type": "boolean", "default": false }
+      },
+      "additionalProperties": false
+    },
+    "Organisation": {
+      "type": "object",
+      "description": "Generic real-world Organisation. Anchored to CanonicalEntity (canonical_entity_id). Describes identity and organisational form only; commercial role is expressed via CounterpartyRole / CounterpartyRelationship (ADR-BCP-014) or PlatformRelationship (this ADR).",
+      "required": [
+        "canonical_entity_id",
+        "display_name",
+        "verification_state",
+        "source_authority",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "canonical_entity_id": {
+          "type": "string",
+          "description": "Platform CanonicalEntity identifier. Organisation identity is never independent of CanonicalEntity.",
+          "minLength": 1
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "official_name": {
+          "type": "string",
+          "description": "Legal / official name when distinct from display_name."
+        },
+        "trading_names": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Trading names, brands or aliases. Do not create new Organisation records solely because of a trading name."
+        },
+        "organisation_form": {
+          "$ref": "#/$defs/organisationForm"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Primary jurisdiction of incorporation or establishment (ISO country or subdivision code preferred)."
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "source_authority": {
+          "type": "string",
+          "description": "Authoritative source that established or last verified this Organisation record (e.g. shared-registry, control-plane-admission, company-registry-provider)."
+        },
+        "status": {
+          "$ref": "#/$defs/lifecycleStatus"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "identifiers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/organisationIdentifier" }
+        },
+        "addresses": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/organisationAddress" }
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "LegalEntityProfile": {
+      "type": "object",
+      "description": "Legally recognised person attached to an Organisation. organisation_id and legal_entity_id remain distinct even when the relationship is one-to-one (ADR-BCP-018). Shared retains governance authority for first-party Nabhold identities; Control Plane is runtime authority for all LegalEntityProfile records.",
+      "required": [
+        "legal_entity_id",
+        "organisation_id",
+        "legal_name",
+        "jurisdiction_of_incorporation",
+        "legal_status",
+        "source_authority",
+        "verification_state",
+        "effective_from"
+      ],
+      "properties": {
+        "legal_entity_id": {
+          "type": "string",
+          "description": "Stable legal-entity identifier. For first-party Nabhold entities this is the Shared registry id (NABHOLD, ZURIBEANS, …). For external entities it is Control-Plane-issued.",
+          "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$"
+        },
+        "organisation_id": {
+          "type": "string",
+          "description": "CanonicalEntity / Organisation identifier this legal person is attached to. MUST differ from legal_entity_id in the identifier space even when cardinality is 1:1."
+        },
+        "legal_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "jurisdiction_of_incorporation": {
+          "type": "string"
+        },
+        "registration_identifiers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/organisationIdentifier" }
+        },
+        "incorporation_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "legal_status": {
+          "type": "string",
+          "description": "Legal status (e.g. ACTIVE, DISSOLVED, IN_LIQUIDATION). Exact vocabulary is extensible and jurisdiction-aware."
+        },
+        "source_authority": {
+          "type": "string"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_references": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Opaque reference to evidence held in a document/evidence system. Binaries are not stored in this contract."
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

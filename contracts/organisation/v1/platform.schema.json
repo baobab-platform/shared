@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baobab.platform/contracts/organisation/v1/platform.schema.json",
+  "title": "Baobab Platform Relationship and Platform Account Contracts (ADR-BCP-018)",
+  "description": "Target path: baobab-platform/shared/contracts/organisation/v1/platform.schema.json\n\nPlatformRelationship answers: how does this Organisation relate to the Baobab Platform?\nPlatformAccount is a commercial / administrative grouping of organisations and tenants\nthat share billing, contract or operational arrangements with Baobab.\n\nCRITICAL DISTINCTIONS:\n  PlatformRelationship != ProductSubscription\n  PlatformRelationship != CorporateRelationship\n  PlatformAccount != Tenant\n  PlatformAccount != authorization boundary\n  same PlatformAccount != shared authorization\n  PLATFORM_GROUP_AFFILIATE != runtime permission\n\nValues such as PLATFORM_OWNER, PLATFORM_OPERATOR, PLATFORM_GROUP_AFFILIATE and\nINTERNAL subscription eligibility are server-authoritative. External applicants\nMUST NOT be able to self-assign them (ADR-BCP-017 / ADR-BCP-018).\n\nControl Plane is the runtime authority.",
+  "type": "object",
+  "$defs": {
+    "verificationState": {
+      "$ref": "domain.schema.json#/$defs/verificationState"
+    },
+    "platformRelationshipType": {
+      "type": "string",
+      "description": "How the Organisation relates to Baobab Platform. Server-authoritative for privileged types.",
+      "enum": [
+        "PLATFORM_OWNER",
+        "PLATFORM_OPERATOR",
+        "PLATFORM_GROUP_AFFILIATE",
+        "PLATFORM_PARTNER",
+        "EXTERNAL_CLIENT",
+        "MANAGED_ENTITY"
+      ]
+    },
+    "PlatformRelationship": {
+      "type": "object",
+      "description": "Lifecycle-managed relationship between an Organisation and the Baobab Platform. Used (together with CorporateRelationship) to derive INTERNAL subscription eligibility.",
+      "required": [
+        "id",
+        "organisation_id",
+        "relationship_type",
+        "verification_state",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "organisation_id": {
+          "type": "string",
+          "description": "CanonicalEntity / Organisation id."
+        },
+        "relationship_type": {
+          "$ref": "#/$defs/platformRelationshipType"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "SUSPENDED", "RETIRED", "PENDING"]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_references": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "source_authority": {
+          "type": "string",
+          "description": "Must be a server-side authority for privileged types (PLATFORM_OWNER, PLATFORM_OPERATOR, PLATFORM_GROUP_AFFILIATE)."
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "PlatformAccount": {
+      "type": "object",
+      "description": "Commercial or administrative account that may cover multiple Organisations and Tenants. Does not confer data access or authorization.",
+      "required": [
+        "id",
+        "display_name",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "primary_organisation_id": {
+          "type": "string",
+          "description": "Optional primary Organisation for the account (e.g. contracting party)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "SUSPENDED", "RETIRED", "PENDING"]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "billing_reference": {
+          "type": "string",
+          "description": "Opaque reference to commercial/billing system. No credentials."
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "PlatformAccountMembership": {
+      "type": "object",
+      "description": "Links an Organisation or Tenant to a PlatformAccount for commercial/administrative purposes only.",
+      "required": [
+        "id",
+        "platform_account_id",
+        "member_type",
+        "member_id",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "platform_account_id": {
+          "type": "string"
+        },
+        "member_type": {
+          "type": "string",
+          "enum": ["ORGANISATION", "TENANT"]
+        },
+        "member_id": {
+          "type": "string",
+          "description": "Organisation canonical_entity_id or tenant_id according to member_type."
+        },
+        "role": {
+          "type": "string",
+          "description": "Optional commercial role within the account (e.g. BILLING_OWNER, CONSUMER). Not an IAM role."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "SUSPENDED", "RETIRED"]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

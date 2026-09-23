@@ -1,6 +1,22 @@
+# =============================================================================
+# Target path: baobab-platform/shared/contracts/erp/v1/system-of-record.yaml
+#
+# This file is a DRAFT amendment of the existing system-of-record.yaml for
+# ADR-BCP-018. Only the Organisation concept is changed in this revision.
+# All other concepts are carried forward unchanged from the current main
+# branch content for review convenience.
+#
+# Change (ADR-BCP-018):
+#   Organisation.canonical_owner  : unassigned  →  control-plane
+#   Shared remains contract/governance authority for the schema.
+#   Control Plane is the runtime authority for Organisation instances,
+#   LegalEntityProfile runtime representation, CorporateRelationship,
+#   PlatformRelationship, PlatformAccount and the tenant mappings.
+# =============================================================================
+
 schema:
   name: baobab-erp-system-of-record
-  version: "1.0"
+  version: "1.1"
   rule: No record is implicitly bidirectional; the declared process owner wins its attributes and corrections are explicit.
 
 concepts:
@@ -20,25 +36,39 @@ concepts:
     canonical_owner: shared
     producer: [shared-governance]
     consumers: [control-plane, erp, trade, infrastructure, digital-estates]
-    external_identifier: canonical legal_entity_id from the Shared registry
+    external_identifier: canonical legal_entity_id from the Shared registry (first-party) or Control Plane runtime registry (external)
     idempiere_representation: one or more private Organisation mappings where approved
     medusa_representation: context metadata only
-    synchronisation_direction: shared_to_consumers
+    synchronisation_direction: shared_to_consumers (first-party); control-plane_to_consumers (external runtime profiles)
     consistency: versioned governance consistency
     mechanism: released registry and explicit mappings
-    conflict_resolution: Shared identity wins; name matching is forbidden
+    conflict_resolution: Shared identity wins for first-party registry ids; name matching is forbidden
+    notes: >
+      ADR-BCP-018: Shared remains the first-party governance source for
+      NABHOLD, ZURIBEANS, THAMANI-GLOBAL and EQUATOR-ESTATE. External
+      LegalEntityProfile records are runtime-owned by Control Plane and do
+      not require a Shared registry entry.
 
   - concept: Organisation
-    canonical_owner: unassigned
-    producer: []
-    consumers: [erp, trade, reporting]
-    external_identifier: not minted until the organisation-model owner is approved
+    # ADR-BCP-018 change: was unassigned / none_until_contract_approved
+    canonical_owner: control-plane
+    producer: [control-plane]
+    consumers: [erp, trade, reporting, control-plane]
+    external_identifier: CanonicalEntity id with Organisation profile (see contracts/organisation/v1/domain.schema.json)
     idempiere_representation: private explicit Organisation mapping where appropriate
-    medusa_representation: optional future context attribute
-    synchronisation_direction: none_until_contract_approved
-    consistency: unavailable
-    mechanism: deferred cross-engine contract
-    conflict_resolution: equality with tenant, legal entity or ERP Organisation is forbidden; ambiguous mappings are quarantined
+    medusa_representation: optional context attribute (organisation_id)
+    synchronisation_direction: control-plane_to_engines
+    consistency: strong at registration; eventual projection
+    mechanism: CanonicalEntity + Organisation profile; context resolution verifies organisation_id
+    conflict_resolution: >
+      Equality with tenant, legal entity or ERP Organisation is forbidden.
+      Ambiguous mappings are quarantined. IAM Organisation claims are never
+      treated as canonical truth; they resolve only via ExternalReference.
+    notes: >
+      ADR-BCP-018 establishes Control Plane as runtime authority while Shared
+      remains contract/governance authority for the schema. BUYER_ORGANISATION
+      and SUPPLIER_ORGANISATION specialisations (ADR-BCP-016 / ADR-0006) remain
+      valid and migrate forward without destructive rewrite.
 
   - concept: User
     canonical_owner: identity-provider
