@@ -108,6 +108,13 @@ Fix items 1 to 8 in §4. Add fixtures for the following:
 
 **Done when:** the self-consumer passes under `full`, `contract`, `security-pr`, `security-deep` and `container` through `workflow_dispatch`, and the emitted check names are recorded in the support policy.
 
+**Progress (2026-09-23):** fixes for items 1–3, 5 and 7 are pushed to PR #68 as `db79dda`. Review also found two more defects, both now fixed:
+
+* The three `foundation-product-*.yml` files were invalid YAML, because of an unquoted `: ` in `name:`.
+* The Rust adapter's download URL returned 404, and `cargo-audit` 0.21.2 cannot parse the current RustSec advisory database. It now uses checksum-verified 0.22.2.
+
+`test_policy.rb` now executes the real `Foundation / Result` script. Items 4 (a real PR/deep split) and 6 (nesting depth) are still open.
+
 ### Phase 3: close H2 (SAST provider decided in the repository contract)
 
 * GitHub Team does not include Code Security (CodeQL and dependency review on private repositories); that is a separate paid add-on. So private repositories default to `fallback`. CodeQL runs only in the public repositories: `shared`, baobab-cp and zuribeans.
@@ -147,6 +154,16 @@ Every repository needs the same three changes:
 | Python service | baobab-dev (private) | Fixes the live `startup_failure`. SAST fallback path. |
 | Digital estate | equator-estate (private) | Container product with `release_require_zero_exceptions`. |
 | Infrastructure | infrastructure (private) | Terraform capability. Confirm the classifier detects it, since nothing was found at the repository root. |
+
+**5A progress (2026-09-23):** each pilot's `chore/foundation-ci-v2` branch now has `main` merged in, is pinned to the candidate `db79dda`, and has no `nabhold/shared` references left. The public pilots have `advanced_security_enabled: true`. The real classifier and schema validation pass locally for all five.
+
+| Pilot | PR | Pilot branch head | Notes |
+|---|---|---|---|
+| baobab-cp | [#137](https://github.com/baobab-platform/baobab-cp/pull/137) | `51280fc` | `milestone-move.yml` still targets the `nabhold` organisation project board. Confirm whether the board moved. |
+| zuribeans | [#74](https://github.com/baobab-platform/zuribeans/pull/74) | `081512e` | — |
+| baobab-dev | [#35](https://github.com/baobab-platform/baobab-dev/pull/35) | `fa47e4b` | The Python adapter finds no known vulnerabilities in `uv.lock`. |
+| equator-estate | [#15](https://github.com/baobab-platform/equator-estate/pull/15) | `6259225` | **The Python adapter will fail**, correctly. `requirements.txt` pins `urllib3` 1.26.20, `requests` 2.32.3, `idna` 3.10 and `markdown` 3.7, which have known advisories. Upgrade them; do not waive the check. |
+| infrastructure | [#7](https://github.com/baobab-platform/infrastructure/pull/7) | `763d2a5` | Classified as `infrastructure`. |
 
 **5B: remaining services:** baobab-cms, baobab-erp\*, baobab-iam\*, baobab-payments, baobab-pulse, baobab-subscriptions, baobab-trade\*, nabhold, thamani\*.
 \* Set `dependency_review_enabled: false` and declare a reviewed `dependency-review` exception before merging. GitHub Team alone does not make dependency review available on private repositories (D2).
