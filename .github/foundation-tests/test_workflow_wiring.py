@@ -155,8 +155,13 @@ assert ".foundation/.baobab/environment-profiles.json" in environment_text
 assert "1.2.6" not in environment_text
 assert "1.4.0-rc.0" not in environment_text
 
+# Approved GitHub-hosted runner label for every workflow in this repository.
+RUNNER_LABEL = "ubuntu-26.04"
+
 for path in WORKFLOWS.glob("*.y*ml"):
     text = path.read_text()
+    for label in re.findall(r"^\s*runs-on:\s*(\S+)", text, re.MULTILINE):
+        assert label == RUNNER_LABEL, f"{path} uses runner {label}; expected {RUNNER_LABEL}"
     assert "contains(fromJSON(inputs.exceptions)" not in text, f"unsafe exception lookup in {path}"
     for reference in re.findall(r"^\s*uses:\s*([^\s#]+)", text, re.MULTILINE):
         if reference.startswith("./"):
