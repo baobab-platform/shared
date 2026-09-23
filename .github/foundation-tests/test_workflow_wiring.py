@@ -123,6 +123,11 @@ assert "pip-audit" in adapters_text
 assert "govulncheck" in adapters_text
 assert "cargo-audit" in adapters_text
 assert "foundation-dependency-adapters" in adapters_text
+# Python audits the lockfile, never the runner environment; Rust is checksum-verified.
+assert "pip-audit -l" not in adapters_text and "|| pip-audit" not in adapters_text
+assert "--no-deps --disable-pip" in adapters_text
+assert "tomllib" in adapters_text
+assert "sha256sum --check --strict" in adapters_text
 
 sast, sast_text = load("reusable-foundation-sast.yml")
 assert {"plan", "analyze", "status"} <= set(sast["jobs"])

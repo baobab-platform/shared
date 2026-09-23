@@ -32,7 +32,7 @@ The classifier publishes Boolean workflow outputs. Downstream jobs use those out
 | Security (deep) | `foundation-product-security.yml` (`mode: deep`) | `security-deep` | same jobs; intended for schedule / monitoring |
 | Container / release | `foundation-product-container.yml` | `container` | classify, container policy, build, scan, SBOM |
 
-Branch protection may still require **`Foundation / Result`** from a caller whose job id is `foundation`. Product-only callers emit the same aggregate name when they use the orchestrator’s `result` job; configure rulesets from a successful pilot emission.
+Branch protection requires the single combined result **`foundation / Foundation / Result`**, emitted when a caller job with id `foundation` calls `foundation-repository-gates.yml` directly. Product wrappers add a level of reusable-workflow nesting, so their checks are named `foundation / foundation / Foundation / Result` and are **not** the required check. Use them only for additional, non-required runs such as scheduled deep security.
 
 Existing callers that omit `profile` continue to receive `full` behaviour.
 

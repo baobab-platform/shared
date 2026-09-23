@@ -20,7 +20,7 @@ permissions:
 jobs:
   adapters:
     name: Dependency adapters
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -101,32 +101,55 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check "pip-audit==2.9.0"
+
+          # Audit the locked dependency set, never the runner's own environment.
+          # Lockfiles are converted to exact pins so pip-audit does not resolve.
+          lock_to_requirements() {
+            python - "$1" <<'EOF'
+          import sys, tomllib
+          path = sys.argv[1]
+          with open(path, "rb") as handle:
+              lock = tomllib.load(handle)
+          pins = set()
+          for package in lock.get("package", []):
+              source = package.get("source") or {}
+              # uv marks index packages with source.registry; poetry omits source
+              # for PyPI and uses type "legacy" for other indexes. Workspace,
+              # path and git packages are not published and cannot be audited.
+              if path.endswith("uv.lock") and "registry" not in source:
+                  continue
+              if path.endswith("poetry.lock") and source.get("type") not in (None, "legacy"):
+                  continue
+              pins.add(f"{package['name']}=={package['version']}")
+          if not pins:
+              sys.exit(f"{path}: no registry packages found to audit")
+          print("\n".join(sorted(pins)))
+          EOF
+          }
+
           case "$PY_MGR" in
-            uv)
-              if [[ -f uv.lock ]]; then
-                pip-audit -l uv.lock || pip-audit
-              else
-                pip-audit
+            uv | poetry)
+              lockfile="$([[ "$PY_MGR" == uv ]] && echo uv.lock || echo poetry.lock)"
+              if [[ ! -f "$lockfile" ]]; then
+                echo "::error::Python package manager $PY_MGR requires $lockfile for the dependency audit"
+                exit 1
               fi
-              ;;
-            poetry)
-              if [[ -f poetry.lock ]]; then
-                pip-audit -l poetry.lock || pip-audit
-              else
-                pip-audit
-              fi
+              lock_to_requirements "$lockfile" > "$RUNNER_TEMP/python-requirements.txt"
+              pip-audit -r "$RUNNER_TEMP/python-requirements.txt" --no-deps --disable-pip --progress-spinner off
               ;;
             pip)
-              if [[ -f requirements.txt ]]; then
-                pip-audit -r requirements.txt
-              elif [[ -f requirements.lock ]]; then
-                pip-audit -r requirements.lock
+              if [[ -f requirements.lock ]]; then
+                pip-audit -r requirements.lock --progress-spinner off
+              elif [[ -f requirements.txt ]]; then
+                pip-audit -r requirements.txt --progress-spinner off
               else
-                pip-audit
+                echo "::error::Python package manager pip requires requirements.lock or requirements.txt for the dependency audit"
+                exit 1
               fi
               ;;
             *)
-              pip-audit
+              echo "::error::Unsupported Python package manager: $PY_MGR"
+              exit 1
               ;;
           esac
 
@@ -155,9 +178,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL https://github.com/rustsec/rustsec/releases/download/cargo-audit%2Fv0.21.2/cargo-audit-x86_64-unknown-linux-gnu.tgz -o cargo-audit.tgz
-          tar -xzf cargo-audit.tgz
-          ./cargo-audit-x86_64-unknown-linux-gnu/cargo-audit audit
+          version="0.22.2"
+          sha256="ab28a1bdb54db4d5d8ad5981cf1f959410370b3d28250dbd35f6a44248620e39"
+          archive="cargo-audit-x86_64-unknown-linux-gnu-v${version}"
+          curl -fsSL "https://github.com/rustsec/rustsec/releases/download/cargo-audit%2Fv${version}/${archive}.tgz" -o "$RUNNER_TEMP/cargo-audit.tgz"
+          echo "${sha256}  $RUNNER_TEMP/cargo-audit.tgz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/cargo-audit.tgz" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/${archive}/cargo-audit" audit
 
       - name: Terraform provider lock evidence
         if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_infra == 'true' }}

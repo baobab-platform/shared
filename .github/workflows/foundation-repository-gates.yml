@@ -119,7 +119,7 @@ jobs:
     name: Foundation / Result
     if: always()
     needs: [classify, baseline, reproducibility, runtime, environment, security, container]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Evaluate activated gates and publish exception evidence
         env:
@@ -134,10 +134,21 @@ jobs:
 
           needs = JSON.parse(ENV.fetch("RESULTS"))
           profile = ENV.fetch("PROFILE")
-          allowed = %w[full contract security-pr security-deep container]
-          abort "unsupported Foundation profile: #{profile.inspect}" unless allowed.include?(profile)
+          families = {
+            "full" => %w[classify baseline reproducibility runtime environment security container],
+            "contract" => %w[classify baseline reproducibility runtime environment],
+            "security-pr" => %w[classify security],
+            "security-deep" => %w[classify security],
+            "container" => %w[classify container]
+          }
+          abort "unsupported Foundation profile: #{profile.inspect}" unless families.key?(profile)
+          active = families.fetch(profile)
 
-          failed = needs.select { |_, value| !%w[success skipped].include?(value.fetch("result")) }
+          # Gates in the profile must succeed. Only gates outside it may be
+          # skipped; any other skip is unexplained and fails the aggregate.
+          failed = needs.reject do |name, value|
+            value.fetch("result") == (active.include?(name) ? "success" : "skipped")
+          end
           puts "profile=#{profile}"
           puts needs.map { |name, value| "#{name}=#{value.fetch('result')}" }.join("\n")
 

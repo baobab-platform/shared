@@ -1,4 +1,4 @@
-name: Reusable — Foundation Product: Contract
+name: "Reusable — Foundation Product: Contract"
 # Repository contract family: classification, baseline, reproducibility,
 # runtime quality, and development-environment validation.
 # Use for PR feedback when security/container are owned by other workflows.

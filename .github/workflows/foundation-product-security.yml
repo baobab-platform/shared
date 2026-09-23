@@ -1,4 +1,4 @@
-name: Reusable — Foundation Product: Security
+name: "Reusable — Foundation Product: Security"
 # PR security (security-pr) or scheduled deep security (security-deep).
 # Same control jobs today; profile documents intent and branch-protection naming.
 # Prefer dependency_review_enabled on pull_request; keep advanced_security_enabled

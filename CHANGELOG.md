@@ -102,8 +102,15 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
-- Foundation aggregator treats profile-gated skipped jobs as non-failures so
-  product profiles can omit unused families without failing `Foundation / Result`.
+- Foundation aggregator accepts a skipped gate only when the selected profile
+  excludes it; gates inside the profile must succeed, so unexplained skips
+  still fail `Foundation / Result`. The policy fixture now executes the real
+  aggregator script.
+- Python dependency adapter audits exact pins derived from `uv.lock` /
+  `poetry.lock` (or `requirements.lock` / `requirements.txt`) instead of the
+  runner environment, and fails when the manifest is missing.
+- Rust dependency adapter uses checksum-verified `cargo-audit` 0.22.2 (0.21.2
+  cannot parse the current RustSec advisory database).
 - Control Plane lifecycle events and error responses now consume the canonical
   cross-engine contracts instead of defining local metadata shapes.
 - Baobab-Platform now declares confirmed `baobab-erp` consumption. Its digital estate
