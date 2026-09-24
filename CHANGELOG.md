@@ -102,7 +102,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
-- Foundation CI **`v2.1.0` promotion candidate** is `53ed9cd` (see
+- Foundation CI **`v2.1.0` is promoted** at `53ed9cd` (see
   `docs/governance/foundation-ci-promotion-v2.1.0.md`). `v2.0.0` was tagged
   before its promotion criteria were met and is superseded; do not pin it.
 - Foundation aggregator accepts a skipped gate only when the selected profile

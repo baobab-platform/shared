@@ -22,13 +22,12 @@ A Foundation revision is promotable only after all of the following are green:
 
 The stable reusable entry point remains `.github/workflows/foundation-repository-gates.yml`. Consumers must not reference its internal component workflows directly. Product entrypoints (`foundation-product-*.yml`) are supported wrappers over the same orchestrator.
 
-### Current promotion candidate
+### Current promoted release
 
 See `docs/governance/foundation-ci-promotion-v2.1.0.md`.
 
-- **Candidate SHA:** `53ed9cdba8fc33e2f184d1ba29b990f71b74f85f`
-- **Proposed tag:** `v2.1.0`
-- **Tag status:** not cut — requirements 1 to 4 are green (all 12 pilots pass on the candidate); ready to tag. Do not treat `main` HEAD as a supported release until that record is updated to **promoted**.
+- **Tag:** `v2.1.0`
+- **Peeled SHA:** `53ed9cdba8fc33e2f184d1ba29b990f71b74f85f` — consumers pin this SHA in both `uses:` and `foundation_ref`.
 - **`v2.0.0`:** tagged before the promotion criteria were met; superseded by `v2.1.0`. Do not pin it.
 
 ## Required check

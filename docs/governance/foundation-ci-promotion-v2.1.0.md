@@ -1,6 +1,6 @@
 # Foundation CI v2.1.0 promotion record
 
-**Status:** Candidate — requirements 1 to 4 are green. **Ready to tag**; the tag is not yet cut.
+**Status:** **Promoted** — tag `v2.1.0` cut on 2026-09-24; peeled SHA `53ed9cdba8fc33e2f184d1ba29b990f71b74f85f` (verified with `git rev-list -n1 'v2.1.0^{}'`).
 **Candidate revision:** `53ed9cdba8fc33e2f184d1ba29b990f71b74f85f` (`shared` `main`, merge of #73)
 **Proposed tag:** `v2.1.0` (decision D4 in `foundation-ci-org-conformance-plan-2026-09-23.md`)
 **Date opened:** 2026-09-24
@@ -32,7 +32,7 @@ All input changes are additive, so a caller on `b1e2937` or `468f0e6` repins by 
 | 2 | `shared` self-consumer Foundation run | **Green** — Foundation Repository Gates ([run 35941045992](https://github.com/baobab-platform/shared/actions/runs/35941045992)), push to `main` on `53ed9cd`. |
 | 3 | One representative consumer per activated runtime or artifact class | **Green** — all 12 pilots pass `foundation / Foundation / Result` on the candidate (table below). |
 | 4 | Exact emitted result check name | **Verified:** `foundation / Foundation / Result` (caller job id `foundation`), read from the pilot check runs. |
-| 5 | Consumer references pinned to the promoted commit SHA | **In progress** — repin PRs below; merge after the pilot runs are green. |
+| 5 | Consumer references pinned to the promoted commit SHA | **In progress** — the repin PRs below already pin `53ed9cd`, the promoted SHA, and are merged after this record. |
 
 ## Pilot cohort (requirement 3)
 
