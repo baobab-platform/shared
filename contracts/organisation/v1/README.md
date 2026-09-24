@@ -20,6 +20,7 @@ Every file is a definition library. Validate a resource against its fragment URI
 | `relationship.schema.json` | `CorporateRelationship`, `CorporateGroup`, `CorporateGroupMembership` |
 | `platform.schema.json` | `PlatformRelationship`, `PlatformAccount`, `PlatformAccountMembership` |
 | `mapping.schema.json` | `TenantOrganisationMapping`, `TenantLegalEntityMapping` |
+| `iam.schema.json` | `IamOrganisationReference` (canonical Organisation ↔ IAM-native organisation), `IamOrganisationEvidence` and the `keycloakOrganizationClaim` form |
 | `events.schema.json` | Data payloads of the ADR-BCP-018 §124 lifecycle events |
 | `asyncapi.yaml` | Registers those events and composes each with the canonical envelope (`contracts/events/v1`) |
 | `examples/` | Illustrative instances for Nabhold Group Africa and an external group; `examples/events/` holds example event envelopes |
@@ -40,6 +41,7 @@ The Control Plane mints each resource ID. IDs are opaque and never contain names
 | PlatformAccountMembership | `pam_[a-z0-9]+` |
 | TenantOrganisationMapping | `tom_[a-z0-9]+` |
 | TenantLegalEntityMapping | `tlem_[a-z0-9]+` |
+| IamOrganisationReference | `iamorg_[a-z0-9]+` |
 
 These IDs replace the earlier reuse of `control-plane/v1#/$defs/mappingId` (`map_*`). That grammar still belongs to the canonical-mapping contract.
 
@@ -135,3 +137,11 @@ Any consequential decision that depends on a relationship MUST fail closed when 
 3. Registration creates `UNVERIFIED` or `PENDING_REVIEW` facts. Only an explicit, governed verification step (ADR-BCP-023) moves them to `VERIFIED`.
 4. Derive INTERNAL subscription eligibility (ADR-BCP-017) only from VERIFIED, directed `OWNS`/`CONTROLS` paths.
 5. Prove the five security statements through the real authorization path before merge.
+
+## IAM organisation projection (gate ORG-10)
+
+A Keycloak Organization is an IAM projection of a canonical Organisation, never the Organisation itself (ADR-BCP-018 §64, §97, §180).
+
+- **Explicit links.** An `IamOrganisationReference` links one canonical Organisation to one provider organisation, scoped by the token `issuer` (for Keycloak, the realm issuer URL). An Organisation may have several links, for example one per realm or region (§65). One provider organisation within one issuer maps to exactly one Organisation. Links are retired, never deleted, and only an ACTIVE link inside its effective window resolves.
+- **Claims are evidence, not truth (§66).** Baobab relies on Keycloak's `organization` claim in the form that includes the organisation id (`keycloakOrganizationClaim`). Only the id is evidence; aliases are mutable display handles and are never resolved, and the alias-only list form is not resolvable. A workload passes the selected organisation to the Control Plane as `IamOrganisationEvidence` (`provider`, `issuer`, `provider_organisation_id`). The Control Plane resolves it through an active link and then validates the resulting Organisation against the tenant, exactly as for a canonical `organisation_id`. Unknown, retired or ambiguous evidence fails closed.
+- **No trust shortcuts (§67).** Claims such as `ultimate_parent` or `allow_all_subsidiaries` are not part of this contract and confer nothing.

@@ -48,7 +48,7 @@ RESPONSIBILITIES = {
         "corporateRelationshipId", "corporateGroupId", "corporateGroupMembershipId",
         "platformRelationshipId", "platformAccountId", "platformAccountMembershipId",
         "tenantOrganisationMappingId", "tenantLegalEntityMappingId", "platformId",
-        "evidenceReference", "relationshipClassification",
+        "evidenceReference", "relationshipClassification", "iamOrganisationReferenceId",
     },
     "relationship.schema.json": {
         "CorporateRelationship", "CorporateGroup", "CorporateGroupMembership",
@@ -61,6 +61,10 @@ RESPONSIBILITIES = {
     "mapping.schema.json": {
         "TenantOrganisationMapping", "TenantLegalEntityMapping", "mappingStatus",
         "tenantOrganisationMappingRole", "tenantLegalEntityMappingRole",
+    },
+    "iam.schema.json": {
+        "IamOrganisationReference", "IamOrganisationEvidence", "keycloakOrganizationClaim",
+        "iamProvider", "iamIssuer", "providerOrganisationId", "iamReferenceStatus",
     },
     "events.schema.json": {
         "OrganisationCreated", "OrganisationVerified", "OrganisationSuspended", "LegalEntityVerified",
@@ -107,6 +111,7 @@ EXAMPLE_KEYS = {
     "platform_account_memberships": ("platform.schema.json", "PlatformAccountMembership"),
     "tenant_organisation_mappings": ("mapping.schema.json", "TenantOrganisationMapping"),
     "tenant_legal_entity_mappings": ("mapping.schema.json", "TenantLegalEntityMapping"),
+    "iam_organisation_references": ("iam.schema.json", "IamOrganisationReference"),
 }
 
 REQUIRED_CORPORATE_VOCABULARY = {"OWNS", "CONTROLS", "BRANCH_OF", "AFFILIATE_OF", "JOINT_VENTURE_WITH", "SUCCESSOR_OF"}
@@ -317,6 +322,17 @@ def check_example_semantics(label: str, doc: dict) -> None:
     for tenant, count in defaults.items():
         if count > 1:
             fail(f"{label}: tenant {tenant} has {count} active DEFAULT legal-entity mappings")
+    # Section 65: one IAM organisation within one issuer is exactly one
+    # canonical Organisation; one Organisation may have several.
+    live_iam: dict[tuple[str, str, str], str] = {}
+    for ref in doc.get("iam_organisation_references", []):
+        need_org(ref["id"], ref["organisation_id"])
+        if ref["status"] != "ACTIVE":
+            continue
+        key = (ref["provider"], ref["issuer"], ref["provider_organisation_id"])
+        if key in live_iam:
+            fail(f"{label}: {ref['id']} and {live_iam[key]} both actively link {key}")
+        live_iam[key] = ref["id"]
 
 
 examples: dict[str, dict] = {}
@@ -428,6 +444,34 @@ if nabhold is not None and acme is not None:
     negative("commercial role as organisation form", "domain.schema.json", "Organisation", r)
     r = first(A, "organisations"); r["jurisdiction"] = "Kenya"
     negative("non-ISO jurisdiction", "domain.schema.json", "Organisation", r)
+
+    r = by(A, "iam_organisation_references", status="ACTIVE"); del r["issuer"]
+    negative("IamOrganisationReference without issuer", "iam.schema.json", "IamOrganisationReference", r)
+    r = by(A, "iam_organisation_references", status="ACTIVE"); r["issuer"] = "http://id.baobab-platform.com/realms/baobab"
+    negative("non-HTTPS IAM issuer", "iam.schema.json", "IamOrganisationReference", r)
+    r = by(A, "iam_organisation_references", status="ACTIVE"); r["id"] = "iamorg_Acme-Foods"
+    negative("human-readable IamOrganisationReference id", "iam.schema.json", "IamOrganisationReference", r)
+    r = by(A, "iam_organisation_references", status="ACTIVE"); r["status"] = "DELETED"
+    negative("IamOrganisationReference deleted instead of retired", "iam.schema.json", "IamOrganisationReference", r)
+    r = by(A, "iam_organisation_references", status="ACTIVE"); r["provider"] = "okta"
+    negative("unregistered IAM provider", "iam.schema.json", "IamOrganisationReference", r)
+    negative("IAM evidence smuggling a canonical organisation_id", "iam.schema.json", "IamOrganisationEvidence",
+             {"provider": "keycloak", "issuer": "https://id.baobab-platform.com/realms/baobab",
+              "provider_organisation_id": "7f1c2a9e-3b4d-4e8f-9a1b-2c3d4e5f6a7b", "organisation_id": "ce_01k8z3m5r2fd"})
+    negative("IAM evidence without a provider organisation id", "iam.schema.json", "IamOrganisationEvidence",
+             {"provider": "keycloak", "issuer": "https://id.baobab-platform.com/realms/baobab"})
+    negative("alias-only organization claim", "iam.schema.json", "keycloakOrganizationClaim", ["acme-foods"])
+    negative("organization claim entry without id", "iam.schema.json", "keycloakOrganizationClaim", {"acme-foods": {}})
+    negative("empty organization claim", "iam.schema.json", "keycloakOrganizationClaim", {})
+
+    # Positive: the claim form and the evidence derived from it.
+    claim = {"acme-foods": {"id": "7f1c2a9e-3b4d-4e8f-9a1b-2c3d4e5f6a7b"}}
+    for error in errors_for("iam.schema.json", "keycloakOrganizationClaim", claim):
+        fail(f"sample Keycloak organization claim rejected: {error}")
+    evidence = {"provider": "keycloak", "issuer": "https://id.baobab-platform.com/realms/baobab",
+                "provider_organisation_id": claim["acme-foods"]["id"]}
+    for error in errors_for("iam.schema.json", "IamOrganisationEvidence", evidence):
+        fail(f"sample IAM organisation evidence rejected: {error}")
 
 for label, schema_file, definition, record in NEGATIVE:
     if schema_file and not errors_for(schema_file, definition, record):

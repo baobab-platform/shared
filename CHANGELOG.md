@@ -23,6 +23,15 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **IAM organisation projection (ADR-BCP-018 gate ORG-10).**
+  `contracts/organisation/v1/iam.schema.json` defines `IamOrganisationReference`,
+  the explicit, issuer-scoped link from a canonical Organisation to a Keycloak
+  Organization (many per Organisation, exactly one Organisation per issuer and
+  provider organisation id); `IamOrganisationEvidence`, which workloads present
+  instead of a canonical `organisation_id`; and the `keycloakOrganizationClaim`
+  form Baobab relies on (organisation ids, never aliases). New
+  `iamOrganisationReferenceId` grammar (`iamorg_*`), examples and negative
+  fixtures in `scripts/validate-organisation-contracts.py`.
 - **One event namespace.** `contracts/control-plane/v1` now registers every
   event `baobab-platform/baobab-cp` emits that was previously unregistered:
   `com.baobab-platform.control-plane.tenant.provisioning-ready/-active/-failed.v1`

@@ -63,6 +63,13 @@
       "maxLength": 63,
       "description": "Opaque Control Plane-minted TenantLegalEntityMapping identifier. Must not embed organisation names, countries, markets or brands."
     },
+    "iamOrganisationReferenceId": {
+      "type": "string",
+      "pattern": "^iamorg_[a-z0-9]+$",
+      "minLength": 8,
+      "maxLength": 63,
+      "description": "Opaque Control Plane-minted IamOrganisationReference identifier. Must not embed organisation names, realms, providers or brands."
+    },
     "platformId": {
       "type": "string",
       "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
