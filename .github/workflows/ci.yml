@@ -37,6 +37,12 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/validate-event-registry.py to the governance-contracts job:
+#   every event type in every asyncapi.yaml is canonical com.baobab-platform.*
+#   and registered once platform-wide, its payload resolves, every example
+#   envelope validates, and no contract mentions a legacy com.nabhold.* type
+#   (ADR-SHARED-008). The job now sets up Python with the Foundation fixture
+#   runtime for real JSON Schema Draft 2020-12 validation.
 # * Added scripts/validate-organisation-contracts.py to the
 #   governance-contracts job, covering contracts/organisation/v1
 #   (ADR-BCP-018). It is the first contract gate that performs real JSON
@@ -72,6 +78,7 @@ on:
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
       - "scripts/validate-trade-contracts.rb"
+      - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
@@ -89,6 +96,7 @@ on:
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
       - "scripts/validate-trade-contracts.rb"
+      - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
@@ -124,6 +132,8 @@ jobs:
           python-version: "3.13"
       - name: Install JSON Schema runtime
         run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
+      - name: Validate the platform event registry (ADR-SHARED-008)
+        run: python scripts/validate-event-registry.py
       - name: Validate organisation contracts and examples (Draft 2020-12)
         run: python scripts/validate-organisation-contracts.py
 

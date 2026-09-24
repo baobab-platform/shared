@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/market-participation-updated.schema.json",
+  "title": "Market participation updated payload",
+  "description": "A tenant's MarketAssignment governance (status or source) changed. Produced by baobab-platform/baobab-cp from its transactional outbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "market_assignment_id",
+    "tenant_id",
+    "status",
+    "source"
+  ],
+  "properties": {
+    "market_assignment_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "$ref": "domain.schema.json#/$defs/tenantId"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "ACTIVE",
+        "SUSPENDED",
+        "RETIRED"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "PROVISIONING",
+        "POLICY",
+        "ADMIN",
+        "MIGRATION"
+      ]
+    }
+  }
+}
