@@ -76,6 +76,10 @@ RESPONSIBILITIES = {
         "counterpartyRoleId", "resolutionCandidateId", "counterpartyRoleType", "counterpartyRoleStatus",
         "legacyOrganisationKind", "resolutionCandidateStatus", "matchedIdentifier",
     },
+    "observability.schema.json": {
+        "RelationshipDriftFinding", "RelationshipDriftReport", "OrganisationAuditEntry", "driftRule",
+        "driftType", "driftSeverity", "driftResourceType", "organisationMetric", "organisationMetricLabel",
+    },
     "events.schema.json": {
         "OrganisationCreated", "OrganisationVerified", "OrganisationSuspended", "LegalEntityVerified",
         "CorporateRelationshipActivated", "CorporateRelationshipEnded", "CorporateRelationshipConflicted",
@@ -126,7 +130,22 @@ EXAMPLE_KEYS = {
     "organisation_admission_outcomes": ("admission.schema.json", "OrganisationAdmissionOutcome"),
     "counterparty_roles": ("counterparty.schema.json", "CounterpartyRole"),
     "organisation_resolution_candidates": ("counterparty.schema.json", "OrganisationResolutionCandidate"),
+    "relationship_drift_findings": ("observability.schema.json", "RelationshipDriftFinding"),
+    "organisation_audit_entries": ("observability.schema.json", "OrganisationAuditEntry"),
 }
+
+# ORG-15: ADR-BCP-018 section 130's metric catalogue, and label names that
+# would make metrics high-cardinality or leak identity (ADR-BCP-008 s44).
+SECTION_130_METRICS = {
+    "organisation_total", "organisation_verification_total", "organisation_duplicate_candidate_total",
+    "corporate_relationship_total", "corporate_relationship_conflict_total", "corporate_relationship_expiry_total",
+    "platform_relationship_total", "platform_relationship_reclassification_total", "platform_account_total",
+    "platform_account_membership_total", "tenant_organisation_mapping_total", "tenant_legal_entity_mapping_total",
+    "internal_eligibility_review_total", "relationship_drift_total", "relationship_resolution_failure_total",
+    "cross_tenant_group_access_denied_total",
+}
+FORBIDDEN_METRIC_LABELS = {"tenant_id", "organisation_id", "legal_entity_id", "name", "display_name",
+                           "registration_number", "identifier", "user_id", "principal_id"}
 
 # ORG-13: identity is matched on these governed identifier types only
 # (ADR-BCP-018 section 99), normalised as the Control Plane compares them.
@@ -258,6 +277,15 @@ if not REQUIRED_PLATFORM_VOCABULARY <= platform_vocab:
     fail(f"platformRelationshipType missing {sorted(REQUIRED_PLATFORM_VOCABULARY - platform_vocab)}")
 if "tenant_id" in SCHEMAS["relationship.schema.json"]["$defs"]["CorporateRelationship"]["properties"]:
     fail("CorporateRelationship must not carry tenant_id (ADR-BCP-018 section 17)")
+observability = SCHEMAS["observability.schema.json"]["$defs"]
+if set(observability["organisationMetric"]["enum"]) != SECTION_130_METRICS:
+    fail(f"organisationMetric must be exactly ADR-BCP-018 section 130's catalogue; "
+         f"missing={sorted(SECTION_130_METRICS - set(observability['organisationMetric']['enum']))} "
+         f"unexpected={sorted(set(observability['organisationMetric']['enum']) - SECTION_130_METRICS)}")
+if set(observability["organisationMetricLabel"]["enum"]) & FORBIDDEN_METRIC_LABELS:
+    fail(f"organisation metric labels must stay low-cardinality and anonymous: {sorted(set(observability['organisationMetricLabel']['enum']) & FORBIDDEN_METRIC_LABELS)}")
+if set(observability["RelationshipDriftFinding"]["properties"]) & FORBIDDEN_EVENT_FIELDS:
+    fail("RelationshipDriftFinding must not carry names or evidence (ADR-BCP-018 section 125)")
 if "root_organisation_id" in SCHEMAS["relationship.schema.json"]["$defs"]["CorporateGroup"]["required"]:
     fail("CorporateGroup.root_organisation_id must stay optional; a unique root may not exist")
 
@@ -396,6 +424,13 @@ def check_example_semantics(label: str, doc: dict) -> None:
         return any(t == match["type"] and v == match["normalised_value"] and (not jurisdiction or j in ("", jurisdiction))
                    for t, v, j in governed.get(ce, set()))
 
+    # ORG-15: findings name known organisations; audit entries are unique.
+    for finding in doc.get("relationship_drift_findings", []):
+        for ce in finding.get("organisation_ids", []):
+            need_org(f"drift {finding['resource_id']}", ce)
+    audit_ids = [a["audit_id"] for a in doc.get("organisation_audit_entries", [])]
+    if len(audit_ids) != len(set(audit_ids)):
+        fail(f"{label}: duplicate audit_id")
     pairs: dict[frozenset, str] = {}
     for cand in doc.get("organisation_resolution_candidates", []):
         pair = frozenset(cand["organisation_ids"])
@@ -432,6 +467,8 @@ nabhold = examples.get("nabhold-group-organisation.json")
 acme = examples.get("acme-holdings-external.json")
 if nabhold is None or acme is None:
     fail("examples must include nabhold-group-organisation.json and acme-holdings-external.json")
+if "organisation-drift-and-audit.json" not in examples:
+    fail("examples must include organisation-drift-and-audit.json (ADR-BCP-018 gate ORG-15)")
 if "legacy-buyer-supplier-migration.json" not in examples:
     fail("examples must include legacy-buyer-supplier-migration.json (ADR-BCP-018 gate ORG-13)")
 else:
@@ -603,6 +640,26 @@ if nabhold is not None and acme is not None and "legacy-buyer-supplier-migration
     negative("decision naming its own reviewer", "counterparty.schema.json", "ResolutionCandidateDecision",
              {"decision": "DISTINCT", "reason": "different companies", "decided_by": "prn_01k8z4f1rvwr"})
     negative("decision without a reason", "counterparty.schema.json", "ResolutionCandidateDecision", {"decision": "DISTINCT"})
+
+    # Drift and audit lineage (ORG-15).
+    D = "organisation-drift-and-audit.json"
+    if D in examples:
+        r = first(D, "relationship_drift_findings"); r["auto_repairable"] = True
+        negative("auto-repairable relationship drift", "observability.schema.json", "RelationshipDriftFinding", r)
+        r = first(D, "relationship_drift_findings"); r["remediation"] = "CASCADE"
+        negative("drift remediated by cascade", "observability.schema.json", "RelationshipDriftFinding", r)
+        r = first(D, "relationship_drift_findings"); r["display_name"] = "Illustrative Subsidiary"
+        negative("drift finding carrying an organisation name", "observability.schema.json", "RelationshipDriftFinding", r)
+        r = first(D, "relationship_drift_findings"); r["severity"] = "HIGH"
+        negative("drift severity outside ADR-BCP-008", "observability.schema.json", "RelationshipDriftFinding", r)
+        r = first(D, "relationship_drift_findings"); r["rule"] = "SOMETHING_ODD"
+        negative("unregistered drift rule", "observability.schema.json", "RelationshipDriftFinding", r)
+        r = first(D, "organisation_audit_entries"); del r["actor"]
+        negative("audit entry without an actor", "observability.schema.json", "OrganisationAuditEntry", r)
+        r = first(D, "organisation_audit_entries"); r["action"] = "Verified Ownership"
+        negative("free-text audit action", "observability.schema.json", "OrganisationAuditEntry", r)
+        negative("metric outside the section 130 catalogue", "observability.schema.json", "organisationMetric", "organisation_names_total")
+        negative("organisation id as a metric label", "observability.schema.json", "organisationMetricLabel", "organisation_id")
 
     # Positive: the claim form and the evidence derived from it.
     claim = {"acme-foods": {"id": "7f1c2a9e-3b4d-4e8f-9a1b-2c3d4e5f6a7b"}}
