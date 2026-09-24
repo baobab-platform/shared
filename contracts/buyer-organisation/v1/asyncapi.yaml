@@ -18,6 +18,7 @@ channels:
       buyerOrganisationStatusChanged: { $ref: "#/components/messages/BuyerOrganisationStatusChanged" }
       buyerMembershipChanged: { $ref: "#/components/messages/BuyerMembershipChanged" }
       buyerCommercialProfileChanged: { $ref: "#/components/messages/BuyerCommercialProfileChanged" }
+      buyerErpProjectionRequested: { $ref: "#/components/messages/BuyerErpProjectionRequested" }
 operations:
   publishBuyerOrganisationEvents:
     action: send
@@ -72,3 +73,12 @@ components:
           - type: object
             properties:
               data: { $ref: ./events.schema.json#/$defs/buyerCommercialProfileChangedEventData }
+
+    BuyerErpProjectionRequested:
+      name: com.baobab-platform.customer.buyer-erp-projection.requested.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerErpProjectionRequestedEventData }
