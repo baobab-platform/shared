@@ -1,0 +1,139 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab-Platform organisation lifecycle events
+  version: 1.0.0
+  description: >
+    ADR-BCP-018 section 124 lifecycle events for Organisation, LegalEntityProfile,
+    CorporateRelationship, PlatformRelationship, PlatformAccount and the explicit
+    tenant mappings. Produced by baobab-platform/baobab-cp from its transactional
+    outbox in the same transaction as the state change; a replayed command that
+    changes nothing publishes nothing. Payloads carry identifiers and state only
+    (section 125). Event types follow ADR-SHARED-008.
+defaultContentType: application/json
+channels:
+  organisationLifecycle:
+    address: baobab-platform.control-plane.organisation.v1
+    messages:
+      organisationCreated: { $ref: "#/components/messages/OrganisationCreated" }
+      organisationVerified: { $ref: "#/components/messages/OrganisationVerified" }
+      organisationSuspended: { $ref: "#/components/messages/OrganisationSuspended" }
+      legalEntityVerified: { $ref: "#/components/messages/LegalEntityVerified" }
+      corporateRelationshipActivated: { $ref: "#/components/messages/CorporateRelationshipActivated" }
+      corporateRelationshipEnded: { $ref: "#/components/messages/CorporateRelationshipEnded" }
+      corporateRelationshipConflicted: { $ref: "#/components/messages/CorporateRelationshipConflicted" }
+      platformRelationshipActivated: { $ref: "#/components/messages/PlatformRelationshipActivated" }
+      platformRelationshipEnded: { $ref: "#/components/messages/PlatformRelationshipEnded" }
+      platformAccountCreated: { $ref: "#/components/messages/PlatformAccountCreated" }
+      platformAccountMembershipChanged: { $ref: "#/components/messages/PlatformAccountMembershipChanged" }
+      tenantOrganisationMappingActivated: { $ref: "#/components/messages/TenantOrganisationMappingActivated" }
+      tenantLegalEntityMappingActivated: { $ref: "#/components/messages/TenantLegalEntityMappingActivated" }
+operations:
+  publishOrganisationLifecycle:
+    action: send
+    channel: { $ref: "#/channels/organisationLifecycle" }
+components:
+  messages:
+    OrganisationCreated:
+      name: com.baobab-platform.control-plane.organisation.created.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/OrganisationCreated" }
+    OrganisationVerified:
+      name: com.baobab-platform.control-plane.organisation.verified.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/OrganisationVerified" }
+    OrganisationSuspended:
+      name: com.baobab-platform.control-plane.organisation.suspended.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/OrganisationSuspended" }
+    LegalEntityVerified:
+      name: com.baobab-platform.control-plane.legal-entity.verified.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/LegalEntityVerified" }
+    CorporateRelationshipActivated:
+      name: com.baobab-platform.control-plane.corporate-relationship.activated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/CorporateRelationshipActivated" }
+    CorporateRelationshipEnded:
+      name: com.baobab-platform.control-plane.corporate-relationship.ended.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/CorporateRelationshipEnded" }
+    CorporateRelationshipConflicted:
+      name: com.baobab-platform.control-plane.corporate-relationship.conflicted.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/CorporateRelationshipConflicted" }
+    PlatformRelationshipActivated:
+      name: com.baobab-platform.control-plane.platform-relationship.activated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PlatformRelationshipActivated" }
+    PlatformRelationshipEnded:
+      name: com.baobab-platform.control-plane.platform-relationship.ended.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PlatformRelationshipEnded" }
+    PlatformAccountCreated:
+      name: com.baobab-platform.control-plane.platform-account.created.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PlatformAccountCreated" }
+    PlatformAccountMembershipChanged:
+      name: com.baobab-platform.control-plane.platform-account-membership.changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PlatformAccountMembershipChanged" }
+    TenantOrganisationMappingActivated:
+      name: com.baobab-platform.control-plane.tenant-organisation-mapping.activated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/TenantOrganisationMappingActivated" }
+    TenantLegalEntityMappingActivated:
+      name: com.baobab-platform.control-plane.tenant-legal-entity-mapping.activated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/TenantLegalEntityMappingActivated" }

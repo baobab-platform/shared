@@ -23,6 +23,84 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Organisation admission onboarding (ADR-BCP-018 gate ORG-09).**
+  `contracts/organisation/v1/admission.schema.json` defines
+  `OrganisationAdmissionRequest` (issued by the admission reviewer after an
+  approved decision; no field can set the platform relationship or mark
+  anything verified) and `OrganisationAdmissionOutcome` (identity resolution
+  NEW_ORGANISATION / EXISTING_ORGANISATION / QUARANTINED, plus the records
+  onboarding converged on). Examples, semantic checks and ten negative
+  fixtures in `scripts/validate-organisation-contracts.py`.
+- **IAM organisation projection (ADR-BCP-018 gate ORG-10).**
+  `contracts/organisation/v1/iam.schema.json` defines `IamOrganisationReference`,
+  the explicit, issuer-scoped link from a canonical Organisation to a Keycloak
+  Organization (many per Organisation, exactly one Organisation per issuer and
+  provider organisation id); `IamOrganisationEvidence`, which workloads present
+  instead of a canonical `organisation_id`; and the `keycloakOrganizationClaim`
+  form Baobab relies on (organisation ids, never aliases). New
+  `iamOrganisationReferenceId` grammar (`iamorg_*`), examples and negative
+  fixtures in `scripts/validate-organisation-contracts.py`.
+- **One event namespace.** `contracts/control-plane/v1` now registers every
+  event `baobab-platform/baobab-cp` emits that was previously unregistered:
+  `com.baobab-platform.control-plane.tenant.provisioning-ready/-active/-failed.v1`
+  and `com.baobab-platform.control-plane.market-participation.created/updated.v1`,
+  with payload schemas and example envelopes. `scripts/validate-event-registry.py`
+  (run by the CI `governance-contracts` job) enforces the single
+  `com.baobab-platform.*` namespace across every `asyncapi.yaml`: canonical and
+  unique names, resolvable payloads, valid example envelopes, and no legacy
+  `com.nabhold.*` types anywhere in `contracts/`.
+- `contracts/organisation/v1` (ADR-BCP-018): Organisation, LegalEntityProfile,
+  CorporateRelationship, CorporateGroup(Membership), PlatformRelationship,
+  PlatformAccount(Membership) and explicit tenant mappings, with opaque
+  resource-ID grammars and evidence-backed `VERIFIED` rules.
+  `scripts/validate-organisation-contracts.py` is the first contract gate that
+  performs real JSON Schema Draft 2020-12 validation with cross-schema `$ref`s
+  resolved, validates the examples, and proves its rules with negative
+  fixtures. The CI `governance-contracts` job now runs it.
+- Foundation **security scopes** (M2). The security family now runs at `pr`
+  scope on pull requests (gitleaks over the PR's own commits, dependency
+  review applicable), `branch` scope on other events (the checked-out ref's
+  full history) and `deep` scope under `security-deep` (every fetched ref,
+  dependency review off). Each emits its own result: `Security / PR`,
+  `Security / Branch` or `Security / Deep`. `security-secrets-scan.yml`
+  gains a validated `log-opts` input (default `HEAD`, backward compatible).
+- **`security.sast_provider`** in `.baobab/repository.yaml` (H2):
+  `codeql | fallback | disabled`, with a `security.ghas` approval record
+  required for CodeQL on a private repository and `disabled` requiring an
+  approved `exceptions.sast`. Resolved by `scripts/foundation/sast_policy.rb`
+  in the classifier; SAST reports `SAST / Fallback` instead of
+  `SAST / Not available`. Private dependency review now also depends on the
+  `security.ghas` record.
+- **Organisation drift guard** (Phase 7):
+  `.github/workflows/foundation-org-conformance.yml` runs weekly and on
+  demand, evaluating every organisation repository with
+  `scripts/foundation/org_conformance.py` against
+  `.baobab/org-conformance.yaml`, and fails on non-deferred High findings.
+  An optional `ORG_CONFORMANCE_TOKEN` secret extends it to private
+  repositories.
+- Fixtures: reusable-workflow nesting depth and workflow count against
+  GitHub's limits, a version comment on every SHA-pinned action, SAST
+  provider resolution across visibility and provider, the classifier run end
+  to end, and the drift guard's rules.
+- Foundation CI **Phase 4 product separation**:
+  - Optional `profile` on `foundation-repository-gates.yml`
+    (`full` | `contract` | `security-pr` | `security-deep` | `container`; default `full`).
+  - Product entrypoints: `foundation-product-contract.yml`,
+    `foundation-product-security.yml` (`mode: pr|deep`),
+    `foundation-product-container.yml`.
+  - Security trigger matrix and product boundaries in
+    `docs/governance/foundation-ci-v2.md`.
+  - Self-consumer uses `security-deep` on schedule and `full` otherwise.
+- Foundation CI v2 **consumer readiness** (see
+  `docs/governance/foundation-ci-promotion-v2.0.0.md` and tag `v2.0.0`):
+  - Executable official caller template (`templates/caller-foundation-repository-gates.yml`)
+    with required `foundation_ref`, minimum permissions, and explicit
+    `advanced_security_enabled` / `legacy_metadata_enabled`.
+  - Caller template validation fixture
+    (`.github/foundation-tests/test_caller_template.py`).
+  - Visibility-aware SAST planner: private repositories without GHAS opt-in
+    emit **SAST / Not available** instead of attempting CodeQL upload.
+  - Promotion record and support-policy gate for the immutable tag.
 - Canonical CloudEvents 1.0 cross-engine envelope with tenant scope,
   correlation, causation, idempotency and W3C trace metadata.
 - RFC 9457 problem-details schema and example for consistent API errors.
@@ -83,6 +161,30 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- Foundation CI **`v2.3.0` is promoted** at `31de2bc` (see
+  `docs/governance/foundation-ci-promotion-v2.3.0.md`): security scopes,
+  `security.sast_provider`, the organisation drift guard, and removal of
+  `legacy_metadata_enabled`.
+- Every SHA-pinned action carries a version comment; the five runtime setup
+  pins that tracked a default branch now name the release they follow.
+- Foundation environment gate: every `baobab-dev` profile now requires
+  **1.4.4** or newer (was 1.2.6, and 1.4.0-rc.0 for `infra`). Callers that
+  declare an older image fail the environment gate once they pin a Foundation
+  revision carrying this floor. `shared` itself moves to `1.4.4-frontend`.
+  Released as Foundation CI **`v2.2.0`** at `ddd2c56` (see
+  `docs/governance/foundation-ci-promotion-v2.2.0.md`).
+- Foundation CI **`v2.1.0` is promoted** at `53ed9cd` (see
+  `docs/governance/foundation-ci-promotion-v2.1.0.md`). `v2.0.0` was tagged
+  before its promotion criteria were met and is superseded; do not pin it.
+- Foundation aggregator accepts a skipped gate only when the selected profile
+  excludes it; gates inside the profile must succeed, so unexplained skips
+  still fail `Foundation / Result`. The policy fixture now executes the real
+  aggregator script.
+- Python dependency adapter audits exact pins derived from `uv.lock` /
+  `poetry.lock` (or `requirements.lock` / `requirements.txt`) instead of the
+  runner environment, and fails when the manifest is missing.
+- Rust dependency adapter uses checksum-verified `cargo-audit` 0.22.2 (0.21.2
+  cannot parse the current RustSec advisory database).
 - Control Plane lifecycle events and error responses now consume the canonical
   cross-engine contracts instead of defining local metadata shapes.
 - Baobab-Platform now declares confirmed `baobab-erp` consumption. Its digital estate
@@ -108,13 +210,21 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Deprecated
 
+- `advanced_security_enabled` (Foundation input) is **deprecated** and kept
+  for one minor version: it only selects CodeQL for a repository that
+  declares no `security.sast_provider`, warns when it disagrees with a
+  declaration, and can no longer enable CodeQL on a private repository
+  without `security.ghas`.
 - Lowercase snake-case aliases for legal entities and underscore-form product
   identifiers remain accepted by Control Plane v1 only for compatibility. New
   records must use registry entity IDs and kebab-case product IDs.
 
 ## Removed
 
-Nothing yet.
+- **`legacy_metadata_enabled`** and the `.nabhold/environment.yaml` bridge
+  (from the orchestrator, classifier, environment gate and product
+  wrappers). Callers must drop the input when they repin; passing it to
+  v2.3.0 or later fails workflow validation.
 
 ## Fixed
 
@@ -135,12 +245,18 @@ Nothing yet.
   identity/ERP/supplier-onboarding event. ADR-SHARED-008 confirms Shared's
   shipped convention as authoritative; both `baobab-cp` documents are
   corrected by reference rather than re-drafted here.
+- Foundation caller template is executable as published (required inputs and
+  permissions); private SAST no longer depends on a silent skip when CodeQL is
+  unavailable.
 
 ## Security
 
 - Restricted control-plane access tokens to asymmetric RS256 or ES256
   signatures, a 15-minute maximum lifetime, and explicit audience and scope
   checks.
+- Foundation SAST path refuses CodeQL upload for private repositories without
+  an explicit `advanced_security_enabled` opt-in, reducing accidental GHAS
+  upload failures.
 
 ---
 
@@ -386,251 +502,19 @@ The `Unreleased` section is the staging area for changes that have entered the r
 
 Contributors should update it when appropriate.
 
-Example:
-
-```markdown
-# Unreleased
-
-## Added
-
-- Added reusable Python CI workflow.
-
-## Changed
-
-- Standardised Python dependency installation using uv.
-
-## Security
-
-- Pinned all third-party GitHub Actions to immutable commit SHAs.
-```
-
 When a release is created, the relevant entries should be moved from `Unreleased` into the new release section.
 
 ---
 
 # Release Format
 
-Released versions should follow this structure:
-
-```markdown
-# [Unreleased]
-
-## Added
-
-## Changed
-
-## Deprecated
-
-## Removed
-
-## Fixed
-
-## Security
-
-
-# [1.1.0] - 2026-08-15
-
-## Added
-
-- Added reusable documentation deployment workflow.
-
-## Changed
-
-- Standardised documentation builds using Zensical.
-
-## Security
-
-- Pinned deployment actions to immutable commit SHAs.
-```
-
-Dates should use ISO 8601 format:
-
-```text
-YYYY-MM-DD
-```
-
----
-
-# Release Notes
-
-Release notes should focus on information relevant to consumers.
-
-Avoid listing every internal commit.
-
-A good release note answers:
-
-* What changed?
-* Why does it matter?
-* Does the consumer need to do anything?
-* Is the change breaking?
-* Is there a security implication?
-
----
-
-# Migration Notes
-
-When a release requires consumer changes, provide a concise migration section.
-
-Example:
-
-```markdown
-## Migration
-
-Consumers upgrading from v1 to v2 must replace:
-
-    old-input: value
-
-with:
-
-    new-input: value
-```
-
-For more complicated migrations, maintain a dedicated migration document under:
-
-```text
-docs/migrations/
-```
-
-and reference it from the changelog.
-
----
-
-# Version References
-
-Where a shared workflow or action is consumed through a version tag, the release should identify the appropriate version.
-
-For example:
-
-```yaml
-uses: baobab-platform/shared/.github/workflows/python-ci.yml@v1
-```
-
-The changelog should make clear when the behaviour associated with `v1` changes and when consumers should move to `v2`.
-
----
-
-# Security Releases
-
-Security fixes may require accelerated release procedures.
-
-A security release may:
-
-* bypass a normal release schedule;
-* require immediate consumer notification;
-* require credential rotation;
-* require downstream workflow updates;
-* require emergency deployment;
-* require temporary disabling of an affected component.
-
-Security releases should still be recorded in this changelog after the immediate response has been completed.
-
----
-
-# Dependency Updates
-
-Routine dependency updates should generally be grouped where appropriate.
-
-Examples:
-
-```markdown
-## Fixed
-
-- Updated `actions/checkout` to the latest approved release.
-- Updated Python documentation dependencies.
-- Updated container base image.
-
-## Security
-
-- Updated dependency containing a known security vulnerability.
-```
-
-The changelog should distinguish ordinary maintenance from security remediation.
-
----
-
-# Internal Changes
-
-Not every internal change requires a changelog entry.
-
-A changelog entry is generally unnecessary for:
-
-* spelling corrections;
-* minor internal refactoring with no behavioural impact;
-* test-only changes;
-* CI changes that affect only repository maintenance;
-* formatting-only changes.
-
-However, if a change affects consumers, security, release behaviour, or operational expectations, it should be documented.
-
----
-
-# Consumer-Facing Changes
-
-The following should normally appear in the changelog:
-
-* workflow interface changes;
-* new workflow versions;
-* changed required permissions;
-* changed secrets;
-* changed artifacts;
-* supported runtime changes;
-* deployment behaviour;
-* security controls;
-* breaking changes;
-* deprecations;
-* removals;
-* changes requiring consumer migration.
-
----
-
-# Release Checklist
-
-Before creating a release, maintainers should verify:
-
-* [ ] `Unreleased` contains all relevant changes.
-* [ ] Breaking changes are clearly identified.
-* [ ] Security changes are documented appropriately.
-* [ ] Consumer impact has been assessed.
-* [ ] Migration guidance exists where necessary.
-* [ ] Version number follows the applicable versioning policy.
-* [ ] Release date is recorded.
-* [ ] Documentation reflects the release.
-* [ ] Deprecated components are identified.
-* [ ] Relevant downstream repositories have been identified.
-
----
-
-# Changelog Discipline
-
-The changelog should remain useful to engineers six months after a release.
-
-Avoid entries such as:
-
-```text
-- Fixed stuff.
-- Updated things.
-- Various improvements.
-- More CI changes.
-```
-
-Prefer:
-
-```text
-- Fixed the documentation deployment workflow so that GitHub Pages
-  artifacts are uploaded using the v4 artifact service.
-```
-
-The goal is not to produce a diary of commits.
-
-The goal is to provide a reliable historical record of **what changed in shared BAOBAB-PLATFORM engineering infrastructure and what those changes mean for its consumers**.
+Released versions should follow this structure with ISO 8601 dates (`YYYY-MM-DD`).
 
 ---
 
 # Historical Releases
 
-No releases have been published yet.
-
-Future releases will be recorded below the `Unreleased` section in reverse chronological order.
+Tagged infrastructure releases `v1.0.0`–`v1.4.0` exist on the repository; detailed notes for those tags predate this expanded changelog. Future releases (including Foundation `v2.0.0` once promoted) will be recorded below the `Unreleased` section in reverse chronological order.
 
 ---
 
@@ -641,3 +525,4 @@ Future releases will be recorded below the `Unreleased` section in reverse chron
 * BAOBAB-PLATFORM `CONTRIBUTING.md`
 * BAOBAB-PLATFORM `SECURITY.md`
 * BAOBAB-PLATFORM `CODEOWNERS`
+* `docs/governance/foundation-ci-promotion-v2.0.0.md`
