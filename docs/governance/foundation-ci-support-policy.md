@@ -28,7 +28,7 @@ See `docs/governance/foundation-ci-promotion-v2.1.0.md`.
 
 - **Candidate SHA:** `53ed9cdba8fc33e2f184d1ba29b990f71b74f85f`
 - **Proposed tag:** `v2.1.0`
-- **Tag status:** not cut — requirements 1, 2 and 4 are green; the pilot cohort (requirement 3) is running. Do not treat `main` HEAD as a supported release until that record is updated to **promoted**.
+- **Tag status:** not cut — requirements 1 to 4 are green (all 12 pilots pass on the candidate); ready to tag. Do not treat `main` HEAD as a supported release until that record is updated to **promoted**.
 - **`v2.0.0`:** tagged before the promotion criteria were met; superseded by `v2.1.0`. Do not pin it.
 
 ## Required check

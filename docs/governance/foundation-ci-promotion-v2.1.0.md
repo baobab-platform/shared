@@ -1,6 +1,6 @@
 # Foundation CI v2.1.0 promotion record
 
-**Status:** Candidate — **tag not yet cut**. Waiting on the pilot cohort (requirement 3).
+**Status:** Candidate — requirements 1 to 4 are green. **Ready to tag**; the tag is not yet cut.
 **Candidate revision:** `53ed9cdba8fc33e2f184d1ba29b990f71b74f85f` (`shared` `main`, merge of #73)
 **Proposed tag:** `v2.1.0` (decision D4 in `foundation-ci-org-conformance-plan-2026-09-23.md`)
 **Date opened:** 2026-09-24
@@ -28,10 +28,10 @@ All input changes are additive, so a caller on `b1e2937` or `468f0e6` repins by 
 
 | # | Requirement | Status |
 |---|-------------|--------|
-| 1 | Workflow and contract static validation in `shared` | **Green** — Foundation Static Validation and CI, push to `main` on `53ed9cd`. |
-| 2 | `shared` self-consumer Foundation run | **Green** — Foundation Repository Gates, push to `main` on `53ed9cd`. |
-| 3 | One representative consumer per activated runtime or artifact class | **In progress** — see the pilot cohort below. |
-| 4 | Exact emitted result check name | **Recorded:** `foundation / Foundation / Result` (caller job id `foundation`). |
+| 1 | Workflow and contract static validation in `shared` | **Green** — Foundation Static Validation ([run 35941045413](https://github.com/baobab-platform/shared/actions/runs/35941045413)) and CI ([run 35941045708](https://github.com/baobab-platform/shared/actions/runs/35941045708)), push to `main` on `53ed9cd`. |
+| 2 | `shared` self-consumer Foundation run | **Green** — Foundation Repository Gates ([run 35941045992](https://github.com/baobab-platform/shared/actions/runs/35941045992)), push to `main` on `53ed9cd`. |
+| 3 | One representative consumer per activated runtime or artifact class | **Green** — all 12 pilots pass `foundation / Foundation / Result` on the candidate (table below). |
+| 4 | Exact emitted result check name | **Verified:** `foundation / Foundation / Result` (caller job id `foundation`), read from the pilot check runs. |
 | 5 | Consumer references pinned to the promoted commit SHA | **In progress** — repin PRs below; merge after the pilot runs are green. |
 
 ## Pilot cohort (requirement 3)
@@ -40,18 +40,18 @@ Each consumer below runs Foundation at the candidate SHA through a one-line repi
 
 | Class | Repository | Pinned via | Result on candidate |
 |---|---|---|---|
-| Python, container artifact (`container_ignore_unfixed: true`) | baobab-dev | `main` (baobab-dev#35) | pending |
-| Node / Next.js digital estate | zuribeans | repin PR | pending |
-| Node / Next.js digital estate | nabhold | repin PR | pending |
-| Go engine | baobab-cp | repin PR | pending |
-| Node CMS engine, container artifact | baobab-cms | repin PR | pending |
-| Java / Maven + Python, container artifact | baobab-erp | repin PR | pending |
-| Java / Keycloak, container artifact | baobab-iam | repin PR | pending |
-| Engine contract only (no runtime yet) | baobab-payments | repin PR | pending |
-| Python engine, container artifact | baobab-pulse | repin PR | pending |
-| Engine contract only (no runtime yet) | baobab-subscriptions | repin PR | pending |
-| Node commerce engine, container artifact | baobab-trade | repin PR | pending |
-| Terraform | infrastructure | repin PR | pending |
+| Python, container artifact (`container_ignore_unfixed: true`) | baobab-dev | `main` (baobab-dev#35) | **Green** — [run 35942099243](https://github.com/baobab-platform/baobab-dev/actions/runs/35942099243) |
+| Node / Next.js digital estate | zuribeans | [#86](https://github.com/baobab-platform/zuribeans/pull/86) | **Green** — [run 35943000146](https://github.com/baobab-platform/zuribeans/actions/runs/35943000146) |
+| Node / Next.js digital estate | nabhold | [#24](https://github.com/baobab-platform/nabhold/pull/24) | **Green** — [run 35943004867](https://github.com/baobab-platform/nabhold/actions/runs/35943004867) |
+| Go engine | baobab-cp | [#141](https://github.com/baobab-platform/baobab-cp/pull/141) | **Green** — [run 35943019306](https://github.com/baobab-platform/baobab-cp/actions/runs/35943019306) |
+| Node CMS engine, container artifact | baobab-cms | [#14](https://github.com/baobab-platform/baobab-cms/pull/14) | **Green** — [run 35943026527](https://github.com/baobab-platform/baobab-cms/actions/runs/35943026527) |
+| Java / Maven + Python, container artifact | baobab-erp | [#37](https://github.com/baobab-platform/baobab-erp/pull/37) | **Green** — [run 35943032756](https://github.com/baobab-platform/baobab-erp/actions/runs/35943032756) |
+| Java / Keycloak, container artifact | baobab-iam | [#37](https://github.com/baobab-platform/baobab-iam/pull/37) | **Green** — [run 35943040487](https://github.com/baobab-platform/baobab-iam/actions/runs/35943040487) |
+| Engine contract only (no runtime yet) | baobab-payments | [#5](https://github.com/baobab-platform/baobab-payments/pull/5) | **Green** — [run 35943049299](https://github.com/baobab-platform/baobab-payments/actions/runs/35943049299) |
+| Python engine, container artifact | baobab-pulse | [#17](https://github.com/baobab-platform/baobab-pulse/pull/17) | **Green** — [run 35943058434](https://github.com/baobab-platform/baobab-pulse/actions/runs/35943058434) |
+| Engine contract only (no runtime yet) | baobab-subscriptions | [#5](https://github.com/baobab-platform/baobab-subscriptions/pull/5) | **Green** — [run 35943064134](https://github.com/baobab-platform/baobab-subscriptions/actions/runs/35943064134) |
+| Node commerce engine, container artifact | baobab-trade | [#101](https://github.com/baobab-platform/baobab-trade/pull/101) | **Green** — [run 35943071121](https://github.com/baobab-platform/baobab-trade/actions/runs/35943071121) |
+| Terraform | infrastructure | [#8](https://github.com/baobab-platform/infrastructure/pull/8) | **Green** — [run 35943009358](https://github.com/baobab-platform/infrastructure/actions/runs/35943009358) |
 
 `equator-estate`, a pilot in the 2026-09-23 plan, is deferred: frontend digital estates other than zuribeans and nabhold are out of the current rollout priority. The digital-estate class is covered by zuribeans and nabhold, and the container class by baobab-dev, baobab-cms, baobab-erp, baobab-iam, baobab-pulse and baobab-trade.
 
