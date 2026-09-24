@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/authorization/v1/decision.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/authorization/v1/decision.schema.json",
   "title": "AuthorizationDecision",
   "description": "Result of an authorization check, including reason codes.",
   "type": "object",

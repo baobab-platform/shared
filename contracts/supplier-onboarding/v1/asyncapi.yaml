@@ -1,6 +1,6 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold Baobab supplier-onboarding events
+  title: Baobab-Platform Baobab supplier-onboarding events
   version: 1.0.0
   description: >
     Estate-owned supplier intake and qualification events using the canonical
@@ -11,7 +11,7 @@ info:
 defaultContentType: application/json
 channels:
   supplierOnboardingEvents:
-    address: nabhold.supplier-onboarding.events.v1
+    address: baobab-platform.supplier-onboarding.events.v1
     messages:
       supplierApplicationSubmitted: { $ref: "#/components/messages/SupplierApplicationSubmitted" }
       supplierApplicationDecided: { $ref: "#/components/messages/SupplierApplicationDecided" }
@@ -24,7 +24,7 @@ operations:
 components:
   messages:
     SupplierApplicationSubmitted:
-      name: com.nabhold.supplier-onboarding.application.submitted.v1
+      name: com.baobab-platform.supplier-onboarding.application.submitted.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -32,7 +32,7 @@ components:
             properties:
               data: { $ref: ./supplier-application-submitted.schema.json }
     SupplierApplicationDecided:
-      name: com.nabhold.supplier-onboarding.application.decided.v1
+      name: com.baobab-platform.supplier-onboarding.application.decided.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -40,7 +40,7 @@ components:
             properties:
               data: { $ref: ./supplier-application-decided.schema.json }
     SupplierQualificationUpdated:
-      name: com.nabhold.supplier-onboarding.qualification.updated.v1
+      name: com.baobab-platform.supplier-onboarding.qualification.updated.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -48,7 +48,7 @@ components:
             properties:
               data: { $ref: ./supplier-qualification-updated.schema.json }
     SupplierCapabilityVerified:
-      name: com.nabhold.supplier-onboarding.capability.verified.v1
+      name: com.baobab-platform.supplier-onboarding.capability.verified.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json

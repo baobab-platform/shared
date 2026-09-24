@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/events.schema.json",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/events.schema.json",
   "title": "Capability lifecycle event payloads",
   "description": "Data payloads for capability-centric lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field. One payload shape per aggregate type is reused across that aggregate's lifecycle events (created/updated/revoked/etc.) for v1; a field only applies to the events for which it is meaningful.",
   "$defs": {

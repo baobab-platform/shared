@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/resolution.schema.json",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/resolution.schema.json",
   "title": "Capability resolution request, response and persisted record",
-  "description": "The runtime decision of whether a capability may execute and, if so, which provider serves it. nabhold/baobab-cp is the sole runtime authority for producing this decision (ADR-BCP-007); this package defines only its shape.",
+  "description": "The runtime decision of whether a capability may execute and, if so, which provider serves it. baobab-platform/baobab-cp is the sole runtime authority for producing this decision (ADR-BCP-007); this package defines only its shape.",
   "$defs": {
     "operationScope": {
       "type": "object",

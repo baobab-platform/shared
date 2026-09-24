@@ -19,7 +19,7 @@ Like `contracts/capability/v1`, this is a contract-authority package: JSON
 Schema, AsyncAPI and this README only. It does **not**:
 
 - run as a service, hold tenant state, or perform composition expansion --
-  that is `nabhold/baobab-cp`'s runtime responsibility;
+  that is `baobab-platform/baobab-cp`'s runtime responsibility;
 - decide which capabilities a composition contains -- see
   `contracts/capability/v1/composition.schema.json`'s `CapabilityComposition`,
   which `ProductVersion.composition_key` references;
@@ -68,6 +68,6 @@ following the same pattern as `capability/v1/domain.schema.json`'s `cap_`/
 - `subscription.schema.json` -- `ProductSubscription` and
   `EntitlementProjection`.
 - `events.schema.json` / `asyncapi.yaml` -- lifecycle events, using the
-  `com.nabhold.<context>.<...>.v<N>` convention (ADR-SHARED-008).
+  `com.baobab-platform.<context>.<...>.v<N>` convention (ADR-SHARED-008).
 
 All asynchronous messages use `contracts/events/v1/envelope.schema.json`.

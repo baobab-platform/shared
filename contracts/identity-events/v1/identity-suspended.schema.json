@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity-events/v1/identity-suspended.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity-events/v1/identity-suspended.schema.json",
   "title": "IdentitySuspendedEvent",
   "description": "Emitted when a canonical identity is suspended (ADR-0016 §8 -- temporary, reversible restriction: security investigation, suspected compromise, temporary workforce suspension, compliance hold). Reversal is the separate identity.reactivated event, not a status this schema itself models. This is the event envelope's `data` payload — see asyncapi.yaml for how it composes with contracts/events/v1/envelope.schema.json.",
   "type": "object",

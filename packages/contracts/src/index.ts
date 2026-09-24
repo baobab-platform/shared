@@ -1,4 +1,4 @@
-// Entry point for @nabhold/contracts-ts.
+// Entry point for @baobab-platform/contracts-ts.
 //
 // Both re-exports below point at generated code that does not exist until
 // `pnpm generate` has run (buf generate + graphql-codegen). This file is
@@ -18,5 +18,5 @@ export * from './context-resolver';
 // Audit Trail and Approval Workflow (§48-49)
 export * from './audit-trail';
 
-export * from './generated/nabhold/shared/v1/health';
+export * from './generated/baobab_platform/shared/v1/health';
 export * from './generated/graphql';

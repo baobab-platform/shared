@@ -1,9 +1,9 @@
 # workload-registry.yaml
 # Canonical registry of workload (service-to-service) identities across the
 # Baobab platform (ADR-0007 §§42-43 "Workload Registration"/"Workload
-# Inventory", §101's illustrative shape). nabhold/baobab-iam owns
+# Inventory", §101's illustrative shape). baobab-platform/baobab-iam owns
 # provisioning the Keycloak clients this registry describes (config/clients/
-# *-workload.json); nabhold/baobab-cp enforces against it at request time
+# *-workload.json); baobab-platform/baobab-cp enforces against it at request time
 # (rejecting any workload token whose client_id isn't listed here, or whose
 # audience/scope falls outside what its entry allows) -- per ADR-0007 §99's
 # ownership table, this file is the single source of truth both repos build
@@ -40,7 +40,7 @@
 #                             client_credentials is the only type baobab-iam
 #                             issues as of this registry's creation; mTLS
 #                             client-certificate auth is owned by
-#                             nabhold/infrastructure (ADR-0007 §§34-41,
+#                             baobab-platform/infrastructure (ADR-0007 §§34-41,
 #                             §94, §99) and is not modelled here until
 #                             that repository defines how it registers.
 #   rotation_owner          -- team/repository responsible for rotating
@@ -49,88 +49,88 @@
 #                              RETIRED (ADR-0007 §45's workload lifecycle
 #                              states). All entries below start ACTIVE,
 #                              reflecting the already-provisioned Keycloak
-#                              clients in nabhold/baobab-iam's config/
+#                              clients in baobab-platform/baobab-iam's config/
 #                              clients/*-workload.json.
 #
 # Adding a workload: add an entry here first (this is the registration
 # ADR-0007 §42 requires), then provision the matching Keycloak client in
-# nabhold/baobab-iam. Removing one: set status to RETIRED here before
+# baobab-platform/baobab-iam. Removing one: set status to RETIRED here before
 # disabling/deleting the Keycloak client, never the other order, so
 # baobab-cp's enforcement (once it reads this registry -- Gate IAM-4 phase
 # 4) never has a live credential for a client this registry doesn't know
 # about.
 
 schema:
-  name: nabhold-workload-registry
+  name: baobab-platform-workload-registry
   version: "1.0"
 
 workloads:
   baobab-cms-workload:
-    repository: nabhold/baobab-cms
-    owner: nabhold/baobab-cms
+    repository: baobab-platform/baobab-cms
+    owner: baobab-platform/baobab-cms
     runtime: "baobab-cms service"
     environment: production
     allowed_audiences: ["baobab-control-plane"]
     allowed_scopes: ["context:resolve"]
     credential_type: client_credentials
-    rotation_owner: nabhold/baobab-cms
+    rotation_owner: baobab-platform/baobab-cms
     status: ACTIVE
 
   baobab-erp-workload:
-    repository: nabhold/baobab-erp
-    owner: nabhold/baobab-erp
+    repository: baobab-platform/baobab-erp
+    owner: baobab-platform/baobab-erp
     runtime: "baobab-erp service"
     environment: production
     # Gate IAM-10 (ADR-0014 §111): added baobab-erp/erp:integrate so this
-    # workload's own iDempiere OSGi bundles (org.nabhold.baobab.erp.context/
+    # workload's own iDempiere OSGi bundles (org.baobab-platform.baobab.erp.context/
     # mapping) can authenticate to baobab-app's HTTP boundary, which
     # previously trusted network location alone.
     allowed_audiences: ["baobab-control-plane", "baobab-erp"]
     allowed_scopes: ["context:resolve", "erp:integrate"]
     credential_type: client_credentials
-    rotation_owner: nabhold/baobab-erp
+    rotation_owner: baobab-platform/baobab-erp
     status: ACTIVE
 
   baobab-pulse-workload:
-    repository: nabhold/baobab-pulse
-    owner: nabhold/baobab-pulse
+    repository: baobab-platform/baobab-pulse
+    owner: baobab-platform/baobab-pulse
     runtime: "baobab-pulse service"
     environment: production
     allowed_audiences: ["baobab-control-plane"]
     allowed_scopes: ["context:resolve"]
     credential_type: client_credentials
-    rotation_owner: nabhold/baobab-pulse
+    rotation_owner: baobab-platform/baobab-pulse
     status: ACTIVE
 
   baobab-trade-workload:
-    repository: nabhold/baobab-trade
-    owner: nabhold/baobab-trade
+    repository: baobab-platform/baobab-trade
+    owner: baobab-platform/baobab-trade
     runtime: "baobab-trade service"
     environment: production
     allowed_audiences: ["baobab-control-plane"]
     allowed_scopes: ["context:resolve"]
     credential_type: client_credentials
-    rotation_owner: nabhold/baobab-trade
+    rotation_owner: baobab-platform/baobab-trade
     status: ACTIVE
 
   thamani-backend:
-    repository: nabhold/thamani
-    owner: nabhold/thamani
+    repository: baobab-platform/thamani
+    owner: baobab-platform/thamani
     runtime: "thamani backend service"
     environment: production
     allowed_audiences: ["baobab-control-plane"]
     allowed_scopes: ["context:resolve"]
     credential_type: client_credentials
-    rotation_owner: nabhold/thamani
+    rotation_owner: baobab-platform/thamani
     status: ACTIVE
 
   zuribeans-backend:
-    repository: nabhold/zuribeans
-    owner: nabhold/zuribeans
+    repository: baobab-platform/zuribeans
+    owner: baobab-platform/zuribeans
     runtime: "zuribeans backend service"
     environment: production
     allowed_audiences: ["baobab-control-plane"]
     allowed_scopes: ["context:resolve"]
     credential_type: client_credentials
-    rotation_owner: nabhold/zuribeans
+    rotation_owner: baobab-platform/zuribeans
     status: ACTIVE

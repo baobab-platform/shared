@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/audit-trail.schema.json",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/audit-trail.schema.json",
   "title": "Audit Trail and Approval Workflow",
   "description": "Immutable audit logs and four-eyes approval workflow for critical control plane operations (§48-49).",
   "$defs": {

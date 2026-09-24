@@ -1,11 +1,11 @@
 # ==============================================================================
-# NABHOLD GROUP AFRICA — BAOBAB PLATFORM
+# BAOBAB-PLATFORM GROUP AFRICA — BAOBAB PLATFORM
 #
 # Publish canonical Baobab contracts as an OCI image.
 #
 # Target:
 #
-#   ghcr.io/nabhold/baobab-contracts:<version>
+#   ghcr.io/baobab-platform/baobab-contracts:<version>
 #
 # Release trigger:
 #
@@ -41,7 +41,9 @@ name: Publish Baobab Contracts OCI Bundle
 on:
   push:
     tags:
-      - "v*.*.*"
+      # Contract bundles have their own release tags. Repository-wide tags
+      # (vX.Y.Z, including Foundation CI releases) must not start this workflow.
+      - "baobab-contracts-v*.*.*"
 
 concurrency:
   group: baobab-contracts-${{ github.ref }}
@@ -53,7 +55,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: nabhold/baobab-contracts
+  IMAGE_NAME: baobab-platform/baobab-contracts
 
 jobs:
 
@@ -267,7 +269,7 @@ jobs:
     permissions:
       contents: read
 
-      # Required to publish ghcr.io/nabhold/baobab-contracts.
+      # Required to publish ghcr.io/baobab-platform/baobab-contracts.
       packages: write
 
       # Required by GitHub artifact attestations.
@@ -409,11 +411,11 @@ jobs:
       #
       # This creates a verifiable relationship between:
       #
-      #   ghcr.io/nabhold/baobab-contracts
+      #   ghcr.io/baobab-platform/baobab-contracts
       #
       # and:
       #
-      #   nabhold/shared @ exact Git commit
+      #   baobab-platform/shared @ exact Git commit
       #
       # subject-name MUST NOT include a tag.
       # ------------------------------------------------------------------------
@@ -421,7 +423,7 @@ jobs:
       - name: Attest OCI build provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
         with:
-          subject-name: ghcr.io/nabhold/baobab-contracts
+          subject-name: ghcr.io/baobab-platform/baobab-contracts
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 

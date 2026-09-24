@@ -71,7 +71,7 @@ current evidenced shape and is required to fail canonical validation.
 | Legacy field | Canonical field | Migration rule |
 |---|---|---|
 | `event_id` | `id` | Mint a UUID for each occurrence and preserve it on retry |
-| `event_type` | `type` | Adopt the `com.nabhold.<domain>.<event>.vN` namespace |
+| `event_type` | `type` | Adopt the `com.baobab-platform.<domain>.<event>.vN` namespace |
 | `schema_version` | `type` + `dataschema` | Version semantics and payload shape explicitly |
 | `occurred_at` | `time` | Preserve the UTC business-occurrence time |
 | service enum `source` | absolute `source` | Use the registered logical producer URI |

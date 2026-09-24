@@ -1,26 +1,47 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold control-plane events
-  version: 1.1.0
-  description: Versioned tenant lifecycle events using the canonical Baobab cross-engine envelope.
+  title: Baobab-Platform control-plane events
+  version: 1.2.0
+  description: >
+    Versioned tenant lifecycle and market participation events using the
+    canonical Baobab cross-engine envelope. Every event baobab-platform/baobab-cp
+    emits is registered here or in its owning package (trade-lane/v1,
+    organisation/v1) under the com.baobab-platform namespace (ADR-SHARED-008).
 defaultContentType: application/json
 channels:
   tenantLifecycle:
-    address: nabhold.control-plane.tenant.v1
+    address: baobab-platform.control-plane.tenant.v1
     messages:
       provisioningStarted:
         $ref: "#/components/messages/ProvisioningStarted"
       provisioningStateChanged:
         $ref: "#/components/messages/ProvisioningStateChanged"
+      provisioningReady:
+        $ref: "#/components/messages/ProvisioningReady"
+      provisioningActive:
+        $ref: "#/components/messages/ProvisioningActive"
+      provisioningFailed:
+        $ref: "#/components/messages/ProvisioningFailed"
+  marketParticipation:
+    address: baobab-platform.control-plane.market-participation.v1
+    messages:
+      marketParticipationCreated:
+        $ref: "#/components/messages/MarketParticipationCreated"
+      marketParticipationUpdated:
+        $ref: "#/components/messages/MarketParticipationUpdated"
 operations:
   publishTenantLifecycle:
     action: send
     channel:
       $ref: "#/channels/tenantLifecycle"
+  publishMarketParticipation:
+    action: send
+    channel:
+      $ref: "#/channels/marketParticipation"
 components:
   messages:
     ProvisioningStarted:
-      name: com.nabhold.control-plane.tenant.provisioning-started.v1
+      name: com.baobab-platform.control-plane.tenant.provisioning-started.v1
       payload:
         allOf:
           - $ref: ./event-envelope.schema.json
@@ -29,7 +50,7 @@ components:
               data:
                 $ref: ./provisioning-started.schema.json
     ProvisioningStateChanged:
-      name: com.nabhold.control-plane.tenant.provisioning-state-changed.v1
+      name: com.baobab-platform.control-plane.tenant.provisioning-state-changed.v1
       payload:
         allOf:
           - $ref: ./event-envelope.schema.json
@@ -37,3 +58,48 @@ components:
             properties:
               data:
                 $ref: ./provisioning-state-changed.schema.json
+    ProvisioningReady:
+      name: com.baobab-platform.control-plane.tenant.provisioning-ready.v1
+      payload:
+        allOf:
+          - $ref: ./event-envelope.schema.json
+          - type: object
+            properties:
+              data:
+                $ref: ./tenant-provisioning-milestone.schema.json
+    ProvisioningActive:
+      name: com.baobab-platform.control-plane.tenant.provisioning-active.v1
+      payload:
+        allOf:
+          - $ref: ./event-envelope.schema.json
+          - type: object
+            properties:
+              data:
+                $ref: ./tenant-provisioning-milestone.schema.json
+    ProvisioningFailed:
+      name: com.baobab-platform.control-plane.tenant.provisioning-failed.v1
+      payload:
+        allOf:
+          - $ref: ./event-envelope.schema.json
+          - type: object
+            properties:
+              data:
+                $ref: ./tenant-provisioning-milestone.schema.json
+    MarketParticipationCreated:
+      name: com.baobab-platform.control-plane.market-participation.created.v1
+      payload:
+        allOf:
+          - $ref: ./event-envelope.schema.json
+          - type: object
+            properties:
+              data:
+                $ref: ./market-participation-created.schema.json
+    MarketParticipationUpdated:
+      name: com.baobab-platform.control-plane.market-participation.updated.v1
+      payload:
+        allOf:
+          - $ref: ./event-envelope.schema.json
+          - type: object
+            properties:
+              data:
+                $ref: ./market-participation-updated.schema.json

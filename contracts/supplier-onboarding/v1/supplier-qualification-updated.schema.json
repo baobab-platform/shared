@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/supplier-onboarding/v1/supplier-qualification-updated.schema.json",
+  "$id": "https://contracts.baobab-platform.com/supplier-onboarding/v1/supplier-qualification-updated.schema.json",
   "title": "Supplier qualification updated",
-  "description": "Emitted on every lifecycle status change of a supplier application or active supplier record, mirroring the estate-owned supplier_status_events audit trail this contract generalizes from (nabhold/zuribeans ADR-0006).",
+  "description": "Emitted on every lifecycle status change of a supplier application or active supplier record, mirroring the estate-owned supplier_status_events audit trail this contract generalizes from (baobab-platform/zuribeans ADR-0006).",
   "type": "object",
   "additionalProperties": false,
   "required": ["estate_id", "legal_entity_id", "application_id", "to_status", "actor", "occurred_at", "revision"],

@@ -4,8 +4,8 @@
 |---|---|
 | **Status** | Accepted |
 | **Date** | 2026-09-01 |
-| **Owner** | Chief Software Engineer, Nabhold Group Africa |
-| **Repository** | `nabhold/shared` |
+| **Owner** | Chief Software Engineer, Baobab-Platform Group Africa |
+| **Repository** | `baobab-platform/shared` |
 | **Depends on** | ADR-0002; ADR-0003; ADR-0004 |
 | **Applies to** | `baobab-erp`, `baobab-cp`, `trade`, authorised digital estates and ERP infrastructure adapters |
 
@@ -84,7 +84,7 @@ remain governed configuration referenced by opaque IDs.
 ### Positive
 
 - iDempiere can be replaced or upgraded without changing canonical identities.
-- Nabhold, ZuriBeans, Thamani and future organisations use the same
+- Baobab-Platform, ZuriBeans, Thamani and future organisations use the same
   configuration-driven onboarding contract.
 - Trade can accept work while ERP is unavailable and recover without duplicate
   financial effects.

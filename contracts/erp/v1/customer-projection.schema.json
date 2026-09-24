@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/erp/v1/customer-projection.schema.json",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/customer-projection.schema.json",
   "title": "Commerce customer projection for ERP",
   "type": "object",
   "additionalProperties": false,

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/binding.schema.json",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/binding.schema.json",
   "title": "CapabilityBinding",
   "description": "Connects a Capability, in a given CapabilityScope, to exactly the CapabilityProvider and EngineInstance that serves it -- when the binding wins deterministic resolution (resolution.schema.json). A binding never itself grants entitlement; entitlement is CapabilityGrant's responsibility.",
   "$defs": {

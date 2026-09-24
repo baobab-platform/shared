@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/shipment/v1/events.schema.json",
+  "$id": "https://contracts.baobab-platform.com/shipment/v1/events.schema.json",
   "title": "Shipment lifecycle event payloads",
   "description": "Data payloads for Shipment lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
   "$defs": {

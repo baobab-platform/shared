@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/inventory-ownership/v1/domain.schema.json",
-  "title": "Nabhold InventoryOwnershipRecord domain identifiers, enumerations and resource",
+  "$id": "https://contracts.baobab-platform.com/inventory-ownership/v1/domain.schema.json",
+  "title": "Baobab-Platform InventoryOwnershipRecord domain identifiers, enumerations and resource",
   "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): which legal entity owns a quantity of stock at a location, distinct from physical custody. Governed under the capability/v1 namespace registry's `inventory` domain. Exists primarily to support ADR-BCP-012's intercompany in-transit-ownership model.",
   "$defs": {
     "inventoryOwnershipId": {

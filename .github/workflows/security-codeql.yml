@@ -1,5 +1,5 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
 # Reusable Workflow: CodeQL Static Analysis
 #
 # File: .github/workflows/security-codeql.yml
@@ -12,8 +12,8 @@
 #   under this repository's own README.md > Roadmap > Security.
 #
 # WHY A `languages` INPUT RATHER THAN A FIXED LANGUAGE:
-#   Today only nabhold/baobab has a language CodeQL can analyse (Python).
-#   nabhold/baobab-dev is Dockerfile/shell — CodeQL has no first-class
+#   Today only baobab-platform/baobab has a language CodeQL can analyse (Python).
+#   baobab-platform/baobab-dev is Dockerfile/shell — CodeQL has no first-class
 #   extractor for either, so it isn't a consumer of this workflow, not
 #   because the workflow doesn't support it, but because there is nothing
 #   here for it to analyse yet. This is still a legitimate "one
@@ -44,7 +44,7 @@
 #   job literally named "analyze" with a step that uses this action. That
 #   lookup only succeeds when a consumer calls this workflow directly. A
 #   consumer that calls it through its own `workflow_call` job (every
-#   consumer of this file does — see nabhold/baobab-erp's
+#   consumer of this file does — see baobab-platform/baobab-erp's
 #   .github/workflows/security.yml) never has a job named "analyze" in
 #   its own YAML (that job id only exists here), so the lookup always
 #   fails: "Could not get upload input to github/codeql-action/analyze

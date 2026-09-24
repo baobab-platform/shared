@@ -1,11 +1,11 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold Baobab capability-centric lifecycle events
+  title: Baobab-Platform Baobab capability-centric lifecycle events
   version: 1.0.0
   description: >
     Capability, grant, provider, binding and composition lifecycle events for
     the capability-centric platform (ADR-BCP-002 through ADR-BCP-009). Uses
-    the same canonical event envelope and com.nabhold.<context>.<...>.v<N>
+    the same canonical event envelope and com.baobab-platform.<context>.<...>.v<N>
     naming convention already shipped for identity, ERP and
     supplier-onboarding events — this package does not introduce a
     different naming scheme. As with contracts/erp/v1 and
@@ -15,7 +15,7 @@ info:
 defaultContentType: application/json
 channels:
   capabilityEvents:
-    address: nabhold.capability.events.v1
+    address: baobab-platform.capability.events.v1
     messages:
       capabilityRegistered: { $ref: "#/components/messages/CapabilityRegistered" }
       capabilityDeprecated: { $ref: "#/components/messages/CapabilityDeprecated" }
@@ -37,7 +37,7 @@ operations:
 components:
   messages:
     CapabilityRegistered:
-      name: com.nabhold.capability.registered.v1
+      name: com.baobab-platform.capability.registered.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -45,7 +45,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/capabilityLifecycleEventData }
     CapabilityDeprecated:
-      name: com.nabhold.capability.deprecated.v1
+      name: com.baobab-platform.capability.deprecated.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -53,7 +53,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/capabilityLifecycleEventData }
     CapabilityRetired:
-      name: com.nabhold.capability.retired.v1
+      name: com.baobab-platform.capability.retired.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -61,7 +61,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/capabilityLifecycleEventData }
     GrantCreated:
-      name: com.nabhold.capability.grant.created.v1
+      name: com.baobab-platform.capability.grant.created.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -69,7 +69,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/grantLifecycleEventData }
     GrantSuspended:
-      name: com.nabhold.capability.grant.suspended.v1
+      name: com.baobab-platform.capability.grant.suspended.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -77,7 +77,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/grantLifecycleEventData }
     GrantRevoked:
-      name: com.nabhold.capability.grant.revoked.v1
+      name: com.baobab-platform.capability.grant.revoked.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -85,7 +85,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/grantLifecycleEventData }
     ProviderRegistered:
-      name: com.nabhold.capability.provider.registered.v1
+      name: com.baobab-platform.capability.provider.registered.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -93,7 +93,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/providerLifecycleEventData }
     ProviderSuspended:
-      name: com.nabhold.capability.provider.suspended.v1
+      name: com.baobab-platform.capability.provider.suspended.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -101,7 +101,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/providerLifecycleEventData }
     ProviderRetired:
-      name: com.nabhold.capability.provider.retired.v1
+      name: com.baobab-platform.capability.provider.retired.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -109,7 +109,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/providerLifecycleEventData }
     BindingCreated:
-      name: com.nabhold.capability.binding.created.v1
+      name: com.baobab-platform.capability.binding.created.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -117,7 +117,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/bindingLifecycleEventData }
     BindingChanged:
-      name: com.nabhold.capability.binding.changed.v1
+      name: com.baobab-platform.capability.binding.changed.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -125,7 +125,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/bindingLifecycleEventData }
     BindingRetired:
-      name: com.nabhold.capability.binding.retired.v1
+      name: com.baobab-platform.capability.binding.retired.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -133,7 +133,7 @@ components:
             properties:
               data: { $ref: ./events.schema.json#/$defs/bindingLifecycleEventData }
     CompositionUpdated:
-      name: com.nabhold.capability.composition.updated.v1
+      name: com.baobab-platform.capability.composition.updated.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json

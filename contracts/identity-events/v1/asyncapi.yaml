@@ -1,6 +1,6 @@
 asyncapi: 3.1.0
 info:
-  title: Nabhold Baobab identity-events
+  title: Baobab-Platform Baobab identity-events
   version: 1.0.0
   description: >
     Canonical identity lifecycle events using the shared Baobab event
@@ -21,7 +21,7 @@ info:
 defaultContentType: application/json
 channels:
   identityEvents:
-    address: nabhold.identity.events.v1
+    address: baobab-platform.identity.events.v1
     messages:
       identityCreated: { $ref: "#/components/messages/IdentityCreated" }
       identityDisabled: { $ref: "#/components/messages/IdentityDisabled" }
@@ -39,7 +39,7 @@ operations:
 components:
   messages:
     IdentityCreated:
-      name: com.nabhold.identity.created.v1
+      name: com.baobab-platform.identity.created.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -47,7 +47,7 @@ components:
             properties:
               data: { $ref: ./identity-created.schema.json }
     IdentityDisabled:
-      name: com.nabhold.identity.disabled.v1
+      name: com.baobab-platform.identity.disabled.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -55,7 +55,7 @@ components:
             properties:
               data: { $ref: ./identity-disabled.schema.json }
     IdentitySuspended:
-      name: com.nabhold.identity.suspended.v1
+      name: com.baobab-platform.identity.suspended.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -63,7 +63,7 @@ components:
             properties:
               data: { $ref: ./identity-suspended.schema.json }
     IdentityReactivated:
-      name: com.nabhold.identity.reactivated.v1
+      name: com.baobab-platform.identity.reactivated.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -71,7 +71,7 @@ components:
             properties:
               data: { $ref: ./identity-reactivated.schema.json }
     MembershipRevoked:
-      name: com.nabhold.membership.revoked.v1
+      name: com.baobab-platform.membership.revoked.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -79,7 +79,7 @@ components:
             properties:
               data: { $ref: ./membership-revoked.schema.json }
     EntitlementRevoked:
-      name: com.nabhold.entitlement.revoked.v1
+      name: com.baobab-platform.entitlement.revoked.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -87,7 +87,7 @@ components:
             properties:
               data: { $ref: ./entitlement-revoked.schema.json }
     CredentialCompromised:
-      name: com.nabhold.credential.compromised.v1
+      name: com.baobab-platform.credential.compromised.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -95,7 +95,7 @@ components:
             properties:
               data: { $ref: ./credential-compromised.schema.json }
     SessionRevoked:
-      name: com.nabhold.session.revoked.v1
+      name: com.baobab-platform.session.revoked.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
@@ -103,7 +103,7 @@ components:
             properties:
               data: { $ref: ./session-revoked.schema.json }
     WorkloadRevoked:
-      name: com.nabhold.workload.revoked.v1
+      name: com.baobab-platform.workload.revoked.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json

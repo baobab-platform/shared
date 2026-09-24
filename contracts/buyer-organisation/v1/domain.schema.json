@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/buyer-organisation/v1/domain.schema.json",
-  "title": "Nabhold BuyerOrganisation domain identifiers, enumerations and resource",
+  "$id": "https://contracts.baobab-platform.com/buyer-organisation/v1/domain.schema.json",
+  "title": "Baobab-Platform BuyerOrganisation domain identifiers, enumerations and resource",
   "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): the buyer-side counterparty a tenant trades with. Governed under the capability/v1 namespace registry's `customer` domain. This package defines vocabulary and the resource shape only; it mints no canonical Organisation ID and does not replace an engine-owned Customer/Business Partner record -- same boundary contracts/supplier-onboarding/v1 draws for suppliers.",
   "$defs": {
     "buyerOrganisationId": {
@@ -27,7 +27,7 @@
         "canonical_organisation_id": {
           "type": ["string", "null"],
           "maxLength": 128,
-          "description": "Reserved and nullable, mirroring contracts/supplier-onboarding/v1's canonical_organisation_id: no canonical Organisation ID authority exists yet (contracts/erp/v1/system-of-record.yaml keeps Organisation's canonical_owner unassigned)."
+          "description": "Optional reference to the ADR-BCP-018 canonical Organisation (CanonicalEntity id). Runtime authority is Control Plane. Null when the buyer record is not yet linked; existing buyer IDs are preserved."
         },
         "name": { "type": "string", "minLength": 1, "maxLength": 200 },
         "status": { "$ref": "#/$defs/buyerOrganisationStatus" },

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/buyer-organisation/v1/events.schema.json",
+  "$id": "https://contracts.baobab-platform.com/buyer-organisation/v1/events.schema.json",
   "title": "BuyerOrganisation lifecycle event payloads",
   "description": "Data payloads for BuyerOrganisation lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
   "$defs": {

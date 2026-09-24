@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/readiness.schema.json",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/readiness.schema.json",
   "title": "ReadinessSnapshot",
   "description": "Hierarchical readiness projection (Technical Specification SS44, SS51): Provider -> Capability -> Product -> Estate -> Tenant. Readiness SHALL be explainable -- never merely `ready: false` where structured reasons are available (SS44) -- so every non-READY snapshot carries blocking_reasons drawn from the same capability_resolution_denial reason-code vocabulary CapabilityResolution and TenantProvisioning.blocking_reasons already use, rather than a separate readiness-specific vocabulary.",
   "$defs": {

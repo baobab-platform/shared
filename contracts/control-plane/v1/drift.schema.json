@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/control-plane/v1/drift.schema.json",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/drift.schema.json",
   "title": "Drift",
   "description": "A detected mismatch between desired and observed state for one object (Technical Specification SS42-43's reconciliation model: Desired State -> Observe -> Compare -> Drift?). Per-object, not per-tenant: Programme Gate P0's classification (phase-0-architecture-inventory-and-lock.md) found only a primitive tenant-level desired_state/observed_state pair implemented (tenants.desired_state/observed_state) and flagged that real Drift must operate per-object -- this schema is that per-object record.",
   "$defs": {

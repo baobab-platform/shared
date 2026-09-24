@@ -2,7 +2,7 @@
  * Generic, estate-agnostic lifecycle mechanism. The states and transition
  * table are the caller's business decision — this file only supplies the
  * enforcement mechanism (canTransition / assertTransition), generalized
- * from the concrete lifecycle nabhold/zuribeans proved out in
+ * from the concrete lifecycle baobab-platform/zuribeans proved out in
  * docs/adr/0006-supplier-registration-data-ownership.md.
  */
 export type TransitionTable<TStatus extends string> = Readonly<Record<TStatus, readonly TStatus[]>>
@@ -27,7 +27,7 @@ export const createLifecycle = <TStatus extends string>(
 }
 
 /**
- * The concrete lifecycle nabhold/zuribeans proved out for its supplier
+ * The concrete lifecycle baobab-platform/zuribeans proved out for its supplier
  * registration vertical slice (ADR-0006). Estates may reuse it as-is via
  * `supplierApplicationLifecycle`, or define their own status union and pass
  * a different transition table to `createLifecycle` if their qualification

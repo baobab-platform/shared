@@ -1,8 +1,8 @@
 # Copy into <repo>/.github/dependabot.yml
 # Resolve every TODO, then delete this comment block.
 #
-# NABHOLD's org-standard Dependabot config for GitHub Actions dependency
-# tracking. Every actions/checkout, nabhold/shared reference, etc. gets an
+# BAOBAB-PLATFORM's org-standard Dependabot config for GitHub Actions dependency
+# tracking. Every actions/checkout, baobab-platform/shared reference, etc. gets an
 # automatic bump PR once the tag/branch it's pinned against moves.
 #
 # This does NOT replace the action-pinning policy (see README.md's
@@ -13,7 +13,7 @@
 # to move the pin forward.
 #
 # Compliance with this shape is checked automatically by
-# nabhold/shared/.github/workflows/enforce-dependabot-config.yml — see
+# baobab-platform/shared/.github/workflows/enforce-dependabot-config.yml — see
 # templates/caller-enforce-dependabot-config.yml to adopt that check in
 # this repo's own CI.
 

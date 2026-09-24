@@ -1,7 +1,7 @@
 # ==============================================================================
-# NABHOLD GROUP AFRICA — nabhold/shared
+# BAOBAB-PLATFORM GROUP AFRICA — baobab-platform/shared
 #
-# Publish versioned @nabhold/* packages to GitHub Packages.
+# Publish versioned @baobab-platform/* packages to GitHub Packages.
 #
 # Release model:
 #
@@ -30,13 +30,13 @@
 #             changeset publish
 #                     │
 #                     ▼
-#          npm.pkg.github.com/@nabhold/*
+#          npm.pkg.github.com/@baobab-platform/*
 #
 # Current publishable packages include:
-#   - @nabhold/contracts-ts
-#   - @nabhold/supplier-domain
+#   - @baobab-platform/contracts-ts
+#   - @baobab-platform/supplier-domain
 #
-# Future non-private @nabhold/* workspace packages are automatically handled
+# Future non-private @baobab-platform/* workspace packages are automatically handled
 # by Changesets once they contain valid package.json metadata.
 #
 # IMPORTANT:
@@ -125,7 +125,7 @@ jobs:
           node-version: "24"
           cache: "pnpm"
           registry-url: "https://npm.pkg.github.com"
-          scope: "@nabhold"
+          scope: "@baobab-platform"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -148,7 +148,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "Publishable @nabhold packages:"
+          echo "Publishable @baobab-platform packages:"
           echo
 
           node <<'NODE'
@@ -185,10 +185,10 @@ jobs:
               );
             }
 
-            if (!pkg.name.startsWith("@nabhold/")) {
+            if (!pkg.name.startsWith("@baobab-platform/")) {
               throw new Error(
                 `Unexpected package scope: ${pkg.name}. ` +
-                `Published shared packages must use @nabhold/*.`
+                `Published shared packages must use @baobab-platform/*.`
               );
             }
 
@@ -250,7 +250,7 @@ jobs:
           node-version: "24"
           cache: "pnpm"
           registry-url: "https://npm.pkg.github.com"
-          scope: "@nabhold"
+          scope: "@baobab-platform"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -292,7 +292,7 @@ jobs:
           PR_NUMBER: ${{ steps.changesets.outputs.pullRequestNumber }}
         run: |
           {
-            echo "## Nabhold Shared Package Release"
+            echo "## Baobab-Platform Shared Package Release"
             echo
             echo "| Property | Value |"
             echo "|---|---|"

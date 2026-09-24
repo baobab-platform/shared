@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/supplier-onboarding/v1/supplier-capability-verified.schema.json",
+  "$id": "https://contracts.baobab-platform.com/supplier-onboarding/v1/supplier-capability-verified.schema.json",
   "title": "Supplier capability verified",
   "description": "Emitted when a reviewer moves a declared supplier capability (what a supplier says it can supply) to verified or rejected. A capability is scoped to one product category; verifying it does not approve any specific product proposal.",
   "type": "object",

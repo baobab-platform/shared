@@ -1,5 +1,5 @@
 schema:
-  name: nabhold-idempotency-policy
+  name: baobab-platform-idempotency-policy
   version: "1.0"
 
 http_commands:

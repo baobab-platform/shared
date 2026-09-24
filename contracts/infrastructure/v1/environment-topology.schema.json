@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/infrastructure/v1/environment-topology.schema.json",
-  "title": "Nabhold environment topology declaration",
+  "$id": "https://contracts.baobab-platform.com/infrastructure/v1/environment-topology.schema.json",
+  "title": "Baobab-Platform environment topology declaration",
   "type": "object",
   "additionalProperties": false,
   "required": ["environment", "region", "classification", "services"],

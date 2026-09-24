@@ -1,0 +1,21 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000000002",
+  "type": "com.baobab-platform.control-plane.corporate-relationship.activated.v1",
+  "source": "https://control-plane.baobab-platform.com/organisation",
+  "subject": "corporate-relationship/crel_01k8z3p0food",
+  "time": "2026-03-20T09:30:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/organisation/v1/events.schema.json#/$defs/CorporateRelationshipActivated",
+  "baobabscope": "platform",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-0000000000ff",
+  "data": {
+    "corporate_relationship_id": "crel_01k8z3p0food",
+    "source_organisation_id": "ce_01k8z3m4q7hx",
+    "target_organisation_id": "ce_01k8z3m5r2fd",
+    "relationship_type": "OWNS",
+    "effective_from": "2026-03-15T00:00:00Z",
+    "verified_at": "2026-03-20T09:30:00Z",
+    "evidence_reference_count": 1
+  }
+}

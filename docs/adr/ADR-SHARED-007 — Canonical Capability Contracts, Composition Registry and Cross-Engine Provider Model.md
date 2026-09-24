@@ -2,11 +2,11 @@
 
 **Status:** Proposed — Normative Platform Contract  
 **Date:** 2026-09-10  
-**Decision Owners:** NABHOLD / Baobab Platform Architecture  
-**Repository:** `nabhold/shared`  
-**Contract Authority:** `nabhold/shared`  
-**Runtime Authority:** `nabhold/baobab-cp`  
-**Identity Authority:** `nabhold/baobab-iam`  
+**Decision Owners:** BAOBAB-PLATFORM / Baobab Platform Architecture  
+**Repository:** `baobab-platform/shared`  
+**Contract Authority:** `baobab-platform/shared`  
+**Runtime Authority:** `baobab-platform/baobab-cp`  
+**Identity Authority:** `baobab-platform/baobab-iam`  
 **Provider Implementations:** Baobab domain engines and approved external providers  
 **Applies To:** All Baobab repositories, Digital Estates, engines, provider adapters, APIs, events and integration contracts  
 **Parent Architecture Decision:** ADR-BCP-002 — Capability-Centric Baobab Platform Architecture and Digital Estate Consumption Model  
@@ -18,7 +18,7 @@
 
 # 1. Executive Decision
 
-`nabhold/shared` SHALL become the **canonical contract authority for the Baobab capability model**.
+`baobab-platform/shared` SHALL become the **canonical contract authority for the Baobab capability model**.
 
 It SHALL define the portable, implementation-neutral contracts by which:
 
@@ -38,7 +38,7 @@ It SHALL define the portable, implementation-neutral contracts by which:
 - errors and reason codes are standardised;
 - Digital Estates and engines communicate without vendor coupling.
 
-`nabhold/shared` SHALL NOT become a runtime service.
+`baobab-platform/shared` SHALL NOT become a runtime service.
 
 It SHALL NOT execute capability resolution.
 
@@ -55,7 +55,7 @@ Those are runtime responsibilities of `baobab-cp`.
 The governing relationship SHALL be:
 
 ```text
-              NABHOLD/SHARED
+              BAOBAB-PLATFORM/SHARED
           canonical language/contracts
                     │
                     ▼
@@ -179,7 +179,7 @@ Runtime systems SHALL implement them.
 
 # 5. What Shared SHALL Become
 
-At target state, `nabhold/shared` SHALL be:
+At target state, `baobab-platform/shared` SHALL be:
 
 > **The authoritative, versioned, implementation-neutral contract repository defining the language through which every Baobab component describes identities, contexts, capabilities, providers, compositions, events and cross-engine interoperability.**
 
@@ -1441,7 +1441,7 @@ That invites drift.
 
 # 50. Suggested Repository Structure
 
-`nabhold/shared` SHOULD evolve toward:
+`baobab-platform/shared` SHOULD evolve toward:
 
 ```text
 shared/
@@ -2682,10 +2682,10 @@ This creates a distributed monolith disguised as reuse.
 # 96. Final Architecture
 
 ```text
-                     NABHOLD / BAOBAB
+                     BAOBAB-PLATFORM / BAOBAB
 
                     CONTRACT AUTHORITY
-                    nabhold/shared
+                    baobab-platform/shared
                           │
              ┌────────────┼────────────┐
              │            │            │
@@ -2727,7 +2727,7 @@ This creates a distributed monolith disguised as reuse.
 
 Upon approval:
 
-1. this ADR SHALL govern capability-contract development in `nabhold/shared`;
+1. this ADR SHALL govern capability-contract development in `baobab-platform/shared`;
 2. Shared SHALL remain the canonical contract authority;
 3. CP SHALL become the runtime authority implementing these contracts;
 4. engine repositories SHALL implement provider contracts rather than invent competing capability semantics;

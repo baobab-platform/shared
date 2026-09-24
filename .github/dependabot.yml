@@ -4,7 +4,7 @@
 # PURPOSE:
 #   Automates dependency management across the repository. This configuration is
 #   specifically tailored to monitor, evaluate, and update GitHub Actions dependencies,
-#   including public/private actions and custom reusable workflows (e.g., `nabhold/shared`).
+#   including public/private actions and custom reusable workflows (e.g., `baobab-platform/shared`).
 #
 # RATIONALE:
 #   Automated tracking prevents software decay, security vulnerabilities, and workflow failures.
@@ -29,7 +29,7 @@ updates:
   # ----------------------------------------------------------------------------
   # PURPOSE:
   #   Tracks actions (e.g., `actions/checkout`) and external reusable workflows
-  #   (e.g., `nabhold/shared/.github/workflows/greetings.yml`) declared in repository workflows.
+  #   (e.g., `baobab-platform/shared/.github/workflows/greetings.yml`) declared in repository workflows.
   # RATIONALE:
   #   Reusable workflows and third-party actions require continuous updates to ingest bug fixes,
   #   security enhancements, and updates to underlying runner environments (e.g., Node.js runtimes).
@@ -74,7 +74,7 @@ updates:
     #   Grouping safe minor/patch upgrades allows a single CI test run and one-click approval.
     # LOGIC:
     #   - 'actions-minor-patch': Unique group rule identifier.
-    #   - 'patterns: ["*"]': Evaluates all actions, including `nabhold/shared` reusable workflows.
+    #   - 'patterns: ["*"]': Evaluates all actions, including `baobab-platform/shared` reusable workflows.
     #   - 'update-types': Includes 'minor' and 'patch' releases. Major version bumps are excluded
     #     so breaking API changes can be isolated and reviewed independently.
     groups:

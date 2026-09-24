@@ -1,5 +1,5 @@
-* @nabhold/platform-engineering
-/.github/ @nabhold/platform-engineering @nabhold/security
-/contracts/ @nabhold/platform-engineering @nabhold/security
-/templates/ @nabhold/platform-engineering
-/SECURITY.md @nabhold/security
+* @baobab-platform/platform-engineering
+/.github/ @baobab-platform/platform-engineering @baobab-platform/security
+/contracts/ @baobab-platform/platform-engineering @baobab-platform/security
+/templates/ @baobab-platform/platform-engineering
+/SECURITY.md @baobab-platform/security

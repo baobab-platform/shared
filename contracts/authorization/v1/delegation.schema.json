@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/authorization/v1/delegation.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/authorization/v1/delegation.schema.json",
   "title": "Delegation",
   "description": "Explicit subject/actor provenance for a delegated call: who a request is ultimately made on behalf of, versus which service actually executed it (ADR-0007 §13-18 'Delegated Calls', §108 'Human Delegation Architecture'; ADR-0008 §90-92 'Confused Deputy Protection'). A delegated call's AuthorizationContext (context.schema.json) SHOULD carry this so `principal_id` (the immediate caller's own identity) and this Delegation's `subject_id` (who the call is ultimately for) are never conflated -- that conflation is exactly the confused-deputy failure ADR-0008 §92 describes.",
   "type": "object",

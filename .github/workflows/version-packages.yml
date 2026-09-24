@@ -1,5 +1,5 @@
 # ==============================================================================
-# NABHOLD GROUP AFRICA — nabhold/shared
+# BAOBAB-PLATFORM GROUP AFRICA — baobab-platform/shared
 #
 # VERSION PACKAGE RELEASES
 #
@@ -118,7 +118,7 @@ jobs:
     #   - create/update the Version Packages PR
     #
     # packages:read allows dependency installation from GitHub Packages where
-    # shared packages eventually depend on other private @nabhold packages.
+    # shared packages eventually depend on other private @baobab-platform packages.
     permissions:
       contents: write
       pull-requests: write
@@ -161,9 +161,9 @@ jobs:
           node-version: "24"
           cache: "pnpm"
 
-          # Configure GitHub Packages for any private @nabhold dependencies.
+          # Configure GitHub Packages for any private @baobab-platform dependencies.
           registry-url: "https://npm.pkg.github.com"
-          scope: "@nabhold"
+          scope: "@baobab-platform"
 
       # ------------------------------------------------------------------------
       # Install

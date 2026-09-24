@@ -2,11 +2,11 @@
 
 **Status:** Accepted — Normative Contract Addition
 **Date:** 2026-09-16
-**Decision Owners:** NABHOLD / Baobab Platform Architecture
-**Primary Repository:** `nabhold/shared`
-**Affected Repositories:** `nabhold/shared`, `nabhold/baobab-cp`
+**Decision Owners:** BAOBAB-PLATFORM / Baobab Platform Architecture
+**Primary Repository:** `baobab-platform/shared`
+**Affected Repositories:** `baobab-platform/shared`, `baobab-platform/baobab-cp`
 **Reference Tenant:** ZuriBeans
-**Trigger:** `baobab-cp` Tenant Onboarding & Provisioning Technical Specification, **Programme Gate P1 — Shared Contract Foundation** (§88): "Implement in `nabhold/shared`: Capability, CapabilityScope, CapabilityGrant, CapabilityProvider, CapabilityBinding, Product, ProductVersion, Composition, Subscription, Context, Provisioning, Readiness, Drift, event vocabulary, reason codes. All schemas validate."
+**Trigger:** `baobab-cp` Tenant Onboarding & Provisioning Technical Specification, **Programme Gate P1 — Shared Contract Foundation** (§88): "Implement in `baobab-platform/shared`: Capability, CapabilityScope, CapabilityGrant, CapabilityProvider, CapabilityBinding, Product, ProductVersion, Composition, Subscription, Context, Provisioning, Readiness, Drift, event vocabulary, reason codes. All schemas validate."
 
 **Depends On:**
 
@@ -19,7 +19,7 @@
 
 ## 1. Purpose
 
-Programme Gate P0 (`baobab-cp`, Accepted) found `ProductSubscription` implemented only as a thin `tenant_id`/`product_id`/`status` table with no `ProductVersion`, composition, or entitlement-projection linkage, and found `ReadinessSnapshot` and `Drift` entirely absent from both the runtime schema and — this ADR's own audit confirms — from `nabhold/shared`'s contracts. Of Programme Gate P1's fourteen required items, an audit of `nabhold/shared`'s existing `contracts/` tree before this ADR found:
+Programme Gate P0 (`baobab-cp`, Accepted) found `ProductSubscription` implemented only as a thin `tenant_id`/`product_id`/`status` table with no `ProductVersion`, composition, or entitlement-projection linkage, and found `ReadinessSnapshot` and `Drift` entirely absent from both the runtime schema and — this ADR's own audit confirms — from `baobab-platform/shared`'s contracts. Of Programme Gate P1's fourteen required items, an audit of `baobab-platform/shared`'s existing `contracts/` tree before this ADR found:
 
 | Item | Status before this ADR |
 |---|---|
@@ -69,7 +69,7 @@ ProductVersion --composition_key--> CapabilityComposition
                                      EntitlementProjection
 ```
 
-Composition expansion, grant materialisation, and all business logic remain `nabhold/baobab-cp`'s runtime responsibility, per the same "contract-authority package, not a runtime" boundary `capability/v1/README.md` already states.
+Composition expansion, grant materialisation, and all business logic remain `baobab-platform/baobab-cp`'s runtime responsibility, per the same "contract-authority package, not a runtime" boundary `capability/v1/README.md` already states.
 
 ---
 
@@ -100,4 +100,4 @@ Every new and modified schema in this ADR was checked with `Draft202012Validator
 - Programme Gate P1's fourteen-item checklist is satisfied: nine items were already present (three corrected by ADR-SHARED-008), and this ADR adds the remaining five (`Product`, `ProductVersion`, `Subscription`, `Readiness`, `Drift`) and completes the sixth (`Provisioning`).
 - `baobab-cp`'s `ProductSubscription` REMODEL, flagged by Programme Gate P0 as the largest single gap in its classification, now has a target contract to remodel against (`contracts/product/v1/subscription.schema.json`) rather than an ad hoc internal redesign.
 - No existing contract file's `$id`, required fields, or enums were changed by this ADR outside of `control-plane/v1/domain.schema.json`'s purely additive new `$defs` (`tenantProvisioningId`, `tenantProvisioningPhase`, `readinessSnapshotId`, `readinessStatus`, `driftRecordId`, `driftObjectType`, `driftResolution`) — no consumer of the pre-existing contracts is broken by this change.
-- `nabhold/baobab-cp` carries the action item to implement `TenantProvisioning`, `ReadinessSnapshot`, and `Drift` as real migrated tables (Programme Gates P7 and P10) and to remodel `product_subscriptions` against `contracts/product/v1/subscription.schema.json` (tracked next, per this session's own follow-on work).
+- `baobab-platform/baobab-cp` carries the action item to implement `TenantProvisioning`, `ReadinessSnapshot`, and `Drift` as real migrated tables (Programme Gates P7 and P10) and to remodel `product_subscriptions` against `contracts/product/v1/subscription.schema.json` (tracked next, per this session's own follow-on work).

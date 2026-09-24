@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/trade-lane/v1/events.schema.json",
+  "$id": "https://contracts.baobab-platform.com/trade-lane/v1/events.schema.json",
   "title": "TradeLane lifecycle event payloads",
   "description": "Data payloads for TradeLane lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
   "$defs": {

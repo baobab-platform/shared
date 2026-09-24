@@ -1,5 +1,5 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
 # Reusable Workflow: Enforce Action Pinning
 #
 # File: .github/workflows/enforce-action-pinning.yml
@@ -10,8 +10,8 @@
 #   pinned to a full 40-character commit SHA. This is the org-wide
 #   action-pinning policy (README.md > "Immutable Dependencies") expressed
 #   as an automated check, applying to every action reference — third-party
-#   actions AND nabhold/shared's own reusable workflows/composite actions
-#   consumed via `uses: nabhold/shared/...@<sha>`. A floating tag (`@v4`,
+#   actions AND baobab-platform/shared's own reusable workflows/composite actions
+#   consumed via `uses: baobab-platform/shared/...@<sha>`. A floating tag (`@v4`,
 #   `@v1`), a branch name, or `@main` all fail this check; only a
 #   40-character hex commit SHA passes.
 #
@@ -113,7 +113,7 @@ jobs:
           if [[ $violations -gt 0 ]]; then
             echo ""
             echo "Found ${violations} action reference(s) not pinned to a full-length commit SHA."
-            echo "See: https://github.com/nabhold/shared/blob/main/README.md#immutable-dependencies"
+            echo "See: https://github.com/baobab-platform/shared/blob/main/README.md#immutable-dependencies"
             exit 1
           fi
 

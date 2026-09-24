@@ -1,4 +1,4 @@
-id: nabhold.control-plane.tenant-provisioning.v1
+id: baobab-platform.control-plane.tenant-provisioning.v1
 initial_state: requested
 terminal_states:
   - cancelled

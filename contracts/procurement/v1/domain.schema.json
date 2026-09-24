@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/procurement/v1/domain.schema.json",
-  "title": "Nabhold ProcurementRequest domain identifiers, enumerations and resource",
+  "$id": "https://contracts.baobab-platform.com/procurement/v1/domain.schema.json",
+  "title": "Baobab-Platform ProcurementRequest domain identifiers, enumerations and resource",
   "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a tenant's internal request to purchase, tracked from creation through approval to conversion into a commitment. Governed under the capability/v1 namespace registry's `procurement` domain.",
   "$defs": {
     "procurementRequestId": {

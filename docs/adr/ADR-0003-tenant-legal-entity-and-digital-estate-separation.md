@@ -4,9 +4,9 @@
 |---|---|
 | **Status** | Accepted |
 | **Date** | 2026-09-01 |
-| **Owner** | Chief Software Engineer, Nabhold Group Africa |
-| **Repository** | `nabhold/shared` |
-| **Supersedes** | ADR-0001 §§2.1–2.3 where they equate Baobab consumption with digital-estate purpose or exclude Nabhold from tenancy |
+| **Owner** | Chief Software Engineer, Baobab-Platform Group Africa |
+| **Repository** | `baobab-platform/shared` |
+| **Supersedes** | ADR-0001 §§2.1–2.3 where they equate Baobab consumption with digital-estate purpose or exclude Baobab-Platform from tenancy |
 | **Depends on** | ADR-0002; Control Plane v1 contracts |
 
 ---
@@ -14,7 +14,7 @@
 ## 1. Context
 
 ADR-0001 correctly separated independently deployed digital estates from the
-Baobab product platform, but it concluded that Nabhold was not a tenant because
+Baobab product platform, but it concluded that Baobab-Platform was not a tenant because
 its digital estate had no Baobab product dependency. That conclusion joined two
 questions which must remain independent:
 
@@ -22,7 +22,7 @@ questions which must remain independent:
 2. Does an organisation consume a Baobab product under an isolated operational
    and security boundary?
 
-Nabhold Group Africa requires the Baobab ERP Engine for its own holding-company
+Baobab-Platform Group Africa requires the Baobab ERP Engine for its own holding-company
 operations. Its corporate digital estate remains separately owned and deployed.
 The existing contracts also use incompatible identifiers: the legal-entity
 registry uses uppercase kebab-case IDs such as `THAMANI-GLOBAL`, while the
@@ -46,20 +46,20 @@ A legal entity is the default tenant boundary, but legal entity and tenant are
 not synonyms. A digital estate neither creates nor prohibits tenancy. Product
 consumption requires a tenant; merely owning an estate does not.
 
-### 2.2 Nabhold
+### 2.2 Baobab-Platform
 
-`NABHOLD` is approved for Baobab tenancy because it consumes `baobab-erp`, not
-because `nabhold/nabhold` exists. The Control Plane must provision a distinct
-opaque `tenant_id`, map it to `NABHOLD`, and enforce the ERP entitlement.
-Nabhold, ZuriBeans and Thamani remain independent tenant boundaries unless an
+`BAOBAB-PLATFORM` is approved for Baobab tenancy because it consumes `baobab-erp`, not
+because `baobab-platform/baobab-platform` exists. The Control Plane must provision a distinct
+opaque `tenant_id`, map it to `BAOBAB-PLATFORM`, and enforce the ERP entitlement.
+Baobab-Platform, ZuriBeans and Thamani remain independent tenant boundaries unless an
 explicit, authorised cross-organisational capability is approved.
 
 ### 2.3 Identifier grammar
 
 | Identifier | Canonical form | Example | Authority |
 |---|---|---|---|
-| Legal entity | Uppercase kebab case | `THAMANI-GLOBAL` | `nabhold/shared` registry |
-| Tenant | Opaque lowercase resource ID prefixed `tn_` | `tn_01k4example` | `nabhold/baobab-cp` |
+| Legal entity | Uppercase kebab case | `THAMANI-GLOBAL` | `baobab-platform/shared` registry |
+| Tenant | Opaque lowercase resource ID prefixed `tn_` | `tn_01k4example` | `baobab-platform/baobab-cp` |
 | Product | Lowercase engine/product ID; kebab case preferred | `baobab-erp` | Shared product/interface contracts and CP entitlement registry |
 
 New tenant IDs must not embed company names, countries, markets or jurisdictions.
@@ -85,7 +85,7 @@ names are never mapping keys.
 
 ### Positive
 
-- Nabhold can consume ERP without coupling ERP tenancy to its website.
+- Baobab-Platform can consume ERP without coupling ERP tenancy to its website.
 - Legal reorganisation and deployment isolation do not force identifier reuse.
 - ERP vendor identifiers stay behind the Baobab ERP boundary.
 - The three initial organisations can be provisioned by one configuration-driven

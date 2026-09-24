@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/product/v1/subscription.schema.json",
+  "$id": "https://contracts.baobab-platform.com/product/v1/subscription.schema.json",
   "title": "ProductSubscription and EntitlementProjection",
-  "description": "ProductSubscription answers exactly one question: which ProductVersion, with which additional profiles/add-ons, has this tenant subscribed to? It never grants capabilities directly -- nabhold/baobab-cp expands it into CapabilityGrant rows (capability/v1/grant.schema.json, source=PRODUCT_SUBSCRIPTION, source_reference=subscription_id), and EntitlementProjection is the read-model record of that expansion (Technical Specification SS31, SS91).",
+  "description": "ProductSubscription answers exactly one question: which ProductVersion, with which additional profiles/add-ons, has this tenant subscribed to? It never grants capabilities directly -- baobab-platform/baobab-cp expands it into CapabilityGrant rows (capability/v1/grant.schema.json, source=PRODUCT_SUBSCRIPTION, source_reference=subscription_id), and EntitlementProjection is the read-model record of that expansion (Technical Specification SS31, SS91).",
   "$defs": {
     "productSubscription": {
       "type": "object",

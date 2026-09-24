@@ -1,5 +1,5 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
 # Reusable Workflow: Greet First-Time Contributors
 #
 # File: .github/workflows/greetings.yml
@@ -38,7 +38,7 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
-# * Initial extraction from nabhold/baobab-dev's repository-local
+# * Initial extraction from baobab-platform/baobab-dev's repository-local
 #   greetings.yml into shared/, made generic via issue-message/pr-message
 #   inputs so wording stays per-repo while the mechanism is centralized.
 # ==============================================================================
@@ -57,12 +57,12 @@ on:
           (a slightly generic comment) rather than hard (a broken workflow).
         type: string
         required: false
-        default: "Thanks for opening your first issue here — welcome to NABHOLD! A maintainer will take a look shortly."
+        default: "Thanks for opening your first issue here — welcome to BAOBAB-PLATFORM! A maintainer will take a look shortly."
       pr-message:
         description: "Comment posted on a contributor's first pull request in the calling repository."
         type: string
         required: false
-        default: "Thanks for your first pull request here — welcome to NABHOLD! A maintainer will review it shortly."
+        default: "Thanks for your first pull request here — welcome to BAOBAB-PLATFORM! A maintainer will review it shortly."
 
 # Least-privilege default at the workflow level, per org policy — the actual
 # write access this job needs is granted explicitly on the job below, not
@@ -78,7 +78,7 @@ jobs:
     # issues:write / pull-requests:write are the minimum actions/first-interaction
     # needs to post a comment. Note this permission block is a CEILING set by
     # the calling job's own `permissions:`, not an automatic grant — the
-    # calling repository's job that does `uses: nabhold/shared/...@v1` must
+    # calling repository's job that does `uses: baobab-platform/shared/...@v1` must
     # itself declare at least this much, or GITHUB_TOKEN here will be
     # silently downgraded and the comment post will fail with a 403.
     permissions:
