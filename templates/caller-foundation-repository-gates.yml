@@ -18,14 +18,20 @@
 #       foundation-product-container.yml
 #   dockerfile, build_context — container build paths
 #   dependency_review_enabled — true when dependency review is available for the repo
-#   advanced_security_enabled — true ONLY when GHAS is licensed and enabled:
-#       • public + true  → CodeQL runs
-#       • public + false → SAST / Not available (Trivy baseline remains)
-#       • private + false → SAST / Not available (does not attempt CodeQL)
-#       • private + true  → CodeQL runs; you assert GHAS is actually on
-#   legacy_metadata_enabled — temporary migration bridge; prefer false for new adopters
+#       (always on public repositories; on private ones only with security.ghas)
 #   container_ignore_unfixed — opt-in: container scan ignores CVEs with no upstream fix
 #       (trivy --ignore-unfixed); fixable findings still fail. Default false (strict).
+#
+# SAST is declared in .baobab/repository.yaml, not here:
+#   security:
+#     sast_provider: codeql | fallback | disabled
+#     ghas:                 # required for codeql on a PRIVATE repository
+#       approved_by: "@handle"
+#       reason: "GitHub Advanced Security is licensed and enabled"
+#       expires: "YYYY-MM-DD"
+#   codeql → CodeQL runs; fallback → SAST / Fallback (portable scans remain);
+#   disabled → needs an approved exceptions.sast. advanced_security_enabled is a
+#   deprecated input kept for one minor version; do not pass it in new callers.
 #
 # Minimum caller permissions:
 #   contents: read, packages: read, actions: read, security-events: write
@@ -65,5 +71,3 @@ jobs:
       dockerfile: "Dockerfile"
       build_context: "."
       dependency_review_enabled: false
-      advanced_security_enabled: false
-      legacy_metadata_enabled: true

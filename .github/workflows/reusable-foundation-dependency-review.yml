@@ -4,11 +4,11 @@ on:
   workflow_call:
     inputs:
       enabled: { type: boolean, default: false }
-      advanced_security_enabled:
+      ghas_approved:
         description: >
-          Caller assertion that GitHub Advanced Security is enabled. Required
-          for dependency review on private repositories. Public repositories
-          do not need GHAS for dependency review.
+          The repository contract carries an approved security.ghas record.
+          Required for dependency review on a private repository; public
+          repositories do not need GHAS for dependency review.
         type: boolean
         default: false
       exceptions: { type: string, default: "{}" }
@@ -24,7 +24,7 @@ jobs:
         id: coverage
         env:
           ENABLED: "${{ inputs.enabled }}"
-          GHAS: "${{ inputs.advanced_security_enabled }}"
+          GHAS: "${{ inputs.ghas_approved }}"
           VISIBILITY: "${{ github.event.repository.visibility }}"
           EVENT: "${{ github.event_name }}"
           WAIVED: "${{ fromJSON(inputs.exceptions)['dependency-review'] != null }}"
@@ -35,7 +35,7 @@ jobs:
           if [[ "$EVENT" == pull_request && "$ENABLED" == true ]]; then applicable=true; fi
 
           # Public: dependency review available without GHAS.
-          # Private: requires advanced_security_enabled as GHAS-backed claim.
+          # Private: requires an approved security.ghas record in the contract.
           available=false
           if [[ "$VISIBILITY" != private || "$GHAS" == true ]]; then available=true; fi
 
@@ -44,11 +44,11 @@ jobs:
             applicable=false
             echo "decision=waived" >> "$GITHUB_OUTPUT"
           elif [[ "$applicable" == true && "$available" != true ]]; then
-            echo "::error::Dependency review is required but unavailable on this private repository; enable GitHub Advanced Security or set dependency_review_enabled=false and declare a reviewed exception"
+            echo "::error::Dependency review is required but unavailable on this private repository; record an approved security.ghas in .baobab/repository.yaml, or set dependency_review_enabled=false and declare a reviewed exception"
             echo "decision=unavailable" >> "$GITHUB_OUTPUT"
             exit 1
           elif [[ "$applicable" == true && "$available" == true ]]; then
-            echo "::notice::Dependency review will run (event=pull_request, visibility=${VISIBILITY}, ghas_claim=${GHAS})"
+            echo "::notice::Dependency review will run (event=pull_request, visibility=${VISIBILITY}, ghas_approved=${GHAS})"
             echo "decision=run" >> "$GITHUB_OUTPUT"
           else
             echo "::notice::Dependency review not applicable (event=${EVENT}, enabled=${ENABLED}, visibility=${VISIBILITY})"

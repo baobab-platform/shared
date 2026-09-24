@@ -9,9 +9,6 @@ on:
         description: Exact shared commit used by the caller; policy files are loaded from this ref.
         type: string
         required: true
-      legacy_metadata_enabled:
-        type: boolean
-        default: true
 permissions:
   contents: read
   packages: read
@@ -23,4 +20,3 @@ jobs:
     with:
       foundation_ref: "${{ inputs.foundation_ref }}"
       profile: contract
-      legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"

@@ -20,5 +20,3 @@ jobs:
       foundation_ref: "${{ github.sha }}"
       profile: ${{ github.event_name == 'schedule' && 'security-deep' || 'full' }}
       dependency_review_enabled: false
-      advanced_security_enabled: false
-      legacy_metadata_enabled: false

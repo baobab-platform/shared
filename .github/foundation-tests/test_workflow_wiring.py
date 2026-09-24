@@ -134,7 +134,7 @@ assert "govulncheck@v1.8.0" in adapters_text
 sast, sast_text = load("reusable-foundation-sast.yml")
 assert {"plan", "analyze", "status"} <= set(sast["jobs"])
 assert "github.event.repository.visibility" in sast_text
-assert "not_available" in sast_text
+assert "\"fallback\" => \"Fallback\"" in sast_text
 assert "SAST /" in sast_text
 assert "foundation-sast-decision" in sast_text
 assert sast["jobs"]["analyze"].get("if") == "needs.plan.outputs.mode == 'codeql'"
@@ -142,7 +142,6 @@ assert "mode != 'codeql'" in str(sast["jobs"]["status"].get("if", ""))
 
 dep_review, dep_review_text = load("reusable-foundation-dependency-review.yml")
 assert "github.event.repository.visibility" in dep_review_text
-assert "advanced_security_enabled" in dep_review_text
 assert "available" in dep_review_text
 
 container, container_text = load("reusable-foundation-container.yml")
@@ -177,5 +176,92 @@ for path in WORKFLOWS.glob("*.y*ml"):
         if reference.startswith("./"):
             continue
         assert re.search(r"@[0-9a-f]{40}$", reference), f"unpinned reference {reference} in {path}"
+
+# Security scope (M2): PR, branch and deep scans differ and emit distinct results.
+security_inputs = workflow_call_inputs(security)
+assert security_inputs["scope"]["default"] == "branch"
+scope_expression = entry["jobs"]["security"]["with"]["scope"]
+assert "security-deep" in scope_expression and "'deep'" in scope_expression
+assert "pull_request" in scope_expression and "'pr'" in scope_expression and "'branch'" in scope_expression
+secrets_opts = security["jobs"]["secrets"]["with"]["log-opts"]
+assert "pull_request.base.sha" in secrets_opts and "'--all'" in secrets_opts and "'HEAD'" in secrets_opts
+assert "inputs.scope == 'pr'" in security["jobs"]["dependency-review"]["with"]["enabled"]
+assert all(name in security["jobs"]["result"]["name"] for name in ("'PR'", "'Deep'", "'Branch'"))
+secrets_scan, secrets_scan_text = load("security-secrets-scan.yml")
+assert workflow_call_inputs(secrets_scan)["log-opts"]["default"] == "HEAD"
+assert '[0-9a-f]{40}' in secrets_scan_text and "LOG_OPTS" in secrets_scan_text
+
+# SAST provider (H2): the contract decides, the classifier resolves, and the
+# security family consumes the decision instead of a caller boolean.
+assert {"sast_provider", "ghas_approved"} <= set(outputs)
+assert "sast_policy.rb" in classifier_text and "github.event.repository.visibility" in classifier_text
+assert entry["jobs"]["classify"]["with"]["advanced_security_enabled"] == "${{ inputs.advanced_security_enabled }}"
+assert entry["jobs"]["security"]["with"]["sast_provider"] == "${{ needs.classify.outputs.sast_provider }}"
+assert "advanced_security_enabled" not in security_inputs
+assert workflow_call_inputs(sast)["provider"]["default"] == "fallback"
+assert "enabled" not in workflow_call_inputs(sast)
+assert "ghas_approved" in workflow_call_inputs(dep_review)
+assert "Deprecated" in workflow_call_inputs(entry)["advanced_security_enabled"]["description"]
+
+# The .nabhold metadata bridge is gone from every Foundation workflow.
+for path in WORKFLOWS.glob("*foundation*.y*ml"):
+    text = path.read_text()
+    assert "legacy_metadata_enabled" not in text, f"{path.name} still references legacy_metadata_enabled"
+    assert ".nabhold/" not in text, f"{path.name} still reads .nabhold metadata"
+
+# Drift guard (Phase 7): scheduled, read-only, driven by the shipped config.
+drift, drift_text = load("foundation-org-conformance.yml")
+drift_on = drift.get(True, drift.get("on"))
+assert "schedule" in drift_on and "workflow_dispatch" in drift_on
+assert "pull_request" not in drift_on, "org drift must not block unrelated pull requests"
+assert drift["permissions"] == {"contents": "read"}
+assert "scripts/foundation/org_conformance.py" in drift_text and ".baobab/org-conformance.yaml" in drift_text
+assert "ORG_CONFORMANCE_TOKEN" in drift_text and "org-conformance-report" in drift_text
+
+# Reusable-workflow nesting. GitHub allows at most 10 levels of connected
+# workflows (the consumer's top-level caller counts as one) and at most 50
+# workflows in one run. Each product wrapper adds a level on top of the
+# orchestrator, so measure the deepest chain a consumer can start.
+MAX_LEVELS = 10
+MAX_WORKFLOWS = 50
+
+
+def local_calls(name: str) -> list[str]:
+    document, _ = load(name)
+    calls = []
+    for job in document.get("jobs", {}).values():
+        uses = job.get("uses", "")
+        if uses.startswith("./.github/workflows/"):
+            calls.append(uses.removeprefix("./.github/workflows/"))
+    return calls
+
+
+def depth(name: str, seen: tuple[str, ...] = ()) -> int:
+    assert name not in seen, f"reusable workflow cycle: {' -> '.join(seen + (name,))}"
+    return 1 + max((depth(child, seen + (name,)) for child in local_calls(name)), default=0)
+
+
+def workflow_count(name: str) -> int:
+    return 1 + sum(workflow_count(child) for child in local_calls(name))
+
+
+for entrypoint in (
+    "foundation-repository-gates.yml",
+    "foundation-product-contract.yml",
+    "foundation-product-security.yml",
+    "foundation-product-container.yml",
+):
+    levels = 1 + depth(entrypoint)  # + the consumer's own caller workflow
+    assert levels <= MAX_LEVELS, f"{entrypoint} reaches {levels} workflow levels; GitHub allows {MAX_LEVELS}"
+    total = 1 + workflow_count(entrypoint)
+    assert total <= MAX_WORKFLOWS, f"{entrypoint} starts {total} workflows; GitHub allows {MAX_WORKFLOWS}"
+
+# Every SHA-pinned action names the release it corresponds to, so the pin
+# stays auditable (for example "# v7.0.1" or "# v7.0.0+6 (main, 2026-09-09)").
+for path in WORKFLOWS.glob("*.y*ml"):
+    for line in path.read_text().splitlines():
+        match = re.match(r"^\s*(?:- )?uses:\s*([^\s#]+@[0-9a-f]{40})(.*)$", line)
+        if match and not match.group(1).startswith("./"):
+            assert re.search(r"#\s*v\d", match.group(2)), f"{path.name}: pin without a version comment: {match.group(1)}"
 
 print("Foundation workflow wiring fixtures passed")
