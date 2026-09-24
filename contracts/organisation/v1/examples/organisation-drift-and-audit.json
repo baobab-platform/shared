@@ -1,0 +1,80 @@
+{
+  "_comment": "Illustrative ADR-BCP-018 gate ORG-15 observations (sections 127-131). A divestiture ended the OWNS relationship that justified a PLATFORM_GROUP_AFFILIATE classification, but the classification is still live: that is CRITICAL drift for review, never an automatic cascade (section 129). A tenant also stays mapped to an organisation that has since been suspended. The audit entries show the lineage section 131 asks for: who verified the ownership, on which evidence, and who ended it.",
+  "organisations": [
+    {
+      "canonical_entity_id": "ce_01k8z5a1hldg",
+      "display_name": "Illustrative Holdings",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2025-01-01T00:00:00Z",
+      "evidence_references": ["evd_01k8z5b1reg1"]
+    },
+    {
+      "canonical_entity_id": "ce_01k8z5a2subs",
+      "display_name": "Illustrative Subsidiary",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "SUSPENDED",
+      "effective_from": "2025-01-01T00:00:00Z",
+      "evidence_references": ["evd_01k8z5b2reg2"]
+    }
+  ],
+  "relationship_drift_findings": [
+    {
+      "rule": "AFFILIATE_BASIS_NOT_IN_FORCE",
+      "drift_type": "STATE_MISMATCH",
+      "severity": "CRITICAL",
+      "resource_type": "PLATFORM_RELATIONSHIP",
+      "resource_id": "prel_0190a1b2c3d4e5f60718293a4b5c6d70",
+      "organisation_ids": ["ce_01k8z5a2subs"],
+      "related_resource_ids": ["crel_0190a1b2c3d4e5f60718293a4b5c6d71"],
+      "observed_state": "PLATFORM_GROUP_AFFILIATE ACTIVE; basis OWNS ENDED",
+      "desired_state": "an ACTIVE PLATFORM_GROUP_AFFILIATE rests on an in-force VERIFIED OWNS or CONTROLS basis",
+      "remediation": "REVIEW",
+      "auto_repairable": false
+    },
+    {
+      "rule": "TENANT_MAPPING_TO_INACTIVE_ORGANISATION",
+      "drift_type": "STATE_MISMATCH",
+      "severity": "DEGRADED",
+      "resource_type": "TENANT_ORGANISATION_MAPPING",
+      "resource_id": "tom_0190a1b2c3d4e5f60718293a4b5c6d72",
+      "tenant_id": "tn_01k8z5c1subs",
+      "organisation_ids": ["ce_01k8z5a2subs"],
+      "observed_state": "mapping ACTIVE; organisation SUSPENDED",
+      "desired_state": "a live tenant mapping names an ACTIVE organisation",
+      "remediation": "REVIEW",
+      "auto_repairable": false
+    }
+  ],
+  "organisation_audit_entries": [
+    {
+      "audit_id": "0190a1b2-c3d4-7e5f-8071-8293a4b5c6d1",
+      "occurred_at": "2025-02-01T09:00:00Z",
+      "action": "corporate_relationship.verified",
+      "target": "corporate-relationship/crel_0190a1b2c3d4e5f60718293a4b5c6d71",
+      "correlation_id": "0190a1b2-c3d4-7e5f-8071-8293a4b5c6e1",
+      "actor": {"actor_id": "reviewer-subject-1", "actor_type": "human"},
+      "payload": {
+        "source_organisation_id": "ce_01k8z5a1hldg",
+        "target_organisation_id": "ce_01k8z5a2subs",
+        "evidence_references": ["evd_01k8z5b3shr1"],
+        "reason": "share register extract reviewed"
+      }
+    },
+    {
+      "audit_id": "0190a1b2-c3d4-7e5f-8071-8293a4b5c6d2",
+      "occurred_at": "2026-06-30T12:00:00Z",
+      "action": "corporate_relationship.ended",
+      "target": "corporate-relationship/crel_0190a1b2c3d4e5f60718293a4b5c6d71",
+      "correlation_id": "0190a1b2-c3d4-7e5f-8071-8293a4b5c6e2",
+      "actor": {"actor_id": "reviewer-subject-2", "actor_type": "human"},
+      "payload": {
+        "source_organisation_id": "ce_01k8z5a1hldg",
+        "target_organisation_id": "ce_01k8z5a2subs",
+        "reason": "divestiture completed"
+      }
+    }
+  ]
+}

@@ -65,4 +65,5 @@ contracts:
       - iam.schema.json
       - admission.schema.json
       - counterparty.schema.json
+      - observability.schema.json
       - events.schema.json

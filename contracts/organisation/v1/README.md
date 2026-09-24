@@ -23,6 +23,7 @@ Every file is a definition library. Validate a resource against its fragment URI
 | `iam.schema.json` | `IamOrganisationReference` (canonical Organisation ↔ IAM-native organisation), `IamOrganisationEvidence` and the `keycloakOrganizationClaim` form |
 | `admission.schema.json` | `OrganisationAdmissionRequest` and `OrganisationAdmissionOutcome`: the organisation stages of external admission (identity resolution, legal verification, corporate relationship claims, PlatformAccount assignment) |
 | `counterparty.schema.json` | `CounterpartyRole` (tenant-scoped commercial role), `OrganisationResolutionCandidate` (a quarantined possible duplicate) and `ResolutionCandidateDecision` |
+| `observability.schema.json` | `RelationshipDriftFinding`/`RelationshipDriftReport` (relationship drift in ADR-BCP-008's drift model), `OrganisationAuditEntry` (audit lineage) and the §130 metric catalogue |
 | `events.schema.json` | Data payloads of the ADR-BCP-018 §124 lifecycle events |
 | `asyncapi.yaml` | Registers those events and composes each with the canonical envelope (`contracts/events/v1`) |
 | `examples/` | Illustrative instances for Nabhold Group Africa and an external group; `examples/events/` holds example event envelopes |
@@ -117,6 +118,7 @@ Any consequential decision that depends on a relationship MUST fail closed when 
 
 - `examples/nabhold-group-organisation.json`: models the first-party structure from ADR-BCP-018 §58. The Shared registry is the authoritative source for Organisation and LegalEntity identity, so those records are VERIFIED with a registry evidence reference. The registry marks jurisdiction, registration and ownership details as TBD, so the example omits them or sets them to `UNKNOWN`. The `OWNS` and `PLATFORM_*` relationships stay `PENDING_REVIEW` until the "Verify CorporateRelationship" step of ADR-BCP-018 §109 is complete. Until then, ADR-BCP-017 INTERNAL eligibility fails closed.
 - `examples/acme-holdings-external.json`: models an external group with opaque IDs throughout. Its VERIFIED facts are backed by evidence. It also includes an unreviewed applicant claim, a `CONFLICTED` ownership fact, a derived corporate group, a PlatformAccount and the tenant mappings.
+- `examples/organisation-drift-and-audit.json`: models ORG-15 observations. A divestiture ended the ownership behind a live `PLATFORM_GROUP_AFFILIATE` (CRITICAL drift for review), a tenant is still mapped to a suspended organisation, and the audit lineage records who verified and ended the ownership.
 - `examples/legacy-buyer-supplier-migration.json`: models the ORG-13 migration of ADR-BCP-016 buyer and supplier records. Both keep their canonical ids and gain one tenant-scoped role each. Two pairs share a governed identifier and are quarantined (one OPEN, one decided DISTINCT). A similar organisation with a different registration number is never paired.
 
 ## Compatibility
@@ -169,3 +171,12 @@ A Keycloak Organization is an IAM projection of a canonical Organisation, never 
 - **Roles are tenant-scoped commercial capacity (ADR-BCP-014 §10-17).** A `CounterpartyRole` names one Organisation, one tenant and one role type. `legacy_entity_type` records the ADR-BCP-016 kind a migrated role came from. A role is not identity and grants no access.
 - **Possible duplicates are quarantined, never merged (§99-101).** An `OrganisationResolutionCandidate` pairs two Organisations that share at least one governed identifier (company registration, tax, VAT or LEI), compared after normalisation. Names never match.
 - **A decision merges nothing.** A reviewer records `DISTINCT` or `DUPLICATE_CONFIRMED` (naming the Organisation a merge would keep). The merge itself is a controlled change under ADR-BCP-021 (ADR-BCP-023 §52). The reviewer is the authenticated principal, never a request field. A `DISTINCT` pair is reopened only if a new governed identifier match appears.
+
+## Drift, audit lineage and metrics (gate ORG-15)
+
+`observability.schema.json` covers ADR-BCP-018 §127-131.
+
+- **Drift is observed, reviewed and never cascaded (§128-129).** A `RelationshipDriftFinding` names the violated rule, an ADR-BCP-008 drift type and severity, the drifting record and what it is measured against. Remediation is always `REVIEW` and `auto_repairable` is always false: relationship changes trigger review, not blind cascades.
+- **Audit lineage answers §131.** An `OrganisationAuditEntry` records who changed what, when, under which correlation and on what evidence references. It is returned only to privileged administrators.
+- **Metrics are the §130 catalogue, with bounded labels.** `organisationMetric` lists the metric names; `organisationMetricLabel` lists the only label names they may carry. Tenant, organisation and relationship ids, names and registration identifiers are never labels (ADR-BCP-008 §44).
+- Findings, audit entries and metrics carry identifiers and states, never organisation names or registration identifiers (§125).

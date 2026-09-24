@@ -23,6 +23,14 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Organisation drift, audit lineage and metrics (ADR-BCP-018 gate ORG-15).**
+  `contracts/organisation/v1/observability.schema.json` defines
+  `RelationshipDriftFinding` and `RelationshipDriftReport` (relationship
+  drift in ADR-BCP-008's model; remediation is always review, never a
+  cascade), `OrganisationAuditEntry` (the lineage section 131 asks for) and
+  the section 130 metric catalogue with its bounded label names. New
+  example, semantic checks and nine negative fixtures; the validator pins
+  the metric catalogue to section 130 and rejects identifying labels.
 - **Buyer/supplier reconciliation (ADR-BCP-018 gate ORG-13).**
   `contracts/organisation/v1/counterparty.schema.json` defines
   `CounterpartyRole` (tenant-scoped commercial role; migrated ADR-BCP-016
