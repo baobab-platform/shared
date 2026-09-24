@@ -11,7 +11,10 @@ contracts in this repository:
   3. every example record validates against its $def, and the example
      documents are referentially and semantically coherent;
   4. negative fixtures prove the load-bearing rules actually reject bad data;
-  5. contracts.lock.yaml registers exactly these schemas.
+  5. asyncapi.yaml registers every ADR-BCP-018 section 124 event under the
+     ADR-SHARED-008 naming convention, composed with the canonical envelope,
+     and event payloads never publish names or evidence (section 125);
+  6. contracts.lock.yaml registers exactly these schemas.
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -59,6 +62,37 @@ RESPONSIBILITIES = {
         "TenantOrganisationMapping", "TenantLegalEntityMapping", "mappingStatus",
         "tenantOrganisationMappingRole", "tenantLegalEntityMappingRole",
     },
+    "events.schema.json": {
+        "OrganisationCreated", "OrganisationVerified", "OrganisationSuspended", "LegalEntityVerified",
+        "CorporateRelationshipActivated", "CorporateRelationshipEnded", "CorporateRelationshipConflicted",
+        "PlatformRelationshipActivated", "PlatformRelationshipEnded", "PlatformAccountCreated",
+        "PlatformAccountMembershipChanged", "TenantOrganisationMappingActivated", "TenantLegalEntityMappingActivated",
+    },
+}
+
+# ADR-BCP-018 section 124 event -> payload $def. Event types follow
+# ADR-SHARED-008 (com.baobab-platform.<context>.<...>.vN).
+EVENT_TYPES = {
+    "com.baobab-platform.control-plane.organisation.created.v1": "OrganisationCreated",
+    "com.baobab-platform.control-plane.organisation.verified.v1": "OrganisationVerified",
+    "com.baobab-platform.control-plane.organisation.suspended.v1": "OrganisationSuspended",
+    "com.baobab-platform.control-plane.legal-entity.verified.v1": "LegalEntityVerified",
+    "com.baobab-platform.control-plane.corporate-relationship.activated.v1": "CorporateRelationshipActivated",
+    "com.baobab-platform.control-plane.corporate-relationship.ended.v1": "CorporateRelationshipEnded",
+    "com.baobab-platform.control-plane.corporate-relationship.conflicted.v1": "CorporateRelationshipConflicted",
+    "com.baobab-platform.control-plane.platform-relationship.activated.v1": "PlatformRelationshipActivated",
+    "com.baobab-platform.control-plane.platform-relationship.ended.v1": "PlatformRelationshipEnded",
+    "com.baobab-platform.control-plane.platform-account.created.v1": "PlatformAccountCreated",
+    "com.baobab-platform.control-plane.platform-account-membership.changed.v1": "PlatformAccountMembershipChanged",
+    "com.baobab-platform.control-plane.tenant-organisation-mapping.activated.v1": "TenantOrganisationMappingActivated",
+    "com.baobab-platform.control-plane.tenant-legal-entity-mapping.activated.v1": "TenantLegalEntityMappingActivated",
+}
+ENVELOPE_REF = "../../events/v1/envelope.schema.json"
+# Section 125: payloads carry identifiers and state, never these.
+FORBIDDEN_EVENT_FIELDS = {
+    "display_name", "official_name", "legal_name", "trading_names", "identifiers", "addresses",
+    "registration_identifiers", "evidence_references", "evidence_reference", "metadata", "verified_by",
+    "billing_profile_reference", "contract_references", "control_basis",
 }
 
 # Example document key -> (schema file, $def).
@@ -396,10 +430,88 @@ if nabhold is not None and acme is not None:
     negative("non-ISO jurisdiction", "domain.schema.json", "Organisation", r)
 
 for label, schema_file, definition, record in NEGATIVE:
-    if not errors_for(schema_file, definition, record):
+    if schema_file and not errors_for(schema_file, definition, record):
         fail(f"negative fixture accepted: {label}")
 
-# 5. Lock registration.
+# 5. Events: asyncapi registration, envelope composition and payload privacy.
+asyncapi = yaml.safe_load((ORG / "asyncapi.yaml").read_text())
+messages = (asyncapi.get("components") or {}).get("messages") or {}
+channel_refs = {m.get("$ref", "").rsplit("/", 1)[-1]
+                for ch in (asyncapi.get("channels") or {}).values()
+                for m in (ch.get("messages") or {}).values()}
+registered: dict[str, str] = {}
+for key, message in messages.items():
+    name = message.get("name", "")
+    layers = ((message.get("payload") or {}).get("allOf")) or []
+    envelope = [layer for layer in layers if isinstance(layer, dict) and layer.get("$ref") == ENVELOPE_REF]
+    data_refs = [layer.get("properties", {}).get("data", {}).get("$ref", "") for layer in layers if isinstance(layer, dict)]
+    data_refs = [ref for ref in data_refs if ref]
+    if not envelope:
+        fail(f"asyncapi message {key} is not composed with {ENVELOPE_REF}")
+    if len(data_refs) != 1 or not data_refs[0].startswith("./events.schema.json#/$defs/"):
+        fail(f"asyncapi message {key} must take its data from ./events.schema.json#/$defs/<Event>")
+        continue
+    definition = data_refs[0].rsplit("/", 1)[-1]
+    if definition not in RESPONSIBILITIES["events.schema.json"]:
+        fail(f"asyncapi message {key} data $def {definition!r} does not exist")
+    if key not in channel_refs:
+        fail(f"asyncapi message {key} is not published on any channel")
+    registered[name] = definition
+if registered != EVENT_TYPES:
+    missing = sorted(set(EVENT_TYPES) - set(registered))
+    unexpected = sorted(set(registered) - set(EVENT_TYPES))
+    wrong = sorted(n for n in set(registered) & set(EVENT_TYPES) if registered[n] != EVENT_TYPES[n])
+    fail(f"asyncapi events differ from ADR-BCP-018 section 124; missing={missing} unexpected={unexpected} wrong_payload={wrong}")
+envelope_schema = json.loads((CONTRACTS / "events" / "v1" / "envelope.schema.json").read_text())
+type_pattern = re.compile(envelope_schema["properties"]["type"]["pattern"])
+for name in registered:
+    if not type_pattern.match(name):
+        fail(f"event type {name!r} violates the canonical envelope pattern (ADR-SHARED-008)")
+for definition, schema in SCHEMAS["events.schema.json"]["$defs"].items():
+    leaked = FORBIDDEN_EVENT_FIELDS & set(schema.get("properties", {}))
+    if leaked:
+        fail(f"event payload {definition} publishes {sorted(leaked)} (ADR-BCP-018 section 125)")
+    if schema.get("additionalProperties") is not False:
+        fail(f"event payload {definition} must set additionalProperties: false")
+
+
+def event_errors(envelope: dict) -> list[str]:
+    definition = EVENT_TYPES.get(envelope.get("type", ""))
+    if definition is None:
+        return [f"type {envelope.get('type')!r} is not a registered organisation event"]
+    composed = {"allOf": [
+        {"$ref": "https://contracts.baobab-platform.com/events/v1/envelope.schema.json"},
+        {"type": "object", "properties": {"data": {"$ref": f"{BASE_URI}events.schema.json#/$defs/{definition}"}}},
+    ]}
+    validator = Draft202012Validator(composed, registry=REGISTRY, format_checker=FORMATS)
+    return [f"{'/'.join(str(p) for p in e.absolute_path) or '<root>'}: {e.message}" for e in validator.iter_errors(envelope)]
+
+
+event_examples = sorted((ORG / "examples" / "events").glob("*.json"))
+if not event_examples:
+    fail("examples/events must contain at least one event envelope")
+seen_types: set[str] = set()
+for path in event_examples:
+    envelope = json.loads(path.read_text())
+    seen_types.add(envelope.get("type", ""))
+    for error in event_errors(envelope):
+        fail(f"{rel(path)}: {error}")
+
+if event_examples:
+    sample = json.loads(event_examples[0].read_text())
+    event_negatives = []
+    leaked = copy.deepcopy(sample); leaked["data"]["evidence_references"] = ["evd_x"]
+    event_negatives.append(("event payload leaking evidence references", leaked))
+    legacy = copy.deepcopy(sample); legacy["type"] = legacy["type"].replace("com.baobab-platform.", "com.nabhold.")
+    event_negatives.append(("legacy com.nabhold event type", legacy))
+    missing_id = copy.deepcopy(sample); missing_id["data"] = {}
+    event_negatives.append(("event payload without identifiers", missing_id))
+    for label, envelope in event_negatives:
+        NEGATIVE.append((label, "", "", {}))
+        if not event_errors(envelope):
+            fail(f"negative fixture accepted: {label}")
+
+# 6. Lock registration.
 lock = yaml.safe_load((ROOT / "contracts.lock.yaml").read_text())
 entries = [c for c in lock.get("contracts", []) if c.get("domain") == "organisation" and c.get("version") == "v1"]
 if len(entries) != 1:

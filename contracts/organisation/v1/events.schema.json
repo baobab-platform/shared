@@ -1,0 +1,426 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/organisation/v1/events.schema.json",
+  "title": "Baobab Organisation Lifecycle Event Payloads (ADR-BCP-018)",
+  "description": "Definition library for the data payloads of the ADR-BCP-018 section 124 lifecycle events, published by baobab-platform/baobab-cp inside the canonical envelope (contracts/events/v1). Composition with the envelope happens in asyncapi.yaml.\n\nPayloads carry identifiers and meaningful state changes only (section 125): no names, evidence references, registration numbers, contacts or metadata. Consumers dereference authorized details through the Control Plane.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "$defs": {
+    "OrganisationCreated": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A canonical Organisation profile was created. It starts as a claim unless source_authority is itself authoritative.",
+      "required": [
+        "organisation_id",
+        "verification_state",
+        "source_authority",
+        "effective_from"
+      ],
+      "properties": {
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "verification_state": {
+          "$ref": "domain.schema.json#/$defs/verificationState"
+        },
+        "source_authority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "OrganisationVerified": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An Organisation became VERIFIED through evidence review.",
+      "required": [
+        "organisation_id",
+        "verified_at",
+        "evidence_reference_count"
+      ],
+      "properties": {
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_reference_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of evidence references that supported the transition. The references themselves are never published (ADR-BCP-018 section 125); authorized consumers dereference the record."
+        }
+      }
+    },
+    "OrganisationSuspended": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An Organisation's lifecycle status became SUSPENDED.",
+      "required": [
+        "organisation_id",
+        "suspended_at"
+      ],
+      "properties": {
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "suspended_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "LegalEntityVerified": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A LegalEntityProfile became VERIFIED through evidence review.",
+      "required": [
+        "legal_entity_id",
+        "organisation_id",
+        "verified_at",
+        "evidence_reference_count"
+      ],
+      "properties": {
+        "legal_entity_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalLegalEntityId"
+        },
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_reference_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of evidence references that supported the transition. The references themselves are never published (ADR-BCP-018 section 125); authorized consumers dereference the record."
+        }
+      }
+    },
+    "CorporateRelationshipActivated": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A directed corporate fact became VERIFIED and ACTIVE, so it may now drive consequential decisions.",
+      "required": [
+        "corporate_relationship_id",
+        "source_organisation_id",
+        "target_organisation_id",
+        "relationship_type",
+        "effective_from",
+        "verified_at",
+        "evidence_reference_count"
+      ],
+      "properties": {
+        "corporate_relationship_id": {
+          "$ref": "domain.schema.json#/$defs/corporateRelationshipId"
+        },
+        "source_organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "target_organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "relationship_type": {
+          "$ref": "relationship.schema.json#/$defs/corporateRelationshipType"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_reference_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of evidence references that supported the transition. The references themselves are never published (ADR-BCP-018 section 125); authorized consumers dereference the record."
+        }
+      }
+    },
+    "CorporateRelationshipEnded": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A corporate fact stopped being in force. History remains queryable.",
+      "required": [
+        "corporate_relationship_id",
+        "source_organisation_id",
+        "target_organisation_id",
+        "relationship_type",
+        "effective_to"
+      ],
+      "properties": {
+        "corporate_relationship_id": {
+          "$ref": "domain.schema.json#/$defs/corporateRelationshipId"
+        },
+        "source_organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "target_organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "relationship_type": {
+          "$ref": "relationship.schema.json#/$defs/corporateRelationshipType"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "CorporateRelationshipConflicted": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Authoritative sources disagree about a corporate fact; consequential use fails closed until review resolves it.",
+      "required": [
+        "corporate_relationship_id",
+        "source_organisation_id",
+        "target_organisation_id",
+        "relationship_type",
+        "detected_at"
+      ],
+      "properties": {
+        "corporate_relationship_id": {
+          "$ref": "domain.schema.json#/$defs/corporateRelationshipId"
+        },
+        "source_organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "target_organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "relationship_type": {
+          "$ref": "relationship.schema.json#/$defs/corporateRelationshipType"
+        },
+        "detected_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PlatformRelationshipActivated": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A PlatformRelationship became VERIFIED and ACTIVE. It confers no runtime authorization.",
+      "required": [
+        "platform_relationship_id",
+        "platform_id",
+        "organisation_id",
+        "relationship_type",
+        "effective_from",
+        "verified_at",
+        "evidence_reference_count"
+      ],
+      "properties": {
+        "platform_relationship_id": {
+          "$ref": "domain.schema.json#/$defs/platformRelationshipId"
+        },
+        "platform_id": {
+          "$ref": "domain.schema.json#/$defs/platformId"
+        },
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "relationship_type": {
+          "$ref": "platform.schema.json#/$defs/platformRelationshipType"
+        },
+        "basis_relationship_id": {
+          "$ref": "domain.schema.json#/$defs/corporateRelationshipId"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_reference_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of evidence references that supported the transition. The references themselves are never published (ADR-BCP-018 section 125); authorized consumers dereference the record."
+        }
+      }
+    },
+    "PlatformRelationshipEnded": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A PlatformRelationship stopped being in force.",
+      "required": [
+        "platform_relationship_id",
+        "platform_id",
+        "organisation_id",
+        "relationship_type",
+        "effective_to"
+      ],
+      "properties": {
+        "platform_relationship_id": {
+          "$ref": "domain.schema.json#/$defs/platformRelationshipId"
+        },
+        "platform_id": {
+          "$ref": "domain.schema.json#/$defs/platformId"
+        },
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "relationship_type": {
+          "$ref": "platform.schema.json#/$defs/platformRelationshipType"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PlatformAccountCreated": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A PlatformAccount was created. It is not a tenant and confers no authorization.",
+      "required": [
+        "platform_account_id",
+        "status",
+        "effective_from"
+      ],
+      "properties": {
+        "platform_account_id": {
+          "$ref": "domain.schema.json#/$defs/platformAccountId"
+        },
+        "primary_organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ACTIVE",
+            "SUSPENDED",
+            "CLOSED"
+          ]
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PlatformAccountMembershipChanged": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An Organisation joined a PlatformAccount or its membership status changed. Account roles are never permissions.",
+      "required": [
+        "platform_account_membership_id",
+        "platform_account_id",
+        "organisation_id",
+        "account_role",
+        "change",
+        "status",
+        "changed_at"
+      ],
+      "properties": {
+        "platform_account_membership_id": {
+          "$ref": "domain.schema.json#/$defs/platformAccountMembershipId"
+        },
+        "platform_account_id": {
+          "$ref": "domain.schema.json#/$defs/platformAccountId"
+        },
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "account_role": {
+          "$ref": "platform.schema.json#/$defs/platformAccountRole"
+        },
+        "change": {
+          "type": "string",
+          "enum": [
+            "ADDED",
+            "STATUS_CHANGED",
+            "ENDED"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ACTIVE",
+            "SUSPENDED",
+            "ENDED"
+          ]
+        },
+        "changed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TenantOrganisationMappingActivated": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An explicit tenant-to-organisation mapping became ACTIVE. It grants no access to any other organisation in the same group or account.",
+      "required": [
+        "tenant_organisation_mapping_id",
+        "tenant_id",
+        "organisation_id",
+        "mapping_role",
+        "effective_from"
+      ],
+      "properties": {
+        "tenant_organisation_mapping_id": {
+          "$ref": "domain.schema.json#/$defs/tenantOrganisationMappingId"
+        },
+        "tenant_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
+        },
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "mapping_role": {
+          "$ref": "mapping.schema.json#/$defs/tenantOrganisationMappingRole"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TenantLegalEntityMappingActivated": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An explicit tenant-to-legal-entity mapping became ACTIVE. For mapping_role DEFAULT, Tenant.LegalEntityID now projects legal_entity_id; replaces_mapping_id names the DEFAULT it ended, if any.",
+      "required": [
+        "tenant_legal_entity_mapping_id",
+        "tenant_id",
+        "legal_entity_id",
+        "mapping_role",
+        "effective_from"
+      ],
+      "properties": {
+        "tenant_legal_entity_mapping_id": {
+          "$ref": "domain.schema.json#/$defs/tenantLegalEntityMappingId"
+        },
+        "tenant_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
+        },
+        "legal_entity_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalLegalEntityId"
+        },
+        "mapping_role": {
+          "$ref": "mapping.schema.json#/$defs/tenantLegalEntityMappingRole"
+        },
+        "replaces_mapping_id": {
+          "$ref": "domain.schema.json#/$defs/tenantLegalEntityMappingId"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

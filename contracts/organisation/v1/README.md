@@ -20,7 +20,9 @@ Every file is a definition library. Validate a resource against its fragment URI
 | `relationship.schema.json` | `CorporateRelationship`, `CorporateGroup`, `CorporateGroupMembership` |
 | `platform.schema.json` | `PlatformRelationship`, `PlatformAccount`, `PlatformAccountMembership` |
 | `mapping.schema.json` | `TenantOrganisationMapping`, `TenantLegalEntityMapping` |
-| `examples/` | Illustrative instances for Nabhold Group Africa and an external group |
+| `events.schema.json` | Data payloads of the ADR-BCP-018 §124 lifecycle events |
+| `asyncapi.yaml` | Registers those events and composes each with the canonical envelope (`contracts/events/v1`) |
+| `examples/` | Illustrative instances for Nabhold Group Africa and an external group; `examples/events/` holds example event envelopes |
 
 `scripts/validate-organisation-contracts.py` checks that each file's `$id` and `$defs` match the table above.
 
@@ -62,6 +64,27 @@ The validator also checks the examples for rules that JSON Schema can't express:
 - a VERIFIED affiliate must rest on a VERIFIED basis.
 
 The Control Plane must enforce the same rules in its persistence layer (ADR-BCP-018 §117–119).
+
+## Events
+
+The Control Plane publishes these events on the `baobab-platform.control-plane.organisation.v1` channel. Each event type follows ADR-SHARED-008 (`com.baobab-platform.control-plane.<resource>.<change>.v1`):
+
+| Event type suffix | Emitted when |
+|-------------------|--------------|
+| `organisation.created` | An organisation profile is created (usually as an UNVERIFIED claim) |
+| `organisation.verified` / `organisation.suspended` | The organisation is verified with evidence, or suspended |
+| `legal-entity.verified` | A legal-entity profile is verified with evidence |
+| `corporate-relationship.activated` / `.ended` / `.conflicted` | A corporate fact becomes VERIFIED and ACTIVE, stops being in force, or has conflicting sources |
+| `platform-relationship.activated` / `.ended` | A platform relationship becomes VERIFIED and ACTIVE, or stops being in force |
+| `platform-account.created` | A PlatformAccount is created |
+| `platform-account-membership.changed` | An organisation joins an account, or its membership status changes |
+| `tenant-organisation-mapping.activated` / `tenant-legal-entity-mapping.activated` | An explicit tenant mapping becomes ACTIVE (for a new DEFAULT legal entity, `replaces_mapping_id` names the default it ended) |
+
+Rules the validator enforces:
+
+- **Payloads carry identifiers and state only (§125).** No names, evidence references, registration numbers, contacts or metadata. Verification events report `evidence_reference_count`, never the references themselves. Consumers dereference authorized details through the Control Plane.
+- **Events come from the transactional outbox.** The Control Plane writes each event in the same transaction as the state change. A replayed command that changes nothing publishes nothing, so consumers see at most one event per real transition.
+- **Pending records publish no activation event.** A relationship or mapping created as PENDING or unverified publishes nothing until it actually becomes ACTIVE, so no consumer can act on an unverified relationship.
 
 ## Architectural invariants (normative)
 

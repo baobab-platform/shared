@@ -62,3 +62,4 @@ contracts:
       - relationship.schema.json
       - platform.schema.json
       - mapping.schema.json
+      - events.schema.json
