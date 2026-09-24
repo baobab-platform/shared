@@ -11,6 +11,7 @@ on:
         required: true
       legacy_metadata_enabled: { type: boolean, default: true }
       release_require_zero_exceptions: { type: boolean, default: true }
+      container_ignore_unfixed: { type: boolean, default: false }
 permissions:
   contents: read
   packages: read
@@ -24,3 +25,4 @@ jobs:
       profile: container
       legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
       release_require_zero_exceptions: "${{ inputs.release_require_zero_exceptions }}"
+      container_ignore_unfixed: "${{ inputs.container_ignore_unfixed }}"

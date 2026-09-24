@@ -70,6 +70,8 @@ Portable Trivy remains the language-independent dependency baseline. Phase 5 add
 | `foundation-dependency-adapters` | Adapter execution status |
 | Container SBOM | Existing SPDX upload from the container product |
 
+The container gate scans at HIGH/CRITICAL and fails on unfixed findings by default. A caller may set `container_ignore_unfixed: true` to skip vulnerabilities with no fixed version upstream (for example base-OS kernel headers in a development image); findings with an available fix still fail, and the run records the opt-in in its notice and step summary.
+
 Retention is **90 days**. Foundation owns schemas; consumers own exception content. Release/container product defaults `release_require_zero_exceptions: true` so active waivers cannot ship without an explicit override.
 
 ## Visibility-aware behaviour

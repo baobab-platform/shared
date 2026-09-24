@@ -149,6 +149,16 @@ container, container_text = load("reusable-foundation-container.yml")
 for requirement in ("container-policy", "container-scan", "sbom", "Healthcheck", "Config"):
     assert requirement in container_text
 assert "trivy image" in container_text
+# ignore_unfixed is an explicit opt-in that defaults to the strict scan and is
+# plumbed through the entrypoint and the container product wrapper.
+assert workflow_call_inputs(container)["ignore_unfixed"]["default"] is False
+assert "--ignore-unfixed" in container_text and "IGNORE_UNFIXED" in container_text
+gates, gates_text = load("foundation-repository-gates.yml")
+assert workflow_call_inputs(gates)["container_ignore_unfixed"]["default"] is False
+assert gates["jobs"]["container"]["with"]["ignore_unfixed"] == "${{ inputs.container_ignore_unfixed }}"
+product, _ = load("foundation-product-container.yml")
+assert workflow_call_inputs(product)["container_ignore_unfixed"]["default"] is False
+assert product["jobs"]["foundation"]["with"]["container_ignore_unfixed"] == "${{ inputs.container_ignore_unfixed }}"
 
 environment, environment_text = load("reusable-foundation-environment.yml")
 assert ".foundation/.baobab/environment-profiles.json" in environment_text
