@@ -127,6 +127,10 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- Foundation CI **`v2.3.0` is promoted** at `31de2bc` (see
+  `docs/governance/foundation-ci-promotion-v2.3.0.md`): security scopes,
+  `security.sast_provider`, the organisation drift guard, and removal of
+  `legacy_metadata_enabled`.
 - Every SHA-pinned action carries a version comment; the five runtime setup
   pins that tracked a default branch now name the release they follow.
 - Foundation environment gate: every `baobab-dev` profile now requires

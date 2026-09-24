@@ -58,8 +58,9 @@ permissions:
 jobs:
   foundation:
     # TODO: replace REPLACE_WITH_FULL_SHARED_COMMIT_SHA with the full-length
-    # commit SHA of the promoted Foundation release. Current: v2.2.0 =
-    # ddd2c56f52b60472f0af1fd2e896e9cdd14bb636 (requires baobab-dev >= 1.4.4).
+    # commit SHA of the promoted Foundation release. Current: v2.3.0 =
+    # 31de2bc3dcd56128c019c640dc7e12c10ae9ca69
+    # (requires baobab-dev >= 1.4.4 and security.sast_provider in the contract).
     # Verify live: git ls-remote --tags https://github.com/baobab-platform/shared.git
     # and git cat-file -e <sha>:.github/workflows/foundation-repository-gates.yml
     uses: baobab-platform/shared/.github/workflows/foundation-repository-gates.yml@REPLACE_WITH_FULL_SHARED_COMMIT_SHA

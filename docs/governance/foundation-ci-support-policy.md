@@ -24,12 +24,12 @@ The stable reusable entry point remains `.github/workflows/foundation-repository
 
 ### Current promoted release
 
-See `docs/governance/foundation-ci-promotion-v2.2.0.md`.
+See `docs/governance/foundation-ci-promotion-v2.3.0.md`.
 
-- **Tag:** `v2.2.0`
-- **Peeled SHA:** `ddd2c56f52b60472f0af1fd2e896e9cdd14bb636` — consumers pin this SHA in both `uses:` and `foundation_ref`.
-- **Requires:** `baobab-dev` 1.4.4 or newer in every profile. Bump the declared image in the same change as the repin.
-- **Previous release:** `v2.1.0` (`53ed9cd`, see `foundation-ci-promotion-v2.1.0.md`).
+- **Tag:** `v2.3.0`
+- **Peeled SHA:** `31de2bc3dcd56128c019c640dc7e12c10ae9ca69` — consumers pin this SHA in both `uses:` and `foundation_ref`.
+- **Requires:** `baobab-dev` 1.4.4 or newer in every profile, `security.sast_provider` in `.baobab/repository.yaml` (defaults to `fallback`), and no `legacy_metadata_enabled` input.
+- **Previous releases:** `v2.2.0` (`ddd2c56`), `v2.1.0` (`53ed9cd`).
 - **`v2.0.0`:** tagged before the promotion criteria were met; superseded. Do not pin it.
 
 ## Required check
