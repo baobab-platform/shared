@@ -30,6 +30,14 @@ See `docs/governance/foundation-ci-promotion-v2.1.0.md`.
 - **Peeled SHA:** `53ed9cdba8fc33e2f184d1ba29b990f71b74f85f` — consumers pin this SHA in both `uses:` and `foundation_ref`.
 - **`v2.0.0`:** tagged before the promotion criteria were met; superseded by `v2.1.0`. Do not pin it.
 
+### Current promotion candidate
+
+See `docs/governance/foundation-ci-promotion-v2.2.0.md`.
+
+- **Candidate SHA:** `ddd2c56f52b60472f0af1fd2e896e9cdd14bb636`
+- **Proposed tag:** `v2.2.0` — raises the `baobab-dev` floor to 1.4.4 in every profile.
+- **Tag status:** not cut — requirements 1 to 4 are green; ready to tag.
+
 ## Required check
 
 The consumer's caller job id becomes part of GitHub's displayed check context. Use a consistent caller job id of `foundation`. Rulesets must be configured from the check emitted by a successful pilot run, rather than from a guessed display name.
