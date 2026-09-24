@@ -1,0 +1,332 @@
+{
+  "_comment": "Illustrative external enterprise group (ADR-BCP-018 sections 36, 44, 54). No entry in the Shared legal-entity registry is required. All identifiers are opaque and Control Plane-minted (section 12): the human-readable name, 'Acme' branding and the company registration number live in names and registration_identifiers, never in ids. Holdings, Foods and Logistics are VERIFIED only through evidence review (evidence_references + verified_by + verified_at). Retail is an applicant claim that has not been reviewed (UNVERIFIED), and its claimed ownership is CONFLICTED because two sources disagree; both must fail closed for consequential decisions. Every organisation is EXTERNAL_CLIENT; the OWNS graph confers no cross-tenant access, and the shared PlatformAccount confers no authorization.",
+  "organisations": [
+    {
+      "canonical_entity_id": "ce_01k8z3m4q7hx",
+      "display_name": "Acme Holdings Ltd",
+      "official_name": "Acme Holdings Limited",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "evidence_references": [
+        "evd_01k8z3n0kx2c"
+      ]
+    },
+    {
+      "canonical_entity_id": "ce_01k8z3m5r2fd",
+      "display_name": "Acme Foods Ltd",
+      "official_name": "Acme Foods Limited",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "evidence_references": [
+        "evd_01k8z3n1pd7q"
+      ]
+    },
+    {
+      "canonical_entity_id": "ce_01k8z3m6t9lg",
+      "display_name": "Acme Logistics Ltd",
+      "official_name": "Acme Logistics Limited",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "evidence_references": [
+        "evd_01k8z3n2hs4m"
+      ]
+    },
+    {
+      "canonical_entity_id": "ce_01k8z3m7w4rt",
+      "display_name": "Acme Retail Ltd",
+      "official_name": "Acme Retail Limited",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "UG",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "applicant-submission",
+      "status": "DRAFT",
+      "effective_from": "2026-03-15T00:00:00Z"
+    }
+  ],
+  "legal_entity_profiles": [
+    {
+      "legal_entity_id": "LE-01K8Z3M4Q7HX",
+      "organisation_id": "ce_01k8z3m4q7hx",
+      "legal_name": "Acme Holdings Limited",
+      "jurisdiction_of_incorporation": "KE",
+      "registration_identifiers": [
+        {
+          "type": "COMPANY_REGISTRATION",
+          "value": "PVT-2020-123456",
+          "issuing_jurisdiction": "KE",
+          "verified": true
+        }
+      ],
+      "legal_status": "ACTIVE",
+      "source_authority": "admission-review",
+      "verification_state": "VERIFIED",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "evidence_references": [
+        "evd_01k8z3n0kx2c"
+      ],
+      "verified_by": "svc:cp-admission-review",
+      "verified_at": "2026-03-20T09:30:00Z",
+      "incorporation_date": "2020-02-11"
+    },
+    {
+      "legal_entity_id": "LE-01K8Z3M5R2FD",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "legal_name": "Acme Foods Limited",
+      "jurisdiction_of_incorporation": "KE",
+      "registration_identifiers": [
+        {
+          "type": "COMPANY_REGISTRATION",
+          "value": "PVT-2021-654321",
+          "issuing_jurisdiction": "KE",
+          "verified": true
+        }
+      ],
+      "legal_status": "ACTIVE",
+      "source_authority": "admission-review",
+      "verification_state": "VERIFIED",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "evidence_references": [
+        "evd_01k8z3n1pd7q"
+      ],
+      "verified_by": "svc:cp-admission-review",
+      "verified_at": "2026-03-20T09:30:00Z"
+    }
+  ],
+  "corporate_relationships": [
+    {
+      "id": "crel_01k8z3p0food",
+      "source_organisation_id": "ce_01k8z3m4q7hx",
+      "target_organisation_id": "ce_01k8z3m5r2fd",
+      "relationship_type": "OWNS",
+      "direct_or_derived": "DIRECT",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "classification": "TENANT_CONFIDENTIAL",
+      "ownership_percentage": 100,
+      "evidence_references": [
+        "evd_01k8z3n5shreg"
+      ],
+      "verified_by": "svc:cp-admission-review",
+      "verified_at": "2026-03-20T09:30:00Z"
+    },
+    {
+      "id": "crel_01k8z3p1logi",
+      "source_organisation_id": "ce_01k8z3m4q7hx",
+      "target_organisation_id": "ce_01k8z3m6t9lg",
+      "relationship_type": "OWNS",
+      "direct_or_derived": "DIRECT",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "classification": "TENANT_CONFIDENTIAL",
+      "ownership_percentage": 80,
+      "evidence_references": [
+        "evd_01k8z3n5shreg"
+      ],
+      "verified_by": "svc:cp-admission-review",
+      "verified_at": "2026-03-20T09:30:00Z"
+    },
+    {
+      "id": "crel_01k8z3p2retl",
+      "source_organisation_id": "ce_01k8z3m4q7hx",
+      "target_organisation_id": "ce_01k8z3m7w4rt",
+      "relationship_type": "OWNS",
+      "direct_or_derived": "DIRECT",
+      "verification_state": "CONFLICTED",
+      "source_authority": "applicant-submission",
+      "status": "PENDING",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "classification": "TENANT_CONFIDENTIAL",
+      "evidence_references": [
+        "evd_01k8z3n3src1",
+        "evd_01k8z3n4src2"
+      ],
+      "metadata": {
+        "review_note": "Two sources disagree on the stake (70% vs 40%); no value is recorded until review resolves it (ADR-BCP-018 section 73)."
+      }
+    }
+  ],
+  "corporate_groups": [
+    {
+      "id": "cgrp_01k8z3q0acme",
+      "display_name": "Acme Global Group",
+      "root_organisation_id": "ce_01k8z3m4q7hx",
+      "status": "ACTIVE",
+      "grouping_policy": "verified-owns-majority/v1",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "classification": "TENANT_CONFIDENTIAL"
+    }
+  ],
+  "corporate_group_memberships": [
+    {
+      "id": "cgm_01k8z3q1hold",
+      "corporate_group_id": "cgrp_01k8z3q0acme",
+      "organisation_id": "ce_01k8z3m4q7hx",
+      "group_role": "ROOT",
+      "basis_relationship_ids": [
+        "crel_01k8z3p0food",
+        "crel_01k8z3p1logi"
+      ],
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "derived_at": "2026-03-20T10:00:00Z",
+      "derivation_version": "verified-owns-majority/v1"
+    },
+    {
+      "id": "cgm_01k8z3q2food",
+      "corporate_group_id": "cgrp_01k8z3q0acme",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "group_role": "MEMBER",
+      "basis_relationship_ids": [
+        "crel_01k8z3p0food"
+      ],
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "derived_at": "2026-03-20T10:00:00Z",
+      "derivation_version": "verified-owns-majority/v1"
+    },
+    {
+      "id": "cgm_01k8z3q3logi",
+      "corporate_group_id": "cgrp_01k8z3q0acme",
+      "organisation_id": "ce_01k8z3m6t9lg",
+      "group_role": "MEMBER",
+      "basis_relationship_ids": [
+        "crel_01k8z3p1logi"
+      ],
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "derived_at": "2026-03-20T10:00:00Z",
+      "derivation_version": "verified-owns-majority/v1"
+    }
+  ],
+  "platform_relationships": [
+    {
+      "id": "prel_01k8z3s0hold",
+      "platform_id": "baobab-platform",
+      "organisation_id": "ce_01k8z3m4q7hx",
+      "relationship_type": "EXTERNAL_CLIENT",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "admission_decision_id": "adm_01k8z3r0acme",
+      "evidence_references": [
+        "evd_01k8z3r1msa"
+      ],
+      "verified_by": "svc:cp-admission-review",
+      "verified_at": "2026-03-20T09:30:00Z",
+      "classification": "TENANT_CONFIDENTIAL"
+    },
+    {
+      "id": "prel_01k8z3s1food",
+      "platform_id": "baobab-platform",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "relationship_type": "EXTERNAL_CLIENT",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "admission_decision_id": "adm_01k8z3r0acme",
+      "evidence_references": [
+        "evd_01k8z3r1msa"
+      ],
+      "verified_by": "svc:cp-admission-review",
+      "verified_at": "2026-03-20T09:30:00Z",
+      "classification": "TENANT_CONFIDENTIAL"
+    },
+    {
+      "id": "prel_01k8z3s2logi",
+      "platform_id": "baobab-platform",
+      "organisation_id": "ce_01k8z3m6t9lg",
+      "relationship_type": "EXTERNAL_CLIENT",
+      "verification_state": "VERIFIED",
+      "source_authority": "admission-review",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "admission_decision_id": "adm_01k8z3r0acme",
+      "evidence_references": [
+        "evd_01k8z3r1msa"
+      ],
+      "verified_by": "svc:cp-admission-review",
+      "verified_at": "2026-03-20T09:30:00Z",
+      "classification": "TENANT_CONFIDENTIAL"
+    }
+  ],
+  "platform_accounts": [
+    {
+      "id": "pacct_01k8z3t0acme",
+      "display_name": "Acme Global Group enterprise account",
+      "primary_organisation_id": "ce_01k8z3m4q7hx",
+      "status": "ACTIVE",
+      "contract_references": [
+        "msa_01k8z3t1"
+      ],
+      "billing_profile_reference": "bill_01k8z3t2",
+      "effective_from": "2026-04-01T00:00:00Z"
+    }
+  ],
+  "platform_account_memberships": [
+    {
+      "id": "pam_01k8z3u0hold",
+      "platform_account_id": "pacct_01k8z3t0acme",
+      "organisation_id": "ce_01k8z3m4q7hx",
+      "account_role": "CONTRACTING_PARTY",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "evidence_reference": "msa_01k8z3t1"
+    },
+    {
+      "id": "pam_01k8z3u1food",
+      "platform_account_id": "pacct_01k8z3t0acme",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "account_role": "SERVICE_RECIPIENT",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z"
+    },
+    {
+      "id": "pam_01k8z3u2logi",
+      "platform_account_id": "pacct_01k8z3t0acme",
+      "organisation_id": "ce_01k8z3m6t9lg",
+      "account_role": "SERVICE_RECIPIENT",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z"
+    }
+  ],
+  "tenant_legal_entity_mappings": [
+    {
+      "id": "tlem_01k8z3v0food",
+      "tenant_id": "tn_01k8z3v1food",
+      "legal_entity_id": "LE-01K8Z3M5R2FD",
+      "mapping_role": "DEFAULT",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "provenance": "control-plane-admission"
+    }
+  ],
+  "tenant_organisation_mappings": [
+    {
+      "id": "tom_01k8z3v2food",
+      "tenant_id": "tn_01k8z3v1food",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "mapping_role": "PRIMARY_ORGANISATION",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "provenance": "control-plane-admission"
+    }
+  ]
+}
