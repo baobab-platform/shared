@@ -23,6 +23,14 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Organisation admission onboarding (ADR-BCP-018 gate ORG-09).**
+  `contracts/organisation/v1/admission.schema.json` defines
+  `OrganisationAdmissionRequest` (issued by the admission reviewer after an
+  approved decision; no field can set the platform relationship or mark
+  anything verified) and `OrganisationAdmissionOutcome` (identity resolution
+  NEW_ORGANISATION / EXISTING_ORGANISATION / QUARANTINED, plus the records
+  onboarding converged on). Examples, semantic checks and ten negative
+  fixtures in `scripts/validate-organisation-contracts.py`.
 - **IAM organisation projection (ADR-BCP-018 gate ORG-10).**
   `contracts/organisation/v1/iam.schema.json` defines `IamOrganisationReference`,
   the explicit, issuer-scoped link from a canonical Organisation to a Keycloak

@@ -63,4 +63,5 @@ contracts:
       - platform.schema.json
       - mapping.schema.json
       - iam.schema.json
+      - admission.schema.json
       - events.schema.json
