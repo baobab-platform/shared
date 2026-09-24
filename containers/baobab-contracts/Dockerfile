@@ -47,3 +47,7 @@ COPY packages/contracts/buf.gen.yaml /baobab/interfaces/buf.gen.yaml
 
 COPY README.md /baobab/README.md
 COPY LICENSE /baobab/LICENSE
+
+# Data-only image with no shell or passwd; a numeric non-root user keeps any
+# consumer that runs it from doing so as root.
+USER 65532:65532

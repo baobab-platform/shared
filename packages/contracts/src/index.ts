@@ -18,5 +18,5 @@ export * from './context-resolver';
 // Audit Trail and Approval Workflow (§48-49)
 export * from './audit-trail';
 
-export * from './generated/baobab-platform/shared/v1/health';
+export * from './generated/baobab_platform/shared/v1/health';
 export * from './generated/graphql';

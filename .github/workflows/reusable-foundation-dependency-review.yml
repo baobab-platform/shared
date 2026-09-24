@@ -1,0 +1,63 @@
+name: Reusable — Foundation Dependency Review
+
+on:
+  workflow_call:
+    inputs:
+      enabled: { type: boolean, default: false }
+      ghas_approved:
+        description: >
+          The repository contract carries an approved security.ghas record.
+          Required for dependency review on a private repository; public
+          repositories do not need GHAS for dependency review.
+        type: boolean
+        default: false
+      exceptions: { type: string, default: "{}" }
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Determine coverage
+        id: coverage
+        env:
+          ENABLED: "${{ inputs.enabled }}"
+          GHAS: "${{ inputs.ghas_approved }}"
+          VISIBILITY: "${{ github.event.repository.visibility }}"
+          EVENT: "${{ github.event_name }}"
+          WAIVED: "${{ fromJSON(inputs.exceptions)['dependency-review'] != null }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          applicable=false
+          if [[ "$EVENT" == pull_request && "$ENABLED" == true ]]; then applicable=true; fi
+
+          # Public: dependency review available without GHAS.
+          # Private: requires an approved security.ghas record in the contract.
+          available=false
+          if [[ "$VISIBILITY" != private || "$GHAS" == true ]]; then available=true; fi
+
+          if [[ "$WAIVED" == true ]]; then
+            echo "::warning::Dependency review waived by an approved repository exception"
+            applicable=false
+            echo "decision=waived" >> "$GITHUB_OUTPUT"
+          elif [[ "$applicable" == true && "$available" != true ]]; then
+            echo "::error::Dependency review is required but unavailable on this private repository; record an approved security.ghas in .baobab/repository.yaml, or set dependency_review_enabled=false and declare a reviewed exception"
+            echo "decision=unavailable" >> "$GITHUB_OUTPUT"
+            exit 1
+          elif [[ "$applicable" == true && "$available" == true ]]; then
+            echo "::notice::Dependency review will run (event=pull_request, visibility=${VISIBILITY}, ghas_approved=${GHAS})"
+            echo "decision=run" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Dependency review not applicable (event=${EVENT}, enabled=${ENABLED}, visibility=${VISIBILITY})"
+            echo "decision=not_applicable" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "run=$([[ "$applicable" == true && "$available" == true ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.coverage.outputs.run == 'true'
+      - name: Dependency review
+        if: steps.coverage.outputs.run == 'true'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0

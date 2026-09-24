@@ -1,34 +1,154 @@
 name: Reusable — Foundation Container
+
 on:
   workflow_call:
     inputs:
       enabled: { type: boolean, default: false }
       dockerfile: { type: string, default: "Dockerfile" }
       build_context: { type: string, default: "." }
+      runtime: { type: boolean, default: true }
+      # Opt-in: skip vulnerabilities that have no fixed version upstream
+      # (trivy --ignore-unfixed). Anything with an available fix still fails.
+      ignore_unfixed: { type: boolean, default: false }
+      exceptions: { type: string, default: "{}" }
+
 permissions:
   contents: read
+
 jobs:
   container:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Validate container declaration
-        if: inputs.enabled
+
+      - name: Validate artifact coordinates and Dockerfile policy
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-policy'] == null
         env:
           DOCKERFILE: "${{ inputs.dockerfile }}"
+          BUILD_CONTEXT: "${{ inputs.build_context }}"
+        shell: bash
         run: |
           set -euo pipefail
-          [[ -f "$DOCKERFILE" ]] || { echo "::error::Container artifact declared but $DOCKERFILE does not exist"; exit 1; }
-          ! grep -Eq '^FROM[[:space:]]+[^[:space:]]+:(latest|edge)([[:space:]]|$)' "$DOCKERFILE" || { echo "::error::Container base images must not use latest or edge"; exit 1; }
+          [[ "$DOCKERFILE" != /* && "$BUILD_CONTEXT" != /* ]] || { echo "::error::Container paths must be repository-relative"; exit 1; }
+          [[ "$DOCKERFILE" != *".."* && "$BUILD_CONTEXT" != *".."* ]] || { echo "::error::Container paths must not escape the repository"; exit 1; }
+          [[ -f "$DOCKERFILE" ]] || { echo "::error::$DOCKERFILE does not exist"; exit 1; }
+          [[ -d "$BUILD_CONTEXT" ]] || { echo "::error::$BUILD_CONTEXT is not a directory"; exit 1; }
+          # Classify each FROM image, skipping flags such as --platform and
+          # references to earlier build stages ("FROM build AS test"). Global
+          # ARG defaults (declared before the first FROM) are substituted, as
+          # Docker does; an image taken from an ARG without a default stays
+          # unverifiable and fails.
+          violations="$(awk '
+            BEGIN { quote = sprintf("%c", 39) }
+            toupper($1) == "ARG" && !seen_from && index($2, "=") > 1 {
+              name = substr($2, 1, index($2, "=") - 1)
+              value = substr($2, index($2, "=") + 1)
+              gsub(/^"|"$/, "", value)
+              if (substr(value, 1, 1) == quote) value = substr(value, 2)
+              if (substr(value, length(value), 1) == quote) value = substr(value, 1, length(value) - 1)
+              if (value != "") args[name] = value
+            }
+            toupper($1) == "FROM" {
+              seen_from = 1
+              i = 2
+              while (i <= NF && $i ~ /^--/) i++
+              image = $i
+              for (name in args) {
+                while ((at = index(image, "${" name "}")) > 0)
+                  image = substr(image, 1, at - 1) args[name] substr(image, at + length(name) + 3)
+                while (match(image, "[$]" name "([^A-Za-z0-9_]|$)"))
+                  image = substr(image, 1, RSTART - 1) args[name] substr(image, RSTART + length(name) + 1)
+              }
+              image = tolower(image)
+              if (image in stages || image == "scratch") {
+                # earlier stage or empty base
+              } else if (image ~ /:(latest|edge)(@|$)/) {
+                print "floating:" image
+              } else if (image !~ /[:@]/) {
+                print "untagged:" image
+              }
+              if (toupper($(i + 1)) == "AS") stages[tolower($(i + 2))] = 1
+            }' "$DOCKERFILE")"
+          if grep -q '^floating:' <<<"$violations"; then
+            echo "::error::Container base images must not use latest or edge: $(grep '^floating:' <<<"$violations" | cut -d: -f2- | paste -sd, -)"
+            exit 1
+          fi
+          if grep -q '^untagged:' <<<"$violations"; then
+            echo "::error::Container base images require an explicit tag or digest: $(grep '^untagged:' <<<"$violations" | cut -d: -f2- | paste -sd, -)"
+            exit 1
+          fi
+
+      - name: Record container-policy exception
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-policy'] != null
+        run: echo "::warning::Container policy waived by an approved repository exception"
+
       - name: Build container
         if: inputs.enabled
         env:
           DOCKERFILE: "${{ inputs.dockerfile }}"
           BUILD_CONTEXT: "${{ inputs.build_context }}"
-        run: docker build --file "$DOCKERFILE" --tag "foundation-scan:${{ github.sha }}" "$BUILD_CONTEXT"
-      - name: Generate SBOM
-        if: inputs.enabled
-        uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
+        run: |
+          docker build             --file "$DOCKERFILE"             --build-arg VERSION="0.0.0-ci"             --build-arg REVISION="${{ github.sha }}"             --tag "foundation-scan:${{ github.sha }}"             "$BUILD_CONTEXT"
+
+      - name: Validate OCI metadata and runtime safety
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-policy'] == null
+        env:
+          IMAGE: "foundation-scan:${{ github.sha }}"
+          RUNTIME: "${{ inputs.runtime }}"
+        shell: ruby {0}
+        run: |
+          require "json"
+          image = ENV.fetch("IMAGE")
+          config = JSON.parse(%x[docker image inspect #{image} --format '{{json .Config}}'])
+          abort "unable to inspect built image" unless $?.success?
+          labels = config["Labels"] || {}
+          %w[org.opencontainers.image.source org.opencontainers.image.version org.opencontainers.image.revision].each do |label|
+            abort "required OCI label #{label} is missing" if labels[label].to_s.empty?
+          end
+          if ENV["RUNTIME"] == "true"
+            user = config["User"].to_s
+            abort "runtime image must declare a non-root USER" if user.empty? || %w[root 0 0:0].include?(user)
+            abort "runtime image must declare HEALTHCHECK" unless config["Healthcheck"].is_a?(Hash)
+          end
+
+      - name: Install checksum-verified Trivy
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
+        env:
+          TRIVY_VERSION: "0.73.0"
+          TRIVY_SHA256: "2edd39da482bb4e9831962487b68f68e3928ec3137794757f54d00383d79547b"
+        run: |
+          set -euo pipefail
+          asset="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          curl -fsSL -o "$asset" "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/${asset}"
+          echo "${TRIVY_SHA256}  ${asset}" | sha256sum -c -
+          tar -xzf "$asset" trivy
+          sudo install -m 0755 trivy /usr/local/bin/trivy
+
+      - name: Scan built image
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
+        env:
+          IGNORE_UNFIXED: "${{ inputs.ignore_unfixed }}"
+        run: |
+          set -euo pipefail
+          args=(--severity HIGH,CRITICAL --exit-code 1 --skip-version-check)
+          if [[ "$IGNORE_UNFIXED" == "true" ]]; then
+            echo "::notice::Container scan ignores vulnerabilities without an upstream fix (ignore_unfixed opt-in)"
+            echo "- Container scan: unfixed vulnerabilities ignored (\`ignore_unfixed: true\`)" >> "$GITHUB_STEP_SUMMARY"
+            args+=(--ignore-unfixed)
+          fi
+          trivy image "${args[@]}" "foundation-scan:${{ github.sha }}"
+
+      - name: Record container-scan exception
+        if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] != null
+        run: echo "::warning::Container vulnerability scan waived by an approved repository exception"
+
+      - name: Generate SPDX SBOM
+        if: inputs.enabled && fromJSON(inputs.exceptions).sbom == null
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
         with:
           image: "foundation-scan:${{ github.sha }}"
           artifact-name: foundation-sbom.spdx.json
+
+      - name: Record SBOM exception
+        if: inputs.enabled && fromJSON(inputs.exceptions).sbom != null
+        run: echo "::warning::SBOM generation waived by an approved repository exception"

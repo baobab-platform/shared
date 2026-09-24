@@ -17,6 +17,8 @@ channels:
       supplierApplicationDecided: { $ref: "#/components/messages/SupplierApplicationDecided" }
       supplierQualificationUpdated: { $ref: "#/components/messages/SupplierQualificationUpdated" }
       supplierCapabilityVerified: { $ref: "#/components/messages/SupplierCapabilityVerified" }
+      supplierKybEvidenceRecorded: { $ref: "#/components/messages/SupplierKybEvidenceRecorded" }
+      supplierKybDecisionRecorded: { $ref: "#/components/messages/SupplierKybDecisionRecorded" }
 operations:
   publishSupplierOnboardingEvents:
     action: send
@@ -55,3 +57,19 @@ components:
           - type: object
             properties:
               data: { $ref: ./supplier-capability-verified.schema.json }
+    SupplierKybEvidenceRecorded:
+      name: com.baobab-platform.supplier-onboarding.kyb.evidence-recorded.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./supplier-kyb-evidence-recorded.schema.json }
+    SupplierKybDecisionRecorded:
+      name: com.baobab-platform.supplier-onboarding.kyb.decision-recorded.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./supplier-kyb-decision-recorded.schema.json }
