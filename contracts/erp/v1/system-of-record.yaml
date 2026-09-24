@@ -6,12 +6,13 @@
 # All other concepts are carried forward unchanged from the current main
 # branch content for review convenience.
 #
-# Change (ADR-BCP-018):
-#   Organisation.canonical_owner  : unassigned  →  control-plane
-#   Shared remains contract/governance authority for the schema.
-#   Control Plane is the runtime authority for Organisation instances,
-#   LegalEntityProfile runtime representation, CorporateRelationship,
-#   PlatformRelationship, PlatformAccount and the tenant mappings.
+# Changes (ADR-BCP-018):
+#   Organisation: runtime owner control-plane; Shared remains contract authority.
+#   Legal Entity: runtime owner control-plane; Shared remains contract authority
+#     and first-party governance source (registry.yaml). External legal entities
+#     are CP-issued and do not require a Shared registry entry.
+#   CorporateRelationship, PlatformRelationship, PlatformAccount, tenant mappings:
+#     runtime owner control-plane; contract authority Shared (organisation/v1).
 # =============================================================================
 
 schema:
@@ -33,25 +34,28 @@ concepts:
     conflict_resolution: Control Plane wins; unresolved or inactive context fails closed
 
   - concept: Legal Entity
-    canonical_owner: shared
-    producer: [shared-governance]
+    canonical_owner: control-plane
+    contract_authority: shared
+    producer: [control-plane, shared-governance]
     consumers: [control-plane, erp, trade, infrastructure, digital-estates]
-    external_identifier: canonical legal_entity_id from the Shared registry (first-party) or Control Plane runtime registry (external)
+    external_identifier: canonical legal_entity_id known to Control Plane
     idempiere_representation: one or more private Organisation mappings where approved
     medusa_representation: context metadata only
-    synchronisation_direction: shared_to_consumers (first-party); control-plane_to_consumers (external runtime profiles)
-    consistency: versioned governance consistency
-    mechanism: released registry and explicit mappings
-    conflict_resolution: Shared identity wins for first-party registry ids; name matching is forbidden
+    synchronisation_direction: control-plane_to_consumers
+    consistency: versioned governance consistency for first-party; strong at CP registration for external
+    mechanism: Shared first-party registry reconciliation and Control Plane LegalEntityProfile
+    conflict_resolution: Shared spelling wins for first-party registry ids; external ids are CP-authoritative; name matching is forbidden
     notes: >
-      ADR-BCP-018: Shared remains the first-party governance source for
-      NABHOLD, ZURIBEANS, THAMANI-GLOBAL and EQUATOR-ESTATE. External
-      LegalEntityProfile records are runtime-owned by Control Plane and do
-      not require a Shared registry entry.
+      ADR-BCP-018 authority split: runtime canonical authority is Control Plane;
+      contract authority is Shared. Shared contracts/legal-entity/registry.yaml is
+      the first-party governance source only (NABHOLD, ZURIBEANS, THAMANI-GLOBAL,
+      EQUATOR-ESTATE). External legal entities are Control-Plane-issued/registered
+      and MUST NOT require a Shared registry entry.
 
   - concept: Organisation
-    # ADR-BCP-018 change: was unassigned / none_until_contract_approved
+    # ADR-BCP-018: runtime owner control-plane; was unassigned until this revision
     canonical_owner: control-plane
+    contract_authority: shared
     producer: [control-plane]
     consumers: [erp, trade, reporting, control-plane]
     external_identifier: CanonicalEntity id with Organisation profile (see contracts/organisation/v1/domain.schema.json)

@@ -1,0 +1,136 @@
+{
+  "_comment": "Illustrative external enterprise group. External legal_entity_ids use opaque LE- form (ADR-BCP-018). No Shared registry entry required.",
+  "organisations": [
+    {
+      "canonical_entity_id": "ce_01k8acmeholdings",
+      "display_name": "Acme Holdings Ltd",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "control-plane-admission",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z"
+    },
+    {
+      "canonical_entity_id": "ce_01k8acmefoods",
+      "display_name": "Acme Foods Ltd",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "control-plane-admission",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z"
+    },
+    {
+      "canonical_entity_id": "ce_01k8acmelogistics",
+      "display_name": "Acme Logistics Ltd",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "control-plane-admission",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z"
+    }
+  ],
+  "legal_entity_profiles": [
+    {
+      "legal_entity_id": "LE-01K8ACMEHOLD",
+      "organisation_id": "ce_01k8acmeholdings",
+      "legal_name": "Acme Holdings Limited",
+      "jurisdiction_of_incorporation": "KE",
+      "registration_identifiers": [
+        {
+          "type": "COMPANY_REGISTRATION",
+          "value": "PVT-2020-123456",
+          "issuing_jurisdiction": "KE",
+          "verified": true
+        }
+      ],
+      "legal_status": "ACTIVE",
+      "source_authority": "control-plane-admission",
+      "verification_state": "VERIFIED",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "evidence_references": ["doc_admission_pack_01k8"]
+    },
+    {
+      "legal_entity_id": "LE-01K8ACMEFOOD",
+      "organisation_id": "ce_01k8acmefoods",
+      "legal_name": "Acme Foods Limited",
+      "jurisdiction_of_incorporation": "KE",
+      "legal_status": "ACTIVE",
+      "source_authority": "control-plane-admission",
+      "verification_state": "VERIFIED",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "evidence_references": ["doc_admission_pack_01k8"]
+    }
+  ],
+  "corporate_relationships": [
+    {
+      "id": "map_cr_01k8_owns_foods",
+      "source_organisation_id": "ce_01k8acmeholdings",
+      "target_organisation_id": "ce_01k8acmefoods",
+      "relationship_type": "OWNS",
+      "ownership_percentage": 100,
+      "direct_or_derived": "DIRECT",
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "source_authority": "admission-review",
+      "evidence_references": ["doc_share_register_01k8"],
+      "verified_by": "admission-officer",
+      "verified_at": "2026-03-20T00:00:00Z"
+    },
+    {
+      "id": "map_cr_01k8_owns_logistics",
+      "source_organisation_id": "ce_01k8acmeholdings",
+      "target_organisation_id": "ce_01k8acmelogistics",
+      "relationship_type": "OWNS",
+      "ownership_percentage": 80,
+      "direct_or_derived": "DIRECT",
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "source_authority": "admission-review",
+      "evidence_references": ["doc_share_register_01k8"],
+      "verified_by": "admission-officer",
+      "verified_at": "2026-03-20T00:00:00Z"
+    }
+  ],
+  "platform_relationships": [
+    {
+      "id": "map_pr_01k8_client",
+      "platform_id": "baobab-platform",
+      "organisation_id": "ce_01k8acmeholdings",
+      "relationship_type": "EXTERNAL_CLIENT",
+      "verification_state": "VERIFIED",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "source_authority": "control-plane-admission",
+      "admission_decision_id": "adm_01k8acme"
+    }
+  ],
+  "tenant_legal_entity_mappings": [
+    {
+      "id": "map_tlem_01k8_foods",
+      "tenant_id": "tn_01k8acmefoods",
+      "legal_entity_id": "LE-01K8ACMEFOOD",
+      "mapping_role": "DEFAULT",
+      "is_default": true,
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "provenance": "control-plane-admission"
+    }
+  ],
+  "tenant_organisation_mappings": [
+    {
+      "id": "map_tom_01k8_foods",
+      "tenant_id": "tn_01k8acmefoods",
+      "organisation_id": "ce_01k8acmefoods",
+      "mapping_role": "PRIMARY_ORGANISATION",
+      "is_default": true,
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "provenance": "control-plane-admission"
+    }
+  ]
+}

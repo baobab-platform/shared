@@ -18,7 +18,7 @@
       "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
       "minLength": 3,
       "maxLength": 63,
-      "description": "Canonical legal-entity identifier from contracts/legal-entity/registry.yaml. Responses, persisted records and events must use this form."
+      "description": "Canonical legal-entity identifier known to Control Plane. First-party IDs reconcile to contracts/legal-entity/registry.yaml; external IDs are Control-Plane-issued or registered and need not appear in that registry (ADR-BCP-018)."
     },
     "legacyLegalEntityAlias": {
       "type": "string",
