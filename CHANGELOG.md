@@ -23,6 +23,15 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **One event namespace.** `contracts/control-plane/v1` now registers every
+  event `baobab-platform/baobab-cp` emits that was previously unregistered:
+  `com.baobab-platform.control-plane.tenant.provisioning-ready/-active/-failed.v1`
+  and `com.baobab-platform.control-plane.market-participation.created/updated.v1`,
+  with payload schemas and example envelopes. `scripts/validate-event-registry.py`
+  (run by the CI `governance-contracts` job) enforces the single
+  `com.baobab-platform.*` namespace across every `asyncapi.yaml`: canonical and
+  unique names, resolvable payloads, valid example envelopes, and no legacy
+  `com.nabhold.*` types anywhere in `contracts/`.
 - Foundation **security scopes** (M2). The security family now runs at `pr`
   scope on pull requests (gitleaks over the PR's own commits, dependency
   review applicable), `branch` scope on other events (the checked-out ref's

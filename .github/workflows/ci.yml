@@ -37,6 +37,12 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/validate-event-registry.py to the governance-contracts job:
+#   every event type in every asyncapi.yaml is canonical com.baobab-platform.*
+#   and registered once platform-wide, its payload resolves, every example
+#   envelope validates, and no contract mentions a legacy com.nabhold.* type
+#   (ADR-SHARED-008). The job now sets up Python with the Foundation fixture
+#   runtime for real JSON Schema Draft 2020-12 validation.
 # * Added scripts/validate-capability-contracts.rb to the governance-contracts
 #   job, covering the new contracts/capability/v1 package (ADR-BCP-002 through
 #   ADR-BCP-009, ADR-SHARED-007 Phase 1).
@@ -67,6 +73,8 @@ on:
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
       - "scripts/validate-trade-contracts.rb"
+      - "scripts/validate-event-registry.py"
+      - ".github/foundation-tests/requirements.txt"
   pull_request:
     paths:
       - ".github/workflows/**"
@@ -82,6 +90,8 @@ on:
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
       - "scripts/validate-trade-contracts.rb"
+      - "scripts/validate-event-registry.py"
+      - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
 
 permissions:
@@ -110,6 +120,13 @@ jobs:
         run: ruby scripts/validate-capability-contracts.rb
       - name: Validate Trade B2B boundary contracts
         run: ruby scripts/validate-trade-contracts.rb
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+        with:
+          python-version: "3.13"
+      - name: Install JSON Schema runtime
+        run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
+      - name: Validate the platform event registry (ADR-SHARED-008)
+        run: python scripts/validate-event-registry.py
 
   action-pinning:
     name: Enforce action pinning (self-check)
