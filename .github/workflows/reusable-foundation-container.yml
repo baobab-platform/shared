@@ -7,6 +7,9 @@ on:
       dockerfile: { type: string, default: "Dockerfile" }
       build_context: { type: string, default: "." }
       runtime: { type: boolean, default: true }
+      # Opt-in: skip vulnerabilities that have no fixed version upstream
+      # (trivy --ignore-unfixed). Anything with an available fix still fails.
+      ignore_unfixed: { type: boolean, default: false }
       exceptions: { type: string, default: "{}" }
 
 permissions:
@@ -123,7 +126,17 @@ jobs:
 
       - name: Scan built image
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
-        run: trivy image --severity HIGH,CRITICAL --exit-code 1 --skip-version-check "foundation-scan:${{ github.sha }}"
+        env:
+          IGNORE_UNFIXED: "${{ inputs.ignore_unfixed }}"
+        run: |
+          set -euo pipefail
+          args=(--severity HIGH,CRITICAL --exit-code 1 --skip-version-check)
+          if [[ "$IGNORE_UNFIXED" == "true" ]]; then
+            echo "::notice::Container scan ignores vulnerabilities without an upstream fix (ignore_unfixed opt-in)"
+            echo "- Container scan: unfixed vulnerabilities ignored (\`ignore_unfixed: true\`)" >> "$GITHUB_STEP_SUMMARY"
+            args+=(--ignore-unfixed)
+          fi
+          trivy image "${args[@]}" "foundation-scan:${{ github.sha }}"
 
       - name: Record container-scan exception
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] != null

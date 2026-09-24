@@ -35,6 +35,13 @@ on:
           Intended for release/container pipelines; default false preserves waiver behaviour.
         type: boolean
         default: false
+      container_ignore_unfixed:
+        description: >
+          Opt-in for the container gate to ignore vulnerabilities that have no fixed
+          version upstream (trivy --ignore-unfixed). Findings with an available fix
+          still fail. Default false keeps the strict scan.
+        type: boolean
+        default: false
 permissions:
   contents: read
   packages: read
@@ -114,6 +121,7 @@ jobs:
       dockerfile: "${{ needs.classify.outputs.container_dockerfile }}"
       build_context: "${{ needs.classify.outputs.container_context }}"
       runtime: "${{ needs.classify.outputs.container_runtime == 'true' }}"
+      ignore_unfixed: "${{ inputs.container_ignore_unfixed }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   result:
     name: Foundation / Result
