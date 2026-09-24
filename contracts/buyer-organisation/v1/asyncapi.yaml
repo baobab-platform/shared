@@ -1,27 +1,45 @@
 asyncapi: 3.1.0
 info:
-  title: Baobab-Platform Baobab buyer-organisation lifecycle events
-  version: 1.0.0
+  title: Baobab buyer onboarding lifecycle events
+  version: 1.1.0
   description: >
-    BuyerOrganisation lifecycle events (Gate ZB-01, ADR-SHARED-008 SS5). Uses
-    the same canonical event envelope and com.baobab-platform.<context>.<...>.v<N>
-    naming convention already shipped for identity, ERP, supplier-onboarding,
-    capability and product events. No message broker exists yet anywhere in
-    this ecosystem to carry these; this contract exists so producers and
-    future consumers have a stable shape to build against once one does.
+    Gate ZB-04 buyer application, organisation, membership and commercial-profile events.
+    Trade owns the commercial lifecycle; Control Plane registers and verifies bounded canonical organisation entities
+    and owns tenant/context attestation; broader Organisation lifecycle ownership remains unresolved; IAM owns authentication; ERP owns authoritative credit
+    and accounting consequences.
 defaultContentType: application/json
 channels:
   buyerOrganisationEvents:
     address: baobab-platform.buyer-organisation.events.v1
     messages:
+      buyerApplicationSubmitted: { $ref: "#/components/messages/BuyerApplicationSubmitted" }
+      buyerApplicationDecision: { $ref: "#/components/messages/BuyerApplicationDecision" }
       buyerOrganisationRegistered: { $ref: "#/components/messages/BuyerOrganisationRegistered" }
       buyerOrganisationStatusChanged: { $ref: "#/components/messages/BuyerOrganisationStatusChanged" }
+      buyerMembershipChanged: { $ref: "#/components/messages/BuyerMembershipChanged" }
+      buyerCommercialProfileChanged: { $ref: "#/components/messages/BuyerCommercialProfileChanged" }
 operations:
   publishBuyerOrganisationEvents:
     action: send
     channel: { $ref: "#/channels/buyerOrganisationEvents" }
 components:
   messages:
+    BuyerApplicationSubmitted:
+      name: com.baobab-platform.customer.buyer-application.submitted.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerApplicationSubmittedEventData }
+    BuyerApplicationDecision:
+      name: com.baobab-platform.customer.buyer-application.decision-recorded.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerApplicationDecisionEventData }
     BuyerOrganisationRegistered:
       name: com.baobab-platform.customer.buyer-organisation.registered.v1
       payload:
@@ -38,3 +56,19 @@ components:
           - type: object
             properties:
               data: { $ref: ./events.schema.json#/$defs/buyerOrganisationStatusChangedEventData }
+    BuyerMembershipChanged:
+      name: com.baobab-platform.customer.buyer-membership.changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerMembershipChangedEventData }
+    BuyerCommercialProfileChanged:
+      name: com.baobab-platform.customer.buyer-commercial-profile.changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerCommercialProfileChangedEventData }
