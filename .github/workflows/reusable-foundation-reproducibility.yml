@@ -1,4 +1,5 @@
 name: Reusable — Foundation Reproducibility
+
 on:
   workflow_call:
     inputs:
@@ -6,39 +7,134 @@ on:
       node: { type: boolean, default: false }
       go: { type: boolean, default: false }
       java: { type: boolean, default: false }
+      rust: { type: boolean, default: false }
+      infrastructure: { type: boolean, default: false }
+      package_managers: { type: string, default: "{}" }
+      exceptions: { type: string, default: "{}" }
+
 permissions:
   contents: read
+
 jobs:
   reproducibility:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Validate capability-specific reproducibility inputs
+      - name: Record approved exception
+        if: fromJSON(inputs.exceptions).reproducibility != null
+        env:
+          EXCEPTION: "${{ toJSON(fromJSON(inputs.exceptions).reproducibility) }}"
+        run: echo "::warning::Reproducibility control waived by approved exception — $EXCEPTION"
+      - name: Validate workspace reproducibility
+        if: ${{ fromJSON(inputs.exceptions).reproducibility == null }}
         env:
           PYTHON: "${{ inputs.python }}"
           NODE: "${{ inputs.node }}"
           GO: "${{ inputs.go }}"
           JAVA: "${{ inputs.java }}"
-        shell: bash
+          RUST: "${{ inputs.rust }}"
+          INFRASTRUCTURE: "${{ inputs.infrastructure }}"
+          PACKAGE_MANAGERS: "${{ inputs.package_managers }}"
+        shell: ruby {0}
         run: |
-          set -euo pipefail
-          if [[ "$NODE" == true ]]; then
-            [[ -f pnpm-lock.yaml || -f package-lock.json || -f yarn.lock ]] || { echo "::error::Node capability requires a lockfile"; exit 1; }
-            if [[ -f package.json ]]; then
-              manager=$(ruby -rjson -e 'puts(JSON.parse(File.read("package.json"))["packageManager"].to_s.split("@").first)')
-              case "$manager" in
-                pnpm) [[ -f pnpm-lock.yaml ]] ;;
-                npm) [[ -f package-lock.json ]] ;;
-                yarn) [[ -f yarn.lock ]] ;;
-                "") : ;;
-                *) echo "::error::Unsupported packageManager: $manager"; exit 1 ;;
-              esac || { echo "::error::packageManager does not match committed lockfile"; exit 1; }
-            fi
-          fi
-          if [[ "$GO" == true && -f go.mod ]]; then [[ -f go.sum ]] || { echo "::error::Go capability requires go.sum"; exit 1; }; fi
-          if [[ "$PYTHON" == true && -f pyproject.toml ]]; then
-            [[ -f uv.lock || -f poetry.lock || -f requirements.txt ]] || { echo "::error::Python capability requires a supported lock or requirements file"; exit 1; }
-          fi
-          if [[ "$JAVA" == true ]]; then
-            [[ -f pom.xml || -n "$(find . -name pom.xml -print -quit)" || -f gradlew ]] || { echo "::error::Java capability requires Maven metadata or the Gradle wrapper"; exit 1; }
-          fi
+          require "json"
+          require "pathname"
+          managers = JSON.parse(ENV.fetch("PACKAGE_MANAGERS"))
+          errors = []
+
+          def files(pattern)
+            Dir.glob(pattern, File::FNM_DOTMATCH).reject { |path| path.split("/").any? { |part| %w[.git node_modules vendor target .terraform].include?(part) } }
+          end
+
+          def ancestor_with(start_dir, names)
+            current = Pathname.new(start_dir).cleanpath
+            loop do
+              found = names.find { |name| File.file?(current.join(name)) }
+              return [current.to_s, found] if found
+              break if current.to_s == "."
+              parent = current.parent
+              break if parent == current
+              current = parent
+            end
+            nil
+          end
+
+          if ENV["NODE"] == "true"
+            manifests = files("{package.json,**/package.json}")
+            errors << "Node capability has no package.json" if manifests.empty?
+            manifests.each do |manifest|
+              errors << "#{manifest} has no lockfile in its workspace ancestry" unless ancestor_with(File.dirname(manifest), %w[pnpm-lock.yaml package-lock.json yarn.lock])
+            end
+            declared = managers["node"]
+            if declared
+              expected = { "pnpm" => "pnpm-lock.yaml", "npm" => "package-lock.json", "yarn" => "yarn.lock" }.fetch(declared)
+              errors << "declared Node manager #{declared} requires #{expected}" unless File.file?(expected)
+              if File.file?("package.json")
+                actual = JSON.parse(File.read("package.json"))["packageManager"].to_s.split("@").first.to_s
+                errors << "package.json packageManager #{actual.inspect} disagrees with contract #{declared}" unless actual.empty? || actual == declared
+              end
+            end
+          end
+
+          if ENV["PYTHON"] == "true"
+            manifests = files("{pyproject.toml,**/pyproject.toml}")
+            errors << "Python capability has no pyproject.toml" if manifests.empty?
+            manifests.each do |manifest|
+              manager = managers["python"]
+              candidates = case manager
+              when "uv" then %w[uv.lock]
+              when "poetry" then %w[poetry.lock]
+              when "pip" then %w[requirements.lock requirements.txt]
+              else %w[uv.lock poetry.lock requirements.lock requirements.txt]
+              end
+              lock = ancestor_with(File.dirname(manifest), candidates)
+              errors << "#{manifest} has no #{manager || 'supported'} dependency lock in its workspace ancestry" unless lock
+              if lock && lock.last == "requirements.txt"
+                File.readlines(File.join(lock.first, lock.last), chomp: true).each_with_index do |line, index|
+                  next if line.strip.empty? || line.lstrip.start_with?("#", "-", "git+", "http://", "https://")
+                  errors << "#{File.join(lock.first, lock.last)}:#{index + 1} is not exactly pinned" unless line.match?(/===?/)
+                end
+              end
+            end
+          end
+
+          if ENV["GO"] == "true"
+            modules = files("{go.mod,**/go.mod}")
+            errors << "Go capability has no go.mod" if modules.empty?
+            modules.each do |mod|
+              errors << "#{mod} requires adjacent go.sum" unless File.file?(File.join(File.dirname(mod), "go.sum"))
+            end
+          end
+
+          if ENV["JAVA"] == "true"
+            maven = files("{pom.xml,**/pom.xml}")
+            gradle = files("{build.gradle,build.gradle.kts,**/build.gradle,**/build.gradle.kts}")
+            errors << "Java capability has no Maven or Gradle build metadata" if maven.empty? && gradle.empty?
+            if managers["java"] == "maven" || (!maven.empty? && managers["java"].nil?)
+              errors << "Maven projects require the Maven wrapper" unless File.file?("mvnw") && File.file?(".mvn/wrapper/maven-wrapper.properties")
+            end
+            if managers["java"] == "gradle" || (!gradle.empty? && managers["java"].nil?)
+              errors << "Gradle projects require the Gradle wrapper" unless File.file?("gradlew") && File.file?("gradle/wrapper/gradle-wrapper.properties")
+            end
+          end
+
+          if ENV["RUST"] == "true"
+            manifests = files("{Cargo.toml,**/Cargo.toml}")
+            errors << "Rust capability has no Cargo.toml" if manifests.empty?
+            errors << "Rust repositories require a committed Cargo.lock" unless File.file?("Cargo.lock")
+            errors << "Rust package manager must be cargo" if managers["rust"] && managers["rust"] != "cargo"
+          end
+
+          if ENV["INFRASTRUCTURE"] == "true"
+            modules = files("{*.tf,**/*.tf}").map { |path| File.dirname(path) }.uniq
+            errors << "Infrastructure capability has no Terraform configuration" if modules.empty?
+            modules.each do |directory|
+              source = files(File.join(directory, "*.tf")).map { |path| File.read(path) }.join("\n")
+              next unless source.include?("required_providers")
+              errors << "#{directory} declares providers but has no .terraform.lock.hcl" unless File.file?(File.join(directory, ".terraform.lock.hcl"))
+            end
+          end
+
+          errors.each { |error| warn "::error::#{error}" }
+          abort "reproducibility validation failed with #{errors.length} error(s)" unless errors.empty?
+          puts "Reproducibility inputs are complete and contract-consistent"

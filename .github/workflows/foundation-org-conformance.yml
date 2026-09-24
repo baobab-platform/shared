@@ -1,0 +1,45 @@
+name: Foundation Organisation Conformance
+# Drift guard (conformance plan Phase 7). Reads every repository in the
+# organisation and reports Foundation drift: pre-rename nabhold/ references,
+# stale or superseded pins, foundation_ref mismatches, missing caller
+# permissions, removed or deprecated inputs, missing repository contracts,
+# and private dependency review without a GHAS record. Rules and deferrals
+# live in .baobab/org-conformance.yaml; the logic is
+# scripts/foundation/org_conformance.py.
+#
+# Token: github.token can read the organisation's public repositories. To
+# cover private repositories, add an ORG_CONFORMANCE_TOKEN secret: a
+# fine-grained token (or GitHub App token) with read-only Metadata and
+# Contents on every organisation repository. Without it, private
+# repositories are absent from the organisation listing: any that
+# .baobab/org-conformance.yaml names (deferred or expected_repositories) are
+# reported as not-visible (Medium), and unnamed ones cannot be seen at all.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  conformance:
+    name: Organisation conformance
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
+      - name: Evaluate organisation conformance
+        env:
+          GITHUB_TOKEN: "${{ secrets.ORG_CONFORMANCE_TOKEN || github.token }}"
+        run: python scripts/foundation/org_conformance.py --config .baobab/org-conformance.yaml --report org-conformance-report.json
+      - name: Upload conformance report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: org-conformance-report
+          path: org-conformance-report.json
+          retention-days: 90
+          if-no-files-found: ignore

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/supplier-onboarding/v1/supplier-kyb-decision-recorded.schema.json",
+  "title": "Supplier KYB decision recorded",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["estate_id", "legal_entity_id", "application_id", "decision", "reason_codes", "decided_at", "revision"],
+  "properties": {
+    "estate_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/resourceId" },
+    "legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+    "application_id": { "$ref": "./domain.schema.json#/$defs/estateResourceId" },
+    "canonical_organisation_id": { "$ref": "./domain.schema.json#/$defs/canonicalOrganisationId" },
+    "decision": { "type": "string", "enum": ["pending", "verified", "failed", "expired"] },
+    "reason_codes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "enum": ["evidence_missing", "registry_mismatch", "ownership_unverified", "licence_invalid", "tax_registration_invalid", "evidence_expired", "suspected_misrepresentation", "other"] } },
+    "applicant_visible_explanation": { "type": ["string", "null"], "maxLength": 1000 },
+    "decided_at": { "$ref": "./domain.schema.json#/$defs/timestamp" },
+    "revision": { "$ref": "./domain.schema.json#/$defs/version" }
+  }
+}
