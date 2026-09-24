@@ -7,6 +7,9 @@ on:
       dockerfile: { type: string, default: "Dockerfile" }
       build_context: { type: string, default: "." }
       runtime: { type: boolean, default: true }
+      # Opt-in: skip vulnerabilities that have no fixed version upstream
+      # (trivy --ignore-unfixed). Anything with an available fix still fails.
+      ignore_unfixed: { type: boolean, default: false }
       exceptions: { type: string, default: "{}" }
 
 permissions:
@@ -30,12 +33,48 @@ jobs:
           [[ "$DOCKERFILE" != *".."* && "$BUILD_CONTEXT" != *".."* ]] || { echo "::error::Container paths must not escape the repository"; exit 1; }
           [[ -f "$DOCKERFILE" ]] || { echo "::error::$DOCKERFILE does not exist"; exit 1; }
           [[ -d "$BUILD_CONTEXT" ]] || { echo "::error::$BUILD_CONTEXT is not a directory"; exit 1; }
-          if grep -Eiq '^FROM[[:space:]]+[^[:space:]]+:(latest|edge)([[:space:]]|$)' "$DOCKERFILE"; then
-            echo "::error::Container base images must not use latest or edge"
+          # Classify each FROM image, skipping flags such as --platform and
+          # references to earlier build stages ("FROM build AS test"). Global
+          # ARG defaults (declared before the first FROM) are substituted, as
+          # Docker does; an image taken from an ARG without a default stays
+          # unverifiable and fails.
+          violations="$(awk '
+            BEGIN { quote = sprintf("%c", 39) }
+            toupper($1) == "ARG" && !seen_from && index($2, "=") > 1 {
+              name = substr($2, 1, index($2, "=") - 1)
+              value = substr($2, index($2, "=") + 1)
+              gsub(/^"|"$/, "", value)
+              if (substr(value, 1, 1) == quote) value = substr(value, 2)
+              if (substr(value, length(value), 1) == quote) value = substr(value, 1, length(value) - 1)
+              if (value != "") args[name] = value
+            }
+            toupper($1) == "FROM" {
+              seen_from = 1
+              i = 2
+              while (i <= NF && $i ~ /^--/) i++
+              image = $i
+              for (name in args) {
+                while ((at = index(image, "${" name "}")) > 0)
+                  image = substr(image, 1, at - 1) args[name] substr(image, at + length(name) + 3)
+                while (match(image, "[$]" name "([^A-Za-z0-9_]|$)"))
+                  image = substr(image, 1, RSTART - 1) args[name] substr(image, RSTART + length(name) + 1)
+              }
+              image = tolower(image)
+              if (image in stages || image == "scratch") {
+                # earlier stage or empty base
+              } else if (image ~ /:(latest|edge)(@|$)/) {
+                print "floating:" image
+              } else if (image !~ /[:@]/) {
+                print "untagged:" image
+              }
+              if (toupper($(i + 1)) == "AS") stages[tolower($(i + 2))] = 1
+            }' "$DOCKERFILE")"
+          if grep -q '^floating:' <<<"$violations"; then
+            echo "::error::Container base images must not use latest or edge: $(grep '^floating:' <<<"$violations" | cut -d: -f2- | paste -sd, -)"
             exit 1
           fi
-          if grep -Ei '^FROM[[:space:]]+[^[:space:]@:]+([[:space:]]|$)' "$DOCKERFILE" | grep -Eiv '^FROM[[:space:]]+scratch([[:space:]]|$)' >/dev/null; then
-            echo "::error::Container base images require an explicit tag or digest"
+          if grep -q '^untagged:' <<<"$violations"; then
+            echo "::error::Container base images require an explicit tag or digest: $(grep '^untagged:' <<<"$violations" | cut -d: -f2- | paste -sd, -)"
             exit 1
           fi
 
@@ -87,7 +126,17 @@ jobs:
 
       - name: Scan built image
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
-        run: trivy image --severity HIGH,CRITICAL --exit-code 1 --skip-version-check "foundation-scan:${{ github.sha }}"
+        env:
+          IGNORE_UNFIXED: "${{ inputs.ignore_unfixed }}"
+        run: |
+          set -euo pipefail
+          args=(--severity HIGH,CRITICAL --exit-code 1 --skip-version-check)
+          if [[ "$IGNORE_UNFIXED" == "true" ]]; then
+            echo "::notice::Container scan ignores vulnerabilities without an upstream fix (ignore_unfixed opt-in)"
+            echo "- Container scan: unfixed vulnerabilities ignored (\`ignore_unfixed: true\`)" >> "$GITHUB_STEP_SUMMARY"
+            args+=(--ignore-unfixed)
+          fi
+          trivy image "${args[@]}" "foundation-scan:${{ github.sha }}"
 
       - name: Record container-scan exception
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] != null

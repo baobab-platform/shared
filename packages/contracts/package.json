@@ -14,7 +14,7 @@
     "generate:proto": "buf generate",
     "generate:graphql": "graphql-codegen --config codegen.ts",
     "generate": "pnpm generate:proto && pnpm generate:graphql",
-    "build": "pnpm generate && tsup src/index.ts --format cjs,esm --dts",
+    "build": "pnpm generate && tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly",
     "lint": "buf lint"
   },
   "dependencies": {

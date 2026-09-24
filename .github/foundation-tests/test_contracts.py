@@ -124,8 +124,31 @@ case["exceptions"] = {
 }
 invalid_cases["unknown exception control"] = case
 
+case = copy.deepcopy(BASE)
+case["security"] = {"sast_provider": "semgrep"}
+invalid_cases["unknown SAST provider"] = case
+
+case = copy.deepcopy(BASE)
+case["security"] = {"sast_provider": "codeql", "ghas": {"approved_by": "@platform"}}
+invalid_cases["incomplete GHAS approval"] = case
+
+case = copy.deepcopy(BASE)
+case["security"] = {"provider": "codeql"}
+invalid_cases["unknown security field"] = case
+
 for name, document in invalid_cases.items():
     expect_invalid(name, document)
+
+for provider in ("codeql", "fallback", "disabled"):
+    declared = copy.deepcopy(BASE)
+    declared["security"] = {"sast_provider": provider}
+    expect_valid(f"security.sast_provider {provider}", declared)
+approved = copy.deepcopy(BASE)
+approved["security"] = {
+    "sast_provider": "codeql",
+    "ghas": {"approved_by": "@platform", "reason": "GHAS is licensed for this repository", "expires": "2099-12-31"},
+}
+expect_valid("codeql with GHAS approval", approved)
 
 exception = copy.deepcopy(BASE)
 exception["exceptions"] = {
@@ -157,6 +180,14 @@ assert set(catalogue["profiles"]) == {"full", "frontend", "frontend-e2e", "infra
 for name, profile in catalogue["profiles"].items():
     assert profile["minimum_version"], f"{name} has no version floor"
     assert "tag_suffix" in profile, f"{name} has no tag suffix declaration"
+
+own = yaml.safe_load((ROOT / ".baobab/environment.yaml").read_text())["environment"]
+own_policy = catalogue["profiles"][own["profile"]]
+own_version = own["minimum_version"].removesuffix(own_policy["tag_suffix"])
+floor = tuple(int(part) for part in own_policy["minimum_version"].split("."))
+assert tuple(int(part) for part in own_version.split(".")) >= floor, (
+    f"shared declares baobab-dev {own_version}, below the {own['profile']} floor {own_policy['minimum_version']}"
+)
 
 loaded = yaml.safe_load((ROOT / ".baobab/repository.yaml").read_text())
 expect_valid("shared repository contract", loaded)

@@ -19,3 +19,5 @@ artifacts:
     dockerfile: containers/baobab-contracts/Dockerfile
     context: .
     runtime: false
+security:
+  sast_provider: fallback

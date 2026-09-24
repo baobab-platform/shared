@@ -3,13 +3,31 @@ name: Reusable — Foundation Security
 on:
   workflow_call:
     inputs:
+      scope:
+        description: >
+          pr — a pull request: secrets scanned over the PR's own commits and
+          dependency review applicable. branch — push, dispatch or schedule under
+          the full profile: secrets scanned over the checked-out ref's full
+          history. deep — scheduled deep security: secrets scanned over every
+          fetched ref; dependency review off.
+        type: string
+        default: branch
       dependency_review_enabled: { type: boolean, default: false }
-      advanced_security_enabled: { type: boolean, default: false }
+      sast_provider:
+        description: Classifier-resolved SAST provider (codeql | fallback | disabled).
+        type: string
+        default: fallback
+      ghas_approved:
+        description: The repository contract carries an approved, unexpired security.ghas record.
+        type: boolean
+        default: false
       python: { type: boolean, default: false }
       node: { type: boolean, default: false }
       go: { type: boolean, default: false }
       java: { type: boolean, default: false }
       rust: { type: boolean, default: false }
+      infrastructure: { type: boolean, default: false }
+      package_managers: { type: string, default: "{}" }
       exceptions: { type: string, default: "{}" }
 
 permissions:
@@ -19,6 +37,18 @@ jobs:
   portable:
     runs-on: ubuntu-26.04
     steps:
+      - name: Validate security scope
+        env:
+          SCOPE: "${{ inputs.scope }}"
+          BASE_SHA: "${{ github.event.pull_request.base.sha }}"
+        run: |
+          set -euo pipefail
+          case "$SCOPE" in
+            pr) [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::scope pr needs a pull_request event with a base sha"; exit 1; } ;;
+            branch|deep) ;;
+            *) echo "::error::unsupported security scope '$SCOPE' (expected pr, branch or deep)"; exit 1 ;;
+          esac
+          echo "::notice::Security scope: $SCOPE"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install checksum-verified Trivy
         env:
@@ -40,15 +70,29 @@ jobs:
       - name: Scan infrastructure and configuration
         run: trivy fs --scanners misconfig --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
 
+  native-deps:
+    uses: ./.github/workflows/reusable-foundation-dependency-adapters.yml
+    with:
+      python: "${{ inputs.python }}"
+      node: "${{ inputs.node }}"
+      go: "${{ inputs.go }}"
+      java: "${{ inputs.java }}"
+      rust: "${{ inputs.rust }}"
+      infrastructure: "${{ inputs.infrastructure }}"
+      package_managers: "${{ inputs.package_managers }}"
+      exceptions: "${{ inputs.exceptions }}"
+
   secrets:
     if: ${{ fromJSON(inputs.exceptions)['secret-scan'] == null }}
     uses: ./.github/workflows/security-secrets-scan.yml
+    with:
+      log-opts: "${{ inputs.scope == 'pr' && format('{0}..HEAD', github.event.pull_request.base.sha) || (inputs.scope == 'deep' && '--all' || 'HEAD') }}"
 
   dependency-review:
     uses: ./.github/workflows/reusable-foundation-dependency-review.yml
     with:
-      enabled: "${{ inputs.dependency_review_enabled }}"
-      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
+      enabled: "${{ inputs.dependency_review_enabled && inputs.scope == 'pr' }}"
+      ghas_approved: "${{ inputs.ghas_approved }}"
       exceptions: "${{ inputs.exceptions }}"
 
   sast:
@@ -58,7 +102,7 @@ jobs:
       actions: read
       security-events: write
     with:
-      enabled: "${{ inputs.advanced_security_enabled }}"
+      provider: "${{ inputs.sast_provider }}"
       python: "${{ inputs.python }}"
       node: "${{ inputs.node }}"
       go: "${{ inputs.go }}"
@@ -67,9 +111,9 @@ jobs:
       exceptions: "${{ inputs.exceptions }}"
 
   result:
-    name: Security / Result
+    name: "Security / ${{ inputs.scope == 'pr' && 'PR' || (inputs.scope == 'deep' && 'Deep' || 'Branch') }}"
     if: always()
-    needs: [portable, secrets, dependency-review, sast]
+    needs: [portable, native-deps, secrets, dependency-review, sast]
     runs-on: ubuntu-26.04
     steps:
       - env:

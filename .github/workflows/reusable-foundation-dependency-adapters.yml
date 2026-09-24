@@ -1,0 +1,229 @@
+name: Reusable — Foundation Dependency Adapters
+# Capability-driven package-manager audits. Trivy fs remains the language-
+# independent baseline in reusable-foundation-security; these adapters add
+# ecosystem-native signals (audit/govulncheck/cargo-audit).
+on:
+  workflow_call:
+    inputs:
+      python: { type: boolean, default: false }
+      node: { type: boolean, default: false }
+      go: { type: boolean, default: false }
+      java: { type: boolean, default: false }
+      rust: { type: boolean, default: false }
+      infrastructure: { type: boolean, default: false }
+      package_managers: { type: string, default: "{}" }
+      exceptions: { type: string, default: "{}" }
+
+permissions:
+  contents: read
+
+jobs:
+  adapters:
+    name: Dependency adapters
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Record dependency-audit exception
+        if: fromJSON(inputs.exceptions)['dependency-audit'] != null
+        env:
+          EXCEPTION: "${{ toJSON(fromJSON(inputs.exceptions)['dependency-audit']) }}"
+        run: |
+          echo "::warning::Native dependency adapters waived by approved exception — $EXCEPTION"
+          mkdir -p .foundation-evidence
+          echo '{"status":"waived","control":"dependency-audit"}' > .foundation-evidence/dependency-adapters.json
+
+      - name: Resolve package managers
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null }}
+        id: managers
+        env:
+          PACKAGE_MANAGERS: "${{ inputs.package_managers }}"
+          NODE: "${{ inputs.node }}"
+          PYTHON: "${{ inputs.python }}"
+          GO: "${{ inputs.go }}"
+          JAVA: "${{ inputs.java }}"
+          RUST: "${{ inputs.rust }}"
+          INFRA: "${{ inputs.infrastructure }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node_mgr=$(python3 -c "import json,os; m=json.loads(os.environ.get('PACKAGE_MANAGERS') or '{}'); print(m.get('node') or '')")
+          py_mgr=$(python3 -c "import json,os; m=json.loads(os.environ.get('PACKAGE_MANAGERS') or '{}'); print(m.get('python') or '')")
+          java_mgr=$(python3 -c "import json,os; m=json.loads(os.environ.get('PACKAGE_MANAGERS') or '{}'); print(m.get('java') or '')")
+          echo "node=${node_mgr:-pnpm}" >> "$GITHUB_OUTPUT"
+          echo "python=${py_mgr:-uv}" >> "$GITHUB_OUTPUT"
+          echo "java=${java_mgr:-}" >> "$GITHUB_OUTPUT"
+          echo "run_node=${NODE}" >> "$GITHUB_OUTPUT"
+          echo "run_python=${PYTHON}" >> "$GITHUB_OUTPUT"
+          echo "run_go=${GO}" >> "$GITHUB_OUTPUT"
+          echo "run_java=${JAVA}" >> "$GITHUB_OUTPUT"
+          echo "run_rust=${RUST}" >> "$GITHUB_OUTPUT"
+          echo "run_infra=${INFRA}" >> "$GITHUB_OUTPUT"
+
+      - name: Node dependency audit
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_node == 'true' }}
+        env:
+          NODE_MGR: "${{ steps.managers.outputs.node }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$NODE_MGR" in
+            pnpm)
+              corepack enable
+              pnpm install --frozen-lockfile
+              pnpm audit --audit-level high
+              ;;
+            npm)
+              npm ci
+              npm audit --audit-level=high
+              ;;
+            yarn)
+              corepack enable
+              yarn install --immutable
+              yarn npm audit --severity high
+              ;;
+            *)
+              echo "::error::Unsupported Node package manager: $NODE_MGR"
+              exit 1
+              ;;
+          esac
+
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_python == 'true' }}
+        with:
+          python-version: "3.13"
+
+      - name: Python dependency audit
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_python == 'true' }}
+        env:
+          PY_MGR: "${{ steps.managers.outputs.python }}"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check "pip-audit==2.9.0"
+
+          # Audit the locked dependency set, never the runner's own environment.
+          # Lockfiles are converted to exact pins so pip-audit does not resolve.
+          lock_to_requirements() {
+            python - "$1" <<'EOF'
+          import sys, tomllib
+          path = sys.argv[1]
+          with open(path, "rb") as handle:
+              lock = tomllib.load(handle)
+          pins = set()
+          for package in lock.get("package", []):
+              source = package.get("source") or {}
+              # uv marks index packages with source.registry; poetry omits source
+              # for PyPI and uses type "legacy" for other indexes. Workspace,
+              # path and git packages are not published and cannot be audited.
+              if path.endswith("uv.lock") and "registry" not in source:
+                  continue
+              if path.endswith("poetry.lock") and source.get("type") not in (None, "legacy"):
+                  continue
+              pins.add(f"{package['name']}=={package['version']}")
+          if not pins:
+              sys.exit(f"{path}: no registry packages found to audit")
+          print("\n".join(sorted(pins)))
+          EOF
+          }
+
+          case "$PY_MGR" in
+            uv | poetry)
+              lockfile="$([[ "$PY_MGR" == uv ]] && echo uv.lock || echo poetry.lock)"
+              if [[ ! -f "$lockfile" ]]; then
+                echo "::error::Python package manager $PY_MGR requires $lockfile for the dependency audit"
+                exit 1
+              fi
+              lock_to_requirements "$lockfile" > "$RUNNER_TEMP/python-requirements.txt"
+              pip-audit -r "$RUNNER_TEMP/python-requirements.txt" --no-deps --disable-pip --progress-spinner off
+              ;;
+            pip)
+              if [[ -f requirements.lock ]]; then
+                pip-audit -r requirements.lock --progress-spinner off
+              elif [[ -f requirements.txt ]]; then
+                pip-audit -r requirements.txt --progress-spinner off
+              else
+                echo "::error::Python package manager pip requires requirements.lock or requirements.txt for the dependency audit"
+                exit 1
+              fi
+              ;;
+            *)
+              echo "::error::Unsupported Python package manager: $PY_MGR"
+              exit 1
+              ;;
+          esac
+
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_go == 'true' }}
+        with:
+          go-version: "stable"
+
+      - name: Go vulnerability check
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_go == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
+          govulncheck ./...
+
+      - name: Java dependency notice
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_java == 'true' }}
+        env:
+          JAVA_MGR: "${{ steps.managers.outputs.java }}"
+        run: |
+          echo "::notice::Java native CVE adapters are not yet wired for ${JAVA_MGR:-unspecified}; Trivy filesystem scan remains the baseline dependency control"
+
+      - name: Rust cargo-audit
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_rust == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="0.22.2"
+          sha256="ab28a1bdb54db4d5d8ad5981cf1f959410370b3d28250dbd35f6a44248620e39"
+          archive="cargo-audit-x86_64-unknown-linux-gnu-v${version}"
+          curl -fsSL "https://github.com/rustsec/rustsec/releases/download/cargo-audit%2Fv${version}/${archive}.tgz" -o "$RUNNER_TEMP/cargo-audit.tgz"
+          echo "${sha256}  $RUNNER_TEMP/cargo-audit.tgz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/cargo-audit.tgz" -C "$RUNNER_TEMP"
+          "$RUNNER_TEMP/${archive}/cargo-audit" audit
+
+      - name: Terraform provider lock evidence
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_infra == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! find . -name '.terraform.lock.hcl' -not -path './.git/*' | grep -q .; then
+            echo "::notice::No .terraform.lock.hcl found; reproducibility gate owns lockfile requirements"
+          else
+            echo "::notice::Terraform provider locks present; Trivy misconfig scan remains the portable infra control"
+            find . -name '.terraform.lock.hcl' -not -path './.git/*'
+          fi
+
+      - name: Write adapter evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .foundation-evidence
+          if [[ ! -f .foundation-evidence/dependency-adapters.json ]]; then
+            cat > .foundation-evidence/dependency-adapters.json <<EOF
+          {
+            "control": "dependency-adapters",
+            "status": "${{ job.status }}",
+            "node": "${{ steps.managers.outputs.run_node }}",
+            "python": "${{ steps.managers.outputs.run_python }}",
+            "go": "${{ steps.managers.outputs.run_go }}",
+            "java": "${{ steps.managers.outputs.run_java }}",
+            "rust": "${{ steps.managers.outputs.run_rust }}",
+            "infrastructure": "${{ steps.managers.outputs.run_infra }}"
+          }
+          EOF
+          fi
+
+      - name: Upload dependency adapter evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: foundation-dependency-adapters
+          path: .foundation-evidence/dependency-adapters.json
+          retention-days: 90
+          if-no-files-found: ignore

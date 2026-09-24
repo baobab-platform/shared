@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/tenant-provisioning-milestone.schema.json",
+  "title": "Tenant provisioning milestone payload",
+  "description": "A TenantProvisioning orchestration (Gate ZB-02) reached READY, ACTIVE or FAILED. These are the orchestration's domain milestones; they are distinct from provisioning-state-changed.schema.json, which describes the provisioning operation's lifecycle. Produced by baobab-platform/baobab-cp from its transactional outbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenant_provisioning_id",
+    "tenant_id",
+    "status",
+    "desired_state_version",
+    "observed_state_version"
+  ],
+  "properties": {
+    "tenant_provisioning_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "$ref": "domain.schema.json#/$defs/tenantId"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "READY",
+        "ACTIVE",
+        "FAILED"
+      ]
+    },
+    "desired_state_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "observed_state_version": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

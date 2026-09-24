@@ -1,3 +1,44 @@
+# Target path: baobab-platform/shared/templates/caller-foundation-repository-gates.yml
+#
+# Copy into <repo>/.github/workflows/foundation.yml (or foundation-repository-gates.yml).
+# Resolve every TODO, then delete this comment block.
+#
+# This template is the supported distribution path for Foundation Repository
+# Gates (compatibility orchestrator). It must remain a valid, executable caller:
+# every required input of foundation-repository-gates.yml is supplied, and the
+# permission set is a superset of what the reusable workflow and its children demand.
+#
+# Required inputs:
+#   foundation_ref (string, required) — exact shared commit; pin to a full-length SHA.
+# Optional:
+#   profile — full (default) | contract | security-pr | security-deep | container
+#     Prefer product entrypoints when only one family is needed:
+#       foundation-product-contract.yml
+#       foundation-product-security.yml  (mode: pr | deep)
+#       foundation-product-container.yml
+#   dockerfile, build_context — container build paths
+#   dependency_review_enabled — true when dependency review is available for the repo
+#       (always on public repositories; on private ones only with security.ghas)
+#   container_ignore_unfixed — opt-in: container scan ignores CVEs with no upstream fix
+#       (trivy --ignore-unfixed); fixable findings still fail. Default false (strict).
+#
+# SAST is declared in .baobab/repository.yaml, not here:
+#   security:
+#     sast_provider: codeql | fallback | disabled
+#     ghas:                 # required for codeql on a PRIVATE repository
+#       approved_by: "@handle"
+#       reason: "GitHub Advanced Security is licensed and enabled"
+#       expires: "YYYY-MM-DD"
+#   codeql → CodeQL runs; fallback → SAST / Fallback (portable scans remain);
+#   disabled → needs an approved exceptions.sast. advanced_security_enabled is a
+#   deprecated input kept for one minor version; do not pass it in new callers.
+#
+# Minimum caller permissions:
+#   contents: read, packages: read, actions: read, security-events: write
+#
+# After copying, confirm Settings → Actions → General allows baobab-platform/shared
+# if the repo uses an explicit allow-list.
+
 name: Foundation Repository Gates
 
 on:
@@ -10,11 +51,24 @@ on:
 
 permissions:
   contents: read
+  packages: read
+  actions: read
+  security-events: write
 
 jobs:
   foundation:
+    # TODO: replace REPLACE_WITH_FULL_SHARED_COMMIT_SHA with the full-length
+    # commit SHA of the promoted Foundation release. Current: v2.3.0 =
+    # 31de2bc3dcd56128c019c640dc7e12c10ae9ca69
+    # (requires baobab-dev >= 1.4.4 and security.sast_provider in the contract).
+    # Verify live: git ls-remote --tags https://github.com/baobab-platform/shared.git
+    # and git cat-file -e <sha>:.github/workflows/foundation-repository-gates.yml
     uses: baobab-platform/shared/.github/workflows/foundation-repository-gates.yml@REPLACE_WITH_FULL_SHARED_COMMIT_SHA
     with:
+      foundation_ref: "REPLACE_WITH_FULL_SHARED_COMMIT_SHA"
+      # full = compatibility (all families). On schedule, prefer security-deep
+      # or call foundation-product-security.yml with mode: deep instead.
+      profile: full
       dockerfile: "Dockerfile"
       build_context: "."
       dependency_review_enabled: false

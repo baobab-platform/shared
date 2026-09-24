@@ -1,6 +1,13 @@
+# ADR-BCP-018 (schema 1.1): Organisation, Legal Entity, CorporateRelationship,
+# PlatformRelationship, PlatformAccount and the explicit tenant mappings have
+# Control Plane as runtime owner; Shared remains contract authority
+# (contracts/organisation/v1) and the first-party governance source
+# (contracts/legal-entity/registry.yaml). External legal entities are
+# Control-Plane-issued and do not require a Shared registry entry.
+
 schema:
   name: baobab-erp-system-of-record
-  version: "1.0"
+  version: "1.1"
   rule: No record is implicitly bidirectional; the declared process owner wins its attributes and corrections are explicit.
 
 concepts:
@@ -17,28 +24,45 @@ concepts:
     conflict_resolution: Control Plane wins; unresolved or inactive context fails closed
 
   - concept: Legal Entity
-    canonical_owner: shared
-    producer: [shared-governance]
+    canonical_owner: control-plane
+    contract_authority: shared
+    producer: [control-plane, shared-governance]
     consumers: [control-plane, erp, trade, infrastructure, digital-estates]
-    external_identifier: canonical legal_entity_id from the Shared registry
+    external_identifier: canonical legal_entity_id known to Control Plane
     idempiere_representation: one or more private Organisation mappings where approved
     medusa_representation: context metadata only
-    synchronisation_direction: shared_to_consumers
-    consistency: versioned governance consistency
-    mechanism: released registry and explicit mappings
-    conflict_resolution: Shared identity wins; name matching is forbidden
+    synchronisation_direction: control-plane_to_consumers
+    consistency: versioned governance consistency for first-party; strong at CP registration for external
+    mechanism: Shared first-party registry reconciliation and Control Plane LegalEntityProfile
+    conflict_resolution: Shared spelling wins for first-party registry ids; external ids are CP-authoritative; name matching is forbidden
+    notes: >
+      ADR-BCP-018 authority split: runtime canonical authority is Control Plane;
+      contract authority is Shared. Shared contracts/legal-entity/registry.yaml is
+      the first-party governance source only (NABHOLD, ZURIBEANS, THAMANI-GLOBAL,
+      EQUATOR-ESTATE). External legal entities are Control-Plane-issued/registered
+      and MUST NOT require a Shared registry entry.
 
   - concept: Organisation
-    canonical_owner: unassigned
-    producer: []
-    consumers: [erp, trade, reporting]
-    external_identifier: not minted until the organisation-model owner is approved
+    # ADR-BCP-018: runtime owner control-plane; was unassigned until this revision
+    canonical_owner: control-plane
+    contract_authority: shared
+    producer: [control-plane]
+    consumers: [erp, trade, reporting, control-plane]
+    external_identifier: CanonicalEntity id with Organisation profile (see contracts/organisation/v1/domain.schema.json)
     idempiere_representation: private explicit Organisation mapping where appropriate
-    medusa_representation: optional future context attribute
-    synchronisation_direction: none_until_contract_approved
-    consistency: unavailable
-    mechanism: deferred cross-engine contract
-    conflict_resolution: equality with tenant, legal entity or ERP Organisation is forbidden; ambiguous mappings are quarantined
+    medusa_representation: optional context attribute (organisation_id)
+    synchronisation_direction: control-plane_to_engines
+    consistency: strong at registration; eventual projection
+    mechanism: CanonicalEntity + Organisation profile; context resolution verifies organisation_id
+    conflict_resolution: >
+      Equality with tenant, legal entity or ERP Organisation is forbidden.
+      Ambiguous mappings are quarantined. IAM Organisation claims are never
+      treated as canonical truth; they resolve only via ExternalReference.
+    notes: >
+      ADR-BCP-018 establishes Control Plane as runtime authority while Shared
+      remains contract/governance authority for the schema. BUYER_ORGANISATION
+      and SUPPLIER_ORGANISATION specialisations (ADR-BCP-016 / ADR-0006) remain
+      valid and migrate forward without destructive rewrite.
 
   - concept: User
     canonical_owner: identity-provider
