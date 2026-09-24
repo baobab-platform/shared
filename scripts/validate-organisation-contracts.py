@@ -71,6 +71,11 @@ RESPONSIBILITIES = {
         "identityResolutionOutcome", "identityResolution", "applicantOrganisation", "legalVerification",
         "corporateRelationshipClaim", "platformAccountAssignment",
     },
+    "counterparty.schema.json": {
+        "CounterpartyRole", "OrganisationResolutionCandidate", "ResolutionCandidateDecision",
+        "counterpartyRoleId", "resolutionCandidateId", "counterpartyRoleType", "counterpartyRoleStatus",
+        "legacyOrganisationKind", "resolutionCandidateStatus", "matchedIdentifier",
+    },
     "events.schema.json": {
         "OrganisationCreated", "OrganisationVerified", "OrganisationSuspended", "LegalEntityVerified",
         "CorporateRelationshipActivated", "CorporateRelationshipEnded", "CorporateRelationshipConflicted",
@@ -119,7 +124,18 @@ EXAMPLE_KEYS = {
     "iam_organisation_references": ("iam.schema.json", "IamOrganisationReference"),
     "organisation_admission_requests": ("admission.schema.json", "OrganisationAdmissionRequest"),
     "organisation_admission_outcomes": ("admission.schema.json", "OrganisationAdmissionOutcome"),
+    "counterparty_roles": ("counterparty.schema.json", "CounterpartyRole"),
+    "organisation_resolution_candidates": ("counterparty.schema.json", "OrganisationResolutionCandidate"),
 }
+
+# ORG-13: identity is matched on these governed identifier types only
+# (ADR-BCP-018 section 99), normalised as the Control Plane compares them.
+GOVERNED_IDENTIFIER_TYPES = {"COMPANY_REGISTRATION", "TAX_IDENTIFIER", "VAT_IDENTIFIER", "LEI"}
+LIVE_ROLE_STATUSES = {"PENDING", "ACTIVE", "SUSPENDED"}
+
+
+def normalise_identifier(value: str) -> str:
+    return re.sub(r"[\s./-]", "", value).upper()
 
 REQUIRED_CORPORATE_VOCABULARY = {"OWNS", "CONTROLS", "BRANCH_OF", "AFFILIATE_OF", "JOINT_VENTURE_WITH", "SUCCESSOR_OF"}
 FORBIDDEN_CORPORATE_VOCABULARY = {"PARENT_OF", "SUBSIDIARY_OF", "SISTER_OF", "RELATED_TO", "JOINT_VENTURE", "SUPPLIER_OF", "CUSTOMER_OF"}
@@ -354,6 +370,46 @@ def check_example_semantics(label: str, doc: dict) -> None:
         if key in live_iam:
             fail(f"{label}: {ref['id']} and {live_iam[key]} both actively link {key}")
         live_iam[key] = ref["id"]
+    # ORG-13: roles are tenant-scoped and unique while live; candidates pair
+    # two known organisations that really share every matched governed
+    # identifier (names never match), and a decision keeps a candidate's own
+    # organisation.
+    live_roles: dict[tuple[str, str, str], str] = {}
+    for role in doc.get("counterparty_roles", []):
+        need_org(role["id"], role["organisation_id"])
+        if role["status"] in LIVE_ROLE_STATUSES:
+            key = (role["organisation_id"], role["tenant_id"], role["role"])
+            if key in live_roles:
+                fail(f"{label}: {role['id']} and {live_roles[key]} are both live for {key}")
+            live_roles[key] = role["id"]
+    governed: dict[str, set[tuple[str, str, str]]] = {}
+    for ce, org in orgs.items():
+        governed[ce] = {(i["type"], normalise_identifier(i["value"]), i.get("issuing_jurisdiction", "").upper())
+                        for i in org.get("identifiers", []) if i["type"] in GOVERNED_IDENTIFIER_TYPES}
+    for p in doc.get("legal_entity_profiles", []):
+        governed.setdefault(p["organisation_id"], set()).update(
+            (i["type"], normalise_identifier(i["value"]), i.get("issuing_jurisdiction", "").upper())
+            for i in p.get("registration_identifiers", []) if i["type"] in GOVERNED_IDENTIFIER_TYPES)
+
+    def carries(ce: str, match: dict) -> bool:
+        jurisdiction = match.get("issuing_jurisdiction", "")
+        return any(t == match["type"] and v == match["normalised_value"] and (not jurisdiction or j in ("", jurisdiction))
+                   for t, v, j in governed.get(ce, set()))
+
+    pairs: dict[frozenset, str] = {}
+    for cand in doc.get("organisation_resolution_candidates", []):
+        pair = frozenset(cand["organisation_ids"])
+        for ce in pair:
+            need_org(cand["id"], ce)
+        if pair in pairs:
+            fail(f"{label}: {cand['id']} and {pairs[pair]} quarantine the same pair")
+        pairs[pair] = cand["id"]
+        for match in cand["matched_identifiers"]:
+            if not all(carries(ce, match) for ce in pair):
+                fail(f"{label}: {cand['id']} matched identifier {match} is not carried by both organisations")
+        surviving = (cand.get("decision") or {}).get("surviving_organisation_id")
+        if surviving is not None and surviving not in pair:
+            fail(f"{label}: {cand['id']} surviving organisation {surviving!r} is not one of its organisations")
 
 
 examples: dict[str, dict] = {}
@@ -376,6 +432,8 @@ nabhold = examples.get("nabhold-group-organisation.json")
 acme = examples.get("acme-holdings-external.json")
 if nabhold is None or acme is None:
     fail("examples must include nabhold-group-organisation.json and acme-holdings-external.json")
+if "legacy-buyer-supplier-migration.json" not in examples:
+    fail("examples must include legacy-buyer-supplier-migration.json (ADR-BCP-018 gate ORG-13)")
 else:
     nabhold_les = {p["legal_entity_id"] for p in nabhold["legal_entity_profiles"]}
     if nabhold_les != FIRST_PARTY:
@@ -409,7 +467,7 @@ def negative(label: str, schema_file: str, definition: str, record: dict) -> Non
     NEGATIVE.append((label, schema_file, definition, record))
 
 
-if nabhold is not None and acme is not None:
+if nabhold is not None and acme is not None and "legacy-buyer-supplier-migration.json" in examples:
     A, N = "acme-holdings-external.json", "nabhold-group-organisation.json"
 
     r = by(A, "corporate_relationships", verification_state="VERIFIED"); del r["evidence_references"]
@@ -507,6 +565,44 @@ if nabhold is not None and acme is not None:
     negative("permission-like PlatformAccount role at admission", "admission.schema.json", "OrganisationAdmissionRequest", r)
     r = first(A, "organisation_admission_requests"); del r["admission_decision_id"]
     negative("admission onboarding without a decision", "admission.schema.json", "OrganisationAdmissionRequest", r)
+
+    # Counterparty roles and resolution candidates (ORG-13).
+    L = "legacy-buyer-supplier-migration.json"
+    r = first(L, "counterparty_roles"); r["role"] = "BUYER_ORGANISATION"
+    negative("legacy entity kind as counterparty role", "counterparty.schema.json", "CounterpartyRole", r)
+    r = first(L, "counterparty_roles"); del r["tenant_id"]
+    negative("platform-wide counterparty role", "counterparty.schema.json", "CounterpartyRole", r)
+    r = first(L, "counterparty_roles"); r["portal_access"] = True
+    negative("counterparty role granting access", "counterparty.schema.json", "CounterpartyRole", r)
+    r = by(L, "counterparty_roles", status="ENDED"); del r["effective_to"]
+    negative("ENDED counterparty role without effective_to", "counterparty.schema.json", "CounterpartyRole", r)
+    r = first(L, "counterparty_roles"); r["id"] = "crole_ZuriBeans-Buyer"
+    negative("human-readable counterparty role id", "counterparty.schema.json", "CounterpartyRole", r)
+    r = by(L, "organisation_resolution_candidates", status="OPEN"); r["matched_identifiers"] = [{"type": "LEGAL_NAME", "normalised_value": "ACMEFOODS"}]
+    negative("resolution candidate matched on a name", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    r = by(L, "organisation_resolution_candidates", status="OPEN"); r["matched_identifiers"] = []
+    negative("resolution candidate without a matched identifier", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    r = by(L, "organisation_resolution_candidates", status="OPEN"); r["organisation_ids"] = r["organisation_ids"][:1]
+    negative("resolution candidate with one organisation", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    r = by(L, "organisation_resolution_candidates", status="OPEN"); r["organisation_ids"] = [r["organisation_ids"][0]] * 2
+    negative("resolution candidate pairing an organisation with itself", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    r = by(L, "organisation_resolution_candidates", status="OPEN"); r["matched_identifiers"][0]["normalised_value"] = "pvt-2019/0443"
+    negative("un-normalised matched identifier", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    r = by(L, "organisation_resolution_candidates", status="DISTINCT"); r["status"] = "OPEN"
+    negative("OPEN resolution candidate carrying a decision", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    r = by(L, "organisation_resolution_candidates", status="DISTINCT"); del r["decided_by"]
+    negative("decided resolution candidate without a reviewer", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    r = by(L, "organisation_resolution_candidates", status="DISTINCT"); r["status"] = "DUPLICATE_CONFIRMED"
+    negative("candidate status disagreeing with its decision", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    r = by(L, "organisation_resolution_candidates", status="DISTINCT"); r["status"] = "MERGED"
+    negative("resolution candidate claiming a merge", "counterparty.schema.json", "OrganisationResolutionCandidate", r)
+    negative("duplicate confirmation without a surviving organisation", "counterparty.schema.json", "ResolutionCandidateDecision",
+             {"decision": "DUPLICATE_CONFIRMED", "reason": "same registry entry"})
+    negative("DISTINCT decision naming a surviving organisation", "counterparty.schema.json", "ResolutionCandidateDecision",
+             {"decision": "DISTINCT", "reason": "different companies", "surviving_organisation_id": "ce_01k8z4b1hq2m"})
+    negative("decision naming its own reviewer", "counterparty.schema.json", "ResolutionCandidateDecision",
+             {"decision": "DISTINCT", "reason": "different companies", "decided_by": "prn_01k8z4f1rvwr"})
+    negative("decision without a reason", "counterparty.schema.json", "ResolutionCandidateDecision", {"decision": "DISTINCT"})
 
     # Positive: the claim form and the evidence derived from it.
     claim = {"acme-foods": {"id": "7f1c2a9e-3b4d-4e8f-9a1b-2c3d4e5f6a7b"}}
