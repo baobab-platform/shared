@@ -159,9 +159,9 @@
         },
         "normalised_value": {
           "type": "string",
-          "pattern": "^[A-Z0-9]+$",
+          "pattern": "^[^a-z\\s./-]+$",
           "minLength": 1,
-          "maxLength": 128
+          "description": "The identifier value with whitespace, '.', '/' and '-' removed and letters upper-cased, exactly as identity resolution compares it."
         },
         "issuing_jurisdiction": {
           "type": "string",
@@ -271,7 +271,7 @@
         "decided_by": {
           "type": "string",
           "minLength": 1,
-          "description": "Canonical principal of the reviewer, stamped by the Control Plane."
+          "description": "Authenticated identity of the reviewer, stamped by the Control Plane from the request's credentials."
         },
         "decided_at": {
           "type": "string",
