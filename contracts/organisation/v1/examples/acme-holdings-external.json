@@ -1,5 +1,5 @@
 {
-  "_comment": "Illustrative external enterprise group (ADR-BCP-018 sections 36, 44, 54). No entry in the Shared legal-entity registry is required. All identifiers are opaque and Control Plane-minted (section 12): the human-readable name, 'Acme' branding and the company registration number live in names and registration_identifiers, never in ids. Holdings, Foods and Logistics are VERIFIED only through evidence review (evidence_references + verified_by + verified_at). Retail is an applicant claim that has not been reviewed (UNVERIFIED), and its claimed ownership is CONFLICTED because two sources disagree; both must fail closed for consequential decisions. Every organisation is EXTERNAL_CLIENT; the OWNS graph confers no cross-tenant access, and the shared PlatformAccount confers no authorization. Acme Foods signs in through two IAM realms (production and an EU-residency realm), so it has two ACTIVE IamOrganisationReferences, plus a RETIRED one from an earlier realm that never resolves (section 65).",
+  "_comment": "Illustrative external enterprise group (ADR-BCP-018 sections 36, 44, 54). No entry in the Shared legal-entity registry is required. All identifiers are opaque and Control Plane-minted (section 12): the human-readable name, 'Acme' branding and the company registration number live in names and registration_identifiers, never in ids. Holdings, Foods and Logistics are VERIFIED only through evidence review (evidence_references + verified_by + verified_at). Retail is an applicant claim that has not been reviewed (UNVERIFIED), and its claimed ownership is CONFLICTED because two sources disagree; both must fail closed for consequential decisions. Every organisation is EXTERNAL_CLIENT; the OWNS graph confers no cross-tenant access, and the shared PlatformAccount confers no authorization. Acme Foods signs in through two IAM realms (production and an EU-residency realm), so it has two ACTIVE IamOrganisationReferences, plus a RETIRED one from an earlier realm that never resolves (section 65). The admission examples onboard Acme Logistics after an approved decision: it declares that Acme Holdings owns it (recorded PENDING_REVIEW, never verified by admission), the reviewer verifies its legal identity and places it in the existing Acme account; a second applicant whose registration number matches Acme Foods is QUARANTINED rather than merged (sections 99-100).",
   "organisations": [
     {
       "canonical_entity_id": "ce_01k8z3m4q7hx",
@@ -360,6 +360,93 @@
       "effective_from": "2026-03-15T00:00:00Z",
       "effective_to": "2026-04-01T00:00:00Z",
       "source_authority": "control-plane-admission"
+    }
+  ],
+  "organisation_admission_requests": [
+    {
+      "admission_decision_id": "adm_01k8z3w1logi",
+      "application_id": "app_01k8z3w0logi",
+      "applicant_organisation": {
+        "legal_name": "Acme Logistics Limited",
+        "jurisdiction_of_incorporation": "KE",
+        "organisation_form": "COMPANY",
+        "registration_identifiers": [
+          {
+            "type": "COMPANY_REGISTRATION",
+            "value": "PVT-2022-777001",
+            "issuing_jurisdiction": "KE"
+          }
+        ]
+      },
+      "legal_verification": {
+        "evidence_references": [
+          "evd_01k8z3w2cert"
+        ],
+        "reason": "certificate of incorporation checked against the registry"
+      },
+      "corporate_relationship_claims": [
+        {
+          "relationship_type": "OWNS",
+          "applicant_role": "TARGET",
+          "counterparty_organisation_id": "ce_01k8z3m4q7hx",
+          "ownership_percentage": 100,
+          "evidence_references": [
+            "evd_01k8z3w3share"
+          ]
+        }
+      ],
+      "platform_account": {
+        "mode": "EXISTING_ACCOUNT",
+        "platform_account_id": "pacct_01k8z3t0acme",
+        "account_role": "SERVICE_RECIPIENT"
+      },
+      "effective_from": "2026-05-01T00:00:00Z"
+    },
+    {
+      "admission_decision_id": "adm_01k8z3w9dupe",
+      "applicant_organisation": {
+        "legal_name": "Acme Foods Kenya Ltd",
+        "jurisdiction_of_incorporation": "KE",
+        "registration_identifiers": [
+          {
+            "type": "COMPANY_REGISTRATION",
+            "value": "PVT-2021-654321",
+            "issuing_jurisdiction": "KE"
+          }
+        ]
+      },
+      "platform_account": {
+        "mode": "NONE"
+      }
+    }
+  ],
+  "organisation_admission_outcomes": [
+    {
+      "admission_decision_id": "adm_01k8z3w1logi",
+      "tenant_id": "tn_01k8z3v3logi",
+      "identity_resolution": "NEW_ORGANISATION",
+      "organisation_id": "ce_01k8z3m6t9lg",
+      "legal_entity_id": "LE-01K8Z3M6T9LG",
+      "legal_entity_verification_state": "VERIFIED",
+      "corporate_relationship_claims": [
+        {
+          "status": "RECORDED_PENDING_REVIEW",
+          "corporate_relationship_id": "crel_01k8z3w4logi"
+        }
+      ],
+      "platform_relationship_id": "prel_01k8z3w5logi",
+      "platform_account_id": "pacct_01k8z3t0acme",
+      "platform_account_membership_id": "pam_01k8z3w6logi",
+      "tenant_organisation_mapping_id": "tom_01k8z3w7logi",
+      "tenant_legal_entity_mapping_id": "tlem_01k8z3w8logi"
+    },
+    {
+      "admission_decision_id": "adm_01k8z3w9dupe",
+      "tenant_id": "tn_01k8z3x0dupe",
+      "identity_resolution": "QUARANTINED",
+      "candidate_organisation_ids": [
+        "ce_01k8z3m5r2fd"
+      ]
     }
   ]
 }

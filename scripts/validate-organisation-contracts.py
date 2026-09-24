@@ -66,6 +66,11 @@ RESPONSIBILITIES = {
         "IamOrganisationReference", "IamOrganisationEvidence", "keycloakOrganizationClaim",
         "iamProvider", "iamIssuer", "providerOrganisationId", "iamReferenceStatus",
     },
+    "admission.schema.json": {
+        "OrganisationAdmissionRequest", "OrganisationAdmissionOutcome", "admissionDecisionId",
+        "identityResolutionOutcome", "identityResolution", "applicantOrganisation", "legalVerification",
+        "corporateRelationshipClaim", "platformAccountAssignment",
+    },
     "events.schema.json": {
         "OrganisationCreated", "OrganisationVerified", "OrganisationSuspended", "LegalEntityVerified",
         "CorporateRelationshipActivated", "CorporateRelationshipEnded", "CorporateRelationshipConflicted",
@@ -112,6 +117,8 @@ EXAMPLE_KEYS = {
     "tenant_organisation_mappings": ("mapping.schema.json", "TenantOrganisationMapping"),
     "tenant_legal_entity_mappings": ("mapping.schema.json", "TenantLegalEntityMapping"),
     "iam_organisation_references": ("iam.schema.json", "IamOrganisationReference"),
+    "organisation_admission_requests": ("admission.schema.json", "OrganisationAdmissionRequest"),
+    "organisation_admission_outcomes": ("admission.schema.json", "OrganisationAdmissionOutcome"),
 }
 
 REQUIRED_CORPORATE_VOCABULARY = {"OWNS", "CONTROLS", "BRANCH_OF", "AFFILIATE_OF", "JOINT_VENTURE_WITH", "SUCCESSOR_OF"}
@@ -322,6 +329,20 @@ def check_example_semantics(label: str, doc: dict) -> None:
     for tenant, count in defaults.items():
         if count > 1:
             fail(f"{label}: tenant {tenant} has {count} active DEFAULT legal-entity mappings")
+    # ORG-09: a claim names a known counterparty; a quarantined admission
+    # names its candidates and produced nothing else (sections 99-100).
+    for req in doc.get("organisation_admission_requests", []):
+        for claim in req.get("corporate_relationship_claims", []):
+            need_org(f"{req['admission_decision_id']} claim counterparty", claim.get("counterparty_organisation_id"))
+    for out in doc.get("organisation_admission_outcomes", []):
+        produced = set(out) - {"admission_decision_id", "tenant_id", "identity_resolution", "candidate_organisation_ids"}
+        if out["identity_resolution"] == "QUARANTINED":
+            if not out.get("candidate_organisation_ids") or produced:
+                fail(f"{label}: quarantined admission {out['admission_decision_id']} must list candidates and nothing else (has {sorted(produced)})")
+        elif "organisation_id" not in out:
+            fail(f"{label}: admission {out['admission_decision_id']} resolved an identity but names no organisation")
+        for ce in out.get("candidate_organisation_ids", []):
+            need_org(f"{out['admission_decision_id']} candidate", ce)
     # Section 65: one IAM organisation within one issuer is exactly one
     # canonical Organisation; one Organisation may have several.
     live_iam: dict[tuple[str, str, str], str] = {}
@@ -463,6 +484,29 @@ if nabhold is not None and acme is not None:
     negative("alias-only organization claim", "iam.schema.json", "keycloakOrganizationClaim", ["acme-foods"])
     negative("organization claim entry without id", "iam.schema.json", "keycloakOrganizationClaim", {"acme-foods": {}})
     negative("empty organization claim", "iam.schema.json", "keycloakOrganizationClaim", {})
+
+    # Admission (ORG-09): nothing an applicant could use to self-classify or
+    # to smuggle verified facts is accepted.
+    r = first(A, "organisation_admission_requests"); r["platform_relationship_type"] = "PLATFORM_GROUP_AFFILIATE"
+    negative("admission request self-classifying its platform relationship", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["applicant_organisation"]["verification_state"] = "VERIFIED"
+    negative("applicant organisation claiming to be verified", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["corporate_relationship_claims"][0]["verification_state"] = "VERIFIED"
+    negative("corporate relationship claim asserting verification", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["applicant_organisation"]["registration_identifiers"] = []
+    negative("applicant without governed identifiers", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["identity_resolution"] = {"decision": "USE_EXISTING_ORGANISATION", "reason": "same company"}
+    negative("existing-organisation resolution without an organisation", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["corporate_relationship_claims"][0]["counterparty_identifiers"] = [{"type": "LEI", "value": "5493001KJTIIGC8Y1R12"}]
+    negative("corporate relationship claim naming two counterparties", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["platform_account"] = {"mode": "NEW_ACCOUNT"}
+    negative("new PlatformAccount without a name", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["platform_account"] = {"mode": "EXISTING_ACCOUNT"}
+    negative("existing PlatformAccount without an id", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["platform_account"]["account_role"] = "ADMIN"
+    negative("permission-like PlatformAccount role at admission", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); del r["admission_decision_id"]
+    negative("admission onboarding without a decision", "admission.schema.json", "OrganisationAdmissionRequest", r)
 
     # Positive: the claim form and the evidence derived from it.
     claim = {"acme-foods": {"id": "7f1c2a9e-3b4d-4e8f-9a1b-2c3d4e5f6a7b"}}

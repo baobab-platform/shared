@@ -21,6 +21,7 @@ Every file is a definition library. Validate a resource against its fragment URI
 | `platform.schema.json` | `PlatformRelationship`, `PlatformAccount`, `PlatformAccountMembership` |
 | `mapping.schema.json` | `TenantOrganisationMapping`, `TenantLegalEntityMapping` |
 | `iam.schema.json` | `IamOrganisationReference` (canonical Organisation ↔ IAM-native organisation), `IamOrganisationEvidence` and the `keycloakOrganizationClaim` form |
+| `admission.schema.json` | `OrganisationAdmissionRequest` and `OrganisationAdmissionOutcome`: the organisation stages of external admission (identity resolution, legal verification, corporate relationship claims, PlatformAccount assignment) |
 | `events.schema.json` | Data payloads of the ADR-BCP-018 §124 lifecycle events |
 | `asyncapi.yaml` | Registers those events and composes each with the canonical envelope (`contracts/events/v1`) |
 | `examples/` | Illustrative instances for Nabhold Group Africa and an external group; `examples/events/` holds example event envelopes |
@@ -145,3 +146,13 @@ A Keycloak Organization is an IAM projection of a canonical Organisation, never 
 - **Explicit links.** An `IamOrganisationReference` links one canonical Organisation to one provider organisation, scoped by the token `issuer` (for Keycloak, the realm issuer URL). An Organisation may have several links, for example one per realm or region (§65). One provider organisation within one issuer maps to exactly one Organisation. Links are retired, never deleted, and only an ACTIVE link inside its effective window resolves.
 - **Claims are evidence, not truth (§66).** Baobab relies on Keycloak's `organization` claim in the form that includes the organisation id (`keycloakOrganizationClaim`). Only the id is evidence; aliases are mutable display handles and are never resolved, and the alias-only list form is not resolvable. A workload passes the selected organisation to the Control Plane as `IamOrganisationEvidence` (`provider`, `issuer`, `provider_organisation_id`). The Control Plane resolves it through an active link and then validates the resulting Organisation against the tenant, exactly as for a canonical `organisation_id`. Unknown, retired or ambiguous evidence fails closed.
 - **No trust shortcuts (§67).** Claims such as `ultimate_parent` or `allow_all_subsidiaries` are not part of this contract and confer nothing.
+
+## Organisation admission (gate ORG-09)
+
+`admission.schema.json` defines what the Control Plane's admission reviewer sends to onboard the organisation behind an approved admission decision (ADR-BCP-018 §68, §108), and what comes back.
+
+- **The applicant never sends it.** The request is issued after an approved AdmissionDecision, and replaying the same `admission_decision_id` changes nothing.
+- **Identity is resolved on governed identifiers only (§99-100).** Names never match. If another Organisation carries one of the applicant's identifiers, the admission is `QUARANTINED` and nothing is written; a reviewer resolves it explicitly with `identity_resolution` (use that existing Organisation, or confirm a new one). Organisations are never merged automatically.
+- **Applicant data is evidence (§69).** Identifiers are recorded as unverified claims, and legal identity becomes VERIFIED only with the reviewer's `legal_verification` evidence. Declared corporate relationships are recorded PENDING_REVIEW with source authority `applicant-submission` and are never verified by admission.
+- **The platform relationship is server-authoritative (§70).** The request has no field for it; the Control Plane records EXTERNAL_CLIENT.
+- **A PlatformAccount is commercial only.** Joining one grants no tenant access.
