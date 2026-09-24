@@ -41,7 +41,9 @@ name: Publish Baobab Contracts OCI Bundle
 on:
   push:
     tags:
-      - "v*.*.*"
+      # Contract bundles have their own release tags. Repository-wide tags
+      # (vX.Y.Z, including Foundation CI releases) must not start this workflow.
+      - "baobab-contracts-v*.*.*"
 
 concurrency:
   group: baobab-contracts-${{ github.ref }}

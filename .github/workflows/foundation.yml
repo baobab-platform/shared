@@ -1,5 +1,4 @@
 name: Foundation Repository Gates
-
 on:
   pull_request:
   push:
@@ -7,12 +6,17 @@ on:
   schedule:
     - cron: "23 5 * * 1"
   workflow_dispatch:
-
 permissions:
   contents: read
-
+  packages: read
+  actions: read
+  security-events: write
 jobs:
   foundation:
+    # Self-consumer: full gate on PR/push; scheduled runs use security-deep so
+    # deep monitoring is explicit in the product profile (Phase 4 separation).
     uses: ./.github/workflows/foundation-repository-gates.yml
     with:
-      dockerfile: ""
+      foundation_ref: "${{ github.sha }}"
+      profile: ${{ github.event_name == 'schedule' && 'security-deep' || 'full' }}
+      dependency_review_enabled: false

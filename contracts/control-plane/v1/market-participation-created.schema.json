@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/control-plane/v1/market-participation-created.schema.json",
+  "title": "Market participation created payload",
+  "description": "A tenant's MarketAssignment (market participation) was created. Produced by baobab-platform/baobab-cp from its transactional outbox. market_id is the Control Plane's market row id (a uuid); it is not yet reconciled with market.schema.json#/$defs/marketId, which describes a slug.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "market_assignment_id",
+    "tenant_id",
+    "market_id",
+    "status",
+    "source"
+  ],
+  "properties": {
+    "market_assignment_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "$ref": "domain.schema.json#/$defs/tenantId"
+    },
+    "market_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "ACTIVE",
+        "SUSPENDED",
+        "RETIRED"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "PROVISIONING",
+        "POLICY",
+        "ADMIN",
+        "MIGRATION"
+      ]
+    }
+  }
+}
