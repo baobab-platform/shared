@@ -1,5 +1,5 @@
 {
-  "_comment": "Illustrative external enterprise group (ADR-BCP-018 sections 36, 44, 54). No entry in the Shared legal-entity registry is required. All identifiers are opaque and Control Plane-minted (section 12): the human-readable name, 'Acme' branding and the company registration number live in names and registration_identifiers, never in ids. Holdings, Foods and Logistics are VERIFIED only through evidence review (evidence_references + verified_by + verified_at). Retail is an applicant claim that has not been reviewed (UNVERIFIED), and its claimed ownership is CONFLICTED because two sources disagree; both must fail closed for consequential decisions. Every organisation is EXTERNAL_CLIENT; the OWNS graph confers no cross-tenant access, and the shared PlatformAccount confers no authorization.",
+  "_comment": "Illustrative external enterprise group (ADR-BCP-018 sections 36, 44, 54). No entry in the Shared legal-entity registry is required. All identifiers are opaque and Control Plane-minted (section 12): the human-readable name, 'Acme' branding and the company registration number live in names and registration_identifiers, never in ids. Holdings, Foods and Logistics are VERIFIED only through evidence review (evidence_references + verified_by + verified_at). Retail is an applicant claim that has not been reviewed (UNVERIFIED), and its claimed ownership is CONFLICTED because two sources disagree; both must fail closed for consequential decisions. Every organisation is EXTERNAL_CLIENT; the OWNS graph confers no cross-tenant access, and the shared PlatformAccount confers no authorization. Acme Foods signs in through two IAM realms (production and an EU-residency realm), so it has two ACTIVE IamOrganisationReferences, plus a RETIRED one from an earlier realm that never resolves (section 65).",
   "organisations": [
     {
       "canonical_entity_id": "ce_01k8z3m4q7hx",
@@ -327,6 +327,39 @@
       "status": "ACTIVE",
       "effective_from": "2026-04-01T00:00:00Z",
       "provenance": "control-plane-admission"
+    }
+  ],
+  "iam_organisation_references": [
+    {
+      "id": "iamorg_01k8z3x1food",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "provider": "keycloak",
+      "issuer": "https://id.baobab-platform.com/realms/baobab",
+      "provider_organisation_id": "7f1c2a9e-3b4d-4e8f-9a1b-2c3d4e5f6a7b",
+      "status": "ACTIVE",
+      "effective_from": "2026-04-01T00:00:00Z",
+      "source_authority": "control-plane-admission"
+    },
+    {
+      "id": "iamorg_01k8z3x2food",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "provider": "keycloak",
+      "issuer": "https://eu.id.baobab-platform.com/realms/baobab",
+      "provider_organisation_id": "0b9e8d7c-6a5f-4e3d-8c2b-1a0f9e8d7c6b",
+      "status": "ACTIVE",
+      "effective_from": "2026-06-01T00:00:00Z",
+      "source_authority": "iam-reconciliation"
+    },
+    {
+      "id": "iamorg_01k8z3x0food",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "provider": "keycloak",
+      "issuer": "https://id-legacy.baobab-platform.com/realms/acme",
+      "provider_organisation_id": "5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a",
+      "status": "RETIRED",
+      "effective_from": "2026-03-15T00:00:00Z",
+      "effective_to": "2026-04-01T00:00:00Z",
+      "source_authority": "control-plane-admission"
     }
   ]
 }
