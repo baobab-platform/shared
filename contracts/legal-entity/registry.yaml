@@ -6,18 +6,18 @@
 #
 # Purpose
 # -------
-# This is the single source of truth for legal-entity identity across every
-# Baobab-Platform system. It exists to prevent the same entity acquiring different
-# names in different repositories (e.g. "thamani", "THAMANI", "thamani-global",
-# "THG", "tenant-002" all referring to the same company).
+# First-party (Nabhold Group Africa) legal-entity governance registry.
+# Authoritative for NABHOLD, ZURIBEANS, THAMANI-GLOBAL and EQUATOR-ESTATE
+# identity spelling and approved product-consumption intent (ADR-BCP-018).
 #
-# Every downstream system MUST reference `id` from this file. No repository
-# may invent its own spelling of a legal-entity identifier.
+# This file is NOT the universal legal-entity source for external customers.
+# External legal-entity identities are Control-Plane-issued/registered at runtime;
+# Shared remains contract authority and first-party governance source only.
 #
-# Consumers of this contract
-# ---------------------------
-#   baobab-platform/baobab-cp        -> tenant.entity_id references an `id` below
-#   baobab-platform/infrastructure   -> resource ownership tags reference an `id` below
+# First-party consumers
+# ---------------------
+#   baobab-platform/baobab-cp        -> first-party tenant mappings reconcile to `id` below
+#   baobab-platform/infrastructure   -> first-party resource ownership tags reference `id` below
 #   baobab-platform/{nabhold,zuribeans,thamani,equator-estate}
 #                             -> each repo's own config declares which `id`
 #                                it represents (self-reference, exactly one)

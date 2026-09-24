@@ -55,3 +55,11 @@ contracts:
       - product.schema.json
       - subscription.schema.json
       - events.schema.json
+  - domain: organisation
+    version: v1
+    schemas:
+      - domain.schema.json
+      - relationship.schema.json
+      - platform.schema.json
+      - mapping.schema.json
+      - events.schema.json

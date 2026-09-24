@@ -15,7 +15,7 @@
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
       "minLength": 3,
       "maxLength": 128,
-      "description": "Reserved for the canonical Organisation identifier once baobab-platform/baobab-cp implements one and contracts/erp/v1/system-of-record.yaml's Organisation concept is assigned an owner. Null until then; no producer of this contract may mint a value here."
+      "description": "Optional reference to the ADR-BCP-018 canonical Organisation (CanonicalEntity id). Runtime authority is Control Plane. Null until linked; producers must not invent Organisation ids outside Control Plane admission/registration."
     },
     "applicationStatus": {
       "type": "string",

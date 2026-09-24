@@ -32,6 +32,14 @@ Changes that have been merged but have not yet been included in a released versi
   `com.baobab-platform.*` namespace across every `asyncapi.yaml`: canonical and
   unique names, resolvable payloads, valid example envelopes, and no legacy
   `com.nabhold.*` types anywhere in `contracts/`.
+- `contracts/organisation/v1` (ADR-BCP-018): Organisation, LegalEntityProfile,
+  CorporateRelationship, CorporateGroup(Membership), PlatformRelationship,
+  PlatformAccount(Membership) and explicit tenant mappings, with opaque
+  resource-ID grammars and evidence-backed `VERIFIED` rules.
+  `scripts/validate-organisation-contracts.py` is the first contract gate that
+  performs real JSON Schema Draft 2020-12 validation with cross-schema `$ref`s
+  resolved, validates the examples, and proves its rules with negative
+  fixtures. The CI `governance-contracts` job now runs it.
 - Foundation **security scopes** (M2). The security family now runs at `pr`
   scope on pull requests (gitleaks over the PR's own commits, dependency
   review applicable), `branch` scope on other events (the checked-out ref's
