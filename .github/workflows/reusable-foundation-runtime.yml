@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
         with:
           python-version: "3.13"
       - name: Validate Python metadata and syntax
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@db0fb3a98ed314b69026b6e8c9be26a7e2fe65a8
+      - uses: actions/setup-node@db0fb3a98ed314b69026b6e8c9be26a7e2fe65a8 # v7.0.0+14 (main, 2026-09-16)
         with:
           node-version: "24"
       - name: Validate Node metadata and source syntax
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@e626ada899467caf4efc6cfd0484b965da944ce8
+      - uses: actions/setup-go@e626ada899467caf4efc6cfd0484b965da944ce8 # v7.0.0+6 (main, 2026-09-18)
         with:
           go-version: stable
           cache: false
@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-java@1aa87b638dacaa70f1c903fa9ec9cbd91058e2ff
+      - uses: actions/setup-java@1aa87b638dacaa70f1c903fa9ec9cbd91058e2ff # v6.0.1+1 (main, 2026-09-10)
         with:
           distribution: temurin
           java-version: "21"
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de
+      - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # v1
         with:
           toolchain: stable
           components: rustfmt, clippy
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: hashicorp/setup-terraform@b75000b53e9ce4de2b4712237bbdb711bdc92aba
+      - uses: hashicorp/setup-terraform@b75000b53e9ce4de2b4712237bbdb711bdc92aba # v4.0.1+12 (main, 2026-09-07)
         with:
           terraform_wrapper: false
       - name: Format and validate Terraform modules

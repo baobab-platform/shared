@@ -7,6 +7,8 @@ on:
       - ".github/workflows/foundation*.yml"
       - ".github/workflows/reusable-foundation-*.yml"
       - ".github/foundation-tests/**"
+      - "scripts/test-foundation.sh"
+      - "templates/caller-foundation-repository-gates.yml"
       - "docs/governance/foundation-ci-*.md"
   push:
     branches: [main]
@@ -15,6 +17,8 @@ on:
       - ".github/workflows/foundation*.yml"
       - ".github/workflows/reusable-foundation-*.yml"
       - ".github/foundation-tests/**"
+      - "scripts/test-foundation.sh"
+      - "templates/caller-foundation-repository-gates.yml"
 
 permissions:
   contents: read
@@ -45,5 +49,10 @@ jobs:
           abort "repository schema must use JSON Schema 2020-12" unless schema["$schema"]&.include?("2020-12")
           abort "repository schema must reject unknown top-level fields" unless schema["additionalProperties"] == false
           puts "Validated #{paths.length} workflows and repository schema"
-      - name: Run Foundation policy fixtures
-        run: ruby .github/foundation-tests/test_policy.rb
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+        with:
+          python-version: "3.13"
+      - name: Install fixture test runtime
+        run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
+      - name: Run Foundation fixture suite
+        run: scripts/test-foundation.sh
