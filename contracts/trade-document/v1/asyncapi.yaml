@@ -1,0 +1,49 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab-Platform Baobab TradeDocument lifecycle events
+  version: 1.0.0
+  description: >
+    TradeDocument lifecycle events (Gate ZB-01, ADR-SHARED-008 SS5). Uses
+    the same canonical event envelope and com.baobab-platform.<context>.<...>.v<N>
+    naming convention already shipped for identity, ERP, supplier-onboarding,
+    capability and product events. No message broker exists yet anywhere in
+    this ecosystem to carry these; this contract exists so producers and
+    future consumers have a stable shape to build against once one does.
+defaultContentType: application/json
+channels:
+  tradeDocumentEvents:
+    address: baobab-platform.trade-document.events.v1
+    messages:
+      tradeDocumentIssued: { $ref: "#/components/messages/TradeDocumentIssued" }
+      tradeDocumentVerified: { $ref: "#/components/messages/TradeDocumentVerified" }
+      tradeDocumentRejected: { $ref: "#/components/messages/TradeDocumentRejected" }
+operations:
+  publishTradeDocumentEvents:
+    action: send
+    channel: { $ref: "#/channels/tradeDocumentEvents" }
+components:
+  messages:
+    TradeDocumentIssued:
+      name: com.baobab-platform.documents.trade-document.issued.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/tradeDocumentIssuedEventData }
+    TradeDocumentVerified:
+      name: com.baobab-platform.documents.trade-document.verified.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/tradeDocumentVerifiedEventData }
+    TradeDocumentRejected:
+      name: com.baobab-platform.documents.trade-document.rejected.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/tradeDocumentVerifiedEventData }

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/intercompany/v1/events.schema.json",
+  "title": "IntercompanyTransaction lifecycle event payloads",
+  "description": "Data payloads for IntercompanyTransaction lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "intercompanyTransactionInitiatedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intercompany_transaction_id", "tenant_id", "from_legal_entity_id", "to_legal_entity_id", "transaction_type", "status"],
+      "properties": {
+        "intercompany_transaction_id": { "$ref": "domain.schema.json#/$defs/intercompanyTransactionId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "from_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "to_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "transaction_type": { "$ref": "domain.schema.json#/$defs/intercompanyTransactionType" },
+        "status": { "$ref": "domain.schema.json#/$defs/intercompanyTransactionStatus" }
+      }
+    },
+    "intercompanyTransactionSettledEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intercompany_transaction_id", "tenant_id", "status"],
+      "properties": {
+        "intercompany_transaction_id": { "$ref": "domain.schema.json#/$defs/intercompanyTransactionId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/intercompanyTransactionStatus" }
+      }
+    }
+  }
+}

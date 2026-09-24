@@ -17,7 +17,7 @@ fail_contract("trade contract package is empty") if json_paths.empty?
 documents = json_paths.to_h { |path| [File.basename(path), JSON.parse(File.read(path))] }
 documents.each do |name, schema|
   fail_contract("#{name} must use JSON Schema 2020-12") unless schema["$schema"] == "https://json-schema.org/draft/2020-12/schema"
-  expected_id = "https://contracts.nabhold.com/trade/v1/#{name}"
+  expected_id = "https://contracts.baobab-platform.com/trade/v1/#{name}"
   fail_contract("#{name} has a mutable or incorrect contract URI") unless schema["$id"] == expected_id
 end
 

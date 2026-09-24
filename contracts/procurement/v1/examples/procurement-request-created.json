@@ -1,0 +1,19 @@
+{
+  "specversion": "1.0",
+  "id": "7a8b9c0d-1e2f-4a1b-8c3d-4e5f6a7b8c9d",
+  "type": "com.baobab-platform.procurement.procurement-request.created.v1",
+  "source": "urn:baobab-platform:service:baobab-cp",
+  "subject": "procurement-request:procreq_01k4zpr001",
+  "time": "2026-09-16T09:25:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/procurement/v1/events.schema.json#/$defs/procurementRequestCreatedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "8b9c0d1e-2f3a-4b1c-9d4e-5f6a7b8c9dae",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "procurement_request_id": "procreq_01k4zpr001",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "requesting_legal_entity_id": "ZURIBEANS",
+    "status": "REQUESTED"
+  }
+}

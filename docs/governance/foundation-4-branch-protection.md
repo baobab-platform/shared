@@ -1,6 +1,6 @@
 # Foundation 4 branch protection
 
-Every Nabhold repository must protect its default `main` branch with a GitHub
+Every Baobab-Platform repository must protect its default `main` branch with a GitHub
 ruleset. Repository administrators apply the setting because branch protection
 is not source-controlled.
 

@@ -1,0 +1,70 @@
+name: Reusable — Foundation Development Environment
+on:
+  workflow_call:
+    inputs:
+      foundation_ref:
+        description: Immutable shared commit containing the environment catalogue.
+        type: string
+        required: true
+      required: { type: boolean, default: false }
+permissions:
+  contents: read
+  packages: read
+jobs:
+  environment:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout caller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout canonical Foundation policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: baobab-platform/shared
+          ref: "${{ inputs.foundation_ref }}"
+          path: .foundation
+          persist-credentials: false
+      - name: Validate Baobab development environment declaration
+        if: inputs.required
+        id: contract
+        shell: ruby {0}
+        run: |
+          require "json"
+          require "yaml"
+          require "rubygems/version"
+          path = ".baobab/environment.yaml"
+          abort "#{path} is required when baobab_dev.required is true" unless File.file?(path)
+          declaration = YAML.safe_load_file(path, aliases: true)
+          accepted_names = %w[baobab-development-environment-contract baobab-platform-development-environment-contract]
+          abort "invalid environment contract name" unless accepted_names.include?(declaration.dig("schema", "name"))
+          abort "unsupported environment contract version" unless declaration.dig("schema", "version").to_s == "1.0"
+          abort "environment provider must be baobab-dev" unless declaration.dig("environment", "provider") == "baobab-dev"
+          catalogue = JSON.parse(File.read(".foundation/.baobab/environment-profiles.json"))
+          abort "unsupported environment catalogue" unless catalogue["schema_version"] == 1 && catalogue["provider"] == "baobab-dev"
+          profiles = catalogue.fetch("profiles")
+          profile = declaration.dig("environment", "profile")
+          abort "unknown baobab-dev profile #{profile.inspect}" unless profiles.key?(profile)
+          policy = profiles.fetch(profile)
+          minimum = policy.fetch("minimum_version")
+          suffix = policy.fetch("tag_suffix")
+          declared = declaration.dig("environment", "minimum_version").to_s
+          bare = suffix.empty? ? declared : declared.delete_suffix(suffix)
+          abort "invalid minimum_version #{declared.inspect}" unless Gem::Version.correct?(bare)
+          abort "profile #{profile} requires baobab-dev >= #{minimum}" unless Gem::Version.new(bare) >= Gem::Version.new(minimum)
+          expected = "#{catalogue.fetch("image_repository")}:#{bare}#{suffix}"
+          files = Dir.glob(".devcontainer/**/*").select { |candidate| File.file?(candidate) }
+          abort ".devcontainer configuration is required" if files.empty?
+          abort "devcontainer must use #{expected}" unless files.any? { |candidate| File.read(candidate).include?(expected) }
+          File.open(ENV.fetch("GITHUB_OUTPUT"), "a") { |output| output.puts "image=#{expected}" }
+      - name: Authenticate to GHCR
+        if: inputs.required
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: "${{ github.actor }}"
+          password: "${{ github.token }}"
+      - name: Verify declared baobab-dev image
+        if: inputs.required
+        env:
+          IMAGE: "${{ steps.contract.outputs.image }}"
+        shell: bash
+        run: docker manifest inspect "$IMAGE" >/dev/null

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/erp/v1/order-consequence-status.schema.json",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/order-consequence-status.schema.json",
   "title": "ERP order consequence status",
   "type": "object",
   "additionalProperties": false,

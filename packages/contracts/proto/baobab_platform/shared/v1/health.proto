@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+// ==============================================================================
+// PLACEHOLDER CONTRACT — NOT A REAL PRODUCT SCHEMA
+//
+// This file exists solely to prove the buf -> ts-proto -> @baobab-platform/contracts-ts
+// -> GHCR publish pipeline works end-to-end. It carries no business meaning.
+//
+// Trade Intelligence, Property Intelligence, and BIE proto schemas are
+// intentionally ABSENT from this package. They have not been designed yet —
+// per explicit instruction, they will be authored once product/domain
+// ownership defines them, not speculatively by this scaffolding pass.
+//
+// Governing decision record: ADR-0001 (baobab-platform/shared/docs/adr/)
+// ==============================================================================
+
+// Protobuf identifiers cannot contain hyphens; the organization namespace is
+// represented as baobab_platform in this language-level package identifier.
+package baobab_platform.shared.v1;
+
+message CheckRequest {}
+
+message CheckResponse {
+  bool ok = 1;
+}
+
+service HealthService {
+  rpc Check(CheckRequest) returns (CheckResponse);
+}

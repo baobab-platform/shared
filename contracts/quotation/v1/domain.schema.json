@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/quotation/v1/domain.schema.json",
+  "title": "Baobab-Platform Quotation domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a supplier's priced response to an RFQ, or a direct unsolicited offer. Governed under the capability/v1 namespace registry's `commercial` domain.",
+  "$defs": {
+    "quotationId": {
+      "type": "string",
+      "pattern": "^quote_[a-z0-9]+$",
+      "minLength": 8,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for a Quotation."
+    },
+    "quotationStatus": {
+      "type": "string",
+      "enum": ["DRAFT", "SUBMITTED", "ACCEPTED", "REJECTED", "EXPIRED", "WITHDRAWN"],
+      "description": "Lifecycle state of a Quotation."
+    },
+    "quotationLineItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line_item_id", "quantity", "unit_price"],
+      "properties": {
+        "line_item_id": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "rfq_line_item_id": { "type": "string", "maxLength": 64 },
+        "product_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/productId" },
+        "description": { "type": "string", "maxLength": 500 },
+        "quantity": { "type": "number", "exclusiveMinimum": 0 },
+        "unit_of_measure": { "type": "string", "maxLength": 32 },
+        "unit_price": { "type": "number", "minimum": 0 }
+      }
+    },
+    "quotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["quotation_id", "tenant_id", "buyer_organisation_id", "status", "line_items"],
+      "properties": {
+        "quotation_id": { "$ref": "#/$defs/quotationId" },
+        "rfq_id": {
+          "type": ["string", "null"],
+          "description": "The rfq/v1 rfqId this quotation responds to; null for a direct, unsolicited quotation."
+        },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "buyer_organisation_id": { "$ref": "../../buyer-organisation/v1/domain.schema.json#/$defs/buyerOrganisationId" },
+        "supplier_reference": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "The quoting counterparty's identifier. Deliberately opaque here -- contracts/supplier-onboarding/v1's canonical_organisation_id is still unassigned, so this package cannot cross-reference a canonical supplier identity."
+        },
+        "currency_code": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "status": { "$ref": "#/$defs/quotationStatus" },
+        "line_items": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/quotationLineItem" }
+        },
+        "valid_until": { "type": "string", "format": "date-time" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

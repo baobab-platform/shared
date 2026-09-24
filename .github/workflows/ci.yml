@@ -1,16 +1,16 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
-# Repository CI: nabhold/shared's own checks
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
+# Repository CI: baobab-platform/shared's own checks
 #
 # File: .github/workflows/ci.yml
 #
 # PURPOSE:
 #   Unlike every other file in .github/workflows/, this one is NOT a
 #   reusable workflow for consumers to call — it's this repository's own
-#   CI, verifying nabhold/shared's own files stay compliant with the
+#   CI, verifying baobab-platform/shared's own files stay compliant with the
 #   policies it hands out to everyone else.
 #
-#   Before this file existed, nothing actually ran on nabhold/shared's own
+#   Before this file existed, nothing actually ran on baobab-platform/shared's own
 #   commits: greetings.yml, pages-zensical.yml, enforce-action-pinning.yml,
 #   and enforce-dependabot-config.yml all declare only `on: workflow_call`,
 #   since a called workflow can't own a real repository-event trigger.
@@ -23,7 +23,7 @@
 # WHY LOCAL PATH REFERENCES BELOW
 # (./.github/workflows/enforce-action-pinning.yml,
 # ./.github/workflows/enforce-dependabot-config.yml) RATHER THAN PINNED
-# nabhold/shared/...@<sha> REFERENCES:
+# baobab-platform/shared/...@<sha> REFERENCES:
 #   Calling a reusable workflow by relative path within the SAME
 #   repository always resolves to the exact commit currently checked
 #   out — it is not a separate fetch of a possibly-different ref, so
@@ -37,13 +37,24 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/validate-event-registry.py to the governance-contracts job:
+#   every event type in every asyncapi.yaml is canonical com.baobab-platform.*
+#   and registered once platform-wide, its payload resolves, every example
+#   envelope validates, and no contract mentions a legacy com.nabhold.* type
+#   (ADR-SHARED-008). The job now sets up Python with the Foundation fixture
+#   runtime for real JSON Schema Draft 2020-12 validation.
+# * Added scripts/validate-organisation-contracts.py to the
+#   governance-contracts job, covering contracts/organisation/v1
+#   (ADR-BCP-018). It is the first contract gate that performs real JSON
+#   Schema Draft 2020-12 validation with cross-schema $refs resolved, so the
+#   job now sets up Python with the Foundation fixture runtime.
 # * Added scripts/validate-capability-contracts.rb to the governance-contracts
 #   job, covering the new contracts/capability/v1 package (ADR-BCP-002 through
 #   ADR-BCP-009, ADR-SHARED-007 Phase 1).
 # * Added a dependabot-config job dogfooding enforce-dependabot-config.yml
 #   against this repository's own .github/dependabot.yml, alongside the
 #   existing action-pinning self-check.
-# * Initial version — added after discovering nabhold/shared had no CI on
+# * Initial version — added after discovering baobab-platform/shared had no CI on
 #   itself, following a corrupted enforce-action-pinning.yml reaching
 #   main undetected.
 # ==============================================================================
@@ -67,6 +78,9 @@ on:
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
       - "scripts/validate-trade-contracts.rb"
+      - "scripts/validate-event-registry.py"
+      - "scripts/validate-organisation-contracts.py"
+      - ".github/foundation-tests/requirements.txt"
   pull_request:
     paths:
       - ".github/workflows/**"
@@ -82,6 +96,9 @@ on:
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
       - "scripts/validate-trade-contracts.rb"
+      - "scripts/validate-event-registry.py"
+      - "scripts/validate-organisation-contracts.py"
+      - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
 
 permissions:
@@ -110,6 +127,15 @@ jobs:
         run: ruby scripts/validate-capability-contracts.rb
       - name: Validate Trade B2B boundary contracts
         run: ruby scripts/validate-trade-contracts.rb
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+        with:
+          python-version: "3.13"
+      - name: Install JSON Schema runtime
+        run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
+      - name: Validate the platform event registry (ADR-SHARED-008)
+        run: python scripts/validate-event-registry.py
+      - name: Validate organisation contracts and examples (Draft 2020-12)
+        run: python scripts/validate-organisation-contracts.py
 
   action-pinning:
     name: Enforce action pinning (self-check)

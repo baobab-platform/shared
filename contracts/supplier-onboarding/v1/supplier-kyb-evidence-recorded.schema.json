@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/supplier-onboarding/v1/supplier-kyb-evidence-recorded.schema.json",
+  "title": "Supplier KYB evidence recorded",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["estate_id", "legal_entity_id", "application_id", "evidence_id", "evidence_kind", "reference", "recorded_at", "revision"],
+  "properties": {
+    "estate_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/resourceId" },
+    "legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+    "application_id": { "$ref": "./domain.schema.json#/$defs/estateResourceId" },
+    "canonical_organisation_id": { "$ref": "./domain.schema.json#/$defs/canonicalOrganisationId" },
+    "evidence_id": { "type": "string", "pattern": "^kyb_[a-z0-9]+$", "minLength": 8, "maxLength": 63 },
+    "evidence_kind": { "type": "string", "enum": ["company_registration", "tax_registration", "registered_address", "beneficial_ownership", "director_identity", "operating_licence", "other"] },
+    "reference": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "content_hash": { "type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$" },
+    "issuing_country": { "$ref": "./domain.schema.json#/$defs/country" },
+    "recorded_at": { "$ref": "./domain.schema.json#/$defs/timestamp" },
+    "revision": { "$ref": "./domain.schema.json#/$defs/version" }
+  }
+}

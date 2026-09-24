@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/assurance-requirement.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/assurance-requirement.schema.json",
   "title": "AssuranceRequirement",
   "description": "The minimum authentication assurance a risk-sensitive operation demands before it may proceed (ADR-0015 §37-39 'Step-Up Authentication', §181). A caller's AuthenticationAssurance (authentication-assurance.schema.json) satisfies this requirement when its acr is at least minimum_acr, at least one of its amr entries is in accepted_methods, and -- when set -- its authenticated_at/step_up_at is no older than max_authentication_age_seconds.",
   "type": "object",

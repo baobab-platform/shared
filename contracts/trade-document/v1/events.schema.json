@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/trade-document/v1/events.schema.json",
+  "title": "TradeDocument lifecycle event payloads",
+  "description": "Data payloads for TradeDocument lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "tradeDocumentIssuedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trade_document_id", "tenant_id", "document_type", "status"],
+      "properties": {
+        "trade_document_id": { "$ref": "domain.schema.json#/$defs/tradeDocumentId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "document_type": { "$ref": "domain.schema.json#/$defs/tradeDocumentType" },
+        "status": { "$ref": "domain.schema.json#/$defs/tradeDocumentStatus" },
+        "related_shipment_id": { "type": ["string", "null"] }
+      }
+    },
+    "tradeDocumentVerifiedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trade_document_id", "tenant_id", "status"],
+      "properties": {
+        "trade_document_id": { "$ref": "domain.schema.json#/$defs/tradeDocumentId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/tradeDocumentStatus" },
+        "rejection_reason": { "type": "string", "maxLength": 500 }
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "specversion": "1.0",
+  "id": "5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f",
+  "type": "com.baobab-platform.documents.trade-document.issued.v1",
+  "source": "urn:baobab-platform:service:baobab-trade",
+  "subject": "trade-document:tdoc_01k4ztd001",
+  "time": "2026-09-16T09:45:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/trade-document/v1/events.schema.json#/$defs/tradeDocumentIssuedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "6d7e8f9a-0b1c-4d1e-9f3a-4b5c6d7e8f9a",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "trade_document_id": "tdoc_01k4ztd001",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "document_type": "BILL_OF_LADING",
+    "status": "ISSUED",
+    "related_shipment_id": "ship_01k4zsh001"
+  }
+}

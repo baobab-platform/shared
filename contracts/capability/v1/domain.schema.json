@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/domain.schema.json",
-  "title": "Nabhold capability-centric domain identifiers and enumerations",
-  "description": "Canonical identifiers and enumerations for the capability-centric platform model (ADR-BCP-002 through ADR-BCP-009, ADR-SHARED-007). This package defines vocabulary only; nabhold/baobab-cp is the runtime authority that persists, evaluates and resolves these concepts.",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/domain.schema.json",
+  "title": "Baobab-Platform capability-centric domain identifiers and enumerations",
+  "description": "Canonical identifiers and enumerations for the capability-centric platform model (ADR-BCP-002 through ADR-BCP-009, ADR-SHARED-007). This package defines vocabulary only; baobab-platform/baobab-cp is the runtime authority that persists, evaluates and resolves these concepts.",
   "$defs": {
     "capabilityKey": {
       "type": "string",
@@ -13,7 +13,7 @@
     },
     "capabilityDomain": {
       "type": "string",
-      "enum": ["identity", "tenant", "organisation", "counterparty", "supplier", "customer", "commercial", "contract", "commerce", "catalogue", "pricing", "inventory", "procurement", "trade", "logistics", "fulfilment", "documents", "finance", "payment", "settlement", "content", "intelligence", "audit", "integration"],
+      "enum": ["identity", "tenant", "organisation", "counterparty", "supplier", "customer", "market", "internal-trade", "commercial", "contract", "commerce", "catalogue", "pricing", "inventory", "procurement", "trade", "customs", "tax", "logistics", "fulfilment", "documents", "finance", "payment", "settlement", "content", "intelligence", "audit", "integration"],
       "description": "Governed top-level namespace for a capability key's first segment. A new top-level domain requires an architecture review and an update to this enum; see namespace-registry.yaml for rationale per domain."
     },
     "capabilityId": {
@@ -116,7 +116,7 @@
     "bindingMode": {
       "type": "string",
       "enum": ["PRIMARY", "FALLBACK", "SHADOW", "MIGRATION", "DISABLED"],
-      "description": "Canonical binding mode (locked by BCP-TS-ONBOARDING-001 CR-002, confirmed in nabhold/baobab-cp Phase-0 audit against ADR-SHARED-007's own independent proposal of the same five values). PRIMARY: normal authoritative binding. FALLBACK: eligible only under approved failover conditions, never a bypass of entitlement/scope/contract/residency/isolation checks. SHADOW: non-authoritative mirrored execution, never determines the business result. MIGRATION: temporary binding participating in an explicit ProviderMigration plan. DISABLED: retained but excluded from resolution. No other value is valid; a superseded seven-value set (including SECONDARY, READ_ONLY, MIGRATION_SOURCE, MIGRATION_TARGET) existed in early nabhold/baobab-cp migrations and must not be reintroduced -- see this schema's own README.md for the rationale."
+      "description": "Canonical binding mode (locked by BCP-TS-ONBOARDING-001 CR-002, confirmed in baobab-platform/baobab-cp Phase-0 audit against ADR-SHARED-007's own independent proposal of the same five values). PRIMARY: normal authoritative binding. FALLBACK: eligible only under approved failover conditions, never a bypass of entitlement/scope/contract/residency/isolation checks. SHADOW: non-authoritative mirrored execution, never determines the business result. MIGRATION: temporary binding participating in an explicit ProviderMigration plan. DISABLED: retained but excluded from resolution. No other value is valid; a superseded seven-value set (including SECONDARY, READ_ONLY, MIGRATION_SOURCE, MIGRATION_TARGET) existed in early baobab-platform/baobab-cp migrations and must not be reintroduced -- see this schema's own README.md for the rationale."
     },
     "engineKey": {
       "type": "string",

@@ -1,214 +1,211 @@
-# ==============================================================================
-# NABHOLD GROUP AFRICA
-# Reusable — Foundation Repository Gates
-#
-# Target path: nabhold/shared/.github/workflows/foundation-repository-gates.yml
-#
-# Purpose
-# -------
-# workflow_call gate every repo's own .github/workflows/foundation.yml calls
-# (see nabhold/baobab-dev's for the calling convention). Validates a
-# repo's .nabhold/environment.yaml + .devcontainer/devcontainer.json against
-# the Development Environment Contract, checks reproducibility inputs
-# (lockfiles, SHA-pinned Actions, no floating base-image tags), and runs a
-# Trivy dependency/secret/container scan.
-#
-# 2026-09-03: repository-contract job's PROFILE_BASELINES map updated —
-# added "infra" (baobab-dev's new Terraform+AWS CLI profile) and fixed
-# "frontend-e2e" (previously missing from the profile whitelist entirely,
-# so frontend-e2e repos could never actually pass this job). See
-# nabhold/shared's contracts/development-environment/schema.yaml for the
-# profile definitions this file's PROFILE_BASELINES map mirrors.
-#
-# 2026-09-05: repository-contract job's minimum_version check fixed —
-# it compared `minimum.start_with?(baseline[:minimum])`, a literal string
-# prefix test, not a version floor. Any repo legitimately declaring a
-# `minimum_version` newer than a baseline's exact string (e.g. "1.3.0"
-# against the "full" profile's "1.2.6" floor) failed this job outright,
-# even though nothing was actually incompatible — confirmed against
-# nabhold/baobab-pulse, whose Foundation Repository Gates run has failed
-# on every push since it legitimately moved to baobab-dev 1.3.0. Now a
-# real Gem::Version `>=` comparison, so any release at or above a
-# profile's floor passes, not only ones whose string happens to start
-# with the floor's exact text.
-#
-# 2026-09-05 (later same day): the Gem::Version `>=` fix above broke every
-# `frontend`-profile repo instead. nabhold/nabhold, nabhold/zuribeans,
-# nabhold/thamani, and nabhold/shared's own declaration (this repo) all
-# follow the documented convention (see engine-template's
-# environment.yaml.example: "use the SAME version in both minimum_version
-# here and the image tag") of writing `minimum_version` WITH the profile
-# suffix baked in, e.g. "1.2.6-frontend" — not the bare "1.2.6" the old
-# PROFILE_BASELINES design assumed. Gem::Version treats the "-frontend"
-# text as a prerelease marker, so "1.2.6-frontend" sorts BELOW "1.2.6" and
-# the floor check failed for all four, identically, confirmed by
-# reproducing this job's exact failure against nabhold/shared's own
-# checkout. Fixed by normalizing `minimum_version` to its bare numeric
-# core (stripping the profile's own suffix if present) before the floor
-# comparison, and building `expected` from that bare core plus the
-# suffix — which now works whether a repo's declared `minimum_version`
-# already carries the suffix (frontend/frontend-e2e's real convention) or
-# doesn't (full/infra's real convention, e.g. nabhold/infrastructure's
-# bare "1.4.0-rc.0").
-# ==============================================================================
-
 name: Reusable — Foundation Repository Gates
-
 on:
   workflow_call:
     inputs:
-      dockerfile:
-        description: Dockerfile path; leave empty when the repository has no image.
-        required: false
+      foundation_ref:
+        description: Exact shared commit used by the caller; policy files are loaded from this ref.
         type: string
-        default: "Dockerfile"
-      build_context:
-        description: Docker build context used when dockerfile exists.
-        required: false
+        required: true
+      profile:
+        description: >
+          Product profile selecting which gate families run. full is the
+          compatibility default (all families). Prefer distinct product
+          entrypoints (foundation-product-*.yml) when only one family is needed.
+          Values: full | contract | security-pr | security-deep | container
         type: string
-        default: "."
-      dependency_review_enabled:
-        description: Enable only after the repository dependency graph is enabled.
-        required: false
+        default: full
+      dockerfile: { type: string, default: "Dockerfile" }
+      build_context: { type: string, default: "." }
+      dependency_review_enabled: { type: boolean, default: false }
+      advanced_security_enabled:
+        description: >
+          Deprecated. Declare security.sast_provider (and, for CodeQL on a private
+          repository, security.ghas) in .baobab/repository.yaml instead. When the
+          repository declares nothing, true still selects CodeQL; it never enables
+          CodeQL on a private repository without the ghas approval record.
         type: boolean
         default: false
-
+      release_require_zero_exceptions:
+        description: >
+          When true, Foundation / Result fails if any repository exceptions are active.
+          Intended for release/container pipelines; default false preserves waiver behaviour.
+        type: boolean
+        default: false
+      container_ignore_unfixed:
+        description: >
+          Opt-in for the container gate to ignore vulnerabilities that have no fixed
+          version upstream (trivy --ignore-unfixed). Findings with an available fix
+          still fail. Default false keeps the strict scan.
+        type: boolean
+        default: false
 permissions:
   contents: read
-
+  packages: read
+  actions: read
+  security-events: write
 jobs:
-  dependency-review:
-    if: github.event_name == 'pull_request' && inputs.dependency_review_enabled
-    runs-on: ubuntu-26.04
+  classify:
+    uses: ./.github/workflows/reusable-foundation-classify.yml
+    with:
+      foundation_ref: "${{ inputs.foundation_ref }}"
+      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
+  baseline:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
+    needs: classify
+    uses: ./.github/workflows/reusable-foundation-baseline.yml
+    with:
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
+  reproducibility:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
+    needs: classify
+    uses: ./.github/workflows/reusable-foundation-reproducibility.yml
+    with:
+      python: "${{ needs.classify.outputs.python == 'true' }}"
+      node: "${{ needs.classify.outputs.node == 'true' }}"
+      go: "${{ needs.classify.outputs.go == 'true' }}"
+      java: "${{ needs.classify.outputs.java == 'true' }}"
+      rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
+      package_managers: "${{ needs.classify.outputs.package_managers }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
+  runtime:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
+    needs: classify
+    uses: ./.github/workflows/reusable-foundation-runtime.yml
+    with:
+      python: "${{ needs.classify.outputs.python == 'true' }}"
+      node: "${{ needs.classify.outputs.node == 'true' }}"
+      go: "${{ needs.classify.outputs.go == 'true' }}"
+      java: "${{ needs.classify.outputs.java == 'true' }}"
+      rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
+      package_managers: "${{ needs.classify.outputs.package_managers }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
+  environment:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
+    needs: classify
+    uses: ./.github/workflows/reusable-foundation-environment.yml
+    with:
+      foundation_ref: "${{ inputs.foundation_ref }}"
+      required: "${{ needs.classify.outputs.environment_required == 'true' }}"
+  security:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'security-pr' || inputs.profile == 'security-deep' }}
+    needs: classify
+    uses: ./.github/workflows/reusable-foundation-security.yml
     permissions:
       contents: read
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
-
-  repository-contract:
+      actions: read
+      security-events: write
+    with:
+      # security-deep always runs the deep scope. Otherwise a pull_request is
+      # scanned at PR scope and anything else (push, dispatch, schedule) at
+      # branch scope, so a security-pr run outside a PR still has a history.
+      scope: "${{ inputs.profile == 'security-deep' && 'deep' || (github.event_name == 'pull_request' && 'pr' || 'branch') }}"
+      dependency_review_enabled: "${{ inputs.dependency_review_enabled }}"
+      sast_provider: "${{ needs.classify.outputs.sast_provider }}"
+      ghas_approved: "${{ needs.classify.outputs.ghas_approved == 'true' }}"
+      python: "${{ needs.classify.outputs.python == 'true' }}"
+      node: "${{ needs.classify.outputs.node == 'true' }}"
+      go: "${{ needs.classify.outputs.go == 'true' }}"
+      java: "${{ needs.classify.outputs.java == 'true' }}"
+      rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
+      package_managers: "${{ needs.classify.outputs.package_managers }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
+  container:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'container' }}
+    needs: classify
+    uses: ./.github/workflows/reusable-foundation-container.yml
+    with:
+      enabled: "${{ needs.classify.outputs.container_artifact == 'true' }}"
+      dockerfile: "${{ needs.classify.outputs.container_dockerfile }}"
+      build_context: "${{ needs.classify.outputs.container_context }}"
+      runtime: "${{ needs.classify.outputs.container_runtime == 'true' }}"
+      ignore_unfixed: "${{ inputs.container_ignore_unfixed }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
+  result:
+    name: Foundation / Result
+    if: always()
+    needs: [classify, baseline, reproducibility, runtime, environment, security, container]
     runs-on: ubuntu-26.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Validate Codespaces and environment contract
+      - name: Evaluate activated gates and publish exception evidence
+        env:
+          RESULTS: "${{ toJSON(needs) }}"
+          PROFILE: "${{ inputs.profile }}"
+          EXCEPTIONS: "${{ needs.classify.outputs.exceptions }}"
+          REQUIRE_ZERO: "${{ inputs.release_require_zero_exceptions }}"
         shell: ruby {0}
         run: |
-          require "yaml"
-          require "rubygems/version"
+          require "json"
+          require "fileutils"
 
-          declaration_path = ".nabhold/environment.yaml"
-          devcontainer_path = ".devcontainer/devcontainer.json"
-          abort "#{declaration_path} is required" unless File.file?(declaration_path)
-          abort "#{devcontainer_path} is required" unless File.file?(devcontainer_path)
+          needs = JSON.parse(ENV.fetch("RESULTS"))
+          profile = ENV.fetch("PROFILE")
+          families = {
+            "full" => %w[classify baseline reproducibility runtime environment security container],
+            "contract" => %w[classify baseline reproducibility runtime environment],
+            "security-pr" => %w[classify security],
+            "security-deep" => %w[classify security],
+            "container" => %w[classify container]
+          }
+          abort "unsupported Foundation profile: #{profile.inspect}" unless families.key?(profile)
+          active = families.fetch(profile)
 
-          declaration = YAML.safe_load_file(declaration_path, aliases: true)
-          abort "invalid environment contract name" unless declaration.dig("schema", "name") == "nabhold-development-environment-contract"
-          abort "unsupported environment contract version" unless declaration.dig("schema", "version").to_s == "1.0"
-          abort "environment provider must be baobab-dev" unless declaration.dig("environment", "provider") == "baobab-dev"
+          # Gates in the profile must succeed. Only gates outside it may be
+          # skipped; any other skip is unexplained and fails the aggregate.
+          failed = needs.reject do |name, value|
+            value.fetch("result") == (active.include?(name) ? "success" : "skipped")
+          end
+          puts "profile=#{profile}"
+          puts needs.map { |name, value| "#{name}=#{value.fetch('result')}" }.join("\n")
 
-          # Per-profile floor: the minimum baobab-dev version each profile must declare, and
-          # the image tag suffix baobab-dev publishes for it (mirrors nabhold/shared's own
-          # contracts/development-environment/schema.yaml `profiles.*.image_tag_pattern`,
-          # duplicated here because this job only checks out the *calling* repo, not
-          # nabhold/shared itself, so it cannot read that file at runtime).
-          #
-          # A repo's declared `minimum_version` may or may not already carry the profile's
-          # own suffix (e.g. "1.2.6-frontend" vs. bare "1.2.6") — both conventions are in
-          # live use across the org, so `minimum_version` is normalized to its bare numeric
-          # core below before any comparison or tag construction, regardless of which form
-          # a given repo wrote.
-          #
-          # Bumping an EXISTING profile's `minimum` here raises the floor for every repo
-          # already on that profile and will break their CI until they bump their own
-          # environment.yaml in step — do that deliberately, in its own PR, coordinated
-          # with the repos on that profile, not as a drive-by edit alongside an unrelated
-          # change. Adding a brand-new profile entry (as with "infra" below) is always
-          # safe: by definition no existing repo declares it yet.
-          PROFILE_BASELINES = {
-            "full"         => { minimum: "1.2.6",      suffix: "" },
-            "frontend"     => { minimum: "1.2.6",      suffix: "-frontend" },
-            "frontend-e2e" => { minimum: "1.2.6",      suffix: "-frontend-e2e" },
-            "infra"        => { minimum: "1.4.0-rc.0", suffix: "-infra" },
-          }.freeze
+          exceptions =
+            begin
+              JSON.parse(ENV.fetch("EXCEPTIONS", "{}") || "{}")
+            rescue JSON::ParserError
+              {}
+            end
+          exceptions = {} unless exceptions.is_a?(Hash)
+          count = exceptions.keys.length
 
-          profile = declaration.dig("environment", "profile")
-          abort "profile must be one of: #{PROFILE_BASELINES.keys.join(', ')}" unless PROFILE_BASELINES.key?(profile)
+          FileUtils.mkdir_p(".foundation-evidence")
+          evidence = {
+            "schema_version" => 1,
+            "profile" => profile,
+            "exception_count" => count,
+            "exceptions" => exceptions,
+            "gate_results" => needs.transform_values { |v| v.fetch("result") }
+          }
+          File.write(".foundation-evidence/foundation-exceptions.json", JSON.pretty_generate(evidence))
 
-          baseline = PROFILE_BASELINES.fetch(profile)
-          declared = declaration.dig("environment", "minimum_version").to_s
-          bare = baseline[:suffix].empty? ? declared : declared.delete_suffix(baseline[:suffix])
-          abort "profile '#{profile}' declares an unparseable minimum_version: #{declared.inspect}" unless Gem::Version.correct?(bare)
-          abort "profile '#{profile}' requires baobab-dev >= v#{baseline[:minimum]}, got v#{declared}" unless Gem::Version.new(bare) >= Gem::Version.new(baseline[:minimum])
+          summary = []
+          summary << "## Foundation / Result"
+          summary << ""
+          summary << "Profile: **#{profile}**"
+          summary << "Active exceptions: **#{count}**"
+          if count.positive?
+            summary << ""
+            summary << "| Control | Approver | Expires |"
+            summary << "|---|---|---|"
+            exceptions.each do |control, body|
+              next unless body.is_a?(Hash)
+              summary << "| #{control} | #{body['approved_by']} | #{body['expires']} |"
+            end
+          end
+          File.write(ENV.fetch("GITHUB_STEP_SUMMARY"), summary.join("\n") + "\n")
 
-          expected = "ghcr.io/nabhold/baobab-dev:#{bare}#{baseline[:suffix]}"
-          devcontainer = Dir.glob(".devcontainer/**/*").select { |path| File.file?(path) }.map { |path| File.read(path) }.join("\n")
-          abort "devcontainer must use #{expected}" unless devcontainer.include?(expected)
-
-          policy = declaration.fetch("compatibility_policy")
-          %w[strict_runtime_versions allow_newer_patch_versions allow_newer_minor_versions allow_older_versions].each do |field|
-            abort "compatibility_policy.#{field} must be boolean" unless [true, false].include?(policy[field])
+          if ENV.fetch("REQUIRE_ZERO") == "true" && count.positive?
+            abort "release_require_zero_exceptions is set but #{count} exception(s) remain active: #{exceptions.keys.join(', ')}"
           end
 
-          capabilities = declaration.dig("validation", "required_capabilities")
-          abort "required_capabilities must not be empty" unless capabilities.is_a?(Array) && !capabilities.empty?
+          abort "required Foundation gates failed: #{failed.keys.join(', ')}" unless failed.empty?
 
-      - name: Enforce reproducibility inputs
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ -f package.json ]]; then
-            [[ -f pnpm-lock.yaml || -f package-lock.json || -f yarn.lock ]] || {
-              echo "::error::Node repositories require a committed lockfile"; exit 1;
-            }
-          fi
-          if [[ -f go.mod ]]; then
-            [[ -f go.sum ]] || { echo "::error::Go repositories require go.sum"; exit 1; }
-          fi
-          if [[ -f Dockerfile ]] && grep -Eq '^FROM[[:space:]]+[^[:space:]]+:(latest|edge)([[:space:]]|$)' Dockerfile; then
-            echo "::error::Dockerfile base images must use explicit release versions"; exit 1
-          fi
-          violations=0
-          while IFS= read -r line; do
-            reference=$(sed -E 's/.*uses:[[:space:]]*//' <<< "$line" | awk '{print $1}')
-            [[ "$reference" == ./* || "$reference" =~ @[0-9a-f]{40}$ ]] || {
-              echo "::error::Action is not pinned to a full commit SHA: $reference"; violations=$((violations + 1));
-            }
-          done < <(find .github -type f \( -name '*.yml' -o -name '*.yaml' \) -exec grep -hE '^[[:space:]]*(-[[:space:]]*)?uses:[[:space:]]*' {} + 2>/dev/null || true)
-          (( violations == 0 ))
-
-  vulnerability-scan:
-    runs-on: ubuntu-26.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Install checksum-verified Trivy
-        env:
-          TRIVY_VERSION: "0.73.0"
-          TRIVY_SHA256: "2edd39da482bb4e9831962487b68f68e3928ec3137794757f54d00383d79547b"
-        run: |
-          set -euo pipefail
-          asset="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
-          curl -fsSL -o "$asset" "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/${asset}"
-          echo "${TRIVY_SHA256}  ${asset}" | sha256sum -c -
-          tar -xzf "$asset" trivy
-          sudo install -m 0755 trivy /usr/local/bin/trivy
-      - name: Scan repository dependencies and secrets
-        run: trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
-      - name: Detect container build
-        id: container
-        env:
-          DOCKERFILE: ${{ inputs.dockerfile }}
-        run: |
-          if [[ -n "$DOCKERFILE" && -f "$DOCKERFILE" ]]; then
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Build container for scanning
-        if: steps.container.outputs.enabled == 'true'
-        env:
-          DOCKERFILE: ${{ inputs.dockerfile }}
-          BUILD_CONTEXT: ${{ inputs.build_context }}
-        run: docker build --file "$DOCKERFILE" --tag foundation-scan:${{ github.sha }} "$BUILD_CONTEXT"
-      - name: Scan built container
-        if: steps.container.outputs.enabled == 'true'
-        run: trivy image --scanners vuln,secret --severity HIGH,CRITICAL --exit-code 1 --skip-version-check foundation-scan:${{ github.sha }}
+      - name: Upload foundation-exceptions.json
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: foundation-exceptions
+          path: .foundation-evidence/foundation-exceptions.json
+          retention-days: 90
+          if-no-files-found: ignore

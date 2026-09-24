@@ -1,0 +1,19 @@
+{
+  "specversion": "1.0",
+  "id": "1a2b3c4d-5e6f-4a1b-8c2d-3e4f5a6b7c8d",
+  "type": "com.baobab-platform.customer.buyer-organisation.registered.v1",
+  "source": "urn:baobab-platform:service:baobab-cp",
+  "subject": "buyer-organisation:buyerorg_01k4zbr001",
+  "time": "2026-09-16T09:10:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/buyer-organisation/v1/events.schema.json#/$defs/buyerOrganisationRegisteredEventData",
+  "baobabscope": "tenant",
+  "correlationid": "2b3c4d5e-6f7a-4b1c-9d2e-4f5a6b7c8d9e",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "buyer_organisation_id": "buyerorg_01k4zbr001",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "name": "ZuriBeans Import Buyer Co.",
+    "status": "PENDING"
+  }
+}

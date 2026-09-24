@@ -1,5 +1,5 @@
 # ==============================================================================
-# NABHOLD Shared Engineering Infrastructure
+# BAOBAB-PLATFORM Shared Engineering Infrastructure
 # Reusable Workflow: Create GitHub Release from Tag
 #
 # File: .github/workflows/release.yml
@@ -130,7 +130,7 @@ jobs:
 
     # contents: write is a CEILING set by the calling job's own
     # `permissions:`, not an automatic grant — the calling repository's job
-    # that does `uses: nabhold/shared/...@v1` must itself declare at least
+    # that does `uses: baobab-platform/shared/...@v1` must itself declare at least
     # this much, or GITHUB_TOKEN here will be silently downgraded and
     # release creation will fail with a 403.
     permissions:
@@ -210,7 +210,7 @@ jobs:
       # generate_release_notes alone.
       - name: Create GitHub Release (draft)
         id: create
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           draft: true
           prerelease: ${{ steps.version.outputs.prerelease }}

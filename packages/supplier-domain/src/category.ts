@@ -1,6 +1,6 @@
 /**
  * Extensible supplier product-category registry shape. Generalized from
- * nabhold/zuribeans' `SUPPLIER_CAPABILITY_CATEGORIES` (ADR-0006): a
+ * baobab-platform/zuribeans' `SUPPLIER_CAPABILITY_CATEGORIES` (ADR-0006): a
  * category is a registry entry, never a dedicated column
  * (`coffee_*`/`vanilla_*`) on the capability schema. The actual category
  * list is a business decision each estate owns for its own supplier base

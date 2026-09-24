@@ -22,7 +22,7 @@ authorization:
 transport:
   workload_to_control_plane:
     mtls_required: true
-    termination_owner: "nabhold/infrastructure"
+    termination_owner: "baobab-platform/infrastructure"
     application_token_required: true
     caller_identity_headers_authoritative: false
 audit:

@@ -1,96 +1,313 @@
 # ==============================================================================
-# NABHOLD GROUP AFRICA — nabhold/shared
-# Publish workspace packages (@nabhold/contracts-ts, and future @nabhold/*
-# packages) to GitHub Packages (GHCR npm registry) via Changesets.
+# BAOBAB-PLATFORM GROUP AFRICA — baobab-platform/shared
 #
-# Target path: .github/workflows/publish-shared.yml
+# Publish versioned @baobab-platform/* packages to GitHub Packages.
 #
-# Conventions honoured here (matching nabhold/baobab-dev's established CI
-# hardening, not the weaker defaults from the original draft this workflow
-# was adapted from):
+# Release model:
 #
-#   - Runners pinned to `ubuntu-26.04`, never floating `ubuntu-latest`.
-#   - Every third-party action pinned to a full 40-character commit SHA,
-#     resolved via `git ls-remote --tags`, with the version kept as a
-#     trailing comment for humans. Annotated tags are peeled (`^{}`) to
-#     their underlying commit before pinning — a floating major-version tag
-#     (`@v4`) is not an acceptable substitute for a SHA pin.
+#   Feature PR
+#      │
+#      ├── code change
+#      └── .changeset/*.md
+#             │
+#             ▼
+#          tag release
+#             │
+#             ▼
+#      Changesets Action
+#             │
+#             ├── pending changesets
+#             │       │
+#             │       ▼
+#             │   Version Packages PR
+#             │
+#             └── no pending changesets
+#                     │
+#                     ▼
+#                  build
+#                     │
+#                     ▼
+#             changeset publish
+#                     │
+#                     ▼
+#          npm.pkg.github.com/@baobab-platform/*
 #
-# To re-resolve a pin when bumping an action's version:
-#   git ls-remote --tags https://github.com/<owner>/<repo>.git
-#   (peeled `^{}` entries are the real commit for annotated tags; unpeeled
-#   entries are the commit directly for lightweight tags)
+# Current publishable packages include:
+#   - @baobab-platform/contracts-ts
+#   - @baobab-platform/supplier-domain
 #
-# This workflow only runs when package-relevant paths change — it must NOT
-# fire on every governance-contract YAML edit under contracts/legal-entity,
-# contracts/tenancy, etc., which have nothing to do with npm publishing.
+# Future non-private @baobab-platform/* workspace packages are automatically handled
+# by Changesets once they contain valid package.json metadata.
+#
+# IMPORTANT:
+#   GitHub Container Registry (ghcr.io) is NOT the npm registry.
+#   npm packages publish to:
+#
+#       https://npm.pkg.github.com
+#
 # ==============================================================================
-
-name: Publish Shared Packages to GHCR
+name: Publish Shared Packages
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*.*.*"
     paths:
       - "packages/**"
-      - "package.json"
-      - "pnpm-workspace.yaml"
-      - "turbo.json"
       - ".changeset/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "changeset-config.json"
+      - "npmrc"
+      - "turbo.json"
+      - ".github/workflows/publish-shared.yml"
 
+  # Allows an authorised maintainer to re-run the release process manually.
+  workflow_dispatch:
+
+# Never allow two releases of shared contracts/packages to run concurrently.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false   # never cancel an in-flight publish
+  group: shared-packages-release-${{ github.ref }}
+  cancel-in-progress: false
 
+# Deny everything by default.
 permissions:
-  contents: write        # changesets/action needs to open the "Version Packages" PR
-  packages: write        # publishing to GHCR
-  pull-requests: write   # changesets/action needs to open/update that PR
+  contents: read
 
 jobs:
-  release:
-    name: Build and publish (or open Version Packages PR)
+  # ============================================================================
+  # Gate 1 — Verify
+  #
+  # Performs all validation with read-only permissions before the publishing
+  # job is granted any write capabilities.
+  # ============================================================================
+  verify:
+    name: Verify publishable packages
     runs-on: ubuntu-26.04
 
+    permissions:
+      contents: read
+      packages: read
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0   # changesets needs full history to compute changelogs
+          fetch-depth: 0
 
+      - name: Verify release commit belongs to main
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin main
+
+          if ! git merge-base --is-ancestor \
+            "${GITHUB_SHA}" \
+            "origin/main"; then
+
+            echo "::error::Release tag must reference a commit contained in main."
+            exit 1
+          fi
       - name: Setup pnpm
-        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-        # No `version:` input — pnpm version is sourced from this repo's
-        # root package.json "packageManager" field (pnpm@11.24.0), so there
-        # is exactly one place that version is declared, not two.
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        # Version comes from:
+        #
+        #   package.json
+        #   "packageManager": "pnpm@11.24.0"
+        #
+        # Do not duplicate the pnpm version here.
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"   # matches baobab-dev's pinned Node major version
+          node-version: "24"
           cache: "pnpm"
           registry-url: "https://npm.pkg.github.com"
-          scope: "@nabhold"
+          scope: "@baobab-platform"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build all packages
+      - name: Lint workspace
+        run: pnpm lint
+
+      - name: Run package tests
+        run: pnpm -r --if-present run test
+
+      - name: Build workspace
         run: pnpm build
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Release Pull Request or publish to GHCR
-        id: changesets
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+      - name: Show publishable workspace packages
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Publishable @baobab-platform packages:"
+          echo
+
+          node <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+
+          const root = path.join(process.cwd(), "packages");
+
+          if (!fs.existsSync(root)) {
+            throw new Error("packages/ directory does not exist");
+          }
+
+          const packages = [];
+
+          for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+            if (!entry.isDirectory()) continue;
+
+            const manifest = path.join(root, entry.name, "package.json");
+            if (!fs.existsSync(manifest)) continue;
+
+            const pkg = JSON.parse(fs.readFileSync(manifest, "utf8"));
+
+            if (pkg.private === true) continue;
+
+            if (!pkg.name) {
+              throw new Error(
+                `Publishable package ${entry.name} has no package name`
+              );
+            }
+
+            if (!pkg.version) {
+              throw new Error(
+                `Publishable package ${pkg.name} has no version`
+              );
+            }
+
+            if (!pkg.name.startsWith("@baobab-platform/")) {
+              throw new Error(
+                `Unexpected package scope: ${pkg.name}. ` +
+                `Published shared packages must use @baobab-platform/*.`
+              );
+            }
+
+            packages.push({
+              name: pkg.name,
+              version: pkg.version,
+              directory: entry.name,
+            });
+          }
+
+          if (packages.length === 0) {
+            throw new Error("No publishable workspace packages found");
+          }
+
+          for (const pkg of packages) {
+            console.log(
+              `- ${pkg.name}@${pkg.version} (${pkg.directory})`
+            );
+          }
+          NODE
+
+  # ============================================================================
+  # Gate 2 — Version or Publish
+  #
+  # Changesets controls the two-phase release lifecycle:
+  #
+  # 1. If .changeset files remain:
+  #       create/update the "Version Packages" PR.
+  #
+  # 2. After the Version Packages PR is merged:
+  #       package.json versions have been updated and changesets consumed.
+  #       The next main-branch run publishes those versions.
+  #
+  # ============================================================================
+  release:
+    name: Version or publish packages
+    needs:
+      - verify
+
+    runs-on: ubuntu-26.04
+
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # If unreleased changesets exist on main, this opens/updates a
-          # "Version Packages" PR instead of publishing directly — publishing
-          # only happens when that PR is merged (see workflow header note).
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@baobab-platform"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Version Packages PR or publish packages
+        id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          # Root package.json:
+          #
+          # "release": "turbo run build && changeset publish"
+          #
+          # Therefore publishing always rebuilds packages in the same runner
+          # before they are sent to GitHub Packages.
           publish: pnpm release
+
+          # Keep release commits/PRs predictable.
+          title: "chore(release): version shared packages"
+          commit: "chore(release): version shared packages"
+
+          # This repository already has GitHub-release infrastructure.
+          # Changesets should nevertheless create package releases/tags when
+          # publishing package versions.
+          createGithubReleases: true
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release summary
+        if: always()
+        shell: bash
+        env:
+          PUBLISHED: ${{ steps.changesets.outputs.published }}
+          PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+          HAS_CHANGESETS: ${{ steps.changesets.outputs.hasChangesets }}
+          PR_NUMBER: ${{ steps.changesets.outputs.pullRequestNumber }}
+        run: |
+          {
+            echo "## Baobab-Platform Shared Package Release"
+            echo
+            echo "| Property | Value |"
+            echo "|---|---|"
+            echo "| Published | \`${PUBLISHED:-false}\` |"
+            echo "| Pending changesets | \`${HAS_CHANGESETS:-unknown}\` |"
+            echo "| Version PR | \`${PR_NUMBER:-none}\` |"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "${PUBLISHED:-false}" == "true" ]]; then
+            {
+              echo "### Published packages"
+              echo
+              echo '```json'
+              echo "${PACKAGES:-[]}"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

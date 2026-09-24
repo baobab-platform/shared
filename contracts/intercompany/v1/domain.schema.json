@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/intercompany/v1/domain.schema.json",
+  "title": "Baobab-Platform IntercompanyTransaction domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a movement between legal entities of the same tenant -- transfer pricing, mirrored documents, stock transfer or elimination (ADR-BCP-012's internal-trade model). Governed under the capability/v1 namespace registry's `internal-trade` domain.",
+  "$defs": {
+    "intercompanyTransactionId": {
+      "type": "string",
+      "pattern": "^ictxn_[a-z0-9]+$",
+      "minLength": 9,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for an IntercompanyTransaction."
+    },
+    "intercompanyTransactionType": {
+      "type": "string",
+      "enum": ["TRANSFER_PRICING", "MIRRORED_DOCUMENT", "STOCK_TRANSFER", "ELIMINATION"],
+      "description": "Nature of the intercompany movement, per ADR-BCP-012."
+    },
+    "intercompanyTransactionStatus": {
+      "type": "string",
+      "enum": ["INITIATED", "MIRRORED", "SETTLED", "ELIMINATED", "CANCELLED"],
+      "description": "Lifecycle state of an IntercompanyTransaction."
+    },
+    "intercompanyTransaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intercompany_transaction_id", "tenant_id", "from_legal_entity_id", "to_legal_entity_id", "transaction_type", "status"],
+      "properties": {
+        "intercompany_transaction_id": { "$ref": "#/$defs/intercompanyTransactionId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "from_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "to_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "transaction_type": { "$ref": "#/$defs/intercompanyTransactionType" },
+        "status": { "$ref": "#/$defs/intercompanyTransactionStatus" },
+        "reference_document_id": {
+          "type": ["string", "null"],
+          "description": "Opaque reference to a related trade-document/v1 tradeDocumentId or shipment/v1 shipmentId, if any."
+        },
+        "amount": { "type": ["number", "null"] },
+        "currency_code": { "type": ["string", "null"], "pattern": "^[A-Z]{3}$" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

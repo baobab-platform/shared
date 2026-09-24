@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity-events/v1/identity-reactivated.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity-events/v1/identity-reactivated.schema.json",
   "title": "IdentityReactivatedEvent",
   "description": "Emitted when a suspended canonical identity is reactivated (ADR-0016 §8 'Suspension SHOULD be reversible'). Reactivation SHALL be explicit (ADR-0016 §128): this event is that explicit record, and its previous_status of SUSPENDED-only means a disabled or archived identity cannot silently reactivate through this event -- ADR-0016 §132 treats archived-identity reactivation as exceptional and out of this event's scope. This is the event envelope's `data` payload — see asyncapi.yaml for how it composes with contracts/events/v1/envelope.schema.json.",
   "type": "object",

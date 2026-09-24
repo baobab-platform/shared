@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/supplier-onboarding/v1/supplier-application-decided.schema.json",
+  "$id": "https://contracts.baobab-platform.com/supplier-onboarding/v1/supplier-application-decided.schema.json",
   "title": "Supplier application decided",
   "description": "Emitted when a reviewer resolves a supplier application: approved, rejected, or sent back for more information or a sample. Decision detail visible to the applicant only; internal reviewer notes are never carried on this contract.",
   "type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/principal.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/principal.schema.json",
   "title": "Principal",
   "description": "The canonical identity of an actor (human, workload, or external entity) within the Baobab platform.",
   "type": "object",

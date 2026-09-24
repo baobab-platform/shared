@@ -1,0 +1,20 @@
+{
+  "specversion": "1.0",
+  "id": "5e6f7a8b-9c0d-4e1f-af2a-6b7c8d9eafb1",
+  "type": "com.baobab-platform.commercial.quotation.submitted.v1",
+  "source": "urn:baobab-platform:service:baobab-cp",
+  "subject": "quotation:quote_01k4zqt001",
+  "time": "2026-09-16T09:20:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/quotation/v1/events.schema.json#/$defs/quotationSubmittedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "6f7a8b9c-0d1e-4f2a-af3a-7c8d9eafb1c2",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "quotation_id": "quote_01k4zqt001",
+    "rfq_id": "rfq_01k4zrf001",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "status": "SUBMITTED",
+    "valid_until": "2026-10-15T23:59:59Z"
+  }
+}

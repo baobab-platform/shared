@@ -1,0 +1,236 @@
+name: Reusable — Foundation Classification
+
+on:
+  workflow_call:
+    inputs:
+      foundation_ref:
+        description: Immutable shared commit containing the canonical policy files.
+        type: string
+        required: true
+      advanced_security_enabled:
+        description: Deprecated caller override; security.sast_provider in the repository contract is authoritative.
+        type: boolean
+        default: false
+    outputs:
+      python: { value: "${{ jobs.classify.outputs.python }}" }
+      node: { value: "${{ jobs.classify.outputs.node }}" }
+      go: { value: "${{ jobs.classify.outputs.go }}" }
+      java: { value: "${{ jobs.classify.outputs.java }}" }
+      rust: { value: "${{ jobs.classify.outputs.rust }}" }
+      infrastructure: { value: "${{ jobs.classify.outputs.infrastructure }}" }
+      container: { value: "${{ jobs.classify.outputs.container }}" }
+      container_artifact: { value: "${{ jobs.classify.outputs.container_artifact }}" }
+      container_dockerfile: { value: "${{ jobs.classify.outputs.container_dockerfile }}" }
+      container_context: { value: "${{ jobs.classify.outputs.container_context }}" }
+      container_runtime: { value: "${{ jobs.classify.outputs.container_runtime }}" }
+      environment_required: { value: "${{ jobs.classify.outputs.environment_required }}" }
+      environment_profile: { value: "${{ jobs.classify.outputs.environment_profile }}" }
+      package_managers: { value: "${{ jobs.classify.outputs.package_managers }}" }
+      exceptions: { value: "${{ jobs.classify.outputs.exceptions }}" }
+      sast_provider: { value: "${{ jobs.classify.outputs.sast_provider }}" }
+      ghas_approved: { value: "${{ jobs.classify.outputs.ghas_approved }}" }
+
+permissions:
+  contents: read
+
+jobs:
+  classify:
+    runs-on: ubuntu-26.04
+    outputs:
+      python: "${{ steps.resolve.outputs.python }}"
+      node: "${{ steps.resolve.outputs.node }}"
+      go: "${{ steps.resolve.outputs.go }}"
+      java: "${{ steps.resolve.outputs.java }}"
+      rust: "${{ steps.resolve.outputs.rust }}"
+      infrastructure: "${{ steps.resolve.outputs.infrastructure }}"
+      container: "${{ steps.resolve.outputs.container }}"
+      container_artifact: "${{ steps.resolve.outputs.container_artifact }}"
+      container_dockerfile: "${{ steps.resolve.outputs.container_dockerfile }}"
+      container_context: "${{ steps.resolve.outputs.container_context }}"
+      container_runtime: "${{ steps.resolve.outputs.container_runtime }}"
+      environment_required: "${{ steps.resolve.outputs.environment_required }}"
+      environment_profile: "${{ steps.resolve.outputs.environment_profile }}"
+      package_managers: "${{ steps.resolve.outputs.package_managers }}"
+      exceptions: "${{ steps.resolve.outputs.exceptions }}"
+      sast_provider: "${{ steps.resolve.outputs.sast_provider }}"
+      ghas_approved: "${{ steps.resolve.outputs.ghas_approved }}"
+    steps:
+      - name: Checkout caller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout canonical Foundation policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: baobab-platform/shared
+          ref: "${{ inputs.foundation_ref }}"
+          path: .foundation
+          persist-credentials: false
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+        if: hashFiles('.baobab/repository.yaml') != ''
+        with:
+          python-version: "3.13"
+      - name: Validate repository declaration against JSON Schema
+        if: hashFiles('.baobab/repository.yaml') != ''
+        run: |
+          python -m pip install --disable-pip-version-check "check-jsonschema==0.38.0"
+          check-jsonschema --schemafile .foundation/.baobab/repository.schema.json .baobab/repository.yaml
+      - id: resolve
+        name: Validate contract and resolve capabilities
+        env:
+          VISIBILITY: "${{ github.event.repository.visibility }}"
+          ADVANCED_SECURITY_ENABLED: "${{ inputs.advanced_security_enabled }}"
+        shell: ruby {0}
+        run: |
+          require "date"
+          require "json"
+          require "yaml"
+
+          def assert_keys!(object, allowed, path)
+            abort "#{path} must be an object" unless object.is_a?(Hash)
+            unknown = object.keys - allowed
+            abort "#{path} contains unknown fields: #{unknown.join(', ')}" unless unknown.empty?
+          end
+
+          contract_path = ".baobab/repository.yaml"
+          declared = []
+          environment_required = false
+          environment_profile = ""
+          managers = {}
+          exceptions = {}
+          container_artifact = false
+          container_dockerfile = ""
+          container_context = "."
+          container_runtime = true
+          security = nil
+
+          if File.file?(contract_path)
+            contract = YAML.safe_load_file(contract_path, permitted_classes: [Date], aliases: false)
+            assert_keys!(contract, %w[schema_version repository capabilities environment package_managers artifacts security exceptions], "contract")
+            abort "schema_version must be 1" unless contract["schema_version"] == 1
+
+            repository = contract["repository"]
+            assert_keys!(repository, %w[lifecycle], "repository")
+            lifecycle = repository["lifecycle"]
+            abort "unsupported repository lifecycle" unless %w[experimental active maintenance deprecated archived].include?(lifecycle)
+
+            declared = contract["capabilities"]
+            abort "capabilities must be a unique string array" unless declared.is_a?(Array) && declared.all? { |item| item.is_a?(String) } && declared == declared.uniq
+            known = %w[python node go java rust container infrastructure documentation contracts github-actions digital-estate engine library development-environment]
+            unknown = declared - known
+            abort "unknown capabilities: #{unknown.join(', ')}" unless unknown.empty?
+
+            environment = contract["environment"]
+            assert_keys!(environment, %w[baobab_dev], "environment")
+            baobab_dev = environment["baobab_dev"]
+            assert_keys!(baobab_dev, %w[required profile], "environment.baobab_dev")
+            environment_required = baobab_dev["required"]
+            abort "environment.baobab_dev.required must be boolean" unless [true, false].include?(environment_required)
+            environment_profile = baobab_dev["profile"].to_s
+            profiles = %w[full frontend frontend-e2e infra]
+            abort "environment.baobab_dev.profile is required when enabled" if environment_required && environment_profile.empty?
+            abort "unsupported environment profile" unless environment_profile.empty? || profiles.include?(environment_profile)
+
+            managers = contract["package_managers"] || {}
+            assert_keys!(managers, %w[node python java rust], "package_managers")
+            allowed_managers = {
+              "node" => %w[pnpm npm yarn],
+              "python" => %w[uv pip poetry],
+              "java" => %w[maven gradle],
+              "rust" => %w[cargo]
+            }
+            managers.each do |runtime, manager|
+              abort "unsupported #{runtime} package manager #{manager.inspect}" unless allowed_managers.fetch(runtime).include?(manager)
+              abort "package_managers.#{runtime} requires the #{runtime} capability" unless declared.include?(runtime)
+            end
+
+            artifacts = contract["artifacts"]
+            assert_keys!(artifacts, %w[container], "artifacts")
+            container = artifacts["container"]
+            if [true, false].include?(container)
+              container_artifact = container
+              container_dockerfile = "Dockerfile" if container
+            elsif container.is_a?(Hash)
+              assert_keys!(container, %w[enabled dockerfile context runtime], "artifacts.container")
+              abort "artifacts.container.enabled must be true for an object declaration" unless container["enabled"] == true
+              container_dockerfile = container["dockerfile"].to_s
+              container_context = container["context"].to_s
+              abort "container dockerfile and context are required" if container_dockerfile.empty? || container_context.empty?
+              container_runtime = container["runtime"]
+              abort "artifacts.container.runtime must be boolean" unless [true, false].include?(container_runtime)
+              container_artifact = true
+            else
+              abort "artifacts.container must be boolean or an artifact object"
+            end
+            abort "container artifact requires container capability" if container_artifact && !declared.include?("container")
+
+            security = contract["security"]
+            assert_keys!(security, %w[sast_provider ghas], "security") unless security.nil?
+
+            exceptions = contract["exceptions"] || {}
+            assert_keys!(exceptions, %w[baseline reproducibility runtime environment dependency-review sast dependency-audit secret-scan container-policy container-scan sbom], "exceptions")
+            exceptions.each do |control, exception|
+              assert_keys!(exception, %w[reason expires approved_by], "exceptions.#{control}")
+              abort "exception #{control} reason must be at least 12 characters" unless exception["reason"].to_s.length >= 12
+              approver = exception["approved_by"].to_s
+              abort "exception #{control} requires an @handle approver" unless approver.match?(/\A@[A-Za-z0-9-]+\z/)
+              expiry = exception["expires"].is_a?(Date) ? exception["expires"] : Date.iso8601(exception["expires"].to_s)
+              abort "exception #{control} expired on #{expiry}" if expiry < Date.today
+              exception["expires"] = expiry.iso8601
+            rescue Date::Error
+              abort "exception #{control} has invalid expiry"
+            end
+
+            if environment_required && File.file?(".baobab/environment.yaml")
+              environment_contract = YAML.safe_load_file(".baobab/environment.yaml", aliases: true)
+              actual_profile = environment_contract.dig("environment", "profile").to_s
+              abort "repository and environment profiles disagree (#{environment_profile} != #{actual_profile})" unless actual_profile == environment_profile
+            end
+          else
+            abort ".baobab/repository.yaml is required"
+          end
+
+          load ".foundation/scripts/foundation/sast_policy.rb"
+          sast = FoundationSast.resolve(
+            visibility: ENV.fetch("VISIBILITY", ""),
+            declaration: security,
+            legacy_advanced_security: ENV.fetch("ADVANCED_SECURITY_ENABLED", "false") == "true",
+            sast_exception: exceptions.key?("sast")
+          )
+          abort sast.error if sast.error
+          sast.warnings.each { |message| warn "::warning::#{message}" }
+          puts "::notice::SAST provider: #{sast.provider} (visibility=#{ENV.fetch('VISIBILITY', '')}, ghas_approved=#{sast.ghas_approved})"
+
+          evidence = {
+            "python" => !Dir.glob("{,**/}pyproject.toml").empty?,
+            "node" => !Dir.glob("{,**/}package.json").empty?,
+            "go" => !Dir.glob("{,**/}go.mod").empty?,
+            "java" => !Dir.glob("{,**/}{pom.xml,build.gradle,build.gradle.kts}").empty?,
+            "rust" => !Dir.glob("{,**/}Cargo.toml").empty?,
+            "container" => !Dir.glob("{,**/}{Dockerfile,Containerfile}").empty?,
+            "infrastructure" => !Dir.glob("{,**/}*.tf").empty?
+          }
+          effective = evidence.transform_values { |value| value }
+          declared.each { |capability| effective[capability] = true if effective.key?(capability) }
+
+          outputs = {
+            "python" => effective.fetch("python", false),
+            "node" => effective.fetch("node", false),
+            "go" => effective.fetch("go", false),
+            "java" => effective.fetch("java", false),
+            "rust" => effective.fetch("rust", false),
+            "infrastructure" => effective.fetch("infrastructure", false),
+            "container" => effective.fetch("container", false),
+            "container_artifact" => container_artifact,
+            "container_dockerfile" => container_dockerfile,
+            "container_context" => container_context,
+            "container_runtime" => container_runtime,
+            "environment_required" => environment_required,
+            "environment_profile" => environment_profile,
+            "package_managers" => JSON.generate(managers),
+            "exceptions" => JSON.generate(exceptions),
+            "sast_provider" => sast.provider,
+            "ghas_approved" => sast.ghas_approved
+          }
+          File.open(ENV.fetch("GITHUB_OUTPUT"), "a") { |output| outputs.each { |key, value| output.puts "#{key}=#{value}" } }
+
+          rows = effective.map { |capability, active| "| #{capability} | #{active ? 'applicable' : 'not_applicable'} |" }
+          File.write(ENV.fetch("GITHUB_STEP_SUMMARY"), "## Foundation classification\n\n| Capability | State |\n|---|---|\n#{rows.join("\n")}\n")

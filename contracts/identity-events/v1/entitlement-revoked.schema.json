@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity-events/v1/entitlement-revoked.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity-events/v1/entitlement-revoked.schema.json",
   "title": "EntitlementRevokedEvent",
   "description": "Emitted when a capability entitlement is revoked or expires (ADR-0016 §23-24 -- capability entitlement has an independent lifecycle from identity and membership; revoking one capability, e.g. ERP, does not revoke unrelated ones, e.g. Trade/CMS/Pulse, unless policy explicitly couples them). This is the event envelope's `data` payload — see asyncapi.yaml for how it composes with contracts/events/v1/envelope.schema.json.",
   "type": "object",

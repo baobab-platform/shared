@@ -3,7 +3,7 @@
 ## Versioning
 
 Published contract packages use Semantic Versioning. Contract identifiers also
-include a major version, such as `nabhold.control-plane.tenant.v1`.
+include a major version, such as `baobab-platform.control-plane.tenant.v1`.
 
 - **Patch:** clarification or fixture correction that changes no valid payload.
 - **Minor:** backward-compatible optional fields, event types, or enum values

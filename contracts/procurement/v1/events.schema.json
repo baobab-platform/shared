@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/procurement/v1/events.schema.json",
+  "title": "ProcurementRequest lifecycle event payloads",
+  "description": "Data payloads for ProcurementRequest lifecycle events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "procurementRequestCreatedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["procurement_request_id", "tenant_id", "requesting_legal_entity_id", "status"],
+      "properties": {
+        "procurement_request_id": { "$ref": "domain.schema.json#/$defs/procurementRequestId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "requesting_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "status": { "$ref": "domain.schema.json#/$defs/procurementRequestStatus" }
+      }
+    },
+    "procurementRequestDecidedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["procurement_request_id", "tenant_id", "status"],
+      "properties": {
+        "procurement_request_id": { "$ref": "domain.schema.json#/$defs/procurementRequestId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/procurementRequestStatus" }
+      }
+    },
+    "procurementRequestConvertedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["procurement_request_id", "tenant_id", "status"],
+      "properties": {
+        "procurement_request_id": { "$ref": "domain.schema.json#/$defs/procurementRequestId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "status": { "$ref": "domain.schema.json#/$defs/procurementRequestStatus" },
+        "converted_reference": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Opaque reference to the downstream commitment (e.g. an order or contract) this request was converted into. That resource's canonical shape is outside this package's scope."
+        }
+      }
+    }
+  }
+}

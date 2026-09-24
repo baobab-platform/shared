@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/supplier-onboarding/v1/supplier-application-submitted.schema.json",
+  "$id": "https://contracts.baobab-platform.com/supplier-onboarding/v1/supplier-application-submitted.schema.json",
   "title": "Supplier application submitted",
   "description": "Emitted by a digital estate when a prospective supplier submits an application for review. Estate-owned and pre-approval; not the ERP-owned Supplier concept in contracts/erp/v1/system-of-record.yaml.",
   "type": "object",

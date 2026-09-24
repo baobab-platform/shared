@@ -180,7 +180,7 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://iam.nabhold.com/realms/nabhold/protocol/openid-connect/auth
-          tokenUrl: https://iam.nabhold.com/realms/nabhold/protocol/openid-connect/token
+          authorizationUrl: https://iam.baobab-platform.com/realms/baobab-platform/protocol/openid-connect/auth
+          tokenUrl: https://iam.baobab-platform.com/realms/baobab-platform/protocol/openid-connect/token
           scopes:
             trade:buy: Request B2B buying operations; domain authority is still evaluated by Trade

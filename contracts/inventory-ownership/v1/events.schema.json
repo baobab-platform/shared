@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/inventory-ownership/v1/events.schema.json",
+  "title": "InventoryOwnershipRecord event payloads",
+  "description": "Data payloads for InventoryOwnershipRecord events, carried inside contracts/events/v1/envelope.schema.json's data field.",
+  "$defs": {
+    "inventoryOwnershipRecordedEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventory_ownership_id", "tenant_id", "owning_legal_entity_id", "quantity", "ownership_type"],
+      "properties": {
+        "inventory_ownership_id": { "$ref": "domain.schema.json#/$defs/inventoryOwnershipId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "owning_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "quantity": { "type": "number" },
+        "ownership_type": { "$ref": "domain.schema.json#/$defs/inventoryOwnershipType" }
+      }
+    },
+    "inventoryOwnershipTransferredEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventory_ownership_id", "tenant_id", "from_legal_entity_id", "to_legal_entity_id", "quantity"],
+      "properties": {
+        "inventory_ownership_id": { "$ref": "domain.schema.json#/$defs/inventoryOwnershipId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "from_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "to_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" },
+        "quantity": { "type": "number" }
+      }
+    }
+  }
+}

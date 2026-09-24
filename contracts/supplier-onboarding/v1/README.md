@@ -2,8 +2,8 @@
 
 This package defines the estate-owned supplier intake and qualification
 domain: applications, decisions, qualification status changes, and
-capability verification outcomes. It generalizes the concrete contract
-`nabhold/zuribeans` has already proved in production code (ADR-0006,
+capability verification outcomes, KYB evidence metadata and KYB decisions. It generalizes the concrete contract
+`baobab-platform/zuribeans` has already proved in production code (ADR-0006,
 `supplier_organisations` / `supplier_status_events` / `supplier_capabilities`)
 so any digital estate hosting a supplier-facing intake can build against a
 stable shape instead of reinventing it.
@@ -14,7 +14,9 @@ stable shape instead of reinventing it.
   application submitted, application decided, qualification updated, and
   capability verified.
 - JSON Schemas define the payloads and shared domain types
-  (`domain.schema.json`).
+  (`domain.schema.json`), including additive KYB evidence and decision events.
+- KYB contracts carry evidence references and hashes only; document bytes, bank
+  account data, raw provider responses and internal reviewer notes are forbidden.
 - `system-of-record.yaml` declares ownership, direction, consistency and
   conflict policy for this domain's own concepts — it does not amend
   `contracts/erp/v1/system-of-record.yaml`.

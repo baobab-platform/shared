@@ -2,11 +2,11 @@
 
 - **Status:** Accepted
 - **Date:** 2026-08-31
-- **Decision owners:** Nabhold platform architecture
+- **Decision owners:** Baobab-Platform platform architecture
 
 ## Context
 
-Nabhold needs a cloud-native control plane without coupling customer-facing
+Baobab-Platform needs a cloud-native control plane without coupling customer-facing
 digital estates to environment orchestration. The earlier Baobab scaffold mixed
 application, platform, and infrastructure concerns in one repository.
 
@@ -18,10 +18,10 @@ The control-plane foundation is split across four repositories:
 
 | Repository | Authoritative responsibility |
 | --- | --- |
-| `nabhold/shared` | Versioned schemas, API and event contracts, state-machine definitions, compatibility policy, and reusable CI contracts |
-| `nabhold/baobab-cp` | Go management API, control-plane metadata, reconciliation workers, audit history, and runtime database migrations |
-| `nabhold/infrastructure` | Docker Compose, Terraform, Kubernetes/Helm, APISIX platform configuration, observability, and environment deployment |
-| `nabhold/baobab-dev` | Versioned development and CI container images |
+| `baobab-platform/shared` | Versioned schemas, API and event contracts, state-machine definitions, compatibility policy, and reusable CI contracts |
+| `baobab-platform/baobab-cp` | Go management API, control-plane metadata, reconciliation workers, audit history, and runtime database migrations |
+| `baobab-platform/infrastructure` | Docker Compose, Terraform, Kubernetes/Helm, APISIX platform configuration, observability, and environment deployment |
+| `baobab-platform/baobab-dev` | Versioned development and CI container images |
 
 <!-- markdownlint-enable MD013 -->
 

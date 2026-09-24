@@ -2,7 +2,7 @@ import { z } from "zod"
 import { SUPPLIER_APPLICATION_STATUSES } from "./lifecycle"
 
 /**
- * Generalized from nabhold/zuribeans' `supplier_organisations` table
+ * Generalized from baobab-platform/zuribeans' `supplier_organisations` table
  * (ADR-0006), with two deliberate differences that keep it estate-agnostic:
  *
  * - `applicantIdentityRef` replaces Zuribeans' `medusaCustomerId`. Each
@@ -10,8 +10,8 @@ import { SUPPLIER_APPLICATION_STATUSES } from "./lifecycle"
  *   Thamani: whatever its own future account system mints) — this package
  *   only defines the join point, never the identity system itself.
  * - `canonicalOrganisationId` remains reserved, nullable, and unpopulated
- *   here for the same reason it is in Zuribeans: nabhold/baobab-cp has no
- *   canonical Organisation type yet, and nabhold/shared's own
+ *   here for the same reason it is in Zuribeans: baobab-platform/baobab-cp has no
+ *   canonical Organisation type yet, and baobab-platform/shared's own
  *   contracts/erp/v1/system-of-record.yaml deliberately keeps the
  *   "Organisation" concept's canonical_owner "unassigned" until an explicit
  *   contract is approved (that invariant is CI-enforced there — this

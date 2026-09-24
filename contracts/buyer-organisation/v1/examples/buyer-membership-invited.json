@@ -1,0 +1,12 @@
+{
+  "buyer_membership_id": "buyermem_example1",
+  "buyer_organisation_id": "buyerorg_example1",
+  "principal_id": null,
+  "customer_id": null,
+  "status": "INVITED",
+  "roles": [
+    "BUYER"
+  ],
+  "invited_email": "buyer@example.com",
+  "invitation_expires_at": "2026-09-22T12:00:00Z"
+}

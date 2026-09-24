@@ -47,7 +47,7 @@ yaml_paths.each { |path| load_yaml(path) }
 schemas = json_documents.select { |_path, document| document.key?("$schema") }
 schemas.each do |path, schema|
   fail_contract("#{path} must use JSON Schema 2020-12") unless schema["$schema"] == "https://json-schema.org/draft/2020-12/schema"
-  fail_contract("#{path} must have an immutable contract URI") unless schema.fetch("$id", "").start_with?("https://contracts.nabhold.com/erp/v1/")
+  fail_contract("#{path} must have an immutable contract URI") unless schema.fetch("$id", "").start_with?("https://contracts.baobab-platform.com/erp/v1/")
   walk_keys(schema) do |key, key_path|
     if key.match?(/\A(?:AD_Client_ID|AD_Org_ID|C_BPartner_ID|C_Order_ID|C_Invoice_ID|C_Payment_ID|M_Product_ID|M_Warehouse_ID)\z/i)
       fail_contract("#{path} exposes vendor field #{key.inspect} at #{key_path.join('.')}")
@@ -184,8 +184,12 @@ concepts.each do |entry|
   fail_contract("#{entry['concept']} authorises bidirectional synchronisation") if serialised.include?("bidirectional")
 end
 organisation = concepts.find { |entry| entry["concept"] == "Organisation" }
-unless organisation["canonical_owner"] == "unassigned" && organisation["synchronisation_direction"] == "none_until_contract_approved"
-  fail_contract("organisation ownership must remain explicit and unassigned until approved")
+unless organisation["canonical_owner"] == "control-plane"
+  fail_contract("organisation canonical_owner must be control-plane (ADR-BCP-018)")
+end
+legal_entity = concepts.find { |entry| entry["concept"] == "Legal Entity" }
+unless legal_entity["canonical_owner"] == "control-plane"
+  fail_contract("legal entity canonical_owner must be control-plane runtime (ADR-BCP-018); Shared remains contract/first-party governance authority")
 end
 
 puts "ERP API, event, mapping, internationalisation and system-of-record contracts passed"

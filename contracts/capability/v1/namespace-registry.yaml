@@ -32,6 +32,10 @@ domains:
     description: "Supplier onboarding, qualification and lifecycle."
   - key: customer
     description: "Customer / buyer relationship management."
+  - key: market
+    description: "Market participation capabilities (sourcing, procurement, selling, importing, exporting, warehousing, distribution, fulfilment) and cross-market trade-lane relationships. Added per ADR-SHARED-008 to register ADR-BCP-011's market-participation model."
+  - key: internal-trade
+    description: "Inter-branch and intercompany movement between legal entities of the same tenant (transfer pricing, mirrored documents, in-transit ownership, elimination). Added per ADR-SHARED-008 to register ADR-BCP-012's internal-trade model."
   - key: commercial
     description: "RFQ, quotation and contract negotiation capabilities not specific to one engine."
   - key: contract
@@ -48,6 +52,10 @@ domains:
     description: "Purchasing and procurement capabilities."
   - key: trade
     description: "Cross-border trade execution capabilities."
+  - key: customs
+    description: "Customs declaration, duty/import-tax calculation and clearance capabilities. Added per ADR-SHARED-008 to register baobab-trade ADR-0021's customs/trade-compliance model."
+  - key: tax
+    description: "Multi-jurisdiction tax registration, calculation and reconciliation capabilities. Added per ADR-SHARED-008 to register baobab-trade ADR-0018 and its Addendum."
   - key: logistics
     description: "Shipment, dispatch and route capabilities."
   - key: fulfilment

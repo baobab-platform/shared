@@ -1,7 +1,7 @@
 {
-  "name": "@nabhold/supplier-domain",
+  "name": "@baobab-platform/supplier-domain",
   "version": "0.1.0",
-  "description": "Reusable supplier-onboarding domain mechanism (lifecycle state machine, capability/certification/status-event shapes) generalized from nabhold/zuribeans ADR-0006. Defines shapes and transition rules only — no persistence, no identity, no canonical Organisation minting.",
+  "description": "Reusable supplier-onboarding domain mechanism (lifecycle state machine, capability/certification/status-event shapes) generalized from baobab-platform/zuribeans ADR-0006. Defines shapes and transition rules only — no persistence, no identity, no canonical Organisation minting.",
   "private": false,
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",

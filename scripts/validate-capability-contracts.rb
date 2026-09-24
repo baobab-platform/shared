@@ -37,7 +37,7 @@ yaml_documents = yaml_paths.to_h { |path| [path, load_yaml(path)] }
 schemas = json_documents.select { |_path, document| document.key?("$schema") }
 schemas.each do |path, schema|
   fail_contract("#{path} must use JSON Schema 2020-12") unless schema["$schema"] == "https://json-schema.org/draft/2020-12/schema"
-  fail_contract("#{path} must have an immutable contract URI") unless schema.fetch("$id", "").start_with?("https://contracts.nabhold.com/capability/v1/")
+  fail_contract("#{path} must have an immutable contract URI") unless schema.fetch("$id", "").start_with?("https://contracts.baobab-platform.com/capability/v1/")
 end
 
 # 2. No capability_key or composition_key value actually committed
@@ -76,7 +76,7 @@ end
 end
 
 # 3. binding_mode is locked to exactly the five-value canonical set
-#    (BCP-TS-ONBOARDING-001 CR-002, confirmed against nabhold/baobab-cp's
+#    (BCP-TS-ONBOARDING-001 CR-002, confirmed against baobab-platform/baobab-cp's
 #    actual migrations during the Phase-0 audit). The superseded
 #    seven-value set (SECONDARY, READ_ONLY, MIGRATION_SOURCE,
 #    MIGRATION_TARGET) must never be reintroduced here.
@@ -123,15 +123,15 @@ examples.each do |path|
 end
 
 # 7. Every event message declared in asyncapi.yaml uses the shared
-#    com.nabhold.<context>.<...>.v<N> convention -- this package must not
+#    com.baobab-platform.<context>.<...>.v<N> convention -- this package must not
 #    reintroduce the baobab.* convention an earlier draft specification
 #    proposed and the Phase-0 audit deliberately did not adopt (see the
 #    Capability Platform tracking issue).
-event_type_pattern = /\Acom\.nabhold\.[a-z0-9]+(?:[.-][a-z0-9]+)*\.v[1-9][0-9]*\z/
+event_type_pattern = /\Acom\.baobab-platform\.[a-z0-9]+(?:[.-][a-z0-9]+)*\.v[1-9][0-9]*\z/
 asyncapi = yaml_documents.fetch(File.join(CAPABILITY_ROOT, "asyncapi.yaml"))
 asyncapi.fetch("components").fetch("messages").each do |message_key, message|
   name = message.fetch("name")
-  fail_contract("asyncapi.yaml message #{message_key} has event name #{name.inspect}, which does not match the com.nabhold.* convention") unless event_type_pattern.match?(name)
+  fail_contract("asyncapi.yaml message #{message_key} has event name #{name.inspect}, which does not match the com.baobab-platform.* convention") unless event_type_pattern.match?(name)
 end
 
 puts "Capability contract validation passed"

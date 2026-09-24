@@ -1,0 +1,20 @@
+{
+  "specversion": "1.0",
+  "id": "3c4d5e6f-7a8b-4c1d-9e2f-4a5b6c7d8e9f",
+  "type": "com.baobab-platform.commercial.rfq.published.v1",
+  "source": "urn:baobab-platform:service:baobab-cp",
+  "subject": "rfq:rfq_01k4zrf001",
+  "time": "2026-09-16T09:15:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/rfq/v1/events.schema.json#/$defs/rfqPublishedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "4d5e6f7a-8b9c-4d1e-af2a-5b6c7d8e9fa0",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "rfq_id": "rfq_01k4zrf001",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "buyer_organisation_id": "buyerorg_01k4zbr001",
+    "status": "PUBLISHED",
+    "response_deadline": "2026-09-30T23:59:59Z"
+  }
+}

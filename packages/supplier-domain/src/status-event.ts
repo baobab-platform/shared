@@ -2,7 +2,7 @@ import { z } from "zod"
 
 /**
  * Auditable history of every lifecycle status change. Generalized from
- * nabhold/zuribeans' `supplier_status_events` table (ADR-0006): a status
+ * baobab-platform/zuribeans' `supplier_status_events` table (ADR-0006): a status
  * change is always recorded with an origin-carrying actor (e.g.
  * "customer:cus_123" or "system"), never a bare name.
  */

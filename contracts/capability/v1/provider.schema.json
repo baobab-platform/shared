@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/provider.schema.json",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/provider.schema.json",
   "title": "CapabilityProvider and ProviderCapabilitySupport",
   "description": "A provider declares what it can implement; a binding (binding.schema.json) declares where it does so. Engine identity (technology family) is distinct from provider identity (canonical implementation); support for a capability is never inferred merely from engine association.",
   "$defs": {

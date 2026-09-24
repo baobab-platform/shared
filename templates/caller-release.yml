@@ -1,6 +1,6 @@
-# Target path: nabhold/shared/templates/caller-release.yml
+# Target path: baobab-platform/shared/templates/caller-release.yml
 #
-# FIX 2026-09-04: the pin below previously pointed at nabhold/shared's
+# FIX 2026-09-04: the pin below previously pointed at baobab-platform/shared's
 # v1.0.0 tag SHA (ad5cdb028023cd6b9c48cd8d7e6151ef4ab0cd73) — a real,
 # resolvable commit, which made the problem harder to spot than the
 # other three caller templates' obvious all-zeros placeholders. v1.0.0
@@ -19,13 +19,13 @@
 #
 # Assumes: a "Keep a Changelog"-style CHANGELOG.md at the repo root with
 # version headings shaped "# [<version>]" or "## [<version>]" (see
-# nabhold/shared's own CHANGELOG.md, or baobab's, for the convention this
+# baobab-platform/shared's own CHANGELOG.md, or baobab's, for the convention this
 # matches). A repo without that heading style should set changelog-path to
 # "" and rely on generate-release-notes alone.
 #
 # NOT a fit for a repository whose release is inseparable from a bespoke
 # artifact pipeline (container build/sign/attest, package publish, etc.) —
-# see nabhold/shared/.github/workflows/release.yml's own header. Keep that
+# see baobab-platform/shared/.github/workflows/release.yml's own header. Keep that
 # kind of release-creation step local to the repo instead of adopting this.
 
 name: Release
@@ -43,14 +43,14 @@ jobs:
   release:
     permissions:
       contents: write
-    # Pin is nabhold/shared's v1.1.0 tag (annotated — peeled commit, not
+    # Pin is baobab-platform/shared's v1.1.0 tag (annotated — peeled commit, not
     # the tag object's own SHA) — the earliest tag that actually contains
     # release.yml. Re-verify before merging if this file is more than a
     # few weeks old: `git ls-remote --tags
-    # https://github.com/nabhold/shared.git` and confirm whichever tag
+    # https://github.com/baobab-platform/shared.git` and confirm whichever tag
     # you pin to actually contains .github/workflows/release.yml, not
     # just that the tag itself resolves.
-    uses: nabhold/shared/.github/workflows/release.yml@f8df9b90ffe8fef5cbf6d14a9bcf868f723d1464 # v1.1.0
+    uses: baobab-platform/shared/.github/workflows/release.yml@f8df9b90ffe8fef5cbf6d14a9bcf868f723d1464 # v1.1.0
     with:
       changelog-path: "CHANGELOG.md"
       # TODO: set to true only once this repo actually publishes something

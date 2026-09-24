@@ -1,0 +1,93 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab buyer onboarding lifecycle events
+  version: 1.1.0
+  description: >
+    Gate ZB-04 buyer application, organisation, membership and commercial-profile events.
+    Trade owns the commercial lifecycle; Control Plane registers and verifies bounded canonical organisation entities
+    and owns tenant/context attestation; broader Organisation lifecycle ownership remains unresolved; IAM owns authentication; ERP owns authoritative credit
+    and accounting consequences.
+defaultContentType: application/json
+channels:
+  buyerOrganisationEvents:
+    address: baobab-platform.buyer-organisation.events.v1
+    messages:
+      buyerApplicationSubmitted: { $ref: "#/components/messages/BuyerApplicationSubmitted" }
+      buyerApplicationDecision: { $ref: "#/components/messages/BuyerApplicationDecision" }
+      buyerApplicationEvidenceDecision: { $ref: "#/components/messages/BuyerApplicationEvidenceDecision" }
+      buyerOrganisationRegistered: { $ref: "#/components/messages/BuyerOrganisationRegistered" }
+      buyerOrganisationStatusChanged: { $ref: "#/components/messages/BuyerOrganisationStatusChanged" }
+      buyerMembershipChanged: { $ref: "#/components/messages/BuyerMembershipChanged" }
+      buyerCommercialProfileChanged: { $ref: "#/components/messages/BuyerCommercialProfileChanged" }
+      buyerErpProjectionRequested: { $ref: "#/components/messages/BuyerErpProjectionRequested" }
+operations:
+  publishBuyerOrganisationEvents:
+    action: send
+    channel: { $ref: "#/channels/buyerOrganisationEvents" }
+components:
+  messages:
+    BuyerApplicationSubmitted:
+      name: com.baobab-platform.customer.buyer-application.submitted.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerApplicationSubmittedEventData }
+    BuyerApplicationDecision:
+      name: com.baobab-platform.customer.buyer-application.decision-recorded.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerApplicationDecisionEventData }
+    BuyerApplicationEvidenceDecision:
+      name: com.baobab-platform.customer.buyer-application-evidence.decided.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerApplicationEvidenceDecisionEventData }
+    BuyerOrganisationRegistered:
+      name: com.baobab-platform.customer.buyer-organisation.registered.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerOrganisationRegisteredEventData }
+    BuyerOrganisationStatusChanged:
+      name: com.baobab-platform.customer.buyer-organisation.status-changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerOrganisationStatusChangedEventData }
+    BuyerMembershipChanged:
+      name: com.baobab-platform.customer.buyer-membership.changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerMembershipChangedEventData }
+    BuyerCommercialProfileChanged:
+      name: com.baobab-platform.customer.buyer-commercial-profile.changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerCommercialProfileChangedEventData }
+
+    BuyerErpProjectionRequested:
+      name: com.baobab-platform.customer.buyer-erp-projection.requested.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerErpProjectionRequestedEventData }

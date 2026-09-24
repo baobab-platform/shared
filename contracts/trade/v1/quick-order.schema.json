@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/trade/v1/quick-order.schema.json",
+  "$id": "https://contracts.baobab-platform.com/trade/v1/quick-order.schema.json",
   "title": "B2B quick-order validation",
   "$defs": {
     "request": {

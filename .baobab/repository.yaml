@@ -1,0 +1,23 @@
+schema_version: 1
+repository:
+  lifecycle: active
+capabilities:
+  - node
+  - container
+  - contracts
+  - github-actions
+  - library
+environment:
+  baobab_dev:
+    required: true
+    profile: frontend
+package_managers:
+  node: pnpm
+artifacts:
+  container:
+    enabled: true
+    dockerfile: containers/baobab-contracts/Dockerfile
+    context: .
+    runtime: false
+security:
+  sast_provider: fallback

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/trade-lane/v1/domain.schema.json",
+  "title": "Baobab-Platform TradeLane domain identifiers, enumerations and resource",
+  "description": "Gate ZB-01 initial publication (ADR-SHARED-008 SS5): a governed origin/destination market relationship a tenant may trade along (ADR-BCP-011's cross-market trading model). Governed under the capability/v1 namespace registry's `market` domain.",
+  "$defs": {
+    "tradeLaneId": {
+      "type": "string",
+      "pattern": "^tlane_[a-z0-9]+$",
+      "minLength": 8,
+      "maxLength": 63,
+      "description": "Control Plane-minted opaque identifier for a TradeLane."
+    },
+    "tradeLaneStatus": {
+      "type": "string",
+      "enum": ["ACTIVE", "SUSPENDED", "RETIRED"],
+      "description": "Lifecycle state of a TradeLane."
+    },
+    "tradeLaneDirection": {
+      "type": "string",
+      "enum": ["IMPORT", "EXPORT", "CROSS_MARKET"],
+      "description": "Direction of goods flow along a TradeLane, per ADR-BCP-011's per-market participation flags."
+    },
+    "tradeLane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trade_lane_id", "tenant_id", "origin_market_id", "destination_market_id", "direction", "status"],
+      "properties": {
+        "trade_lane_id": { "$ref": "#/$defs/tradeLaneId" },
+        "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+        "origin_market_id": { "type": "string", "maxLength": 128 },
+        "destination_market_id": { "type": "string", "maxLength": 128 },
+        "direction": { "$ref": "#/$defs/tradeLaneDirection" },
+        "status": { "$ref": "#/$defs/tradeLaneStatus" },
+        "permitted_capability_keys": {
+          "type": "array",
+          "items": { "$ref": "../../capability/v1/domain.schema.json#/$defs/capabilityKey" },
+          "description": "Capability keys this tenant may exercise along this lane (e.g. procurement.*, logistics.*)."
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

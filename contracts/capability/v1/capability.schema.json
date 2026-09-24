@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://contracts.nabhold.com/capability/v1/capability.schema.json",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/capability.schema.json",
   "title": "CapabilityDefinition and CapabilityDependency",
   "description": "A Capability describes WHAT the platform can do, never HOW or WHERE. It carries no provider, engine, tenant or region identity.",
   "$defs": {
@@ -18,7 +18,7 @@
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]*$",
           "maxLength": 63,
-          "description": "Repository that owns this capability's semantics, evolution and conformance, e.g. \"baobab-trade\". nabhold/shared remains contract authority regardless of ownership."
+          "description": "Repository that owns this capability's semantics, evolution and conformance, e.g. \"baobab-trade\". baobab-platform/shared remains contract authority regardless of ownership."
         },
         "lifecycle": { "$ref": "domain.schema.json#/$defs/capabilityLifecycle" },
         "maturity": { "$ref": "domain.schema.json#/$defs/capabilityMaturity" },

@@ -16,7 +16,7 @@ This is a contract-authority package: JSON Schema, YAML governance files,
 AsyncAPI and OpenAPI definitions only. It does **not**:
 
 - run as a service, hold tenant state, or execute resolution -- that is
-  `nabhold/baobab-cp`'s runtime responsibility;
+  `baobab-platform/baobab-cp`'s runtime responsibility;
 - implement business workflows (approval logic, workflow engines, state
   machines with side effects) -- see the retired
   `packages/supplier-domain/src/lifecycle.ts` for a worked example of
@@ -47,7 +47,7 @@ AsyncAPI and OpenAPI definitions only. It does **not**:
   ranking competing eligible bindings. Every capability-centric ADR
   deferred this definition to Shared; this file is that definition.
 - `asyncapi.yaml` -- capability lifecycle events, using the existing
-  `com.nabhold.<context>.<...>.v<N>` convention already enforced by
+  `com.baobab-platform.<context>.<...>.v<N>` convention already enforced by
   `contracts/events/v1/envelope.schema.json` (confirmed during the
   Phase-0 audit as the real, shipped convention across identity, ERP and
   supplier-onboarding events -- this package does not introduce a
@@ -69,12 +69,12 @@ category of `contracts/authorization/v1/reason-code-registry.yaml`, alongside
 - `contracts/control-plane/v1/context-resolution.schema.json` is the
   pre-capability-centric context/entitlement check
   (`product_id` in, coarse `entitled: true/false` out). It is not
-  replaced by this package; `nabhold/baobab-cp`'s Phase 2+ work
+  replaced by this package; `baobab-platform/baobab-cp`'s Phase 2+ work
   (see the Capability Platform tracking issue) extends context
   resolution into the richer `PlatformContext` model these capability
   contracts assume, as a separate, sequenced piece of work.
 - Capability lifecycle events use the same envelope and the same
-  `com.nabhold.*` reverse-DNS convention as every other event domain in
+  `com.baobab-platform.*` reverse-DNS convention as every other event domain in
   this repository -- see the Phase-0 audit finding on the Capability
   Platform tracking issue for why an earlier draft specification's
   `baobab.*` proposal was not adopted.

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity/v1/session.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/session.schema.json",
   "title": "Session",
   "description": "An authentication session, owned by IAM, with bounded lifetime. How strongly the session's principal authenticated is carried entirely by authentication_assurance (authentication-assurance.schema.json, ADR-0015 §180-181) -- see that schema's acr/amr for the OIDC-precise picture a step-up decision (AssuranceRequirement) needs. Session previously duplicated this with its own assurance_level/authentication_methods enums; those were removed as unconsumed (nothing in this repository or in baobab-cp/baobab-iam read them) rather than reconciled field-by-field against the vocabulary AuthenticationAssurance actually uses.",
   "type": "object",

@@ -1,13 +1,13 @@
 openapi: 3.1.0
 info:
-  title: Nabhold Baobab Control Plane API
+  title: Baobab-Platform Baobab Control Plane API
   version: 1.1.0
-  description: Contract for tenant lifecycle management. Implementations live in nabhold/baobab-cp.
+  description: Contract for tenant lifecycle management. Implementations live in baobab-platform/baobab-cp.
   license:
     name: Apache-2.0
     identifier: Apache-2.0
 servers:
-  - url: https://control.nabhold.com/v1
+  - url: https://control.baobab-platform.com/v1
     description: Production placeholder; activation requires an approved domain binding.
 paths:
   /tenants:
@@ -611,9 +611,9 @@ components:
   securitySchemes:
     adminOidc:
       type: openIdConnect
-      openIdConnectUrl: https://identity.nabhold.com/.well-known/openid-configuration
+      openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
       description: Human administrator identity; issuer is environment-configured by the implementation.
     workloadOidc:
       type: openIdConnect
-      openIdConnectUrl: https://identity.nabhold.com/.well-known/openid-configuration
+      openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
       description: Short-lived workload or delegated identity token used only over the infrastructure-owned mTLS path.

@@ -1,0 +1,22 @@
+{
+  "specversion": "1.0",
+  "id": "7a8b9c0d-1e2f-4a3b-4c5d-6e7f8a9b0c1d",
+  "type": "com.baobab-platform.product.entitlement-projection.updated.v1",
+  "source": "urn:baobab-platform:service:baobab-cp",
+  "subject": "entitlement-projection:entproj_01k4za2p4q",
+  "time": "2026-09-13T09:12:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/product/v1/events.schema.json#/$defs/entitlementProjectionEventData",
+  "baobabscope": "tenant",
+  "correlationid": "6f7a8b9c-0d1e-4f2a-3b4c-5d6e7f8a9b0c",
+  "causationid": "5e6f7a8b-9c0d-4e1f-2a3b-4c5d6e7f8a9b",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "entitlement_projection_id": "entproj_01k4za2p4q",
+    "subscription_id": "sub_01k4z9j3n2",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "capability_key": "commerce.order.create",
+    "status": "MATERIALIZED",
+    "grant_id": "grant_01k4z8h2m1"
+  }
+}

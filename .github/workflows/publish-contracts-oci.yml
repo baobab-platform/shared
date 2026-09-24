@@ -1,0 +1,465 @@
+# ==============================================================================
+# BAOBAB-PLATFORM GROUP AFRICA — BAOBAB PLATFORM
+#
+# Publish canonical Baobab contracts as an OCI image.
+#
+# Target:
+#
+#   ghcr.io/baobab-platform/baobab-contracts:<version>
+#
+# Release trigger:
+#
+#   baobab-contracts-v1.2.3
+#
+# Stable releases additionally receive:
+#
+#   :1.2
+#   :1
+#   :latest
+#
+# Every release receives:
+#
+#   :1.2.3
+#   :sha-<commit>
+#
+# Pre-releases, for example:
+#
+#   baobab-contracts-v1.3.0-rc.1
+#
+# receive ONLY:
+#
+#   :1.3.0-rc.1
+#   :sha-<commit>
+#
+# They MUST NOT move stable aliases.
+#
+# The image is deliberately separate from npm package publication.
+# ==============================================================================
+
+name: Publish Baobab Contracts OCI Bundle
+
+on:
+  push:
+    tags:
+      # Contract bundles have their own release tags. Repository-wide tags
+      # (vX.Y.Z, including Foundation CI releases) must not start this workflow.
+      - "baobab-contracts-v*.*.*"
+
+concurrency:
+  group: baobab-contracts-${{ github.ref }}
+  cancel-in-progress: false
+
+# Deny permissions by default.
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: baobab-platform/baobab-contracts
+
+jobs:
+
+  # ============================================================================
+  # Gate 1 — Validate release
+  # ============================================================================
+
+  validate:
+    name: Validate contract release
+    runs-on: ubuntu-26.04
+
+    permissions:
+      contents: read
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+      major: ${{ steps.version.outputs.major }}
+      minor: ${{ steps.version.outputs.minor }}
+      short-sha: ${{ steps.version.outputs.short-sha }}
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Verify release commit belongs to main
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin main
+
+          if ! git merge-base --is-ancestor \
+            "${GITHUB_SHA}" \
+            "origin/main"; then
+
+            echo "::error::Release tag must reference a commit contained in main."
+            exit 1
+          fi
+      # ------------------------------------------------------------------------
+      # Extract and strictly validate the Baobab contract bundle version.
+      #
+      # Valid:
+      #
+      #   baobab-contracts-v1.0.0
+      #   baobab-contracts-v1.2.3
+      #   baobab-contracts-v2.0.0-rc.1
+      #
+      # Invalid:
+      #
+      #   v1.2.3
+      #   contracts-v1.2
+      #   baobab-contracts-latest
+      # ------------------------------------------------------------------------
+
+      - name: Resolve contract bundle version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TAG="${GITHUB_REF_NAME}"
+          PREFIX="baobab-contracts-v"
+
+          if [[ "${TAG}" != "${PREFIX}"* ]]; then
+            echo "::error::Unexpected release tag: ${TAG}"
+            exit 1
+          fi
+
+          VERSION="${TAG#${PREFIX}}"
+
+          # Semantic version with optional pre-release component.
+          #
+          # Intentionally excludes SemVer build metadata (+foo), because '+'
+          # is not valid in a Docker/OCI tag.
+          SEMVER_REGEX='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z][0-9A-Za-z.-]*)?$'
+
+          if [[ ! "${VERSION}" =~ ${SEMVER_REGEX} ]]; then
+            echo "::error::Invalid Baobab contract bundle version: ${VERSION}"
+            exit 1
+          fi
+
+          BASE_VERSION="${VERSION%%-*}"
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${BASE_VERSION}"
+
+          if [[ "${VERSION}" == *-* ]]; then
+            PRERELEASE=true
+          else
+            PRERELEASE=false
+          fi
+
+          SHORT_SHA="${GITHUB_SHA:0:12}"
+
+          {
+            echo "version=${VERSION}"
+            echo "major=${MAJOR}"
+            echo "minor=${MINOR}"
+            echo "prerelease=${PRERELEASE}"
+            echo "short-sha=${SHORT_SHA}"
+          } >> "${GITHUB_OUTPUT}"
+
+          echo "Baobab contracts release:"
+          echo "  version:    ${VERSION}"
+          echo "  major:      ${MAJOR}"
+          echo "  minor:      ${MINOR}"
+          echo "  prerelease: ${PRERELEASE}"
+          echo "  revision:   ${GITHUB_SHA}"
+
+      # ------------------------------------------------------------------------
+      # Ensure the OCI bundle has all of its mandatory source material.
+      # ------------------------------------------------------------------------
+
+      - name: Validate contract bundle structure
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_paths=(
+            "contracts"
+            "contracts.lock.yaml"
+            "packages/contracts/proto"
+            "packages/contracts/graphql"
+            "packages/contracts/buf.yaml"
+            "packages/contracts/buf.gen.yaml"
+            "containers/baobab-contracts/Dockerfile"
+            "README.md"
+            "LICENSE"
+          )
+
+          for path in "${required_paths[@]}"; do
+            if [[ ! -e "${path}" ]]; then
+              echo "::error::Required OCI contract bundle path is missing: ${path}"
+              exit 1
+            fi
+          done
+
+          if [[ -z "$(find contracts -type f -print -quit)" ]]; then
+            echo "::error::contracts/ contains no contract files."
+            exit 1
+          fi
+
+          echo "Contract bundle structure is valid."
+
+      # ------------------------------------------------------------------------
+      # Verify contracts.lock.yaml references known contract domains.
+      #
+      # This is deliberately conservative. More sophisticated schema-level
+      # conformance can later be delegated to a dedicated validation script.
+      # ------------------------------------------------------------------------
+
+      - name: Check contract domains referenced by lock manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          lock = Path("contracts.lock.yaml").read_text(encoding="utf-8")
+
+          domains = re.findall(
+              r"^\s*-\s+domain:\s+([A-Za-z0-9_-]+)\s*$",
+              lock,
+              flags=re.MULTILINE,
+          )
+
+          if not domains:
+              raise SystemExit(
+                  "contracts.lock.yaml contains no contract domain entries"
+              )
+
+          missing = [
+              domain
+              for domain in domains
+              if not Path("contracts", domain).is_dir()
+          ]
+
+          if missing:
+              print(
+                  "contracts.lock.yaml references missing domains:",
+                  file=sys.stderr,
+              )
+              for domain in missing:
+                  print(f"  - {domain}", file=sys.stderr)
+              raise SystemExit(1)
+
+          print(
+              f"Validated {len(domains)} locked contract domain(s)."
+          )
+          PY
+
+
+  # ============================================================================
+  # Gate 2 — Build and publish OCI bundle
+  # ============================================================================
+
+  publish:
+    name: Build, attest and publish OCI bundle
+
+    needs:
+      - validate
+
+    runs-on: ubuntu-26.04
+
+    permissions:
+      contents: read
+
+      # Required to publish ghcr.io/baobab-platform/baobab-contracts.
+      packages: write
+
+      # Required by GitHub artifact attestations.
+      attestations: write
+      id-token: write
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # ------------------------------------------------------------------------
+      # Do not permit an immutable version to be silently overwritten.
+      #
+      # Moving aliases such as :1, :1.2 and :latest are intentionally mutable.
+      # :1.2.3 itself is not.
+      # ------------------------------------------------------------------------
+
+      - name: Refuse to overwrite existing immutable version
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          IMAGE="${REGISTRY}/${IMAGE_NAME}:${VERSION}"
+
+          if docker buildx imagetools inspect "${IMAGE}" \
+              >/dev/null 2>&1; then
+            echo "::error::OCI contract bundle already exists: ${IMAGE}"
+            echo "::error::Published semantic versions are immutable."
+            exit 1
+          fi
+
+          echo "Version ${VERSION} is not currently published."
+
+      # ------------------------------------------------------------------------
+      # Construct release tags.
+      #
+      # Stable:
+      #
+      #   :1.2.3
+      #   :1.2
+      #   :1
+      #   :latest
+      #   :sha-abcdef123456
+      #
+      # Pre-release:
+      #
+      #   :1.3.0-rc.1
+      #   :sha-abcdef123456
+      # ------------------------------------------------------------------------
+
+      - name: Generate OCI tags
+        id: tags
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+          MAJOR: ${{ needs.validate.outputs.major }}
+          MINOR: ${{ needs.validate.outputs.minor }}
+          PRERELEASE: ${{ needs.validate.outputs.prerelease }}
+          SHORT_SHA: ${{ needs.validate.outputs.short-sha }}
+        run: |
+          set -euo pipefail
+
+          IMAGE="${REGISTRY}/${IMAGE_NAME}"
+
+          {
+            echo "tags<<EOF"
+
+            # Immutable release identifier.
+            echo "${IMAGE}:${VERSION}"
+
+            # Immutable source revision identifier.
+            echo "${IMAGE}:sha-${SHORT_SHA}"
+
+            if [[ "${PRERELEASE}" == "false" ]]; then
+              # Moving compatibility aliases for stable releases only.
+              echo "${IMAGE}:${MAJOR}.${MINOR}"
+              echo "${IMAGE}:${MAJOR}"
+              echo "${IMAGE}:latest"
+            fi
+
+            echo "EOF"
+          } >> "${GITHUB_OUTPUT}"
+
+      # ------------------------------------------------------------------------
+      # Build and publish.
+      #
+      # Because this is static contract data, both AMD64 and ARM64 variants
+      # contain identical Baobab contract material. Publishing both prevents
+      # platform mismatch problems for developer workstations and CI runners.
+      #
+      # BuildKit additionally emits SBOM and provenance attestations.
+      # ------------------------------------------------------------------------
+
+      - name: Build and push Baobab contract bundle
+        id: build
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: containers/baobab-contracts/Dockerfile
+
+          push: true
+
+          platforms: |
+            linux/amd64
+            linux/arm64
+
+          tags: ${{ steps.tags.outputs.tags }}
+
+          build-args: |
+            VERSION=${{ needs.validate.outputs.version }}
+            REVISION=${{ github.sha }}
+
+          # BuildKit-native software-bill-of-materials and provenance.
+          sbom: true
+          provenance: mode=max
+
+          # GitHub Actions cache is appropriate because the source contract
+          # layers are content-addressed and relatively small.
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # ------------------------------------------------------------------------
+      # GitHub-native provenance attestation.
+      #
+      # This creates a verifiable relationship between:
+      #
+      #   ghcr.io/baobab-platform/baobab-contracts
+      #
+      # and:
+      #
+      #   baobab-platform/shared @ exact Git commit
+      #
+      # subject-name MUST NOT include a tag.
+      # ------------------------------------------------------------------------
+
+      - name: Attest OCI build provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-name: ghcr.io/baobab-platform/baobab-contracts
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
+
+      # ------------------------------------------------------------------------
+      # Human-readable release summary.
+      # ------------------------------------------------------------------------
+
+      - name: Publish workflow summary
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+          PRERELEASE: ${{ needs.validate.outputs.prerelease }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+          TAGS: ${{ steps.tags.outputs.tags }}
+        run: |
+          {
+            echo "# Baobab Contracts OCI Release"
+            echo
+            echo "| Property | Value |"
+            echo "|---|---|"
+            echo "| Version | \`${VERSION}\` |"
+            echo "| Pre-release | \`${PRERELEASE}\` |"
+            echo "| Registry | \`${REGISTRY}\` |"
+            echo "| Image | \`${IMAGE_NAME}\` |"
+            echo "| Commit | \`${GITHUB_SHA}\` |"
+            echo "| Digest | \`${DIGEST}\` |"
+            echo
+            echo "## Published references"
+            echo
+            echo '```text'
+            echo "${TAGS}"
+            echo '```'
+            echo
+            echo "## Canonical immutable reference"
+            echo
+            echo '```text'
+            echo "${REGISTRY}/${IMAGE_NAME}@${DIGEST}"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"

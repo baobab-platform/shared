@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://schemas.nabhold.com/contracts/identity-events/v1/workload-revoked.schema.json",
+  "$id": "https://schemas.baobab-platform.com/contracts/identity-events/v1/workload-revoked.schema.json",
   "title": "WorkloadRevokedEvent",
   "description": "Emitted when a workload identity is revoked (ADR-0016 §79 'Workload Lifecycle' -- PROVISIONED/ACTIVE/SUSPENDED -> REVOKED is distinct from RETIRED, which follows planned decommissioning rather than a security/administrative revocation). principal_id is the WorkloadIdentity's own principal id (contracts/identity/v1/workload-identity.schema.json extends Principal, so it shares the same id space as every other event's principal_id); client_id is carried alongside it because ADR-0016 §80 requires every workload identity to be provisioned against an identified OAuth client, and ADR-0015 §107 'Compromised service credentials SHALL be individually revocable' means that client -- not just the abstract identity -- is what a consumer actually needs to act on. This is the event envelope's `data` payload — see asyncapi.yaml for how it composes with contracts/events/v1/envelope.schema.json.",
   "type": "object",

@@ -1,0 +1,59 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab-Platform Baobab ProcurementRequest lifecycle events
+  version: 1.0.0
+  description: >
+    ProcurementRequest lifecycle events (Gate ZB-01, ADR-SHARED-008 SS5).
+    Uses the same canonical event envelope and
+    com.baobab-platform.<context>.<...>.v<N> naming convention already shipped for
+    identity, ERP, supplier-onboarding, capability and product events. No
+    message broker exists yet anywhere in this ecosystem to carry these;
+    this contract exists so producers and future consumers have a stable
+    shape to build against once one does.
+defaultContentType: application/json
+channels:
+  procurementRequestEvents:
+    address: baobab-platform.procurement.events.v1
+    messages:
+      procurementRequestCreated: { $ref: "#/components/messages/ProcurementRequestCreated" }
+      procurementRequestApproved: { $ref: "#/components/messages/ProcurementRequestApproved" }
+      procurementRequestRejected: { $ref: "#/components/messages/ProcurementRequestRejected" }
+      procurementRequestConverted: { $ref: "#/components/messages/ProcurementRequestConverted" }
+operations:
+  publishProcurementRequestEvents:
+    action: send
+    channel: { $ref: "#/channels/procurementRequestEvents" }
+components:
+  messages:
+    ProcurementRequestCreated:
+      name: com.baobab-platform.procurement.procurement-request.created.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/procurementRequestCreatedEventData }
+    ProcurementRequestApproved:
+      name: com.baobab-platform.procurement.procurement-request.approved.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/procurementRequestDecidedEventData }
+    ProcurementRequestRejected:
+      name: com.baobab-platform.procurement.procurement-request.rejected.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/procurementRequestDecidedEventData }
+    ProcurementRequestConverted:
+      name: com.baobab-platform.procurement.procurement-request.converted.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/procurementRequestConvertedEventData }

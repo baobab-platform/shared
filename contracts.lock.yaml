@@ -48,3 +48,20 @@ contracts:
       - events.schema.json
       - namespace-registry.yaml
       - scope-specificity.yaml
+  - domain: product
+    version: v1
+    schemas:
+      - domain.schema.json
+      - product.schema.json
+      - subscription.schema.json
+      - events.schema.json
+  - domain: organisation
+    version: v1
+    schemas:
+      - domain.schema.json
+      - relationship.schema.json
+      - platform.schema.json
+      - mapping.schema.json
+      - iam.schema.json
+      - admission.schema.json
+      - events.schema.json

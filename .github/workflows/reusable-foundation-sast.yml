@@ -1,0 +1,151 @@
+name: Reusable — Foundation CodeQL
+
+on:
+  workflow_call:
+    inputs:
+      provider:
+        description: >
+          SAST provider resolved by the Foundation classifier from the
+          repository contract (security.sast_provider) and visibility:
+          codeql | fallback | disabled. The classifier has already refused
+          CodeQL on a private repository without an approved security.ghas
+          record, and disabled without an approved exceptions.sast.
+        type: string
+        default: fallback
+      python: { type: boolean, default: false }
+      node: { type: boolean, default: false }
+      go: { type: boolean, default: false }
+      java: { type: boolean, default: false }
+      rust: { type: boolean, default: false }
+      exceptions: { type: string, default: "{}" }
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-26.04
+    outputs:
+      matrix: "${{ steps.matrix.outputs.matrix }}"
+      mode: "${{ steps.matrix.outputs.mode }}"
+      status_name: "${{ steps.matrix.outputs.status_name }}"
+      reason: "${{ steps.matrix.outputs.reason }}"
+    steps:
+      - id: matrix
+        env:
+          PROVIDER: "${{ inputs.provider }}"
+          PYTHON: "${{ inputs.python }}"
+          NODE: "${{ inputs.node }}"
+          GO: "${{ inputs.go }}"
+          JAVA: "${{ inputs.java }}"
+          RUST: "${{ inputs.rust }}"
+          WAIVED: "${{ fromJSON(inputs.exceptions).sast != null }}"
+          VISIBILITY: "${{ github.event.repository.visibility }}"
+        shell: ruby {0}
+        run: |
+          require "json"
+
+          entries = []
+          entries << { language: "python", mode: "none" } if ENV["PYTHON"] == "true"
+          entries << { language: "javascript-typescript", mode: "none" } if ENV["NODE"] == "true"
+          entries << { language: "go", mode: "autobuild" } if ENV["GO"] == "true"
+          entries << { language: "java-kotlin", mode: "autobuild" } if ENV["JAVA"] == "true"
+          entries << { language: "rust", mode: "none" } if ENV["RUST"] == "true"
+
+          provider = ENV.fetch("PROVIDER")
+          abort "unsupported SAST provider #{provider.inspect}" unless %w[codeql fallback disabled].include?(provider)
+          waived = ENV["WAIVED"] == "true"
+          visibility = (ENV["VISIBILITY"] || "").strip
+
+          mode =
+            if waived then "waived"
+            elsif provider == "disabled" then "disabled"
+            elsif entries.empty? then "no_languages"
+            elsif provider == "codeql" then "codeql"
+            else "fallback"
+            end
+
+          status_name = {
+            "waived" => "Waived",
+            "disabled" => "Disabled",
+            "no_languages" => "No languages",
+            "fallback" => "Fallback",
+            "codeql" => "CodeQL"
+          }.fetch(mode)
+
+          reason = {
+            "waived" => "CodeQL waived by an approved repository exception",
+            "disabled" => "SAST disabled by security.sast_provider with an approved exceptions.sast",
+            "no_languages" => "No CodeQL-supported languages were classified for this repository",
+            "fallback" => "security.sast_provider resolved to fallback; CodeQL does not run and the portable Trivy scans remain the evidence",
+            "codeql" => "CodeQL selected by security.sast_provider (visibility=#{visibility.empty? ? 'unknown' : visibility})"
+          }.fetch(mode)
+
+          warn "::warning::#{reason}" if %w[waived disabled].include?(mode)
+          puts "::notice::SAST decision: mode=#{mode} provider=#{provider} visibility=#{visibility.empty? ? 'unknown' : visibility} languages=#{entries.map { |e| e[:language] }.join(',')}"
+          puts "::notice::#{reason}"
+
+          decision = {
+            schema_version: 2,
+            mode: mode,
+            provider: provider,
+            status_name: status_name,
+            reason: reason,
+            visibility: visibility.empty? ? "unknown" : visibility,
+            languages: entries.map { |e| e[:language] }
+          }
+          File.write("foundation-sast-decision.json", JSON.pretty_generate(decision))
+
+          File.open(ENV.fetch("GITHUB_OUTPUT"), "a") do |output|
+            output.puts "matrix=#{JSON.generate({ include: entries })}"
+            output.puts "mode=#{mode}"
+            output.puts "status_name=#{status_name}"
+            output.puts "reason=#{reason.gsub("\n", " ")}"
+          end
+
+      - name: Upload SAST decision evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: foundation-sast-decision
+          path: foundation-sast-decision.json
+          retention-days: 90
+          if-no-files-found: ignore
+
+  analyze:
+    if: needs.plan.outputs.mode == 'codeql'
+    needs: plan
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: github/codeql-action/init@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
+        with:
+          languages: "${{ matrix.language }}"
+          build-mode: "${{ matrix.mode }}"
+      - uses: github/codeql-action/analyze@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
+        with:
+          category: "/language:${{ matrix.language }}"
+
+  status:
+    if: always() && needs.plan.outputs.mode != 'codeql'
+    needs: plan
+    name: SAST / ${{ needs.plan.outputs.status_name }}
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Record SAST coverage decision
+        env:
+          MODE: "${{ needs.plan.outputs.mode }}"
+          REASON: "${{ needs.plan.outputs.reason }}"
+        run: |
+          set -euo pipefail
+          echo "::notice::${REASON}"
+          echo "SAST mode=${MODE}"
+          echo "${REASON}"
