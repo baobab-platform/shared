@@ -1,0 +1,142 @@
+{
+  "_comment": "Illustrative ADR-BCP-018 gate ORG-13 migration (sections 11, 99-101, 112). One real organisation was registered twice under ADR-BCP-016's bounded kinds: as a BUYER_ORGANISATION by one tenant and as a SUPPLIER_ORGANISATION by another. Migration keeps both canonical ids, attaches unverified organisation profiles and materialises one tenant-scoped role each. Both profiles later carry the same company registration number (with different separators), so reconciliation quarantines the pair; nothing is merged. A third organisation with a similar name but a different registration number is never paired: names never establish identity. The second candidate shows a reviewer's DISTINCT decision.",
+  "organisations": [
+    {
+      "canonical_entity_id": "ce_01k8z4b1hq2m",
+      "display_name": "buyer:zuribeans:0192",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "legacy-canonical-entity",
+      "status": "ACTIVE",
+      "effective_from": "2026-02-02T00:00:00Z",
+      "identifiers": [
+        {"type": "COMPANY_REGISTRATION", "value": "PVT-2019/0443", "issuing_jurisdiction": "KE"}
+      ]
+    },
+    {
+      "canonical_entity_id": "ce_01k8z4b2kw7r",
+      "display_name": "supplier:thamani:0077",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "legacy-canonical-entity",
+      "status": "ACTIVE",
+      "effective_from": "2026-01-11T00:00:00Z",
+      "identifiers": [
+        {"type": "COMPANY_REGISTRATION", "value": "pvt 2019 0443", "issuing_jurisdiction": "KE"}
+      ]
+    },
+    {
+      "canonical_entity_id": "ce_01k8z4b3np5t",
+      "display_name": "supplier:thamani:0078",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "legacy-canonical-entity",
+      "status": "ACTIVE",
+      "effective_from": "2026-01-12T00:00:00Z",
+      "identifiers": [
+        {"type": "COMPANY_REGISTRATION", "value": "PVT-2020/1188", "issuing_jurisdiction": "KE"}
+      ]
+    },
+    {
+      "canonical_entity_id": "ce_01k8z4b4qs8v",
+      "display_name": "supplier:thamani:0081",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "legacy-canonical-entity",
+      "status": "ACTIVE",
+      "effective_from": "2026-01-15T00:00:00Z",
+      "identifiers": [
+        {"type": "TAX_IDENTIFIER", "value": "P051234567Q", "issuing_jurisdiction": "KE"}
+      ]
+    },
+    {
+      "canonical_entity_id": "ce_01k8z4b5tv3x",
+      "display_name": "buyer:zuribeans:0204",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "legacy-canonical-entity",
+      "status": "ACTIVE",
+      "effective_from": "2026-02-20T00:00:00Z",
+      "identifiers": [
+        {"type": "TAX_IDENTIFIER", "value": "P051234567Q", "issuing_jurisdiction": "KE"}
+      ]
+    }
+  ],
+  "counterparty_roles": [
+    {
+      "id": "crole_01k8z4c1buyr",
+      "organisation_id": "ce_01k8z4b1hq2m",
+      "tenant_id": "tn_01k8z3zuri",
+      "role": "BUYER",
+      "status": "ACTIVE",
+      "effective_from": "2026-02-02T00:00:00Z",
+      "source_authority": "legacy-canonical-entity",
+      "legacy_entity_type": "BUYER_ORGANISATION"
+    },
+    {
+      "id": "crole_01k8z4c2supp",
+      "organisation_id": "ce_01k8z4b2kw7r",
+      "tenant_id": "tn_01k8z3thmn",
+      "role": "SUPPLIER",
+      "status": "ACTIVE",
+      "effective_from": "2026-01-11T00:00:00Z",
+      "source_authority": "legacy-canonical-entity",
+      "legacy_entity_type": "SUPPLIER_ORGANISATION"
+    },
+    {
+      "id": "crole_01k8z4c3supp",
+      "organisation_id": "ce_01k8z4b3np5t",
+      "tenant_id": "tn_01k8z3thmn",
+      "role": "SUPPLIER",
+      "status": "ACTIVE",
+      "effective_from": "2026-01-12T00:00:00Z",
+      "source_authority": "legacy-canonical-entity",
+      "legacy_entity_type": "SUPPLIER_ORGANISATION"
+    },
+    {
+      "id": "crole_01k8z4c4supp",
+      "organisation_id": "ce_01k8z4b4qs8v",
+      "tenant_id": "tn_01k8z3thmn",
+      "role": "SUPPLIER",
+      "status": "ENDED",
+      "effective_from": "2026-01-15T00:00:00Z",
+      "effective_to": "2026-06-30T00:00:00Z",
+      "source_authority": "legacy-canonical-entity",
+      "legacy_entity_type": "SUPPLIER_ORGANISATION"
+    },
+    {
+      "id": "crole_01k8z4c5buyr",
+      "organisation_id": "ce_01k8z4b5tv3x",
+      "tenant_id": "tn_01k8z3zuri",
+      "role": "BUYER",
+      "status": "ACTIVE",
+      "effective_from": "2026-02-20T00:00:00Z",
+      "source_authority": "legacy-canonical-entity",
+      "legacy_entity_type": "BUYER_ORGANISATION"
+    }
+  ],
+  "organisation_resolution_candidates": [
+    {
+      "id": "orc_01k8z4d1open",
+      "organisation_ids": ["ce_01k8z4b1hq2m", "ce_01k8z4b2kw7r"],
+      "matched_identifiers": [
+        {"type": "COMPANY_REGISTRATION", "normalised_value": "PVT20190443", "issuing_jurisdiction": "KE"}
+      ],
+      "status": "OPEN",
+      "detected_at": "2026-09-24T21:00:00Z",
+      "source": "organisation-reconciliation"
+    },
+    {
+      "id": "orc_01k8z4d2dist",
+      "organisation_ids": ["ce_01k8z4b4qs8v", "ce_01k8z4b5tv3x"],
+      "matched_identifiers": [
+        {"type": "TAX_IDENTIFIER", "normalised_value": "P051234567Q", "issuing_jurisdiction": "KE"}
+      ],
+      "status": "DISTINCT",
+      "detected_at": "2026-09-24T21:00:00Z",
+      "source": "organisation-reconciliation",
+      "decision": {
+        "decision": "DISTINCT",
+        "reason": "Registry extract shows the ended supplier's tax number was reassigned after deregistration; the buyer is a different company.",
+        "evidence_references": ["evd_01k8z4e1regx"]
+      },
+      "decided_by": "prn_01k8z4f1rvwr",
+      "decided_at": "2026-09-25T08:30:00Z"
+    }
+  ]
+}

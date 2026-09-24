@@ -23,6 +23,15 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Buyer/supplier reconciliation (ADR-BCP-018 gate ORG-13).**
+  `contracts/organisation/v1/counterparty.schema.json` defines
+  `CounterpartyRole` (tenant-scoped commercial role; migrated ADR-BCP-016
+  buyer and supplier records keep their canonical ids and record their legacy
+  kind), `OrganisationResolutionCandidate` (a quarantined pair of
+  Organisations sharing a governed identifier; names never match) and
+  `ResolutionCandidateDecision` (DISTINCT or DUPLICATE_CONFIRMED; merges
+  nothing). New example, semantic checks and eighteen negative fixtures in
+  `scripts/validate-organisation-contracts.py`.
 - **Organisation admission onboarding (ADR-BCP-018 gate ORG-09).**
   `contracts/organisation/v1/admission.schema.json` defines
   `OrganisationAdmissionRequest` (issued by the admission reviewer after an

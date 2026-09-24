@@ -22,6 +22,7 @@ Every file is a definition library. Validate a resource against its fragment URI
 | `mapping.schema.json` | `TenantOrganisationMapping`, `TenantLegalEntityMapping` |
 | `iam.schema.json` | `IamOrganisationReference` (canonical Organisation ↔ IAM-native organisation), `IamOrganisationEvidence` and the `keycloakOrganizationClaim` form |
 | `admission.schema.json` | `OrganisationAdmissionRequest` and `OrganisationAdmissionOutcome`: the organisation stages of external admission (identity resolution, legal verification, corporate relationship claims, PlatformAccount assignment) |
+| `counterparty.schema.json` | `CounterpartyRole` (tenant-scoped commercial role), `OrganisationResolutionCandidate` (a quarantined possible duplicate) and `ResolutionCandidateDecision` |
 | `events.schema.json` | Data payloads of the ADR-BCP-018 §124 lifecycle events |
 | `asyncapi.yaml` | Registers those events and composes each with the canonical envelope (`contracts/events/v1`) |
 | `examples/` | Illustrative instances for Nabhold Group Africa and an external group; `examples/events/` holds example event envelopes |
@@ -43,6 +44,8 @@ The Control Plane mints each resource ID. IDs are opaque and never contain names
 | TenantOrganisationMapping | `tom_[a-z0-9]+` |
 | TenantLegalEntityMapping | `tlem_[a-z0-9]+` |
 | IamOrganisationReference | `iamorg_[a-z0-9]+` |
+| CounterpartyRole | `crole_[a-z0-9]+` |
+| OrganisationResolutionCandidate | `orc_[a-z0-9]+` |
 
 These IDs replace the earlier reuse of `control-plane/v1#/$defs/mappingId` (`map_*`). That grammar still belongs to the canonical-mapping contract.
 
@@ -114,6 +117,7 @@ Any consequential decision that depends on a relationship MUST fail closed when 
 
 - `examples/nabhold-group-organisation.json`: models the first-party structure from ADR-BCP-018 §58. The Shared registry is the authoritative source for Organisation and LegalEntity identity, so those records are VERIFIED with a registry evidence reference. The registry marks jurisdiction, registration and ownership details as TBD, so the example omits them or sets them to `UNKNOWN`. The `OWNS` and `PLATFORM_*` relationships stay `PENDING_REVIEW` until the "Verify CorporateRelationship" step of ADR-BCP-018 §109 is complete. Until then, ADR-BCP-017 INTERNAL eligibility fails closed.
 - `examples/acme-holdings-external.json`: models an external group with opaque IDs throughout. Its VERIFIED facts are backed by evidence. It also includes an unreviewed applicant claim, a `CONFLICTED` ownership fact, a derived corporate group, a PlatformAccount and the tenant mappings.
+- `examples/legacy-buyer-supplier-migration.json`: models the ORG-13 migration of ADR-BCP-016 buyer and supplier records. Both keep their canonical ids and gain one tenant-scoped role each. Two pairs share a governed identifier and are quarantined (one OPEN, one decided DISTINCT). A similar organisation with a different registration number is never paired.
 
 ## Compatibility
 
@@ -156,3 +160,12 @@ A Keycloak Organization is an IAM projection of a canonical Organisation, never 
 - **Applicant data is evidence (§69).** Identifiers are recorded as unverified claims, and legal identity becomes VERIFIED only with the reviewer's `legal_verification` evidence. Declared corporate relationships are recorded PENDING_REVIEW with source authority `applicant-submission` and are never verified by admission.
 - **The platform relationship is server-authoritative (§70).** The request has no field for it; the Control Plane records EXTERNAL_CLIENT.
 - **A PlatformAccount is commercial only.** Joining one grants no tenant access.
+
+## Buyer/supplier reconciliation (gate ORG-13)
+
+`counterparty.schema.json` generalises ADR-BCP-016's bounded `BUYER_ORGANISATION` and `SUPPLIER_ORGANISATION` kinds into Organisation plus roles (ADR-BCP-018 §11, §112).
+
+- **Existing ids are kept (§112, §194).** A migrated record keeps its canonical id and its entity type, and gains an unverified organisation profile. Nothing is rewritten or deleted.
+- **Roles are tenant-scoped commercial capacity (ADR-BCP-014 §10-17).** A `CounterpartyRole` names one Organisation, one tenant and one role type. `legacy_entity_type` records the ADR-BCP-016 kind a migrated role came from. A role is not identity and grants no access.
+- **Possible duplicates are quarantined, never merged (§99-101).** An `OrganisationResolutionCandidate` pairs two Organisations that share at least one governed identifier (company registration, tax, VAT or LEI), compared after normalisation. Names never match.
+- **A decision merges nothing.** A reviewer records `DISTINCT` or `DUPLICATE_CONFIRMED` (naming the Organisation a merge would keep). The merge itself is a controlled change under ADR-BCP-021 (ADR-BCP-023 §52). The reviewer is the authenticated principal, never a request field. A `DISTINCT` pair is reopened only if a new governed identifier match appears.
