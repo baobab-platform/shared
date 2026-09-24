@@ -1,6 +1,6 @@
 # Foundation CI v2.2.0 promotion record
 
-**Status:** Candidate — requirements 1 to 4 are green. **Ready to tag**; the tag is not yet cut.
+**Status:** **Promoted** — tag `v2.2.0` cut on 2026-09-24; peeled SHA `ddd2c56f52b60472f0af1fd2e896e9cdd14bb636` (verified with `git rev-list -n1 'v2.2.0^{}'`).
 **Candidate revision:** `ddd2c56f52b60472f0af1fd2e896e9cdd14bb636` (`shared` `main`, merge of #75)
 **Proposed tag:** `v2.2.0`
 **Previous release:** `v2.1.0` (`53ed9cd`, see `foundation-ci-promotion-v2.1.0.md`)
@@ -25,7 +25,7 @@ The tag must point at the candidate revision itself, because that is the SHA the
 | 2 | `shared` self-consumer Foundation run | **Green** — Foundation Repository Gates ([run 35945106588](https://github.com/baobab-platform/shared/actions/runs/35945106588)), push to `main` on `ddd2c56`. `shared` itself declares `1.4.4-frontend`. |
 | 3 | One representative consumer per activated runtime or artifact class | **Green** — all 12 pilots pass `foundation / Foundation / Result` on the candidate (table below). |
 | 4 | Exact emitted result check name | **Verified:** `foundation / Foundation / Result` (caller job id `foundation`), unchanged from `v2.1.0`. |
-| 5 | Consumer references pinned to the promoted commit SHA | **Pending the tag** — each pilot PR below pins `ddd2c56` and moves to 1.4.4; they merge after the tag. |
+| 5 | Consumer references pinned to the promoted commit SHA | **In progress** — each pilot PR below already pins `ddd2c56`, the promoted SHA, and moves to 1.4.4; they merge after this record. |
 
 ## Pilot cohort (requirement 3)
 
