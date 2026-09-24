@@ -3,15 +3,15 @@ name: Reusable — Foundation CodeQL
 on:
   workflow_call:
     inputs:
-      enabled:
+      provider:
         description: >
-          Caller opt-in for CodeQL. Must be true only when GitHub Advanced
-          Security is licensed and enabled for private repositories (public
-          repositories may opt in without GHAS). Never set true on a private
-          repo without GHAS — the planner will refuse CodeQL and emit
-          SAST / Not available instead of attempting an upload that fails.
-        type: boolean
-        default: false
+          SAST provider resolved by the Foundation classifier from the
+          repository contract (security.sast_provider) and visibility:
+          codeql | fallback | disabled. The classifier has already refused
+          CodeQL on a private repository without an approved security.ghas
+          record, and disabled without an approved exceptions.sast.
+        type: string
+        default: fallback
       python: { type: boolean, default: false }
       node: { type: boolean, default: false }
       go: { type: boolean, default: false }
@@ -33,7 +33,7 @@ jobs:
     steps:
       - id: matrix
         env:
-          ENABLED: "${{ inputs.enabled }}"
+          PROVIDER: "${{ inputs.provider }}"
           PYTHON: "${{ inputs.python }}"
           NODE: "${{ inputs.node }}"
           GO: "${{ inputs.go }}"
@@ -52,69 +52,46 @@ jobs:
           entries << { language: "java-kotlin", mode: "autobuild" } if ENV["JAVA"] == "true"
           entries << { language: "rust", mode: "none" } if ENV["RUST"] == "true"
 
-          enabled = ENV["ENABLED"] == "true"
+          provider = ENV.fetch("PROVIDER")
+          abort "unsupported SAST provider #{provider.inspect}" unless %w[codeql fallback disabled].include?(provider)
           waived = ENV["WAIVED"] == "true"
           visibility = (ENV["VISIBILITY"] || "").strip
-          private = visibility == "private"
-          ghas_claim = enabled
-          codeql_available = !private || ghas_claim
 
           mode =
-            if waived
-              "waived"
-            elsif entries.empty?
-              "no_languages"
-            elsif !enabled
-              "not_available"
-            elsif !codeql_available
-              "not_available"
-            else
-              "codeql"
+            if waived then "waived"
+            elsif provider == "disabled" then "disabled"
+            elsif entries.empty? then "no_languages"
+            elsif provider == "codeql" then "codeql"
+            else "fallback"
             end
 
-          status_name =
-            case mode
-            when "waived" then "Waived"
-            when "no_languages" then "No languages"
-            when "not_available" then "Not available"
-            else "CodeQL"
-            end
+          status_name = {
+            "waived" => "Waived",
+            "disabled" => "Disabled",
+            "no_languages" => "No languages",
+            "fallback" => "Fallback",
+            "codeql" => "CodeQL"
+          }.fetch(mode)
 
-          reason =
-            case mode
-            when "waived"
-              "CodeQL waived by an approved repository exception"
-            when "no_languages"
-              "No CodeQL-supported languages were classified for this repository"
-            when "not_available"
-              if private && !enabled
-                "CodeQL not available: private repository without advanced_security_enabled (GHAS) opt-in; portable Trivy remains the baseline SAST path"
-              elsif private && enabled && !codeql_available
-                "CodeQL not available for this private repository under current policy"
-              elsif !enabled
-                "CodeQL not requested (advanced_security_enabled=false); portable Trivy remains the baseline SAST path"
-              else
-                "CodeQL not available"
-              end
-            else
-              if private
-                "CodeQL enabled for private repository; caller asserts GitHub Advanced Security is licensed and enabled"
-              else
-                "CodeQL enabled for public repository"
-              end
-            end
+          reason = {
+            "waived" => "CodeQL waived by an approved repository exception",
+            "disabled" => "SAST disabled by security.sast_provider with an approved exceptions.sast",
+            "no_languages" => "No CodeQL-supported languages were classified for this repository",
+            "fallback" => "security.sast_provider resolved to fallback; CodeQL does not run and the portable Trivy scans remain the evidence",
+            "codeql" => "CodeQL selected by security.sast_provider (visibility=#{visibility.empty? ? 'unknown' : visibility})"
+          }.fetch(mode)
 
-          warn "::warning::#{reason}" if mode == "waived"
-          puts "::notice::SAST decision: mode=#{mode} visibility=#{visibility.empty? ? 'unknown' : visibility} enabled=#{enabled} languages=#{entries.map { |e| e[:language] }.join(',')}"
+          warn "::warning::#{reason}" if %w[waived disabled].include?(mode)
+          puts "::notice::SAST decision: mode=#{mode} provider=#{provider} visibility=#{visibility.empty? ? 'unknown' : visibility} languages=#{entries.map { |e| e[:language] }.join(',')}"
           puts "::notice::#{reason}"
 
           decision = {
-            schema_version: 1,
+            schema_version: 2,
             mode: mode,
+            provider: provider,
             status_name: status_name,
             reason: reason,
             visibility: visibility.empty? ? "unknown" : visibility,
-            enabled: enabled,
             languages: entries.map { |e| e[:language] }
           }
           File.write("foundation-sast-decision.json", JSON.pretty_generate(decision))

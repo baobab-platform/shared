@@ -23,6 +23,31 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- Foundation **security scopes** (M2). The security family now runs at `pr`
+  scope on pull requests (gitleaks over the PR's own commits, dependency
+  review applicable), `branch` scope on other events (the checked-out ref's
+  full history) and `deep` scope under `security-deep` (every fetched ref,
+  dependency review off). Each emits its own result: `Security / PR`,
+  `Security / Branch` or `Security / Deep`. `security-secrets-scan.yml`
+  gains a validated `log-opts` input (default `HEAD`, backward compatible).
+- **`security.sast_provider`** in `.baobab/repository.yaml` (H2):
+  `codeql | fallback | disabled`, with a `security.ghas` approval record
+  required for CodeQL on a private repository and `disabled` requiring an
+  approved `exceptions.sast`. Resolved by `scripts/foundation/sast_policy.rb`
+  in the classifier; SAST reports `SAST / Fallback` instead of
+  `SAST / Not available`. Private dependency review now also depends on the
+  `security.ghas` record.
+- **Organisation drift guard** (Phase 7):
+  `.github/workflows/foundation-org-conformance.yml` runs weekly and on
+  demand, evaluating every organisation repository with
+  `scripts/foundation/org_conformance.py` against
+  `.baobab/org-conformance.yaml`, and fails on non-deferred High findings.
+  An optional `ORG_CONFORMANCE_TOKEN` secret extends it to private
+  repositories.
+- Fixtures: reusable-workflow nesting depth and workflow count against
+  GitHub's limits, a version comment on every SHA-pinned action, SAST
+  provider resolution across visibility and provider, the classifier run end
+  to end, and the drift guard's rules.
 - Foundation CI **Phase 4 product separation**:
   - Optional `profile` on `foundation-repository-gates.yml`
     (`full` | `contract` | `security-pr` | `security-deep` | `container`; default `full`).
@@ -102,6 +127,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- Every SHA-pinned action carries a version comment; the five runtime setup
+  pins that tracked a default branch now name the release they follow.
 - Foundation environment gate: every `baobab-dev` profile now requires
   **1.4.4** or newer (was 1.2.6, and 1.4.0-rc.0 for `infra`). Callers that
   declare an older image fail the environment gate once they pin a Foundation
@@ -145,13 +172,21 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Deprecated
 
+- `advanced_security_enabled` (Foundation input) is **deprecated** and kept
+  for one minor version: it only selects CodeQL for a repository that
+  declares no `security.sast_provider`, warns when it disagrees with a
+  declaration, and can no longer enable CodeQL on a private repository
+  without `security.ghas`.
 - Lowercase snake-case aliases for legal entities and underscore-form product
   identifiers remain accepted by Control Plane v1 only for compatibility. New
   records must use registry entity IDs and kebab-case product IDs.
 
 ## Removed
 
-Nothing yet.
+- **`legacy_metadata_enabled`** and the `.nabhold/environment.yaml` bridge
+  (from the orchestrator, classifier, environment gate and product
+  wrappers). Callers must drop the input when they repin; passing it to
+  v2.3.0 or later fails workflow validation.
 
 ## Fixed
 

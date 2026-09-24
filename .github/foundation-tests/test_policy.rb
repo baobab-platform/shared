@@ -5,6 +5,7 @@ require "yaml"
 
 require "open3"
 require "tmpdir"
+require "fileutils"
 
 GATES = %w[classify baseline reproducibility runtime environment security container].freeze
 entry_workflow = YAML.safe_load_file(".github/workflows/foundation-repository-gates.yml", aliases: true)
@@ -157,3 +158,75 @@ node_manifests.each do |name, (manifest, expected)|
 end
 
 puts "Reproducibility packageManager fixtures passed"
+
+# SAST provider resolution (H2). Every combination of visibility and declared
+# provider, plus the approval record, the sast exception and the deprecated
+# advanced_security_enabled override.
+require "date"
+load "scripts/foundation/sast_policy.rb"
+
+today = Date.new(2026, 9, 24)
+ghas = { "approved_by" => "@platform-security", "reason" => "GHAS licensed for this repository", "expires" => "2027-03-31" }
+sast_cases = {
+  # [visibility, declaration, legacy flag, sast exception] => provider, or :error
+  "public codeql" => [["public", { "sast_provider" => "codeql" }, false, false], "codeql"],
+  "public fallback" => [["public", { "sast_provider" => "fallback" }, false, false], "fallback"],
+  "public disabled with exception" => [["public", { "sast_provider" => "disabled" }, false, true], "disabled"],
+  "public disabled without exception" => [["public", { "sast_provider" => "disabled" }, false, false], :error],
+  "private codeql without ghas" => [["private", { "sast_provider" => "codeql" }, false, false], :error],
+  "private codeql with ghas" => [["private", { "sast_provider" => "codeql", "ghas" => ghas }, false, false], "codeql"],
+  "private codeql with expired ghas" => [["private", { "sast_provider" => "codeql", "ghas" => ghas.merge("expires" => "2026-01-01") }, false, false], :error],
+  "private codeql with unsigned ghas" => [["private", { "sast_provider" => "codeql", "ghas" => ghas.merge("approved_by" => "someone") }, false, false], :error],
+  "private fallback" => [["private", { "sast_provider" => "fallback" }, false, false], "fallback"],
+  "private disabled with exception" => [["private", { "sast_provider" => "disabled" }, false, true], "disabled"],
+  "private disabled without exception" => [["private", { "sast_provider" => "disabled" }, false, false], :error],
+  "undeclared defaults to fallback" => [["public", nil, false, false], "fallback"],
+  "legacy flag selects codeql when undeclared" => [["public", nil, true, false], "codeql"],
+  "legacy flag cannot unlock private codeql" => [["private", nil, true, false], :error],
+  "declaration beats legacy flag" => [["public", { "sast_provider" => "fallback" }, true, false], "fallback"],
+  "unknown visibility is private" => [["", { "sast_provider" => "codeql" }, false, false], :error],
+  "unknown provider" => [["public", { "sast_provider" => "semgrep" }, false, false], :error]
+}
+sast_cases.each do |name, ((visibility, declaration, legacy, exception), expected)|
+  result = FoundationSast.resolve(visibility: visibility, declaration: declaration,
+                                  legacy_advanced_security: legacy, sast_exception: exception, today: today)
+  actual = result.error ? :error : result.provider
+  abort "sast #{name}: expected #{expected.inspect}, got #{actual.inspect} (#{result.error})" unless actual == expected
+end
+abort "ghas approval not reported" unless FoundationSast.resolve(visibility: "private", declaration: { "sast_provider" => "fallback", "ghas" => ghas }, today: today).ghas_approved
+disagreement = FoundationSast.resolve(visibility: "public", declaration: { "sast_provider" => "fallback" }, legacy_advanced_security: true, today: today)
+abort "legacy disagreement not warned" unless disagreement.warnings.any? { |message| message.include?("the declaration wins") }
+
+# The real classifier step, run against sample contracts with this checkout
+# standing in for the pinned Foundation revision.
+classifier = YAML.safe_load_file(".github/workflows/reusable-foundation-classify.yml", aliases: true)
+resolve_step = classifier.dig("jobs", "classify", "steps").find { |step| step["id"] == "resolve" }
+abort "classifier resolve step not found" unless resolve_step
+base_contract = {
+  "schema_version" => 1, "repository" => { "lifecycle" => "active" }, "capabilities" => ["node"],
+  "environment" => { "baobab_dev" => { "required" => false } }, "artifacts" => { "container" => false }
+}
+classifier_cases = {
+  "public, declares codeql" => ["public", { "security" => { "sast_provider" => "codeql" } }, "codeql"],
+  "private, declares fallback" => ["private", { "security" => { "sast_provider" => "fallback" } }, "fallback"],
+  "private, codeql without approval" => ["private", { "security" => { "sast_provider" => "codeql" } }, :error],
+  "unknown security field" => ["public", { "security" => { "provider" => "codeql" } }, :error],
+  "nothing declared" => ["public", {}, "fallback"]
+}
+classifier_cases.each do |name, (visibility, extra, expected)|
+  actual = Dir.mktmpdir do |dir|
+    FileUtils.mkdir_p(File.join(dir, ".baobab"))
+    File.write(File.join(dir, ".baobab/repository.yaml"), YAML.dump(base_contract.merge(extra)))
+    File.symlink(Dir.pwd, File.join(dir, ".foundation"))
+    output = File.join(dir, "output")
+    env = { "VISIBILITY" => visibility, "ADVANCED_SECURITY_ENABLED" => "false",
+            "GITHUB_OUTPUT" => output, "GITHUB_STEP_SUMMARY" => File.join(dir, "summary") }
+    _, status = Open3.capture2e(env, "ruby", "-e", resolve_step["run"], chdir: dir)
+    next :error unless status.success?
+
+    File.readlines(output).find { |line| line.start_with?("sast_provider=") }.to_s.strip.delete_prefix("sast_provider=")
+  end
+  abort "classifier #{name}: expected #{expected.inspect}, got #{actual.inspect}" unless actual == expected
+end
+
+puts "SAST provider resolution fixtures passed"

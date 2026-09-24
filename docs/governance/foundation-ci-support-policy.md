@@ -61,4 +61,4 @@ Foundation uploads retained workflow artifacts so waived controls and fallback S
 
 A run that does not create jobs is a Foundation distribution or GitHub configuration defect. A started gate reporting `misconfigured` is a repository contract defect. A started applicable gate reporting `failed` is a policy or repository defect. Only an explicit classifier decision may make a control not applicable.
 
-For SAST: a private repository without `advanced_security_enabled` must receive an explicit **SAST / Not available** (or equivalent) coverage decision, not a CodeQL upload failure. That is a Foundation distribution defect if CodeQL still runs.
+For SAST: a private repository without an approved `security.ghas` record must never reach a CodeQL upload. It receives an explicit **SAST / Fallback** decision, or fails classification if it declares `codeql` without the approval. CodeQL running there anyway is a Foundation distribution defect.

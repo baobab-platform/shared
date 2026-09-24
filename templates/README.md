@@ -57,10 +57,10 @@ workflow at all — see its own entry below for why it's copied differently.
   Recommended for every repo that participates in the Foundation contract.
   **The template is executable as published:** it supplies the required
   `foundation_ref` input, the minimum permissions (`contents`, `packages`,
-  `actions`, `security-events`), and explicit defaults for
-  `advanced_security_enabled` and `legacy_metadata_enabled`. Private
-  repositories without GitHub Advanced Security must keep
-  `advanced_security_enabled: false`.
+  `actions`, `security-events`), and an explicit `dependency_review_enabled`.
+  CodeQL is chosen by `security.sast_provider` in the repository's
+  `.baobab/repository.yaml`, not by a caller input; a private repository
+  needs an approved `security.ghas` record to run CodeQL.
 
 Steps:
 
@@ -74,24 +74,21 @@ Steps:
    already in the template, since it may be stale by the time you copy
    it.
 
-   **Release tags (historical):** `v1.0.0` … `v1.4.0`. Latest cut tag is still
-   **`v1.4.0`** until **`v2.0.0`** is promoted.
-
-   **Foundation consumer-readiness candidate (Phase 1+2, not yet tagged):**
-   `1f39f6871a0f832127c0a44e3111807320f29b46`
-   See `docs/governance/foundation-ci-promotion-v2.0.0.md` for status. Do not
-   treat this SHA as a supported release until that document says **promoted**
-   and the `v2.0.0` tag exists.
+   **Foundation releases:** the current promoted release, its peeled SHA and
+   any open candidate are listed under "Current promoted release" in
+   `docs/governance/foundation-ci-support-policy.md`, with one promotion
+   record per release (`docs/governance/foundation-ci-promotion-v*.md`).
+   `v2.0.0` is superseded and must not be pinned.
 
    Don't trust a tag name alone — confirm with
    `git cat-file -e <sha>:.github/workflows/<file>`.
 4. Confirm the consuming repo's Settings → Actions → General → Actions
    permissions allows `baobab-platform/shared` (only relevant if that repo has an
    explicit allow-list rather than "Allow all actions").
-5. For Foundation specifically: set `advanced_security_enabled: true` only
-   when GHAS is enabled for the repository. Leave `legacy_metadata_enabled`
-   true only while migrating from `.nabhold/environment.yaml`; new adopters
-   with `.baobab/repository.yaml` should set it false. Branch protection should
+5. For Foundation specifically: declare `security.sast_provider` in
+   `.baobab/repository.yaml` (see `docs/governance/foundation-ci-v2.md`).
+   Do not pass `advanced_security_enabled` (deprecated) or
+   `legacy_metadata_enabled` (removed in v2.3.0). Branch protection should
    require the check emitted as **`foundation / Foundation / Result`** (caller
    job id must be `foundation`).
 

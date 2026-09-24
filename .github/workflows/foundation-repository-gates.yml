@@ -19,16 +19,12 @@ on:
       dependency_review_enabled: { type: boolean, default: false }
       advanced_security_enabled:
         description: >
-          Opt-in for GHAS-backed controls (CodeQL and private dependency review).
-          Public + true runs CodeQL; public/private + false emits SAST / Not available
-          without attempting upload; private + true runs CodeQL only when the caller
-          asserts GHAS is licensed and enabled. Default false is safe for private repos.
+          Deprecated. Declare security.sast_provider (and, for CodeQL on a private
+          repository, security.ghas) in .baobab/repository.yaml instead. When the
+          repository declares nothing, true still selects CodeQL; it never enables
+          CodeQL on a private repository without the ghas approval record.
         type: boolean
         default: false
-      legacy_metadata_enabled:
-        description: Temporary cohort-migration bridge for .nabhold/environment.yaml; remove after Gate 11.
-        type: boolean
-        default: true
       release_require_zero_exceptions:
         description: >
           When true, Foundation / Result fails if any repository exceptions are active.
@@ -52,7 +48,7 @@ jobs:
     uses: ./.github/workflows/reusable-foundation-classify.yml
     with:
       foundation_ref: "${{ inputs.foundation_ref }}"
-      legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
+      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
   baseline:
     if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
     needs: classify
@@ -92,7 +88,6 @@ jobs:
     with:
       foundation_ref: "${{ inputs.foundation_ref }}"
       required: "${{ needs.classify.outputs.environment_required == 'true' }}"
-      legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
   security:
     if: ${{ inputs.profile == 'full' || inputs.profile == 'security-pr' || inputs.profile == 'security-deep' }}
     needs: classify
@@ -102,8 +97,13 @@ jobs:
       actions: read
       security-events: write
     with:
+      # security-deep always runs the deep scope. Otherwise a pull_request is
+      # scanned at PR scope and anything else (push, dispatch, schedule) at
+      # branch scope, so a security-pr run outside a PR still has a history.
+      scope: "${{ inputs.profile == 'security-deep' && 'deep' || (github.event_name == 'pull_request' && 'pr' || 'branch') }}"
       dependency_review_enabled: "${{ inputs.dependency_review_enabled }}"
-      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
+      sast_provider: "${{ needs.classify.outputs.sast_provider }}"
+      ghas_approved: "${{ needs.classify.outputs.ghas_approved == 'true' }}"
       python: "${{ needs.classify.outputs.python == 'true' }}"
       node: "${{ needs.classify.outputs.node == 'true' }}"
       go: "${{ needs.classify.outputs.go == 'true' }}"

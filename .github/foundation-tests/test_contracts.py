@@ -124,8 +124,31 @@ case["exceptions"] = {
 }
 invalid_cases["unknown exception control"] = case
 
+case = copy.deepcopy(BASE)
+case["security"] = {"sast_provider": "semgrep"}
+invalid_cases["unknown SAST provider"] = case
+
+case = copy.deepcopy(BASE)
+case["security"] = {"sast_provider": "codeql", "ghas": {"approved_by": "@platform"}}
+invalid_cases["incomplete GHAS approval"] = case
+
+case = copy.deepcopy(BASE)
+case["security"] = {"provider": "codeql"}
+invalid_cases["unknown security field"] = case
+
 for name, document in invalid_cases.items():
     expect_invalid(name, document)
+
+for provider in ("codeql", "fallback", "disabled"):
+    declared = copy.deepcopy(BASE)
+    declared["security"] = {"sast_provider": provider}
+    expect_valid(f"security.sast_provider {provider}", declared)
+approved = copy.deepcopy(BASE)
+approved["security"] = {
+    "sast_provider": "codeql",
+    "ghas": {"approved_by": "@platform", "reason": "GHAS is licensed for this repository", "expires": "2099-12-31"},
+}
+expect_valid("codeql with GHAS approval", approved)
 
 exception = copy.deepcopy(BASE)
 exception["exceptions"] = {

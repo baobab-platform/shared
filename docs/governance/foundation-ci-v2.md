@@ -6,7 +6,7 @@ Foundation CI enforces Baobab-wide governance and reproducibility contracts. It 
 
 Every governed repository declares `.baobab/repository.yaml`. The declaration is authoritative; strong file evidence may add a capability but never removes a declared one. The contract is intentionally limited to lifecycle, capabilities, development-environment participation, package-manager intent, produced artifacts, and controlled exceptions.
 
-During the organisation rollout only, consumers without the new contract may use existing `.baobab/environment.yaml` or `.nabhold/environment.yaml` metadata. Such runs emit a migration warning. Set `legacy_metadata_enabled: false` in a pilot consumer to prove full migration. The bridge is scheduled for removal after all consumer pins have moved to the v2 Foundation commit.
+`.baobab/repository.yaml` is required. The temporary `.nabhold/environment.yaml` migration bridge and its `legacy_metadata_enabled` input were removed in v2.3.0; a caller that still passes that input fails validation and must drop it when it repins.
 
 ## Capability evidence
 
@@ -28,19 +28,31 @@ The classifier publishes Boolean workflow outputs. Downstream jobs use those out
 |---|---|---|---|
 | Compatibility (all) | `foundation-repository-gates.yml` | `full` (default) | contract + security + container |
 | Contract | `foundation-product-contract.yml` | `contract` | classify, baseline, reproducibility, runtime, environment |
-| Security (PR) | `foundation-product-security.yml` (`mode: pr`) | `security-pr` | classify, security (portable Trivy, native adapters, secrets, dependency review, SAST) |
-| Security (deep) | `foundation-product-security.yml` (`mode: deep`) | `security-deep` | same jobs; intended for schedule / monitoring |
+| Security (PR) | `foundation-product-security.yml` (`mode: pr`) | `security-pr` | classify, security at PR scope: secrets over the PR's own commits, dependency review applicable, portable Trivy, native adapters, SAST |
+| Security (deep) | `foundation-product-security.yml` (`mode: deep`) | `security-deep` | classify, security at deep scope: secrets over every fetched ref, dependency review off, portable Trivy, native adapters, SAST |
 | Container / release | `foundation-product-container.yml` | `container` | classify, container policy, build, scan, SBOM |
 
 Branch protection requires the single combined result **`foundation / Foundation / Result`**, emitted when a caller job with id `foundation` calls `foundation-repository-gates.yml` directly. Product wrappers add a level of reusable-workflow nesting, so their checks are named `foundation / foundation / Foundation / Result` and are **not** the required check. Use them only for additional, non-required runs such as scheduled deep security.
 
 Existing callers that omit `profile` continue to receive `full` behaviour.
 
+### Security scope
+
+The security family runs at one of three scopes. The orchestrator chooses it; callers do not pass it.
+
+| Scope | Chosen when | Secret scan (`gitleaks --log-opts`) | Dependency review | Result check |
+|---|---|---|---|---|
+| `pr` | `pull_request` event, any profile except `security-deep` | `<base sha>..HEAD` — the PR's own commits | applicable when `dependency_review_enabled` | `Security / PR` |
+| `branch` | any other event (`push`, `workflow_dispatch`, `schedule`) under `full` or `security-pr` | `HEAD` — the checked-out ref's full history | off | `Security / Branch` |
+| `deep` | profile `security-deep` | `--all` — every fetched ref | off | `Security / Deep` |
+
+A PR therefore no longer fails because of a secret already on its base branch; that is caught by the branch scan on the next push and by the scheduled deep scan. None of the `Security / *` checks is required; branch protection requires only `foundation / Foundation / Result`.
+
 ### Security trigger matrix
 
 | Trigger | Authoritative product | Typical inputs |
 |---|---|---|
-| `pull_request` | Security PR and/or Contract | `dependency_review_enabled: true` when available; `advanced_security_enabled` only with GHAS |
+| `pull_request` | Security PR and/or Contract | `dependency_review_enabled: true` when available; CodeQL from `security.sast_provider` |
 | `push` to default branch | Contract and/or full compatibility | Match repository policy |
 | `schedule` (weekly) | Security deep | Prefer `foundation-product-security.yml` with `mode: deep`; do not treat a deep-scan failure as a PR regression without triage |
 | Release / tag pipeline | Container | `foundation-product-container.yml` when `container_artifact` is true; prefer `release_require_zero_exceptions: true` |
@@ -80,18 +92,34 @@ GitHub dependency review is activated only for pull requests in repositories whe
 
 ### SAST / CodeQL decision matrix
 
-| Repository visibility | `advanced_security_enabled` | Languages classified | Result |
+The repository declares its SAST provider in `.baobab/repository.yaml`; the classifier resolves it together with the repository's visibility (`scripts/foundation/sast_policy.rb`).
+
+```yaml
+security:
+  sast_provider: codeql      # codeql | fallback | disabled (default: fallback)
+  ghas:                      # required for codeql on a private repository
+    approved_by: "@handle"
+    reason: "GitHub Advanced Security is licensed and enabled"
+    expires: "2027-03-31"
+```
+
+| Visibility | `sast_provider` | Approval | Result |
 |---|---|---|---|
-| public | `true` | yes | CodeQL runs per language |
-| public | `false` | any | **SAST / Not available** (portable Trivy remains baseline) |
-| private | `false` | any | **SAST / Not available** — does not attempt CodeQL upload |
-| private | `true` | yes | CodeQL runs; caller asserts GHAS is licensed and enabled |
-| any | any | none | **SAST / No languages** |
-| any | any | waived exception | **SAST / Waived** |
+| public | `codeql` | — | CodeQL runs per classified language |
+| public | `fallback` | — | **SAST / Fallback**; portable Trivy remains the evidence |
+| public | `disabled` | approved `exceptions.sast` | **SAST / Waived** |
+| private | `codeql` | approved, unexpired `security.ghas` | CodeQL runs per classified language |
+| private | `codeql` | none, or expired | classification fails: the repository is misconfigured |
+| private | `fallback` | — | **SAST / Fallback** |
+| private | `disabled` | approved `exceptions.sast` | **SAST / Waived** |
+| any | `disabled` | no `exceptions.sast` | classification fails |
+| any | `codeql` / `fallback` | — | **SAST / No languages** when nothing CodeQL supports is classified |
 
-Private repositories must not set `advanced_security_enabled: true` unless GitHub Advanced Security is actually enabled. The planner uses visibility plus the caller opt-in so a private repo without the opt-in cannot accidentally invoke CodeQL and fail on SARIF upload. When CodeQL does not run, the workflow emits a visible `SAST / Not available` (or Waived / No languages) check instead of a silent skip.
+Visibility that is not reported as `public` is treated as private. A private repository can therefore never reach a CodeQL upload without an approval record in its own contract. The resolved decision is uploaded as `foundation-sast-decision.json`.
 
-Dependency review uses the same visibility rule: available on public repositories, or on private repositories only when `advanced_security_enabled` is true. If a PR enables dependency review on a private repo without that claim, the job fails with an actionable error.
+`advanced_security_enabled` is deprecated and kept for one minor version. For a repository that declares nothing, `true` still selects `codeql` (subject to the same private-repository approval rule). When it disagrees with a declaration, the declaration wins and a warning is emitted.
+
+Dependency review follows the same availability decision: available on public repositories, and on private repositories only with an approved `security.ghas`. If a PR enables dependency review on a private repository without it, the job fails with an actionable error.
 
 The `shared` repository may remain private. Organisation Actions access must permit Baobab repositories to call reusable workflows from it. Consumers continue to pin the exact `shared` commit SHA; they must not replace immutable pins with `main`.
 
