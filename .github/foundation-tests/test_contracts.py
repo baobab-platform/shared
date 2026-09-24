@@ -158,6 +158,14 @@ for name, profile in catalogue["profiles"].items():
     assert profile["minimum_version"], f"{name} has no version floor"
     assert "tag_suffix" in profile, f"{name} has no tag suffix declaration"
 
+own = yaml.safe_load((ROOT / ".baobab/environment.yaml").read_text())["environment"]
+own_policy = catalogue["profiles"][own["profile"]]
+own_version = own["minimum_version"].removesuffix(own_policy["tag_suffix"])
+floor = tuple(int(part) for part in own_policy["minimum_version"].split("."))
+assert tuple(int(part) for part in own_version.split(".")) >= floor, (
+    f"shared declares baobab-dev {own_version}, below the {own['profile']} floor {own_policy['minimum_version']}"
+)
+
 loaded = yaml.safe_load((ROOT / ".baobab/repository.yaml").read_text())
 expect_valid("shared repository contract", loaded)
 

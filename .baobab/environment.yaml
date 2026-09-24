@@ -7,7 +7,7 @@ application:
 environment:
   provider: baobab-dev
   profile: frontend
-  minimum_version: "1.4.3-frontend"
+  minimum_version: "1.4.4-frontend"
   contract_minimum_version: "1.0"
 compatibility_policy:
   strict_runtime_versions: true
