@@ -33,8 +33,12 @@ DOCUMENTED_OPTIONAL_INPUTS = {
     "dockerfile",
     "build_context",
     "dependency_review_enabled",
-    "advanced_security_enabled",
-    "legacy_metadata_enabled",
+}
+
+# Removed or deprecated inputs a new caller must not pass.
+FORBIDDEN_INPUTS = {
+    "legacy_metadata_enabled",  # removed in v2.3.0
+    "advanced_security_enabled",  # deprecated: security.sast_provider in the contract
 }
 
 
@@ -82,6 +86,10 @@ def main() -> None:
         assert name in with_block, (
             f"template should pass optional input {name!r} explicitly for documentation"
         )
+    for name in FORBIDDEN_INPUTS:
+        assert name not in with_block, f"template must not pass {name!r}"
+    unknown = set(with_block) - set(entry_inputs)
+    assert not unknown, f"template passes inputs the entrypoint does not declare: {sorted(unknown)}"
 
     # Placeholder SHA must appear so consumers replace it; do not ship a real SHA
     # that becomes stale. Prefer a clear REPLACE_ token.
@@ -89,8 +97,7 @@ def main() -> None:
     assert "REPLACE_WITH_FULL_SHARED_COMMIT_SHA" in template_text, (
         "template must use REPLACE_WITH_FULL_SHARED_COMMIT_SHA placeholder for the pin"
     )
-    assert "advanced_security_enabled" in template_text
-    assert "legacy_metadata_enabled" in template_text
+    assert "sast_provider" in template_text
     assert "security-events" in template_text
 
     print("Caller template validation passed")

@@ -1,0 +1,5 @@
+# Reviewed gitleaks false positives. Fingerprint format: commit:file:rule:line.
+# Contract examples: "idempotencykey" holds an illustrative idempotency key
+# (trade-order-order_01k4n6w5-v1), not a credential.
+d28cbdeb77f2c2eab7c20439f908a7c7a8fa4110:contracts/erp/v1/examples/commerce-order-placed.json:generic-api-key:13
+d28cbdeb77f2c2eab7c20439f908a7c7a8fa4110:contracts/erp/v1/examples/order-consequence-changed.json:generic-api-key:14

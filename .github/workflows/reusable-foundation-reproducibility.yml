@@ -70,7 +70,7 @@ jobs:
               expected = { "pnpm" => "pnpm-lock.yaml", "npm" => "package-lock.json", "yarn" => "yarn.lock" }.fetch(declared)
               errors << "declared Node manager #{declared} requires #{expected}" unless File.file?(expected)
               if File.file?("package.json")
-                actual = JSON.parse(File.read("package.json"))["packageManager"].to_s.split("@").first
+                actual = JSON.parse(File.read("package.json"))["packageManager"].to_s.split("@").first.to_s
                 errors << "package.json packageManager #{actual.inspect} disagrees with contract #{declared}" unless actual.empty? || actual == declared
               end
             end

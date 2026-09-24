@@ -7,7 +7,6 @@ on:
         type: string
         required: true
       required: { type: boolean, default: false }
-      legacy_metadata_enabled: { type: boolean, default: true }
 permissions:
   contents: read
   packages: read
@@ -27,21 +26,13 @@ jobs:
       - name: Validate Baobab development environment declaration
         if: inputs.required
         id: contract
-        env:
-          LEGACY_METADATA_ENABLED: "${{ inputs.legacy_metadata_enabled }}"
         shell: ruby {0}
         run: |
           require "json"
           require "yaml"
           require "rubygems/version"
-          path = if File.file?(".baobab/environment.yaml")
-            ".baobab/environment.yaml"
-          elsif ENV.fetch("LEGACY_METADATA_ENABLED") == "true" && File.file?(".nabhold/environment.yaml")
-            warn "::warning::.nabhold/environment.yaml is deprecated; migrate it to .baobab/environment.yaml"
-            ".nabhold/environment.yaml"
-          else
-            abort ".baobab/environment.yaml is required when baobab_dev.required is true"
-          end
+          path = ".baobab/environment.yaml"
+          abort "#{path} is required when baobab_dev.required is true" unless File.file?(path)
           declaration = YAML.safe_load_file(path, aliases: true)
           accepted_names = %w[baobab-development-environment-contract baobab-platform-development-environment-contract]
           abort "invalid environment contract name" unless accepted_names.include?(declaration.dig("schema", "name"))
