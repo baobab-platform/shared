@@ -19,6 +19,9 @@ reports the drift that the 2026-09-23 conformance audit had to find by hand:
   Medium  unreleased-pin               the pin is not a promoted release (for example a pilot candidate)
   Medium  deprecated-input             the caller passes a deprecated input
   Medium  unreadable                   the repository could not be read with the available token
+  Medium  not-visible                  a repository named in the configuration (deferred or
+                                       expected_repositories) is absent from the listing — usually a
+                                       private repository the token cannot see
   Low     undeclared-sast-provider     .baobab/repository.yaml does not declare security.sast_provider
 
 Repositories listed under `deferred` in the configuration are still reported,
@@ -139,6 +142,16 @@ def evaluate(snapshot: dict, config: dict, today: dt.date) -> dict:
         if expiry < today:
             add(name, "High", "expired-deferral", f"deferral approved by {deferral.get('approved_by')} expired on {expiry}")
 
+    # The organisation listing only returns repositories the token can see, so a
+    # private repository is silently absent without an organisation-wide token.
+    # Any repository the configuration names must therefore be accounted for.
+    listed = {repo["name"] for repo in snapshot.get("repositories", [])}
+    known = set(deferred) | set(config.get("expected_repositories") or [])
+    for name in sorted(known - listed):
+        add(name, "Medium", "not-visible",
+            "named in the configuration but absent from the organisation listing; "
+            "if it is private, set ORG_CONFORMANCE_TOKEN so it can be scanned")
+
     for repo in sorted(snapshot.get("repositories", []), key=lambda item: item["name"]):
         name = repo["name"]
         if repo.get("archived"):
@@ -246,6 +259,7 @@ def evaluate(snapshot: dict, config: dict, today: dt.date) -> dict:
         "latest_release": latest,
         "latest_release_sha": snapshot.get("tags", {}).get(latest) if latest else None,
         "repositories_scanned": sorted(repo["name"] for repo in snapshot.get("repositories", []) if not repo.get("archived")),
+        "repositories_not_visible": sorted(known - listed),
         "counts": counts,
         "deferred_findings": sum(1 for item in findings if item["deferred"]),
         "passed": not blocking,
@@ -257,6 +271,11 @@ def render_summary(report: dict) -> str:
     lines = ["## Foundation organisation conformance", ""]
     lines.append(f"Organisation: **{report['organisation']}** · latest promoted release: **{report['latest_release'] or 'none'}**")
     lines.append(f"Repositories scanned: {len(report['repositories_scanned'])}")
+    if report["repositories_not_visible"]:
+        lines.append(
+            f"Not visible to the token: {', '.join(report['repositories_not_visible'])}"
+            " — set ORG_CONFORMANCE_TOKEN to scan private repositories"
+        )
     counts = report["counts"]
     lines.append(
         f"Findings: **{counts['High']} High**, {counts['Medium']} Medium, {counts['Low']} Low"
