@@ -154,6 +154,21 @@ clean = org_conformance.evaluate(
 assert clean["passed"] is True, clean["findings"]
 assert clean["deferred_findings"] == 1
 
+# Repositories the configuration names must be seen: a private repository the
+# token cannot list is reported as not-visible instead of silently dropped.
+hidden = org_conformance.evaluate(
+    {"tags": TAGS, "repositories": [repo("conformant")]},
+    {**CONFIG, "deferred": {"later": CONFIG["deferred"]["later"]}, "expected_repositories": ["platform-secret"]},
+    TODAY,
+)
+hidden_found = {(item["repository"], item["severity"], item["check"], item["deferred"]) for item in hidden["findings"]}
+assert ("platform-secret", "Medium", "not-visible", False) in hidden_found, hidden_found
+assert ("later", "Medium", "not-visible", True) in hidden_found, hidden_found
+assert hidden["repositories_not_visible"] == ["later", "platform-secret"]
+assert hidden["passed"] is True  # visibility gaps are reported, not fatal
+assert "Not visible to the token: later, platform-secret" in org_conformance.render_summary(hidden)
+assert report["repositories_not_visible"] == []
+
 summary = org_conformance.render_summary(report)
 assert "### Findings" in summary and "### Deferred repositories" in summary and "**Result: failed**" in summary
 

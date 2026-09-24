@@ -11,7 +11,9 @@ name: Foundation Organisation Conformance
 # cover private repositories, add an ORG_CONFORMANCE_TOKEN secret: a
 # fine-grained token (or GitHub App token) with read-only Metadata and
 # Contents on every organisation repository. Without it, private
-# repositories are reported as unreadable (Medium) rather than skipped.
+# repositories are absent from the organisation listing: any that
+# .baobab/org-conformance.yaml names (deferred or expected_repositories) are
+# reported as not-visible (Medium), and unnamed ones cannot be seen at all.
 on:
   schedule:
     - cron: "17 6 * * 1"

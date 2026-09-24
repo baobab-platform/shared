@@ -19,6 +19,11 @@ removed_inputs:
 deprecated_inputs:
   - advanced_security_enabled
 
+# Repositories that must appear in every scan. A named repository missing from
+# the organisation listing (typically private without ORG_CONFORMANCE_TOKEN)
+# is reported as not-visible. Deferred repositories are always expected.
+expected_repositories: []
+
 # Repositories whose Foundation migration is deliberately postponed. Their
 # findings are reported but do not fail the run until the deferral expires.
 deferred:
