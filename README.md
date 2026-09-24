@@ -13,11 +13,12 @@
 
 This repository owns the reusable GitHub and contract-compatibility gates used
 across all eleven Baobab-Platform repositories. Its Codespaces environment uses the
-`baobab-dev` v1.2.6 `frontend` profile because Shared builds Node-based contract
+`baobab-dev` v1.4.4 `frontend` profile because Shared builds Node-based contract
 packages but no deployable service.
 
 Every consuming repository must provide a `.baobab/environment.yaml`, use an
-exact v1.2.6 development profile, commit dependency lockfiles, pin GitHub
+`baobab-dev` v1.4.4 or newer development profile (the floor in
+`.baobab/environment-profiles.json`), commit dependency lockfiles, pin GitHub
 Actions to full commit SHAs, and call the reusable Foundation Repository Gates.
 Those gates perform dependency review, source/dependency/secret scanning,
 conditional container build scanning, environment-contract validation, and

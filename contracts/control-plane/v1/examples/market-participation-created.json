@@ -1,0 +1,22 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000000102",
+  "type": "com.baobab-platform.control-plane.market-participation.created.v1",
+  "source": "urn:baobab-platform:service:baobab-cp",
+  "subject": "0192a1b0-7c3e-7a10-8000-00000000bb01",
+  "time": "2026-08-31T12:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/control-plane/v1/market-participation-created.schema.json",
+  "baobabscope": "tenant",
+  "correlationid": "cf71af4b-e547-4494-bad5-0b5a9fb6cb11",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "idempotencykey": "provision-01k4m7x9q2v6c8r3d5f1h0j4",
+  "traceparent": "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01",
+  "data": {
+    "market_assignment_id": "0192a1b0-7c3e-7a10-8000-00000000bb01",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "market_id": "0192a1b0-7c3e-7a10-8000-00000000cc01",
+    "status": "PENDING",
+    "source": "PROVISIONING"
+  }
+}

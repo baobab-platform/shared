@@ -184,8 +184,12 @@ concepts.each do |entry|
   fail_contract("#{entry['concept']} authorises bidirectional synchronisation") if serialised.include?("bidirectional")
 end
 organisation = concepts.find { |entry| entry["concept"] == "Organisation" }
-unless organisation["canonical_owner"] == "unassigned" && organisation["synchronisation_direction"] == "none_until_contract_approved"
-  fail_contract("organisation ownership must remain explicit and unassigned until approved")
+unless organisation["canonical_owner"] == "control-plane"
+  fail_contract("organisation canonical_owner must be control-plane (ADR-BCP-018)")
+end
+legal_entity = concepts.find { |entry| entry["concept"] == "Legal Entity" }
+unless legal_entity["canonical_owner"] == "control-plane"
+  fail_contract("legal entity canonical_owner must be control-plane runtime (ADR-BCP-018); Shared remains contract/first-party governance authority")
 end
 
 puts "ERP API, event, mapping, internationalisation and system-of-record contracts passed"

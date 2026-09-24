@@ -46,3 +46,27 @@ concepts:
     consistency: estate authoritative; declared != verified
     mechanism: estate-owned database and this contract's versioned events
     conflict_resolution: certification metadata only; document custody is a storage decision each estate makes for itself, not covered by this contract
+
+  - concept: Supplier KYB Evidence
+    canonical_owner: hosting-estate
+    producer: [digital-estates]
+    consumers: [erp, reporting]
+    external_identifier: estate-local kyb evidence ID scoped to one Supplier Application
+    idempiere_representation: none; approved decisions inform later ERP Supplier provisioning but never become C_BPartner document blobs
+    medusa_representation: none
+    synchronisation_direction: estate_to_authorised_consumers
+    consistency: estate authoritative pre-approval; declared evidence is not verification
+    mechanism: estate-owned metadata and versioned supplier-onboarding events
+    conflict_resolution: failed, expired or incomplete evidence blocks approval; ambiguous provider results require staff review
+
+  - concept: Supplier KYB Decision
+    canonical_owner: hosting-estate
+    producer: [digital-estates]
+    consumers: [erp, reporting]
+    external_identifier: Supplier Application plus monotonically increasing revision
+    idempiere_representation: readiness input only; not an ERP Supplier or Business Partner
+    medusa_representation: none
+    synchronisation_direction: estate_to_authorised_consumers
+    consistency: latest non-superseded revision wins; verified is required before approval
+    mechanism: versioned supplier-onboarding events and estate audit trail
+    conflict_resolution: fail closed on missing, failed or expired decision

@@ -12,13 +12,15 @@
       "additionalProperties": false,
       "required": ["lifecycle"],
       "properties": {
-        "lifecycle": { "enum": ["experimental", "active", "maintenance", "deprecated"] }
+        "lifecycle": { "enum": ["experimental", "active", "maintenance", "deprecated", "archived"] }
       }
     },
     "capabilities": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "enum": ["python", "node", "go", "java", "container", "infrastructure", "documentation", "contracts", "github-actions", "digital-estate", "engine", "library", "development-environment"] }
+      "items": {
+        "enum": ["python", "node", "go", "java", "rust", "container", "infrastructure", "documentation", "contracts", "github-actions", "digital-estate", "engine", "library", "development-environment"]
+      }
     },
     "environment": {
       "type": "object",
@@ -31,8 +33,14 @@
           "required": ["required"],
           "properties": {
             "required": { "type": "boolean" },
-            "profile": { "type": "string", "minLength": 1 }
-          }
+            "profile": { "enum": ["full", "frontend", "frontend-e2e", "infra"] }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "required": { "const": true } }, "required": ["required"] },
+              "then": { "required": ["profile"] }
+            }
+          ]
         }
       }
     },
@@ -42,24 +50,67 @@
       "properties": {
         "node": { "enum": ["pnpm", "npm", "yarn"] },
         "python": { "enum": ["uv", "pip", "poetry"] },
-        "java": { "enum": ["maven", "gradle"] }
+        "java": { "enum": ["maven", "gradle"] },
+        "rust": { "const": "cargo" }
       }
     },
     "artifacts": {
       "type": "object",
       "additionalProperties": false,
       "required": ["container"],
-      "properties": { "container": { "type": "boolean" } }
+      "properties": {
+        "container": {
+          "oneOf": [
+            { "type": "boolean" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["enabled", "dockerfile", "context", "runtime"],
+              "properties": {
+                "enabled": { "const": true },
+                "dockerfile": { "type": "string", "minLength": 1 },
+                "context": { "type": "string", "minLength": 1 },
+                "runtime": { "type": "boolean" }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sast_provider": {
+          "enum": ["codeql", "fallback", "disabled"],
+          "description": "codeql runs CodeQL (a private repository also needs an approved ghas record); fallback reports SAST / Fallback and relies on the portable scans; disabled needs an approved exceptions.sast."
+        },
+        "ghas": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reason", "expires", "approved_by"],
+          "description": "Approval that GitHub Advanced Security is licensed and enabled for this repository. Required for codeql on a private repository; also makes dependency review available on a private repository.",
+          "properties": {
+            "reason": { "type": "string", "minLength": 12 },
+            "expires": { "type": "string", "format": "date" },
+            "approved_by": { "type": "string", "pattern": "^@[A-Za-z0-9-]+$" }
+          }
+        }
+      }
     },
     "exceptions": {
       "type": "object",
+      "propertyNames": {
+        "enum": ["baseline", "reproducibility", "runtime", "environment", "dependency-review", "sast", "dependency-audit", "secret-scan", "container-policy", "container-scan", "sbom"]
+      },
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["reason", "expires"],
+        "required": ["reason", "expires", "approved_by"],
         "properties": {
           "reason": { "type": "string", "minLength": 12 },
-          "expires": { "type": "string", "format": "date" }
+          "expires": { "type": "string", "format": "date" },
+          "approved_by": { "type": "string", "pattern": "^@[A-Za-z0-9-]+$" }
         }
       }
     }

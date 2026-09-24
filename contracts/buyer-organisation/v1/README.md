@@ -11,7 +11,7 @@ That separate admission lifecycle is governed by `baobab-cp` ADR-BCP-017.
 | Concern | Authority |
 | --- | --- |
 | Buyer application and commercial approval | Baobab Trade |
-| Registration and verification of a `BUYER_ORGANISATION` canonical entity; tenant/context attestation | Baobab Control Plane (bounded ADR-BCP-016 role) |
+| Registration and verification of a `BUYER_ORGANISATION` canonical entity; tenant/context attestation | Baobab Control Plane (ADR-BCP-016, with Organisation authority settled by ADR-BCP-018) |
 | Human authentication and principal lifecycle | Baobab IAM |
 | Buyer membership, roles and purchasing authority | Baobab Trade |
 | Customer/Business Partner projection, credit and accounting consequences | Baobab ERP |
@@ -41,8 +41,10 @@ DRAFT
 ```
 
 Approval creates the Trade-owned buyer relationship. Canonical linkage remains nullable until a
-Control Plane `BUYER_ORGANISATION` entity is registered and verified; ADR-BCP-016 does not settle
-platform-wide Organisation lifecycle ownership. Rejection,
+Control Plane `BUYER_ORGANISATION` entity is registered and verified. ADR-BCP-018 (section 194)
+settles the Organisation authority ADR-BCP-016 left open: the Control Plane is the runtime
+authority, and existing `BUYER_ORGANISATION` IDs remain reusable as canonical Organisation IDs.
+Rejection,
 withdrawal and suspension preserve audit history.
 
 ## Guardrails

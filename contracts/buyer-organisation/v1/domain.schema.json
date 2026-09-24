@@ -256,7 +256,7 @@
               "type": "null"
             }
           ],
-          "description": "Optional Control Plane canonical entity reference registered under ADR-BCP-016. Nullable because that ADR does not assign platform-wide Organisation lifecycle ownership."
+          "description": "Optional reference to the ADR-BCP-018 canonical Organisation (Control Plane CanonicalEntity id). Runtime authority is the Control Plane. Null until the buyer record is linked; existing buyer IDs are preserved."
         },
         "source_application_id": {
           "anyOf": [

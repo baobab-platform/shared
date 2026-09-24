@@ -1,0 +1,3 @@
+# Python runtime for the Foundation fixture suite (scripts/test-foundation.sh).
+check-jsonschema==0.38.0
+PyYAML==6.0.3
