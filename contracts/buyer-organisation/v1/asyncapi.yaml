@@ -14,6 +14,7 @@ channels:
     messages:
       buyerApplicationSubmitted: { $ref: "#/components/messages/BuyerApplicationSubmitted" }
       buyerApplicationDecision: { $ref: "#/components/messages/BuyerApplicationDecision" }
+      buyerApplicationEvidenceDecision: { $ref: "#/components/messages/BuyerApplicationEvidenceDecision" }
       buyerOrganisationRegistered: { $ref: "#/components/messages/BuyerOrganisationRegistered" }
       buyerOrganisationStatusChanged: { $ref: "#/components/messages/BuyerOrganisationStatusChanged" }
       buyerMembershipChanged: { $ref: "#/components/messages/BuyerMembershipChanged" }
@@ -41,6 +42,14 @@ components:
           - type: object
             properties:
               data: { $ref: ./events.schema.json#/$defs/buyerApplicationDecisionEventData }
+    BuyerApplicationEvidenceDecision:
+      name: com.baobab-platform.customer.buyer-application-evidence.decided.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/buyerApplicationEvidenceDecisionEventData }
     BuyerOrganisationRegistered:
       name: com.baobab-platform.customer.buyer-organisation.registered.v1
       payload:

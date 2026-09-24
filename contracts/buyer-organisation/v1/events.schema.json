@@ -345,6 +345,75 @@
           "maxLength": 128
         }
       }
+    },
+    "buyerApplicationEvidenceDecisionEventData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "buyer_application_id",
+        "evidence_id",
+        "evidence_type",
+        "canonical_document_id",
+        "document_version",
+        "content_sha256",
+        "decision",
+        "decision_reference",
+        "reason_code",
+        "reviewed_by_principal_id"
+      ],
+      "properties": {
+        "buyer_application_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_type": {
+          "type": "string",
+          "enum": [
+            "COMPANY_REGISTRATION",
+            "TAX_REGISTRATION",
+            "AUTHORIZED_REPRESENTATIVE",
+            "REGISTERED_ADDRESS",
+            "OWNERSHIP_STRUCTURE",
+            "BANK_ACCOUNT",
+            "OTHER"
+          ]
+        },
+        "canonical_document_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "document_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "VERIFIED",
+            "REJECTED"
+          ]
+        },
+        "decision_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "reviewed_by_principal_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   }
 }
