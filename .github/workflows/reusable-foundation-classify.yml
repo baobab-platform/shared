@@ -3,7 +3,12 @@ name: Reusable — Foundation Classification
 on:
   workflow_call:
     inputs:
-      legacy_metadata_enabled:
+      foundation_ref:
+        description: Immutable shared commit containing the canonical policy files.
+        type: string
+        required: true
+      advanced_security_enabled:
+        description: Deprecated caller override; security.sast_provider in the repository contract is authoritative.
         type: boolean
         default: false
     outputs:
@@ -22,7 +27,8 @@ on:
       environment_profile: { value: "${{ jobs.classify.outputs.environment_profile }}" }
       package_managers: { value: "${{ jobs.classify.outputs.package_managers }}" }
       exceptions: { value: "${{ jobs.classify.outputs.exceptions }}" }
-      metadata_mode: { value: "${{ jobs.classify.outputs.metadata_mode }}" }
+      sast_provider: { value: "${{ jobs.classify.outputs.sast_provider }}" }
+      ghas_approved: { value: "${{ jobs.classify.outputs.ghas_approved }}" }
 
 permissions:
   contents: read
@@ -46,13 +52,32 @@ jobs:
       environment_profile: "${{ steps.resolve.outputs.environment_profile }}"
       package_managers: "${{ steps.resolve.outputs.package_managers }}"
       exceptions: "${{ steps.resolve.outputs.exceptions }}"
-      metadata_mode: "${{ steps.resolve.outputs.metadata_mode }}"
+      sast_provider: "${{ steps.resolve.outputs.sast_provider }}"
+      ghas_approved: "${{ steps.resolve.outputs.ghas_approved }}"
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout caller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout canonical Foundation policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: baobab-platform/shared
+          ref: "${{ inputs.foundation_ref }}"
+          path: .foundation
+          persist-credentials: false
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+        if: hashFiles('.baobab/repository.yaml') != ''
+        with:
+          python-version: "3.13"
+      - name: Validate repository declaration against JSON Schema
+        if: hashFiles('.baobab/repository.yaml') != ''
+        run: |
+          python -m pip install --disable-pip-version-check "check-jsonschema==0.38.0"
+          check-jsonschema --schemafile .foundation/.baobab/repository.schema.json .baobab/repository.yaml
       - id: resolve
         name: Validate contract and resolve capabilities
         env:
-          LEGACY_METADATA_ENABLED: "${{ inputs.legacy_metadata_enabled }}"
+          VISIBILITY: "${{ github.event.repository.visibility }}"
+          ADVANCED_SECURITY_ENABLED: "${{ inputs.advanced_security_enabled }}"
         shell: ruby {0}
         run: |
           require "date"
@@ -66,7 +91,6 @@ jobs:
           end
 
           contract_path = ".baobab/repository.yaml"
-          metadata_mode = "contract"
           declared = []
           environment_required = false
           environment_profile = ""
@@ -76,10 +100,11 @@ jobs:
           container_dockerfile = ""
           container_context = "."
           container_runtime = true
+          security = nil
 
           if File.file?(contract_path)
             contract = YAML.safe_load_file(contract_path, permitted_classes: [Date], aliases: false)
-            assert_keys!(contract, %w[schema_version repository capabilities environment package_managers artifacts exceptions], "contract")
+            assert_keys!(contract, %w[schema_version repository capabilities environment package_managers artifacts security exceptions], "contract")
             abort "schema_version must be 1" unless contract["schema_version"] == 1
 
             repository = contract["repository"]
@@ -137,8 +162,11 @@ jobs:
             end
             abort "container artifact requires container capability" if container_artifact && !declared.include?("container")
 
+            security = contract["security"]
+            assert_keys!(security, %w[sast_provider ghas], "security") unless security.nil?
+
             exceptions = contract["exceptions"] || {}
-            assert_keys!(exceptions, %w[baseline reproducibility environment dependency-review sast dependency-audit secret-scan container-policy container-scan sbom], "exceptions")
+            assert_keys!(exceptions, %w[baseline reproducibility runtime environment dependency-review sast dependency-audit secret-scan container-policy container-scan sbom], "exceptions")
             exceptions.each do |control, exception|
               assert_keys!(exception, %w[reason expires approved_by], "exceptions.#{control}")
               abort "exception #{control} reason must be at least 12 characters" unless exception["reason"].to_s.length >= 12
@@ -156,13 +184,20 @@ jobs:
               actual_profile = environment_contract.dig("environment", "profile").to_s
               abort "repository and environment profiles disagree (#{environment_profile} != #{actual_profile})" unless actual_profile == environment_profile
             end
-          elsif ENV.fetch("LEGACY_METADATA_ENABLED") == "true" && (File.file?(".baobab/environment.yaml") || File.file?(".nabhold/environment.yaml"))
-            metadata_mode = "legacy"
-            environment_required = true
-            warn "::warning::.baobab/repository.yaml is required after migration; using temporary legacy metadata"
           else
             abort ".baobab/repository.yaml is required"
           end
+
+          load ".foundation/scripts/foundation/sast_policy.rb"
+          sast = FoundationSast.resolve(
+            visibility: ENV.fetch("VISIBILITY", ""),
+            declaration: security,
+            legacy_advanced_security: ENV.fetch("ADVANCED_SECURITY_ENABLED", "false") == "true",
+            sast_exception: exceptions.key?("sast")
+          )
+          abort sast.error if sast.error
+          sast.warnings.each { |message| warn "::warning::#{message}" }
+          puts "::notice::SAST provider: #{sast.provider} (visibility=#{ENV.fetch('VISIBILITY', '')}, ghas_approved=#{sast.ghas_approved})"
 
           evidence = {
             "python" => !Dir.glob("{,**/}pyproject.toml").empty?,
@@ -192,9 +227,10 @@ jobs:
             "environment_profile" => environment_profile,
             "package_managers" => JSON.generate(managers),
             "exceptions" => JSON.generate(exceptions),
-            "metadata_mode" => metadata_mode
+            "sast_provider" => sast.provider,
+            "ghas_approved" => sast.ghas_approved
           }
           File.open(ENV.fetch("GITHUB_OUTPUT"), "a") { |output| outputs.each { |key, value| output.puts "#{key}=#{value}" } }
 
           rows = effective.map { |capability, active| "| #{capability} | #{active ? 'applicable' : 'not_applicable'} |" }
-          File.write(ENV.fetch("GITHUB_STEP_SUMMARY"), "## Foundation classification\n\nMetadata: **#{metadata_mode}**\n\n| Capability | State |\n|---|---|\n#{rows.join("\n")}\n")
+          File.write(ENV.fetch("GITHUB_STEP_SUMMARY"), "## Foundation classification\n\n| Capability | State |\n|---|---|\n#{rows.join("\n")}\n")

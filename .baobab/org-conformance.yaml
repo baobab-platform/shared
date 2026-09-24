@@ -1,0 +1,41 @@
+# Configuration for .github/workflows/foundation-org-conformance.yml
+# (scripts/foundation/org_conformance.py). Reviewed like any policy file.
+schema_version: 1
+organisation: baobab-platform
+foundation_repository: shared
+
+# A pin one minor release behind the latest promoted release is Medium;
+# further behind (or a superseded release) is High.
+max_minor_lag: 1
+
+# Tags that must never be pinned.
+superseded_tags:
+  - v2.0.0
+
+# Caller inputs Foundation no longer accepts (input: first release without
+# it), and inputs kept only for backwards compatibility.
+removed_inputs:
+  legacy_metadata_enabled: v2.3.0
+deprecated_inputs:
+  - advanced_security_enabled
+
+# Repositories that must appear in every scan. A named repository missing from
+# the organisation listing (typically private without ORG_CONFORMANCE_TOKEN)
+# is reported as not-visible. Deferred repositories are always expected.
+expected_repositories: []
+
+# Repositories whose Foundation migration is deliberately postponed. Their
+# findings are reported but do not fail the run until the deferral expires.
+deferred:
+  thamani:
+    reason: Frontend digital estate outside the current rollout priority (zuribeans and nabhold first).
+    approved_by: "@bjnabs"
+    expires: "2026-12-31"
+  equator-estate:
+    reason: Frontend digital estate deferred; history also carries secrets that must be rotated first.
+    approved_by: "@bjnabs"
+    expires: "2026-12-31"
+  engine-template:
+    reason: Template repository deferred by the platform owner until the engine rollout settles.
+    approved_by: "@bjnabs"
+    expires: "2026-12-31"

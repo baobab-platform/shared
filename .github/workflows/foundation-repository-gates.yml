@@ -2,17 +2,42 @@ name: Reusable — Foundation Repository Gates
 on:
   workflow_call:
     inputs:
+      foundation_ref:
+        description: Exact shared commit used by the caller; policy files are loaded from this ref.
+        type: string
+        required: true
+      profile:
+        description: >
+          Product profile selecting which gate families run. full is the
+          compatibility default (all families). Prefer distinct product
+          entrypoints (foundation-product-*.yml) when only one family is needed.
+          Values: full | contract | security-pr | security-deep | container
+        type: string
+        default: full
       dockerfile: { type: string, default: "Dockerfile" }
       build_context: { type: string, default: "." }
       dependency_review_enabled: { type: boolean, default: false }
       advanced_security_enabled:
-        description: Set true only when GitHub Advanced Security is enabled for the caller.
+        description: >
+          Deprecated. Declare security.sast_provider (and, for CodeQL on a private
+          repository, security.ghas) in .baobab/repository.yaml instead. When the
+          repository declares nothing, true still selects CodeQL; it never enables
+          CodeQL on a private repository without the ghas approval record.
         type: boolean
         default: false
-      legacy_metadata_enabled:
-        description: Temporary cohort-migration bridge for .nabhold/environment.yaml; remove after Gate 11.
+      release_require_zero_exceptions:
+        description: >
+          When true, Foundation / Result fails if any repository exceptions are active.
+          Intended for release/container pipelines; default false preserves waiver behaviour.
         type: boolean
-        default: true
+        default: false
+      container_ignore_unfixed:
+        description: >
+          Opt-in for the container gate to ignore vulnerabilities that have no fixed
+          version upstream (trivy --ignore-unfixed). Findings with an available fix
+          still fail. Default false keeps the strict scan.
+        type: boolean
+        default: false
 permissions:
   contents: read
   packages: read
@@ -22,10 +47,16 @@ jobs:
   classify:
     uses: ./.github/workflows/reusable-foundation-classify.yml
     with:
-      legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
+      foundation_ref: "${{ inputs.foundation_ref }}"
+      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
   baseline:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
+    needs: classify
     uses: ./.github/workflows/reusable-foundation-baseline.yml
+    with:
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
   reproducibility:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-reproducibility.yml
     with:
@@ -37,13 +68,28 @@ jobs:
       infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
       package_managers: "${{ needs.classify.outputs.package_managers }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
+  runtime:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
+    needs: classify
+    uses: ./.github/workflows/reusable-foundation-runtime.yml
+    with:
+      python: "${{ needs.classify.outputs.python == 'true' }}"
+      node: "${{ needs.classify.outputs.node == 'true' }}"
+      go: "${{ needs.classify.outputs.go == 'true' }}"
+      java: "${{ needs.classify.outputs.java == 'true' }}"
+      rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
+      package_managers: "${{ needs.classify.outputs.package_managers }}"
+      exceptions: "${{ needs.classify.outputs.exceptions }}"
   environment:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-environment.yml
     with:
+      foundation_ref: "${{ inputs.foundation_ref }}"
       required: "${{ needs.classify.outputs.environment_required == 'true' }}"
-      legacy_metadata_enabled: "${{ inputs.legacy_metadata_enabled }}"
   security:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'security-pr' || inputs.profile == 'security-deep' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-security.yml
     permissions:
@@ -51,15 +97,23 @@ jobs:
       actions: read
       security-events: write
     with:
+      # security-deep always runs the deep scope. Otherwise a pull_request is
+      # scanned at PR scope and anything else (push, dispatch, schedule) at
+      # branch scope, so a security-pr run outside a PR still has a history.
+      scope: "${{ inputs.profile == 'security-deep' && 'deep' || (github.event_name == 'pull_request' && 'pr' || 'branch') }}"
       dependency_review_enabled: "${{ inputs.dependency_review_enabled }}"
-      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
+      sast_provider: "${{ needs.classify.outputs.sast_provider }}"
+      ghas_approved: "${{ needs.classify.outputs.ghas_approved == 'true' }}"
       python: "${{ needs.classify.outputs.python == 'true' }}"
       node: "${{ needs.classify.outputs.node == 'true' }}"
       go: "${{ needs.classify.outputs.go == 'true' }}"
       java: "${{ needs.classify.outputs.java == 'true' }}"
       rust: "${{ needs.classify.outputs.rust == 'true' }}"
+      infrastructure: "${{ needs.classify.outputs.infrastructure == 'true' }}"
+      package_managers: "${{ needs.classify.outputs.package_managers }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   container:
+    if: ${{ inputs.profile == 'full' || inputs.profile == 'container' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-container.yml
     with:
@@ -67,20 +121,91 @@ jobs:
       dockerfile: "${{ needs.classify.outputs.container_dockerfile }}"
       build_context: "${{ needs.classify.outputs.container_context }}"
       runtime: "${{ needs.classify.outputs.container_runtime == 'true' }}"
+      ignore_unfixed: "${{ inputs.container_ignore_unfixed }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   result:
     name: Foundation / Result
     if: always()
-    needs: [classify, baseline, reproducibility, environment, security, container]
+    needs: [classify, baseline, reproducibility, runtime, environment, security, container]
     runs-on: ubuntu-26.04
     steps:
-      - name: Evaluate activated gates
+      - name: Evaluate activated gates and publish exception evidence
         env:
           RESULTS: "${{ toJSON(needs) }}"
+          PROFILE: "${{ inputs.profile }}"
+          EXCEPTIONS: "${{ needs.classify.outputs.exceptions }}"
+          REQUIRE_ZERO: "${{ inputs.release_require_zero_exceptions }}"
         shell: ruby {0}
         run: |
           require "json"
+          require "fileutils"
+
           needs = JSON.parse(ENV.fetch("RESULTS"))
-          failed = needs.select { |_, value| !%w[success skipped].include?(value.fetch("result")) }
+          profile = ENV.fetch("PROFILE")
+          families = {
+            "full" => %w[classify baseline reproducibility runtime environment security container],
+            "contract" => %w[classify baseline reproducibility runtime environment],
+            "security-pr" => %w[classify security],
+            "security-deep" => %w[classify security],
+            "container" => %w[classify container]
+          }
+          abort "unsupported Foundation profile: #{profile.inspect}" unless families.key?(profile)
+          active = families.fetch(profile)
+
+          # Gates in the profile must succeed. Only gates outside it may be
+          # skipped; any other skip is unexplained and fails the aggregate.
+          failed = needs.reject do |name, value|
+            value.fetch("result") == (active.include?(name) ? "success" : "skipped")
+          end
+          puts "profile=#{profile}"
           puts needs.map { |name, value| "#{name}=#{value.fetch('result')}" }.join("\n")
+
+          exceptions =
+            begin
+              JSON.parse(ENV.fetch("EXCEPTIONS", "{}") || "{}")
+            rescue JSON::ParserError
+              {}
+            end
+          exceptions = {} unless exceptions.is_a?(Hash)
+          count = exceptions.keys.length
+
+          FileUtils.mkdir_p(".foundation-evidence")
+          evidence = {
+            "schema_version" => 1,
+            "profile" => profile,
+            "exception_count" => count,
+            "exceptions" => exceptions,
+            "gate_results" => needs.transform_values { |v| v.fetch("result") }
+          }
+          File.write(".foundation-evidence/foundation-exceptions.json", JSON.pretty_generate(evidence))
+
+          summary = []
+          summary << "## Foundation / Result"
+          summary << ""
+          summary << "Profile: **#{profile}**"
+          summary << "Active exceptions: **#{count}**"
+          if count.positive?
+            summary << ""
+            summary << "| Control | Approver | Expires |"
+            summary << "|---|---|---|"
+            exceptions.each do |control, body|
+              next unless body.is_a?(Hash)
+              summary << "| #{control} | #{body['approved_by']} | #{body['expires']} |"
+            end
+          end
+          File.write(ENV.fetch("GITHUB_STEP_SUMMARY"), summary.join("\n") + "\n")
+
+          if ENV.fetch("REQUIRE_ZERO") == "true" && count.positive?
+            abort "release_require_zero_exceptions is set but #{count} exception(s) remain active: #{exceptions.keys.join(', ')}"
+          end
+
           abort "required Foundation gates failed: #{failed.keys.join(', ')}" unless failed.empty?
+
+      - name: Upload foundation-exceptions.json
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: foundation-exceptions
+          path: .foundation-evidence/foundation-exceptions.json
+          retention-days: 90
+          if-no-files-found: ignore

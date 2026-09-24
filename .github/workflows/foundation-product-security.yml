@@ -1,0 +1,43 @@
+name: "Reusable — Foundation Product: Security"
+# PR security (mode: pr) or scheduled deep security (mode: deep).
+#   pr   — on a pull_request, secrets are scanned over the PR's own commits and
+#          dependency review applies; emits Security / PR.
+#   deep — secrets are scanned over every fetched ref and dependency review is
+#          off; emits Security / Deep. Use it on a schedule; its failures go to
+#          triage and are never a required check.
+# CodeQL is chosen by security.sast_provider in the repository contract;
+# advanced_security_enabled is a deprecated override.
+on:
+  workflow_call:
+    inputs:
+      foundation_ref:
+        description: Exact shared commit used by the caller; policy files are loaded from this ref.
+        type: string
+        required: true
+      mode:
+        description: "pr (default) or deep (scheduled / history-oriented monitoring)"
+        type: string
+        default: pr
+      dependency_review_enabled: { type: boolean, default: false }
+      advanced_security_enabled:
+        description: Deprecated; declare security.sast_provider in .baobab/repository.yaml.
+        type: boolean
+        default: false
+permissions:
+  contents: read
+  packages: read
+  actions: read
+  security-events: write
+jobs:
+  foundation:
+    uses: ./.github/workflows/foundation-repository-gates.yml
+    permissions:
+      contents: read
+      packages: read
+      actions: read
+      security-events: write
+    with:
+      foundation_ref: "${{ inputs.foundation_ref }}"
+      profile: "${{ inputs.mode == 'deep' && 'security-deep' || 'security-pr' }}"
+      dependency_review_enabled: "${{ inputs.dependency_review_enabled }}"
+      advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"

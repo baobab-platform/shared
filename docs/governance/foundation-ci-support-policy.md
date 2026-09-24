@@ -20,12 +20,45 @@ A Foundation revision is promotable only after all of the following are green:
 4. verification of the exact emitted result check name; and
 5. consumer references pinned to the promoted commit SHA.
 
-The stable reusable entry point remains `.github/workflows/foundation-repository-gates.yml`. Consumers must not reference its internal component workflows directly.
+The stable reusable entry point remains `.github/workflows/foundation-repository-gates.yml`. Consumers must not reference its internal component workflows directly. Product entrypoints (`foundation-product-*.yml`) are supported wrappers over the same orchestrator.
+
+### Current promoted release
+
+See `docs/governance/foundation-ci-promotion-v2.3.0.md`.
+
+- **Tag:** `v2.3.0`
+- **Peeled SHA:** `31de2bc3dcd56128c019c640dc7e12c10ae9ca69` — consumers pin this SHA in both `uses:` and `foundation_ref`.
+- **Requires:** `baobab-dev` 1.4.4 or newer in every profile, `security.sast_provider` in `.baobab/repository.yaml` (defaults to `fallback`), and no `legacy_metadata_enabled` input.
+- **Previous releases:** `v2.2.0` (`ddd2c56`), `v2.1.0` (`53ed9cd`).
+- **`v2.0.0`:** tagged before the promotion criteria were met; superseded. Do not pin it.
 
 ## Required check
 
 The consumer's caller job id becomes part of GitHub's displayed check context. Use a consistent caller job id of `foundation`. Rulesets must be configured from the check emitted by a successful pilot run, rather than from a guessed display name.
 
+Expected aggregate name pattern (self-consumer):
+
+```text
+foundation / Foundation / Result
+```
+
+## Evidence artifacts (Phase 5)
+
+Foundation uploads retained workflow artifacts so waived controls and fallback SAST decisions are inspectable after the run.
+
+| Artifact name | Produced by | Content |
+|---|---|---|
+| `foundation-exceptions` | `Foundation / Result` | `foundation-exceptions.json` — active exceptions, profile, gate results |
+| `foundation-sast-decision` | SAST planner | `foundation-sast-decision.json` — mode, visibility, reason |
+| `foundation-dependency-adapters` | Native dependency adapters | Adapter status per ecosystem |
+| Container SBOM (existing) | Container product | SPDX via anchore/sbom-action |
+
+**Retention:** 90 days (GitHub Actions default override on each upload).
+**Ownership:** Foundation maintainers own schema and retention policy; consuming repositories own the content of declared exceptions and must keep them current.
+**Release policy:** set `release_require_zero_exceptions: true` on container/release callers so active waivers cannot silently ship.
+
 ## Failure ownership
 
 A run that does not create jobs is a Foundation distribution or GitHub configuration defect. A started gate reporting `misconfigured` is a repository contract defect. A started applicable gate reporting `failed` is a policy or repository defect. Only an explicit classifier decision may make a control not applicable.
+
+For SAST: a private repository without an approved `security.ghas` record must never reach a CodeQL upload. It receives an explicit **SAST / Fallback** decision, or fails classification if it declares `codeql` without the approval. CodeQL running there anyway is a Foundation distribution defect.
