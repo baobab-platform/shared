@@ -1,4 +1,4 @@
-# =============================================================================
+# ==============================================================================
 # BAOBAB-PLATFORM GROUP AFRICA
 # Tenancy Contract
 #
@@ -62,7 +62,7 @@
 #     (with Tenant.LegalEntityID retained as a compatibility projection).
 #   - First-party Nabhold identities (NABHOLD, ZURIBEANS, THAMANI-GLOBAL,
 #     EQUATOR-ESTATE) continue to be governed by the Shared registry.
-# =============================================================================
+# ==============================================================================
 
 schema:
   name: "baobab-tenancy-contract"
@@ -94,6 +94,11 @@ tenant_definition:
   # source-controlled Nabhold legal-entity registry. The registry remains the
   # governance source for first-party Nabhold Group identities only.
   requires_default_legal_entity_registry_entry: false
+  # ADR-BCP-018 section 114: the obligation is not removed, it moves. Before a
+  # tenant becomes active it MUST resolve to an active canonical LegalEntity
+  # in the Control Plane (the default TenantLegalEntityMapping).
+  requires_default_active_canonical_legal_entity: true
+  canonical_legal_entity_authority: "baobab-platform/baobab-cp"
   first_party_registry_source: "shared/contracts/legal-entity/registry.yaml"
   first_party_identities:
     - "NABHOLD"

@@ -1,19 +1,9 @@
-# =============================================================================
-# Target path: baobab-platform/shared/contracts/erp/v1/system-of-record.yaml
-#
-# This file is a DRAFT amendment of the existing system-of-record.yaml for
-# ADR-BCP-018. Only the Organisation concept is changed in this revision.
-# All other concepts are carried forward unchanged from the current main
-# branch content for review convenience.
-#
-# Changes (ADR-BCP-018):
-#   Organisation: runtime owner control-plane; Shared remains contract authority.
-#   Legal Entity: runtime owner control-plane; Shared remains contract authority
-#     and first-party governance source (registry.yaml). External legal entities
-#     are CP-issued and do not require a Shared registry entry.
-#   CorporateRelationship, PlatformRelationship, PlatformAccount, tenant mappings:
-#     runtime owner control-plane; contract authority Shared (organisation/v1).
-# =============================================================================
+# ADR-BCP-018 (schema 1.1): Organisation, Legal Entity, CorporateRelationship,
+# PlatformRelationship, PlatformAccount and the explicit tenant mappings have
+# Control Plane as runtime owner; Shared remains contract authority
+# (contracts/organisation/v1) and the first-party governance source
+# (contracts/legal-entity/registry.yaml). External legal entities are
+# Control-Plane-issued and do not require a Shared registry entry.
 
 schema:
   name: baobab-erp-system-of-record
