@@ -73,6 +73,21 @@ Each engine package publishes its capability and provider descriptors (`capabili
 
 The Control Plane registers and binds these through its normal capability and provider mechanisms. Nothing is special-cased by engine name.
 
+### 5. Engine workload scopes
+
+Callers reach the engines with workload tokens whose audience is the engine itself (`baobab-subscriptions` or `baobab-payments`). A token issued for one engine, or for the Control Plane, is refused everywhere else. `authorization/v1/scope-registry.yaml` registers the scopes, all workload-only:
+
+| Engine | Scope | Grants |
+|---|---|---|
+| `baobab-subscriptions` | `billing:manage` | Ensure, suspend and cancel billing projections |
+| `baobab-subscriptions` | `billing:read` | Read billing projections |
+| `baobab-subscriptions` | `usage:record` | Meter usage |
+| `baobab-payments` | `payment:execute` | Create, confirm, capture and cancel payment intents |
+| `baobab-payments` | `payment:refund` | Refund a payment |
+| `baobab-payments` | `payment:read` | Read payment intents, payments and refunds |
+
+Static bearer secrets are not a supported production mechanism.
+
 ## Consequences
 
 - **Explainable INTERNAL.** The Control Plane can answer why a subscription is INTERNAL from Shared-defined records, without asking the billing engine.

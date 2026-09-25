@@ -419,7 +419,21 @@ if product_events.get("SubscriptionClassified", {}).get("name") != "com.baobab-p
 if set(load("product/v1/events.schema.json")["$defs"]["subscriptionClassifiedEventData"]["properties"]) & FORBIDDEN_EVENT_FIELDS:
     fail("subscription.classified publishes forbidden fields")
 
-# 8. Lock.
+# 8. Engine workload scopes: each engine's scopes are workload-only and
+# issued for that engine's audience alone (ADR-SHARED-011 section 5).
+ENGINE_SCOPES = {
+    "billing:manage": "baobab-subscriptions", "billing:read": "baobab-subscriptions", "usage:record": "baobab-subscriptions",
+    "payment:execute": "baobab-payments", "payment:refund": "baobab-payments", "payment:read": "baobab-payments",
+}
+scopes = {entry["name"]: entry for entry in load("authorization/v1/scope-registry.yaml")["scopes"]}
+for name, audience in ENGINE_SCOPES.items():
+    entry = scopes.get(name)
+    if entry is None:
+        fail(f"scope-registry.yaml must register {name}")
+    elif entry.get("audience") != [audience] or entry.get("allowed_actors") != ["workload"]:
+        fail(f"scope {name} must be workload-only with audience [{audience}]")
+
+# 9. Lock.
 lock = yaml.safe_load((ROOT / "contracts.lock.yaml").read_text())
 by_domain = {entry["domain"]: entry for entry in lock["contracts"] if entry.get("version") == "v1"}
 for domain, files in LOCK.items():
