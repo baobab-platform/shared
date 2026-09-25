@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/admission/v1/events.schema.json",
+  "title": "Baobab Admission Lifecycle Event Payloads (ADR-BCP-017 section 40)",
+  "description": "Definition library for the data payloads of the ClientApplication lifecycle events, published by baobab-platform/baobab-cp from its transactional outbox inside the canonical envelope (contracts/events/v1). Composition with the envelope happens in asyncapi.yaml.\n\nPayloads carry identifiers and state only: no organisation names, identifiers, contacts, evidence references, request or decision text, or principal identifiers. Consumers dereference authorized detail through the Control Plane.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "$defs": {
+    "ClientApplicationCreated": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An applicant principal (or platform staff, for assisted and internal-group channels) opened a ClientApplication. No tenant, membership or subscription exists because of it.",
+      "required": [
+        "client_application_id",
+        "application_channel",
+        "created_at"
+      ],
+      "properties": {
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "application_channel": {
+          "$ref": "application.schema.json#/$defs/applicationChannel"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ClientApplicationSubmitted": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A DRAFT application was submitted for validation.",
+      "required": [
+        "client_application_id",
+        "submitted_at"
+      ],
+      "properties": {
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ClientApplicationInformationRequested": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A reviewer returned the application to its applicant for more information. The request text is not published.",
+      "required": [
+        "client_application_id",
+        "requested_at"
+      ],
+      "properties": {
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "requested_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ClientApplicationWithdrawn": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The applicant withdrew the application. The reason is not published.",
+      "required": [
+        "client_application_id",
+        "withdrawn_at"
+      ],
+      "properties": {
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "withdrawn_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ClientApplicationApproved": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An AdmissionDecision approved the application, classifying the subscription it permits. Governed onboarding may now begin; nothing is provisioned or activated by this event (section 22).",
+      "required": [
+        "client_application_id",
+        "admission_decision_id",
+        "approved_subscription_type",
+        "decided_at"
+      ],
+      "properties": {
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "admission_decision_id": {
+          "$ref": "decision.schema.json#/$defs/admissionDecisionId"
+        },
+        "approved_subscription_type": {
+          "$ref": "decision.schema.json#/$defs/subscriptionType"
+        },
+        "decided_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ClientApplicationRejected": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An AdmissionDecision rejected the application. The reason is not published.",
+      "required": [
+        "client_application_id",
+        "admission_decision_id",
+        "decided_at"
+      ],
+      "properties": {
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "admission_decision_id": {
+          "$ref": "decision.schema.json#/$defs/admissionDecisionId"
+        },
+        "decided_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

@@ -67,3 +67,10 @@ contracts:
       - counterparty.schema.json
       - observability.schema.json
       - events.schema.json
+  - domain: admission
+    version: v1
+    schemas:
+      - application.schema.json
+      - decision.schema.json
+      - events.schema.json
+      - lifecycle.yaml

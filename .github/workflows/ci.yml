@@ -37,6 +37,9 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/validate-admission-contracts.py to the governance-contracts
+#   job, covering the new contracts/admission/v1 package (ADR-BCP-017
+#   ClientApplication, AdmissionDecision, lifecycle and events).
 # * Added scripts/validate-event-registry.py to the governance-contracts job:
 #   every event type in every asyncapi.yaml is canonical com.baobab-platform.*
 #   and registered once platform-wide, its payload resolves, every example
@@ -80,6 +83,7 @@ on:
       - "scripts/validate-trade-contracts.rb"
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
+      - "scripts/validate-admission-contracts.py"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
     paths:
@@ -98,6 +102,7 @@ on:
       - "scripts/validate-trade-contracts.rb"
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
+      - "scripts/validate-admission-contracts.py"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
 
@@ -136,6 +141,8 @@ jobs:
         run: python scripts/validate-event-registry.py
       - name: Validate organisation contracts and examples (Draft 2020-12)
         run: python scripts/validate-organisation-contracts.py
+      - name: Validate admission contracts, lifecycle and examples (Draft 2020-12)
+        run: python scripts/validate-admission-contracts.py
 
   action-pinning:
     name: Enforce action pinning (self-check)
