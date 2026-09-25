@@ -651,7 +651,7 @@ to pick up new patch/minor releases within the same major line; Dependabot
 bump PRs automatically once a tag exists to track.
 
 Contracts and packages follow the same major/minor/patch discipline, with
-`changeset-config.json` driving versioning and changelog generation for
+`.changeset/config.json` driving versioning and changelog generation for
 the `packages/` workspace.
 
 ---
@@ -804,7 +804,7 @@ shared/
 ├── package.json
 ├── pnpm-workspace.yaml
 ├── turbo.json
-└── changeset-config.json
+└── .changeset/config.json
 ```
 
 The structure should remain **purpose-driven**. Directories should not be created merely because the structure looks impressive.
