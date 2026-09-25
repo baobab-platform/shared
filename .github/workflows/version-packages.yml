@@ -233,15 +233,15 @@ jobs:
         id: changesets
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          version: pnpm version-packages
+          version-script: pnpm version-packages
 
-          title: "chore(release): version shared packages"
-          commit: "chore(release): version shared packages"
+          pr-title: "chore(release): version shared packages"
+          commit-message: "chore(release): version shared packages"
 
           # This workflow only versions packages.
           #
           # GitHub Releases belong to the separate tag-driven release process.
-          createGithubReleases: false
+          create-github-releases: false
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -254,8 +254,8 @@ jobs:
         if: always()
         shell: bash
         env:
-          HAS_CHANGESETS: ${{ steps.changesets.outputs.hasChangesets }}
-          VERSION_PR: ${{ steps.changesets.outputs.pullRequestNumber }}
+          HAS_CHANGESETS: ${{ steps.changesets.outputs.has-changesets }}
+          VERSION_PR: ${{ steps.changesets.outputs.pr-number }}
         run: |
           {
             echo "# Shared Package Version Preparation"
