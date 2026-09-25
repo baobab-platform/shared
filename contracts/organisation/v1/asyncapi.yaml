@@ -4,8 +4,8 @@ info:
   version: 1.0.0
   description: >
     ADR-BCP-018 section 124 lifecycle events for Organisation, LegalEntityProfile,
-    CorporateRelationship, PlatformRelationship, PlatformAccount and the explicit
-    tenant mappings. Produced by baobab-platform/baobab-cp from its transactional
+    CorporateRelationship, PlatformRelationship, PlatformAccount, the explicit
+    tenant mappings and tenant PlatformAccount bindings. Produced by baobab-platform/baobab-cp from its transactional
     outbox in the same transaction as the state change; a replayed command that
     changes nothing publishes nothing. Payloads carry identifiers and state only
     (section 125). Event types follow ADR-SHARED-008.
@@ -25,6 +25,9 @@ channels:
       platformRelationshipEnded: { $ref: "#/components/messages/PlatformRelationshipEnded" }
       platformAccountCreated: { $ref: "#/components/messages/PlatformAccountCreated" }
       platformAccountMembershipChanged: { $ref: "#/components/messages/PlatformAccountMembershipChanged" }
+      platformAccountStatusChanged: { $ref: "#/components/messages/PlatformAccountStatusChanged" }
+      tenantPlatformAccountBound: { $ref: "#/components/messages/TenantPlatformAccountBound" }
+      tenantPlatformAccountBindingEnded: { $ref: "#/components/messages/TenantPlatformAccountBindingEnded" }
       tenantOrganisationMappingActivated: { $ref: "#/components/messages/TenantOrganisationMappingActivated" }
       tenantLegalEntityMappingActivated: { $ref: "#/components/messages/TenantLegalEntityMappingActivated" }
 operations:
@@ -121,6 +124,30 @@ components:
           - type: object
             properties:
               data: { $ref: "./events.schema.json#/$defs/PlatformAccountMembershipChanged" }
+    PlatformAccountStatusChanged:
+      name: com.baobab-platform.control-plane.platform-account.status-changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PlatformAccountStatusChanged" }
+    TenantPlatformAccountBound:
+      name: com.baobab-platform.control-plane.tenant-platform-account-binding.bound.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/TenantPlatformAccountBound" }
+    TenantPlatformAccountBindingEnded:
+      name: com.baobab-platform.control-plane.tenant-platform-account-binding.ended.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/TenantPlatformAccountBindingEnded" }
     TenantOrganisationMappingActivated:
       name: com.baobab-platform.control-plane.tenant-organisation-mapping.activated.v1
       payload:

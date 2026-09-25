@@ -421,6 +421,84 @@
           "format": "date-time"
         }
       }
+    },
+    "PlatformAccountStatusChanged": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A PlatformAccount's status changed by a governed decision. Changes no tenant's access.",
+      "required": [
+        "platform_account_id",
+        "previous_status",
+        "status",
+        "changed_at"
+      ],
+      "properties": {
+        "platform_account_id": {
+          "$ref": "domain.schema.json#/$defs/platformAccountId"
+        },
+        "previous_status": {
+          "$ref": "platform.schema.json#/$defs/platformAccountStatus"
+        },
+        "status": {
+          "$ref": "platform.schema.json#/$defs/platformAccountStatus"
+        },
+        "changed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TenantPlatformAccountBound": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A tenant was explicitly bound to a PlatformAccount. Commercial provenance only; grants no access.",
+      "required": [
+        "tenant_platform_account_binding_id",
+        "tenant_id",
+        "platform_account_id",
+        "effective_from"
+      ],
+      "properties": {
+        "tenant_platform_account_binding_id": {
+          "$ref": "domain.schema.json#/$defs/tenantPlatformAccountBindingId"
+        },
+        "tenant_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
+        },
+        "platform_account_id": {
+          "$ref": "domain.schema.json#/$defs/platformAccountId"
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TenantPlatformAccountBindingEnded": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A tenant's PlatformAccount binding ended. Changes no tenant access, subscription or grant.",
+      "required": [
+        "tenant_platform_account_binding_id",
+        "tenant_id",
+        "platform_account_id",
+        "effective_to"
+      ],
+      "properties": {
+        "tenant_platform_account_binding_id": {
+          "$ref": "domain.schema.json#/$defs/tenantPlatformAccountBindingId"
+        },
+        "tenant_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
+        },
+        "platform_account_id": {
+          "$ref": "domain.schema.json#/$defs/platformAccountId"
+        },
+        "effective_to": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     }
   }
 }
