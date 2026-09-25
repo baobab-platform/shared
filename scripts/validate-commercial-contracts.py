@@ -53,12 +53,12 @@ REQUIRED_DEFS = {
                                             "classificationReferenceRule", "SubscriptionClassificationRecord",
                                             "billingPolicy", "ClassificationExplanation"},
     "product/v1/events.schema.json": {"subscriptionClassifiedEventData"},
-    "subscriptions/v1/domain.schema.json": {"billingSubscriptionId", "usageRecordId", "billingState", "readinessStatus",
-                                            "readinessReason", "billingProviderKind", "usageMetricKey"},
+    "subscriptions/v1/domain.schema.json": {"billingSubscriptionId", "usageRecordId", "billingState", "operationalCondition",
+                                            "readinessStatus", "billingBlocker", "billingProviderKind", "usageMetricKey"},
     "subscriptions/v1/billing.schema.json": {"classificationProvenance", "billingPolicy", "EnsureBillingProjectionRequest",
                                              "BillingProjection", "BillingProjectionCommand", "RecordUsageRequest", "UsageRecord"},
     "subscriptions/v1/events.schema.json": {"BillingSubscriptionCreated", "BillingSubscriptionSuspended",
-                                            "BillingSubscriptionCancelled", "UsageRecorded"},
+                                            "BillingSubscriptionResumed", "BillingSubscriptionTerminated", "UsageRecorded"},
     "payments/v1/domain.schema.json": {"paymentIntentId", "paymentId", "refundId", "currencyCode", "paymentIntentStatus",
                                        "paymentStatus", "refundStatus", "captureMethod", "paymentProviderKind", "sourceEngine"},
     "payments/v1/payment.schema.json": {"Money", "PaymentContext", "ProviderResult", "CreatePaymentIntentRequest",
@@ -81,7 +81,8 @@ EVENT_TYPES = {
     "subscriptions/v1": {
         "com.baobab-platform.subscriptions.billing-subscription.created.v1": "BillingSubscriptionCreated",
         "com.baobab-platform.subscriptions.billing-subscription.suspended.v1": "BillingSubscriptionSuspended",
-        "com.baobab-platform.subscriptions.billing-subscription.cancelled.v1": "BillingSubscriptionCancelled",
+        "com.baobab-platform.subscriptions.billing-subscription.resumed.v1": "BillingSubscriptionResumed",
+        "com.baobab-platform.subscriptions.billing-subscription.terminated.v1": "BillingSubscriptionTerminated",
         "com.baobab-platform.subscriptions.usage.recorded.v1": "UsageRecorded",
     },
     "payments/v1": {
@@ -328,11 +329,30 @@ negative("INTERNAL projection that bills", BILL + "BillingProjection",
 negative("INTERNAL projection that invokes payments", BILL + "BillingProjection",
          {**internal_projection, "billing_policy": {**internal_projection["billing_policy"], "payment_execution": "REQUIRED"}})
 negative("commercial projection ACTIVE on a simulated provider", BILL + "BillingProjection", {**commercial_projection, "billing_state": "ACTIVE"})
+ready_facts = {k: True for k in commercial_projection["readiness"]["facts"]}
 negative("commercial projection READY on a simulated provider", BILL + "BillingProjection",
-         {**commercial_projection, "readiness": {"status": "READY", "reasons": []}})
+         {**commercial_projection, "readiness": {"status": "READY", "facts": ready_facts, "blockers": []}})
+negative("simulated commercial projection without the provider blocker", BILL + "BillingProjection",
+         {**commercial_projection, "readiness": {**commercial_projection["readiness"], "blockers": ["PRICING_CONFIGURATION_MISSING"]}})
+negative("simulated commercial projection claiming a ready provider", BILL + "BillingProjection",
+         {**commercial_projection, "readiness": {**commercial_projection["readiness"],
+                                                 "facts": {**commercial_projection["readiness"]["facts"], "provider_ready": True}}})
 negative("READY with blockers", BILL + "BillingProjection",
-         {**internal_projection, "readiness": {"status": "READY", "reasons": ["PAYMENT_PROVIDER_NOT_CONFIGURED"]}})
-negative("BLOCKED without a reason", BILL + "BillingProjection", {**commercial_projection, "readiness": {"status": "BLOCKED", "reasons": []}})
+         {**internal_projection, "readiness": {**internal_projection["readiness"], "blockers": ["PAYMENT_PATH_NOT_READY"]}})
+negative("READY without metering", BILL + "BillingProjection",
+         {**internal_projection, "readiness": {**internal_projection["readiness"],
+                                               "facts": {**internal_projection["readiness"]["facts"], "metering_available": False}}})
+negative("BLOCKED without a blocker", BILL + "BillingProjection",
+         {**commercial_projection, "readiness": {**commercial_projection["readiness"], "blockers": []}})
+negative("readiness as a single boolean", BILL + "BillingProjection", {**internal_projection, "readiness": {"ready": True}})
+negative("infrastructure condition as billing state", BILL + "BillingProjection", {**internal_projection, "billing_state": "PROVIDER_TIMEOUT"})
+negative("projection without an operational condition", BILL + "BillingProjection",
+         {k: v for k, v in internal_projection.items() if k != "operational_condition"})
+negative("terminated projection that still reports ready", BILL + "BillingProjection", {**internal_projection, "billing_state": "TERMINATED"})
+negative("ensure request without an authoritative revision", BILL + "EnsureBillingProjectionRequest",
+         {k: v for k, v in billing["ensure_requests"][0].items() if k != "authoritative_revision"})
+negative("command without an authoritative revision", BILL + "BillingProjectionCommand",
+         {k: v for k, v in billing["commands"][0].items() if k != "authoritative_revision"})
 negative("temporary provider claiming to be real", BILL + "BillingProjection",
          {**internal_projection, "provider": {"kind": "TEMPORARY", "simulated": False}})
 negative("suspended projection that still reports ready", BILL + "BillingProjection", {**internal_projection, "billing_state": "SUSPENDED"})

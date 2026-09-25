@@ -41,12 +41,17 @@ ADR-BCP-018 gate ORG-11 requires that INTERNAL eligibility, established by the C
 
 - **The billing projection.** Billing sees a ProductSubscription only through a projection. The projection references the product subscription and its classification provenance, and never redefines them.
 - **Tenant context comes from the Control Plane.** Tenant, legal entity and PlatformAccount are asserted by the Control Plane over workload identity.
-- **Readiness is honest.**
-  - INTERNAL is `READY` without any payment dependency.
-  - A billing-required projection served by a simulated provider is always `BLOCKED`, with a precise reason (for example `PAYMENT_PROVIDER_NOT_CONFIGURED`), and never `ACTIVE`.
+- **Lifecycle (aligned with ADR-SUB-0003, 2026-09-25).**
+  - `billing_state` follows ADR-SUB-0003 §5: `PENDING_CONFIGURATION`, `PROVISIONING`, `ACTIVE`, `SUSPENDED`, `TERMINATING` and `TERMINATED`.
+  - Operational trouble is a separate `operational_condition`.
+  - Requests, commands, projections and lifecycle events carry the Control Plane's `authoritative_revision`, so an out-of-order older revision never regresses state.
+- **Readiness is honest (ADR-SUB-0006 §57-58).**
+  - Readiness is separate facts plus machine-readable blockers.
+  - INTERNAL is `READY` without any provider or payment dependency.
+  - A billing-required projection served by a simulated provider is always `BLOCKED`, carries `BILLING_PROVIDER_NOT_CONFIGURED`, reports `provider_ready: false`, and is never `ACTIVE`.
 - **Usage records** are metered for every type. INTERNAL usage is metered but not billable.
 - **Events:**
-  - `billing-subscription.created`, `billing-subscription.suspended` and `billing-subscription.cancelled`;
+  - `billing-subscription.created`, `.suspended`, `.resumed` and `.terminated`. `.terminated` replaces the original `.cancelled`, following ADR-SUB-0003 §10. The package had no consumers when it changed;
   - `usage.recorded`.
 
   They are distinct from the Control Plane's `product.subscription.*` aggregate.
