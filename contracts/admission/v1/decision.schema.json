@@ -43,7 +43,7 @@
           "minItems": 1,
           "uniqueItems": true,
           "items": {"$ref": "../../organisation/v1/domain.schema.json#/$defs/platformRelationshipId"},
-          "description": "The verified PLATFORM_OWNER or PLATFORM_GROUP_AFFILIATE relationships in force at evaluated_at."
+          "description": "The qualifying platform relationships in force at evaluated_at: a verified PLATFORM_OWNER or PLATFORM_OPERATOR, or a PLATFORM_GROUP_AFFILIATE whose basis leads through verified OWNS/CONTROLS to a platform owner (ADR-BCP-018 internal eligibility)."
         },
         "evaluated_at": {"type": "string", "format": "date-time"}
       }
