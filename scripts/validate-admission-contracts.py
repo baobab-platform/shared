@@ -323,6 +323,9 @@ if {"capp_01k9kilima", "capp_01k9duma"} <= set(apps) and {"adm_01k9zuribeans", "
     unsubmitted = {**copy.deepcopy(kilima), "status": "UNDER_REVIEW"}
     del unsubmitted["decision"], unsubmitted["submitted_at"]
     negative("under review without submitted_at", "application.schema.json", "ClientApplication", unsubmitted)
+    cancelled = {**copy.deepcopy(kilima), "status": "CANCELLED"}
+    del cancelled["decision"], cancelled["organisation_profile"]["legal_name"]
+    negative("cancelled (only reachable after submission) without a legal name", "application.schema.json", "ClientApplication", cancelled)
     parallel = {**copy.deepcopy(commercial), "approved_subscription_type": "INTERNAL_GROUP"}
     negative("parallel INTERNAL_GROUP subscription type", "decision.schema.json", "AdmissionDecision", parallel)
 

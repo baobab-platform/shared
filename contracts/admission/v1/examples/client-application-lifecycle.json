@@ -1,5 +1,5 @@
 {
-  "_comment": "Illustrative ADR-BCP-017 ClientApplication instances; runtime authority is the Control Plane. ZuriBeans applies through the INTERNAL_GROUP channel and is approved INTERNAL only because the Control Plane evaluated its verified PLATFORM_GROUP_AFFILIATE relationship (see organisation/v1/examples/nabhold-group-organisation.json); its registration identifier is a placeholder until contracts/legal-entity/registry.yaml records it. Kilima Fresh Produce is a fictional external applicant, approved COMMERCIAL; the fictional Duma Logistics draft shows that a DRAFT may be incomplete.",
+  "_comment": "Illustrative ADR-BCP-017 ClientApplication instances; runtime authority is the Control Plane. ZuriBeans applies through the INTERNAL_GROUP channel and is approved INTERNAL only because the Control Plane evaluated its verified PLATFORM_GROUP_AFFILIATE relationship (see organisation/v1/examples/nabhold-group-organisation.json); its registration identifier is a placeholder until contracts/legal-entity/registry.yaml records it. Kilima Fresh Produce is a fictional external applicant, approved COMMERCIAL; the fictional Duma Logistics draft shows that a DRAFT may be incomplete, and an application withdrawn before submission needs no completeness either.",
   "client_applications": [
     {
       "client_application_id": "capp_01k9zuribeans",
@@ -171,6 +171,22 @@
       "information_requests": [],
       "created_at": "2026-09-24T07:00:00Z",
       "updated_at": "2026-09-24T07:00:00Z"
+    },
+    {
+      "client_application_id": "capp_01k9withdrawn",
+      "reference": "APP-2026-000004",
+      "status": "WITHDRAWN",
+      "application_channel": "SELF_SERVICE",
+      "version": 2,
+      "applicant_principal_id": "prn_01k9duma",
+      "organisation_profile": {},
+      "requirements": {},
+      "requested_markets": [],
+      "evidence": [],
+      "information_requests": [],
+      "created_at": "2026-09-23T07:00:00Z",
+      "updated_at": "2026-09-23T08:00:00Z",
+      "closed_at": "2026-09-23T08:00:00Z"
     }
   ],
   "admission_decisions": [

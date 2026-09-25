@@ -219,9 +219,9 @@
       },
       "allOf": [
         {
-          "if": {"properties": {"status": {"not": {"const": "DRAFT"}}}},
+          "if": {"properties": {"status": {"enum": ["SUBMITTED", "VALIDATING", "INFORMATION_REQUIRED", "UNDER_REVIEW", "APPROVED", "REJECTED", "CANCELLED"]}}},
           "then": {
-            "description": "Submission requires the organisation's identity, its requirements and at least one market (section 8: validation starts from a complete application).",
+            "description": "Every state only a submitted application can reach requires the organisation's identity and at least one market (section 8: validation starts from a complete application). WITHDRAWN and EXPIRED can also be reached from DRAFT, so they require neither.",
             "required": ["submitted_at"],
             "properties": {
               "organisation_profile": {"required": ["legal_name", "jurisdiction_of_incorporation", "registration_identifiers", "authorised_representative"],

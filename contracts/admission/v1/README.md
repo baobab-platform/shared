@@ -45,11 +45,13 @@ Every JSON file is a definition library. Validate a resource against its fragmen
   - only a DECIDER reaches APPROVED or REJECTED, and only from UNDER_REVIEW;
   - the applicant can edit only DRAFT and INFORMATION_REQUIRED applications, and can withdraw from any open state;
   - terminal states are final.
-- **A complete application to submit.** Once past DRAFT, an application has:
+- **A complete application to submit.** Every state only a submitted application can reach (SUBMITTED through REJECTED, and CANCELLED) requires:
   - its legal name, jurisdiction, at least one registration identifier and an authorised representative;
   - at least one requested market;
   - `submitted_at`.
-- **An explicit decision (§21).**
+  - `submitted_at`.
+
+  WITHDRAWN and EXPIRED can also be reached straight from DRAFT, so they require neither.
   - APPROVED requires a subscription type, a market scope and at least one evidence reference.
   - REJECTED can carry none of the approval fields.
   - The decider's identity comes from authentication, never from the request body.
