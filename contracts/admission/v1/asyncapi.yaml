@@ -3,12 +3,14 @@ info:
   title: Baobab-Platform admission lifecycle events
   version: 1.0.0
   description: >
-    ADR-BCP-017 section 40 ClientApplication lifecycle events. Produced by
+    ADR-BCP-017 section 40 ClientApplication and TenantOnboardingRequest
+    lifecycle events. Produced by
     baobab-platform/baobab-cp from its transactional outbox in the same
     transaction as the state change; a replayed command that changes nothing
     publishes nothing. Payloads carry identifiers and state only. Event types
     follow ADR-SHARED-008. Subscription classification is carried by the
-    approval; tenant onboarding and activation events belong to provisioning.
+    approval; provisioning, readiness and activation events belong to
+    provisioning.
 defaultContentType: application/json
 channels:
   clientApplicationLifecycle:
@@ -20,6 +22,10 @@ channels:
       clientApplicationWithdrawn: { $ref: "#/components/messages/ClientApplicationWithdrawn" }
       clientApplicationApproved: { $ref: "#/components/messages/ClientApplicationApproved" }
       clientApplicationRejected: { $ref: "#/components/messages/ClientApplicationRejected" }
+      tenantOnboardingRequested: { $ref: "#/components/messages/TenantOnboardingRequested" }
+      tenantOnboardingAuthorised: { $ref: "#/components/messages/TenantOnboardingAuthorised" }
+      tenantOnboardingFulfilled: { $ref: "#/components/messages/TenantOnboardingFulfilled" }
+      tenantOnboardingCancelled: { $ref: "#/components/messages/TenantOnboardingCancelled" }
 operations:
   publishClientApplicationLifecycle:
     action: send
@@ -74,3 +80,35 @@ components:
           - type: object
             properties:
               data: { $ref: "./events.schema.json#/$defs/ClientApplicationRejected" }
+    TenantOnboardingRequested:
+      name: com.baobab-platform.control-plane.tenant-onboarding.requested.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/TenantOnboardingRequested" }
+    TenantOnboardingAuthorised:
+      name: com.baobab-platform.control-plane.tenant-onboarding.authorised.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/TenantOnboardingAuthorised" }
+    TenantOnboardingFulfilled:
+      name: com.baobab-platform.control-plane.tenant-onboarding.fulfilled.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/TenantOnboardingFulfilled" }
+    TenantOnboardingCancelled:
+      name: com.baobab-platform.control-plane.tenant-onboarding.cancelled.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/TenantOnboardingCancelled" }

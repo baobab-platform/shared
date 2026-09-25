@@ -1,0 +1,91 @@
+{
+  "_comment": "ADR-BCP-017 sections 22-24: APPROVED decisions from client-application-lifecycle.json handed to onboarding. The ZuriBeans request was authorised by a second principal and fulfilled by provisioning; the Kilima request awaits authorisation; a superseded Kilima request was cancelled. The requester is never the applicant or the decider, and the authoriser is never the requester or the applicant.",
+  "tenant_onboarding_requests": [
+    {
+      "tenant_onboarding_request_id": "tor_01k9zuribeans",
+      "client_application_id": "capp_01k9zuribeans",
+      "admission_decision_id": "adm_01k9zuribeans",
+      "status": "FULFILLED",
+      "desired_state": {
+        "display_name": "ZuriBeans",
+        "residency_region": "af-south-1",
+        "isolation_strategy": "schema_per_tenant",
+        "subscription_type": "INTERNAL",
+        "market_scope": [
+          "KE",
+          "UG"
+        ],
+        "product_requirements": [
+          "b2b-trade",
+          "erp"
+        ]
+      },
+      "reason": "Onboard the approved group affiliate.",
+      "correlation_id": "0192a1b0-7c3e-7a10-8000-0000000001ff",
+      "requested_by": "prn_01k9onboarding",
+      "requested_at": "2026-09-22T11:00:00Z",
+      "authorised_by": "prn_01k9security",
+      "authorised_at": "2026-09-22T12:00:00Z",
+      "tenant_id": "tn_01k9zuribeans",
+      "fulfilled_at": "2026-09-22T13:00:00Z"
+    },
+    {
+      "tenant_onboarding_request_id": "tor_01k9kilimaold",
+      "client_application_id": "capp_01k9kilima",
+      "admission_decision_id": "adm_01k9kilima",
+      "status": "CANCELLED",
+      "desired_state": {
+        "display_name": "Kilima Traders",
+        "residency_region": "af-south-1",
+        "isolation_strategy": "row_level_security",
+        "subscription_type": "COMMERCIAL",
+        "market_scope": [
+          "UG"
+        ],
+        "product_requirements": [
+          "b2b-trade",
+          "procurement"
+        ]
+      },
+      "reason": "Onboard the approved client.",
+      "correlation_id": "0192a1b0-7c3e-7a10-8000-0000000002ff",
+      "requested_by": "prn_01k9onboarding",
+      "requested_at": "2026-09-23T16:00:00Z",
+      "cancelled_by": "prn_01k9onboarding",
+      "cancelled_at": "2026-09-23T16:30:00Z",
+      "cancellation_reason": "Wrong residency region requested."
+    },
+    {
+      "tenant_onboarding_request_id": "tor_01k9kilima",
+      "client_application_id": "capp_01k9kilima",
+      "admission_decision_id": "adm_01k9kilima",
+      "status": "REQUESTED",
+      "desired_state": {
+        "display_name": "Kilima Traders",
+        "residency_region": "eu-west-1",
+        "isolation_strategy": "row_level_security",
+        "subscription_type": "COMMERCIAL",
+        "market_scope": [
+          "UG"
+        ],
+        "product_requirements": [
+          "b2b-trade",
+          "procurement"
+        ]
+      },
+      "reason": "Onboard the approved client.",
+      "correlation_id": "0192a1b0-7c3e-7a10-8000-0000000002ff",
+      "requested_by": "prn_01k9onboarding",
+      "requested_at": "2026-09-23T17:00:00Z"
+    }
+  ],
+  "tenant_onboarding_request_commands": [
+    {
+      "admission_decision_id": "adm_01k9kilima",
+      "display_name": "Kilima Traders",
+      "residency_region": "eu-west-1",
+      "isolation_strategy": "row_level_security",
+      "reason": "Onboard the approved client."
+    }
+  ]
+}

@@ -59,6 +59,26 @@ Every JSON file is a definition library. Validate a resource against its fragmen
 - **Server-authoritative classification (§10-13).** The subscription vocabulary is ADR-BCP-005's: COMMERCIAL, INTERNAL, TRIAL, PARTNER, MANUAL and MIGRATION. There is no INTERNAL_GROUP. For INTERNAL, the decider names the canonical Organisation, and the Control Plane evaluates eligibility itself from governed platform and corporate relationships. The decision records `InternalEligibilityEvidence`: the qualifying platform relationships in force when the decision was made. Those are a verified PLATFORM_OWNER or PLATFORM_OPERATOR, or a PLATFORM_GROUP_AFFILIATE whose basis leads through verified control to a platform owner. Nobody can submit that evidence, and a non-INTERNAL decision cannot carry it. INTERNAL means a zero monetary charge, never zero governance (§11).
 - **Approval is not activation (§22).** An AdmissionDecision is immutable. Approval permits governed onboarding. A failed onboarding does not rewrite the decision (§44), and a later subscription change is a reclassification (§48).
 
+## Tenant onboarding handoff (§22-24, §39, §46)
+
+`onboarding.schema.json` and `onboarding-lifecycle.yaml` define the governed step between an APPROVED decision and provisioning:
+
+```text
+AdmissionDecision APPROVED
+        │  explicit request (onboarding:request; not the applicant or decider)
+        ▼
+TenantOnboardingRequest REQUESTED
+        │  authorise (onboarding:authorise; not the requester or applicant)
+        ▼
+AUTHORISED ──► provisioning ──► FULFILLED (records the tenant it produced)
+REQUESTED / AUTHORISED ──► CANCELLED (the decision is never rewritten)
+```
+
+- **Approval activates nothing.** No request exists until someone makes one explicitly. Fulfilment records traceability only; activation still requires readiness.
+- **Desired state comes from the decision.** Subscription type, market scope, product requirements and isolation are copied from the AdmissionDecision. The request command accepts only the display name, residency region, isolation (only when the decision set none) and a reason.
+- **One live request per decision.** Repeating the request returns the live one (§46).
+- **Traceable.** A request carries `client_application_id`, `admission_decision_id` and a stable `correlation_id` (§23, §41). Its events carry identifiers and state only.
+
 ## Authorization
 
 The scopes are registered in `contracts/authorization/v1/scope-registry.yaml`:
@@ -69,6 +89,8 @@ The scopes are registered in `contracts/authorization/v1/scope-registry.yaml`:
 | `application:write` | applicant | Creating, editing, submitting, answering and withdrawing their own applications |
 | `admission:review` (privileged) | platform reviewer | Inspecting applications, starting validation and review, requesting information, cancelling |
 | `admission:decide` (privileged) | platform approver | Approving or rejecting an application under review. The approver is never the application's applicant. |
+| `onboarding:request` (privileged) | platform onboarding requester | Handing an APPROVED decision to onboarding as a TenantOnboardingRequest, recording the tenant provisioning produced, and cancelling a request. The requester is never the applicant or the decider. |
+| `onboarding:authorise` (privileged) | platform onboarding authoriser | Authorising a REQUESTED onboarding request before provisioning. The authoriser is never the requester or the applicant. |
 
 A scope is necessary but not sufficient. An applicant reaches only applications they own. The review and decision scopes also require platform-administrator authority in the Control Plane. The reviewer role does not include the decision (ADR-BCP-020 §34).
 
@@ -77,6 +99,7 @@ A scope is necessary but not sufficient. An applicant reaches only applications 
 | Resource | Grammar |
 |----------|---------|
 | ClientApplication | `capp_[a-z0-9]+` |
+| TenantOnboardingRequest | `tor_[a-z0-9]+` |
 | AdmissionDecision | `adm_[a-z0-9]+`: a subset of `organisation/v1` `admissionDecisionId`, so it keys organisation admission directly |
 | Application reference | `APP-<year>-<sequence>`: for correspondence only, never for authorization |
 

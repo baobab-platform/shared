@@ -1,0 +1,22 @@
+# ADR-BCP-017 sections 22-24, 39 and 46: the TenantOnboardingRequest
+# lifecycle.
+#
+# Every permitted transition, the command that performs it and the actor
+# who may issue it. Anything not listed is refused.
+#
+# Actors:
+#   REQUESTER   a platform onboarding requester (onboarding:request), never
+#               the application's applicant or the decision's decider
+#   AUTHORISER  a platform onboarding authoriser (onboarding:authorise),
+#               never the requester or the applicant
+#   OPERATOR    a platform provisioning operator (onboarding:request)
+#               recording the tenant provisioning produced
+version: 1
+initial: REQUESTED
+created_by: REQUESTER
+terminal: [FULFILLED, CANCELLED]
+transitions:
+  - {command: authorise, from: REQUESTED,  to: AUTHORISED, actor: AUTHORISER}
+  - {command: fulfil,    from: AUTHORISED, to: FULFILLED,  actor: OPERATOR}
+  - {command: cancel,    from: REQUESTED,  to: CANCELLED,  actor: REQUESTER}
+  - {command: cancel,    from: AUTHORISED, to: CANCELLED,  actor: AUTHORISER}
