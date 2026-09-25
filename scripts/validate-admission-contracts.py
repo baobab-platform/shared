@@ -17,7 +17,9 @@ resolved against the contracts in this repository:
   5. asyncapi.yaml registers exactly the section 40 events, composed with
      the canonical envelope, and payloads carry no names, text, evidence
      or principals;
-  6. contracts.lock.yaml registers exactly these files.
+  6. contracts.lock.yaml registers exactly these files, and the
+     authorization scope registry defines the admission scopes for humans
+     only, with review and decision privileged and distinct.
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -410,6 +412,17 @@ if len(entries) != 1:
     fail("contracts.lock.yaml must register domain admission v1 exactly once")
 elif entries[0].get("schemas") != LOCKED_FILES:
     fail(f"contracts.lock.yaml admission v1 schemas must be {LOCKED_FILES}")
+
+scopes = {entry["name"]: entry for entry in
+          yaml.safe_load((CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
+for name, privileged in {"application:read": False, "application:write": False,
+                         "admission:review": True, "admission:decide": True}.items():
+    entry = scopes.get(name)
+    if entry is None:
+        fail(f"scope-registry.yaml does not define {name}")
+    elif entry.get("allowed_actors") != ["human"] or bool(entry.get("privileged")) != privileged \
+            or entry.get("audience") != ["baobab-control-plane"]:
+        fail(f"scope-registry.yaml {name}: must be a {'privileged ' if privileged else ''}human-only Control Plane scope")
 
 if failures:
     for message in failures:

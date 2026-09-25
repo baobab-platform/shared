@@ -57,6 +57,19 @@ Every JSON file is a definition library. Validate a resource against its fragmen
 - **Server-authoritative classification (§10-13).** The subscription vocabulary is ADR-BCP-005's: COMMERCIAL, INTERNAL, TRIAL, PARTNER, MANUAL and MIGRATION. There is no INTERNAL_GROUP. For INTERNAL, the decider names the canonical Organisation, and the Control Plane evaluates eligibility itself from governed platform and corporate relationships. The decision records `InternalEligibilityEvidence`: the verified PLATFORM_OWNER or PLATFORM_GROUP_AFFILIATE relationships in force when the decision was made. Nobody can submit that evidence, and a non-INTERNAL decision cannot carry it. INTERNAL means a zero monetary charge, never zero governance (§11).
 - **Approval is not activation (§22).** An AdmissionDecision is immutable. Approval permits governed onboarding. A failed onboarding does not rewrite the decision (§44), and a later subscription change is a reclassification (§48).
 
+## Authorization
+
+The scopes are registered in `contracts/authorization/v1/scope-registry.yaml`:
+
+| Scope | Holder | Permits |
+|-------|--------|---------|
+| `application:read` | applicant | Reading their own applications |
+| `application:write` | applicant | Creating, editing, submitting, answering and withdrawing their own applications |
+| `admission:review` (privileged) | platform reviewer | Inspecting applications, starting validation and review, requesting information, cancelling |
+| `admission:decide` (privileged) | platform approver | Approving or rejecting an application under review. The approver is never the application's applicant. |
+
+A scope is necessary but not sufficient. An applicant reaches only applications they own. The review and decision scopes also require platform-administrator authority in the Control Plane. The reviewer role does not include the decision (ADR-BCP-020 §34).
+
 ## Resource identifiers
 
 | Resource | Grammar |

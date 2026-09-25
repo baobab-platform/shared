@@ -79,6 +79,39 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "application:read"
+    description: >-
+      An applicant reads their own ClientApplications (ADR-BCP-017 section 5).
+      Grants nothing about any tenant, organisation or other applicant.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+
+  - name: "application:write"
+    description: >-
+      An applicant creates, edits, submits, answers and withdraws their own
+      ClientApplications (ADR-BCP-017 sections 5, 8). It can never set status,
+      subscription classification or verification: those are server-authoritative.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+
+  - name: "admission:review"
+    description: >-
+      A platform admission reviewer inspects applications, moves them through
+      validation and review, requests information and cancels them
+      (ADR-BCP-020 section 34). It does not include the admission decision.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "admission:decide"
+    description: >-
+      A platform admission approver approves or rejects an application under
+      review and classifies its subscription (ADR-BCP-017 section 21,
+      ADR-BCP-020 section 35). Never on an application the approver made.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "erp:integrate"
     description: >-
       Allows a workload to call baobab-erp's own application-service integration
