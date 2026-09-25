@@ -30,6 +30,13 @@ ADR-BCP-018 gate ORG-11 requires that INTERNAL eligibility, established by the C
 - **`billing-policy.yaml`** is the billing policy per subscription type. INTERNAL is zero monetary charge and no billing, yet metering, entitlement control, audit, readiness and isolation all remain on, and payment execution is never invoked (ADR-BCP-017 §11).
 - **`subscription.classified`** is a new event. It carries identifiers and state only.
 
+### 1a. Drift and authorization
+
+- **Drift rule.** `organisation/v1` gains the drift rule `INTERNAL_CLASSIFICATION_BASIS_NOT_IN_FORCE` (resource type `PRODUCT_SUBSCRIPTION`). It fires when an INTERNAL subscription's recorded eligibility basis is no longer in force, for example after a divestiture. The remediation is governed review or reclassification, never silent deletion of the tenant or subscription.
+- **New scopes** in `authorization/v1/scope-registry.yaml`, both privileged:
+  - `subscription:read` to read classifications and explanations;
+  - `subscription:classify` to classify or reclassify.
+
 ### 2. Billing contracts (`contracts/subscriptions/v1`)
 
 - **The billing projection.** Billing sees a ProductSubscription only through a projection. The projection references the product subscription and its classification provenance, and never redefines them.
