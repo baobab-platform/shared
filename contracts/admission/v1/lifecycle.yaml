@@ -1,0 +1,39 @@
+# ADR-BCP-017 section 8: the ClientApplication lifecycle.
+#
+# Every permitted transition, the command that performs it and the actor
+# who may issue it. Anything not listed is refused. Implementations test
+# their transition table against this file.
+#
+# Actors:
+#   APPLICANT  the authenticated applicant principal who owns the application
+#   REVIEWER   a platform admission reviewer (ADR-BCP-020 section 34)
+#   DECIDER    a platform admission approver who is not the applicant
+#              (ADR-BCP-020 sections 35, 39)
+#   PLATFORM   a platform administrator (cancellation) or the Control Plane
+#              itself (expiry)
+version: 1
+initial: DRAFT
+terminal: [APPROVED, REJECTED, WITHDRAWN, EXPIRED, CANCELLED]
+transitions:
+  - {command: submit,              from: DRAFT,                to: SUBMITTED,            actor: APPLICANT}
+  - {command: begin_validation,    from: SUBMITTED,            to: VALIDATING,           actor: REVIEWER}
+  - {command: request_information, from: VALIDATING,           to: INFORMATION_REQUIRED, actor: REVIEWER}
+  - {command: request_information, from: UNDER_REVIEW,         to: INFORMATION_REQUIRED, actor: REVIEWER}
+  - {command: respond,             from: INFORMATION_REQUIRED, to: VALIDATING,           actor: APPLICANT}
+  - {command: begin_review,        from: VALIDATING,           to: UNDER_REVIEW,         actor: REVIEWER}
+  - {command: approve,             from: UNDER_REVIEW,         to: APPROVED,             actor: DECIDER}
+  - {command: reject,              from: UNDER_REVIEW,         to: REJECTED,             actor: DECIDER}
+  - {command: withdraw,            from: DRAFT,                to: WITHDRAWN,            actor: APPLICANT}
+  - {command: withdraw,            from: SUBMITTED,            to: WITHDRAWN,            actor: APPLICANT}
+  - {command: withdraw,            from: VALIDATING,           to: WITHDRAWN,            actor: APPLICANT}
+  - {command: withdraw,            from: INFORMATION_REQUIRED, to: WITHDRAWN,            actor: APPLICANT}
+  - {command: withdraw,            from: UNDER_REVIEW,         to: WITHDRAWN,            actor: APPLICANT}
+  - {command: expire,              from: DRAFT,                to: EXPIRED,              actor: PLATFORM}
+  - {command: expire,              from: INFORMATION_REQUIRED, to: EXPIRED,              actor: PLATFORM}
+  - {command: cancel,              from: SUBMITTED,            to: CANCELLED,            actor: PLATFORM}
+  - {command: cancel,              from: VALIDATING,           to: CANCELLED,            actor: PLATFORM}
+  - {command: cancel,              from: INFORMATION_REQUIRED, to: CANCELLED,            actor: PLATFORM}
+  - {command: cancel,              from: UNDER_REVIEW,         to: CANCELLED,            actor: PLATFORM}
+# Editing is not a transition: the applicant may edit while the application
+# is in one of these states, and each edit increments its version.
+editable_by_applicant: [DRAFT, INFORMATION_REQUIRED]

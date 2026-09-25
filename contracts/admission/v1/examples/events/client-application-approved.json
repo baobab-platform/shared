@@ -1,0 +1,18 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000000102",
+  "type": "com.baobab-platform.control-plane.client-application.approved.v1",
+  "source": "https://control-plane.baobab-platform.com/admission",
+  "subject": "client-application/capp_01k9zuribeans",
+  "time": "2026-09-22T10:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/admission/v1/events.schema.json#/$defs/ClientApplicationApproved",
+  "baobabscope": "platform",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-0000000001ff",
+  "data": {
+    "client_application_id": "capp_01k9zuribeans",
+    "admission_decision_id": "adm_01k9zuribeans",
+    "approved_subscription_type": "INTERNAL",
+    "decided_at": "2026-09-22T10:00:00Z"
+  }
+}

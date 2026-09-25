@@ -1,0 +1,280 @@
+{
+  "_comment": "Illustrative ADR-BCP-017 ClientApplication instances; runtime authority is the Control Plane. ZuriBeans applies through the INTERNAL_GROUP channel and is approved INTERNAL only because the Control Plane evaluated its verified PLATFORM_GROUP_AFFILIATE relationship (see organisation/v1/examples/nabhold-group-organisation.json); its registration identifier is a placeholder until contracts/legal-entity/registry.yaml records it. Kilima Fresh Produce is a fictional external applicant, approved COMMERCIAL; the fictional Duma Logistics draft shows that a DRAFT may be incomplete.",
+  "client_applications": [
+    {
+      "client_application_id": "capp_01k9zuribeans",
+      "reference": "APP-2026-000001",
+      "status": "APPROVED",
+      "application_channel": "INTERNAL_GROUP",
+      "version": 6,
+      "applicant_principal_id": "prn_01k9zuriadmin",
+      "assigned_reviewer": "prn_01k9reviewer",
+      "organisation_profile": {
+        "legal_name": "ZuriBeans",
+        "organisation_form": "COMPANY",
+        "jurisdiction_of_incorporation": "KE",
+        "registration_identifiers": [
+          {
+            "type": "COMPANY_REGISTRATION",
+            "value": "PLACEHOLDER-ZURIBEANS",
+            "issuing_jurisdiction": "KE"
+          }
+        ],
+        "authorised_representative": {
+          "full_name": "Applicant Representative",
+          "role": "Director"
+        },
+        "ownership_claims": [
+          {
+            "relationship_type": "OWNS",
+            "applicant_role": "TARGET",
+            "counterparty_organisation_id": "ce_nabhold_root"
+          }
+        ]
+      },
+      "requirements": {
+        "operates_b2b": true,
+        "trades_cross_border": true,
+        "requires_accounting": true,
+        "manages_inventory": true
+      },
+      "requested_markets": [
+        {
+          "country_code": "KE"
+        },
+        {
+          "country_code": "UG"
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_type": "OWNERSHIP_EVIDENCE",
+          "evidence_reference": "evd_nabhold_share_register_2026",
+          "recorded_at": "2026-09-20T08:00:00Z"
+        }
+      ],
+      "information_requests": [],
+      "decision": {
+        "admission_decision_id": "adm_01k9zuribeans",
+        "decision": "APPROVED",
+        "decided_at": "2026-09-22T10:00:00Z",
+        "reason": "Nabhold Group affiliate; INTERNAL subscription approved."
+      },
+      "created_at": "2026-09-20T08:00:00Z",
+      "updated_at": "2026-09-22T10:00:00Z",
+      "submitted_at": "2026-09-20T09:00:00Z",
+      "closed_at": "2026-09-22T10:00:00Z"
+    },
+    {
+      "client_application_id": "capp_01k9kilima",
+      "reference": "APP-2026-000002",
+      "status": "APPROVED",
+      "application_channel": "SELF_SERVICE",
+      "version": 7,
+      "applicant_principal_id": "prn_01k9kilima",
+      "organisation_profile": {
+        "legal_name": "Kilima Fresh Produce Ltd",
+        "trading_names": [
+          "Kilima Fresh"
+        ],
+        "organisation_form": "COMPANY",
+        "jurisdiction_of_incorporation": "UG",
+        "registration_identifiers": [
+          {
+            "type": "COMPANY_REGISTRATION",
+            "value": "80020001234567",
+            "issuing_jurisdiction": "UG"
+          },
+          {
+            "type": "TAX_IDENTIFIER",
+            "value": "1000123456",
+            "issuing_jurisdiction": "UG"
+          }
+        ],
+        "registered_address": {
+          "lines": [
+            "Plot 12, Industrial Area"
+          ],
+          "locality": "Kampala",
+          "country_code": "UG"
+        },
+        "website": "https://kilima.example",
+        "industry": "Fresh produce wholesale",
+        "business_model": "Aggregates smallholder produce and sells to retailers in Uganda and Kenya.",
+        "authorised_representative": {
+          "full_name": "Applicant Representative",
+          "role": "Managing Director",
+          "email": "md@kilima.example"
+        }
+      },
+      "requirements": {
+        "operates_b2b": true,
+        "sells_online": true,
+        "requires_procurement": true,
+        "requires_supplier_management": true,
+        "trades_cross_border": true
+      },
+      "requested_markets": [
+        {
+          "country_code": "UG"
+        },
+        {
+          "country_code": "KE",
+          "note": "From 2027"
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_type": "REGISTRATION_EVIDENCE",
+          "evidence_reference": "evd_kilima_certificate_of_incorporation",
+          "recorded_at": "2026-09-21T07:00:00Z"
+        },
+        {
+          "evidence_type": "TAX_EVIDENCE",
+          "evidence_reference": "evd_kilima_tax_clearance",
+          "description": "Tax clearance, supplied on request",
+          "recorded_at": "2026-09-22T12:00:00Z"
+        }
+      ],
+      "information_requests": [
+        {
+          "requested_at": "2026-09-22T09:00:00Z",
+          "message": "Please provide a current tax clearance certificate.",
+          "responded_at": "2026-09-22T12:00:00Z",
+          "response": "Uploaded."
+        }
+      ],
+      "decision": {
+        "admission_decision_id": "adm_01k9kilima",
+        "decision": "APPROVED",
+        "decided_at": "2026-09-23T15:00:00Z",
+        "reason": "Registration and tax standing verified."
+      },
+      "created_at": "2026-09-21T07:00:00Z",
+      "updated_at": "2026-09-23T15:00:00Z",
+      "submitted_at": "2026-09-21T08:00:00Z",
+      "closed_at": "2026-09-23T15:00:00Z"
+    },
+    {
+      "client_application_id": "capp_01k9duma",
+      "reference": "APP-2026-000003",
+      "status": "DRAFT",
+      "application_channel": "SELF_SERVICE",
+      "version": 1,
+      "applicant_principal_id": "prn_01k9duma",
+      "organisation_profile": {
+        "legal_name": "Duma Logistics"
+      },
+      "requirements": {},
+      "requested_markets": [],
+      "evidence": [],
+      "information_requests": [],
+      "created_at": "2026-09-24T07:00:00Z",
+      "updated_at": "2026-09-24T07:00:00Z"
+    }
+  ],
+  "admission_decisions": [
+    {
+      "admission_decision_id": "adm_01k9zuribeans",
+      "client_application_id": "capp_01k9zuribeans",
+      "decision": "APPROVED",
+      "reason": "Nabhold Group affiliate; INTERNAL subscription approved.",
+      "decided_by": "prn_01k9approver",
+      "decided_at": "2026-09-22T10:00:00Z",
+      "approved_subscription_type": "INTERNAL",
+      "internal_eligibility": {
+        "organisation_id": "ce_zuribeans",
+        "platform_id": "baobab-platform",
+        "eligibility_status": "ELIGIBLE",
+        "basis_relationship_ids": [
+          "prel_01k8zuriaffil"
+        ],
+        "evaluated_at": "2026-09-22T10:00:00Z"
+      },
+      "approved_market_scope": [
+        "KE",
+        "UG"
+      ],
+      "approved_product_requirements": [
+        "b2b-trade",
+        "erp"
+      ],
+      "approved_isolation_requirements": "schema_per_tenant",
+      "evidence_references": [
+        "evd_nabhold_share_register_2026"
+      ]
+    },
+    {
+      "admission_decision_id": "adm_01k9kilima",
+      "client_application_id": "capp_01k9kilima",
+      "decision": "APPROVED",
+      "reason": "Registration and tax standing verified.",
+      "decided_by": "prn_01k9approver",
+      "decided_at": "2026-09-23T15:00:00Z",
+      "approved_subscription_type": "COMMERCIAL",
+      "approved_market_scope": [
+        "UG"
+      ],
+      "approved_product_requirements": [
+        "b2b-trade",
+        "procurement"
+      ],
+      "conditions": [
+        "Kenya participation requires a separate review in 2027."
+      ],
+      "evidence_references": [
+        "evd_kilima_certificate_of_incorporation",
+        "evd_kilima_tax_clearance"
+      ]
+    }
+  ],
+  "client_application_drafts": [
+    {
+      "organisation_profile": {
+        "legal_name": "Duma Logistics"
+      }
+    },
+    {
+      "version": 1,
+      "requirements": {
+        "operates_b2b": true,
+        "trades_cross_border": true
+      },
+      "requested_markets": [
+        {
+          "country_code": "TZ"
+        }
+      ],
+      "evidence": [
+        {
+          "evidence_type": "REGISTRATION_EVIDENCE",
+          "evidence_reference": "evd_duma_registration"
+        }
+      ]
+    }
+  ],
+  "admission_decision_requests": [
+    {
+      "decision": "APPROVED",
+      "reason": "Nabhold Group affiliate; INTERNAL subscription approved.",
+      "approved_subscription_type": "INTERNAL",
+      "internal_eligibility_organisation_id": "ce_zuribeans",
+      "approved_market_scope": [
+        "KE",
+        "UG"
+      ],
+      "approved_product_requirements": [
+        "b2b-trade",
+        "erp"
+      ],
+      "approved_isolation_requirements": "schema_per_tenant",
+      "evidence_references": [
+        "evd_nabhold_share_register_2026"
+      ]
+    },
+    {
+      "decision": "REJECTED",
+      "reason": "The registration evidence could not be verified."
+    }
+  ]
+}

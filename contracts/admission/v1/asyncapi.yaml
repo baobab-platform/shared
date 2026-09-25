@@ -1,0 +1,76 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab-Platform admission lifecycle events
+  version: 1.0.0
+  description: >
+    ADR-BCP-017 section 40 ClientApplication lifecycle events. Produced by
+    baobab-platform/baobab-cp from its transactional outbox in the same
+    transaction as the state change; a replayed command that changes nothing
+    publishes nothing. Payloads carry identifiers and state only. Event types
+    follow ADR-SHARED-008. Subscription classification is carried by the
+    approval; tenant onboarding and activation events belong to provisioning.
+defaultContentType: application/json
+channels:
+  clientApplicationLifecycle:
+    address: baobab-platform.control-plane.client-application.v1
+    messages:
+      clientApplicationCreated: { $ref: "#/components/messages/ClientApplicationCreated" }
+      clientApplicationSubmitted: { $ref: "#/components/messages/ClientApplicationSubmitted" }
+      clientApplicationInformationRequested: { $ref: "#/components/messages/ClientApplicationInformationRequested" }
+      clientApplicationWithdrawn: { $ref: "#/components/messages/ClientApplicationWithdrawn" }
+      clientApplicationApproved: { $ref: "#/components/messages/ClientApplicationApproved" }
+      clientApplicationRejected: { $ref: "#/components/messages/ClientApplicationRejected" }
+operations:
+  publishClientApplicationLifecycle:
+    action: send
+    channel: { $ref: "#/channels/clientApplicationLifecycle" }
+components:
+  messages:
+    ClientApplicationCreated:
+      name: com.baobab-platform.control-plane.client-application.created.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/ClientApplicationCreated" }
+    ClientApplicationSubmitted:
+      name: com.baobab-platform.control-plane.client-application.submitted.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/ClientApplicationSubmitted" }
+    ClientApplicationInformationRequested:
+      name: com.baobab-platform.control-plane.client-application.information-requested.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/ClientApplicationInformationRequested" }
+    ClientApplicationWithdrawn:
+      name: com.baobab-platform.control-plane.client-application.withdrawn.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/ClientApplicationWithdrawn" }
+    ClientApplicationApproved:
+      name: com.baobab-platform.control-plane.client-application.approved.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/ClientApplicationApproved" }
+    ClientApplicationRejected:
+      name: com.baobab-platform.control-plane.client-application.rejected.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/ClientApplicationRejected" }
