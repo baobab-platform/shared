@@ -1,0 +1,18 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000000103",
+  "type": "com.baobab-platform.control-plane.tenant-onboarding.requested.v1",
+  "source": "https://control-plane.baobab-platform.com/admission",
+  "subject": "tenant-onboarding-request/tor_01k9zuribeans",
+  "time": "2026-09-22T11:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/admission/v1/events.schema.json#/$defs/TenantOnboardingRequested",
+  "baobabscope": "platform",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-0000000001ff",
+  "data": {
+    "tenant_onboarding_request_id": "tor_01k9zuribeans",
+    "client_application_id": "capp_01k9zuribeans",
+    "admission_decision_id": "adm_01k9zuribeans",
+    "requested_at": "2026-09-22T11:00:00Z"
+  }
+}

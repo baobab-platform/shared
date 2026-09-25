@@ -112,6 +112,26 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "onboarding:request"
+    description: >-
+      A platform onboarding requester hands an APPROVED AdmissionDecision to
+      onboarding as a TenantOnboardingRequest, records the tenant provisioning
+      produced, or cancels a request (ADR-BCP-017 sections 22-24). Never for
+      an application the requester made or a decision the requester took.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "onboarding:authorise"
+    description: >-
+      A platform onboarding authoriser authorises a REQUESTED
+      TenantOnboardingRequest before provisioning may fulfil it (ADR-BCP-017
+      sections 22, 39). Never a request the authoriser made, nor for an
+      application the authoriser made.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "subscription:read"
     description: >-
       A platform operator reads ProductSubscription classifications and their

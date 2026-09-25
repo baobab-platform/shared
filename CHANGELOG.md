@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Tenant onboarding handoff (ADR-BCP-017 sections 22-24, 39, 46).**
+  `contracts/admission/v1/onboarding.schema.json` defines `TenantOnboardingRequest` (`tor_`), its desired state (subscription type, markets, products and isolation taken from the AdmissionDecision) and its commands. `onboarding-lifecycle.yaml` sets the lifecycle: REQUESTED → AUTHORISED → FULFILLED, with CANCELLED from either open state. New privileged scopes `onboarding:request` and `onboarding:authorise`. Four `tenant-onboarding.*` events. The validator gains 21 negatives, including separation of duties, one live request per decision, and desired state that departs from the decision.
 - **Tenant PlatformAccount binding and account lifecycle (ADR-BCP-018 gate ORG-07).**
   `contracts/organisation/v1/platform.schema.json` adds `TenantPlatformAccountBinding` (explicit, effective-dated, at most one ACTIVE per tenant, commercial only), its bind/end commands, and the §83 PlatformAccount lifecycle (`platformAccountStatus`, `platformAccountTransitions`, `PlatformAccountStatusChangeRequest`). New events: `platform-account.status-changed`, `tenant-platform-account-binding.bound` and `.ended`. The validator gains 13 negative fixtures, including semantic ones: two ACTIVE bindings, binding on a CLOSED account, and binding without account membership.
 - **Organisation drift, audit lineage and metrics (ADR-BCP-018 gate ORG-15).**

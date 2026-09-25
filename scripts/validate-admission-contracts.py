@@ -57,12 +57,19 @@ RESPONSIBILITIES = {
         "admissionDecisionId", "admissionDecisionValue", "subscriptionType", "isolationStrategy",
         "InternalEligibilityEvidence", "AdmissionDecisionRequest", "AdmissionDecision",
     },
+    "onboarding.schema.json": {
+        "tenantOnboardingRequestId", "onboardingRequestStatus", "OnboardingDesiredState", "TenantOnboardingRequest",
+        "TenantOnboardingRequestCommand", "OnboardingAuthorisationCommand", "OnboardingCancellationCommand",
+        "OnboardingFulfilmentCommand",
+    },
     "events.schema.json": {
         "ClientApplicationCreated", "ClientApplicationSubmitted", "ClientApplicationInformationRequested",
         "ClientApplicationWithdrawn", "ClientApplicationApproved", "ClientApplicationRejected",
+        "TenantOnboardingRequested", "TenantOnboardingAuthorised", "TenantOnboardingFulfilled", "TenantOnboardingCancelled",
     },
 }
-LOCKED_FILES = [*RESPONSIBILITIES, "lifecycle.yaml"]
+LOCKED_FILES = ["application.schema.json", "decision.schema.json", "onboarding.schema.json", "events.schema.json",
+                "lifecycle.yaml", "onboarding-lifecycle.yaml"]
 
 EVENT_TYPES = {
     "com.baobab-platform.control-plane.client-application.created.v1": "ClientApplicationCreated",
@@ -71,6 +78,10 @@ EVENT_TYPES = {
     "com.baobab-platform.control-plane.client-application.withdrawn.v1": "ClientApplicationWithdrawn",
     "com.baobab-platform.control-plane.client-application.approved.v1": "ClientApplicationApproved",
     "com.baobab-platform.control-plane.client-application.rejected.v1": "ClientApplicationRejected",
+    "com.baobab-platform.control-plane.tenant-onboarding.requested.v1": "TenantOnboardingRequested",
+    "com.baobab-platform.control-plane.tenant-onboarding.authorised.v1": "TenantOnboardingAuthorised",
+    "com.baobab-platform.control-plane.tenant-onboarding.fulfilled.v1": "TenantOnboardingFulfilled",
+    "com.baobab-platform.control-plane.tenant-onboarding.cancelled.v1": "TenantOnboardingCancelled",
 }
 ENVELOPE_REF = "../../events/v1/envelope.schema.json"
 FORBIDDEN_EVENT_FIELDS = {
@@ -198,12 +209,15 @@ for path in sorted((PKG / "examples").glob("*.json")):
         "admission_decisions": ("decision.schema.json", "AdmissionDecision"),
         "client_application_drafts": ("application.schema.json", "ClientApplicationDraft"),
         "admission_decision_requests": ("decision.schema.json", "AdmissionDecisionRequest"),
+        "tenant_onboarding_requests": ("onboarding.schema.json", "TenantOnboardingRequest"),
+        "tenant_onboarding_request_commands": ("onboarding.schema.json", "TenantOnboardingRequestCommand"),
     }.items():
         for index, record in enumerate(document.get(key, [])):
             for error in errors_for(schema_file, definition, record):
                 fail(f"{rel(path)}: {key}[{index}] {error}")
     unknown = set(document) - {"_comment", "client_applications", "admission_decisions",
-                               "client_application_drafts", "admission_decision_requests"}
+                               "client_application_drafts", "admission_decision_requests",
+                               "tenant_onboarding_requests", "tenant_onboarding_request_commands"}
     if unknown:
         fail(f"{rel(path)}: unknown example keys {sorted(unknown)}")
 
@@ -231,6 +245,76 @@ for path in sorted((PKG / "examples").glob("*.json")):
             fail(f"{rel(path)}: {full['admission_decision_id']} eligibility must be evaluated when deciding")
 if "client-application-lifecycle.json" not in examples:
     fail("examples/client-application-lifecycle.json is missing")
+
+
+def onboarding_problems(requests: list[dict], apps: dict, decisions: dict) -> list[str]:
+    """ADR-BCP-017 sections 22-24, 39, 46: a request names an APPROVED
+    decision of its own application; its desired state takes the decision's
+    classification, markets, products and isolation; the requester is neither
+    applicant nor decider and the authoriser is neither requester nor
+    applicant; at most one live request exists per decision."""
+    problems, live = [], {}
+    for r in requests:
+        rid = r["tenant_onboarding_request_id"]
+        d = decisions.get(r["admission_decision_id"])
+        app = apps.get(r["client_application_id"])
+        if d is None or app is None:
+            problems.append(f"{rid} names an unknown decision or application")
+            continue
+        if d["decision"] != "APPROVED":
+            problems.append(f"{rid} onboards a {d['decision']} decision")
+        if d["client_application_id"] != r["client_application_id"]:
+            problems.append(f"{rid} pairs a decision with another application")
+        ds = r["desired_state"]
+        if ds["subscription_type"] != d.get("approved_subscription_type"):
+            problems.append(f"{rid} desired subscription type differs from the decision")
+        if set(ds["market_scope"]) != set(d.get("approved_market_scope", [])):
+            problems.append(f"{rid} desired markets differ from the decision")
+        if set(ds["product_requirements"]) != set(d.get("approved_product_requirements", [])):
+            problems.append(f"{rid} desired products differ from the decision")
+        if d.get("approved_isolation_requirements") and ds["isolation_strategy"] != d["approved_isolation_requirements"]:
+            problems.append(f"{rid} desired isolation differs from the decision")
+        if r["requested_by"] in (app["applicant_principal_id"], d["decided_by"]):
+            problems.append(f"{rid} is requested by its applicant or decider")
+        if r.get("authorised_by") in (r["requested_by"], app["applicant_principal_id"]):
+            problems.append(f"{rid} is authorised by its requester or applicant")
+        if r["status"] in ("REQUESTED", "AUTHORISED", "FULFILLED"):
+            if r["admission_decision_id"] in live:
+                problems.append(f"{rid} and {live[r['admission_decision_id']]} are both live for one decision")
+            live[r["admission_decision_id"]] = rid
+    return problems
+
+
+onboarding_doc = examples.get("tenant-onboarding.json")
+if onboarding_doc is None:
+    fail("examples/tenant-onboarding.json is missing")
+else:
+    base = examples.get("client-application-lifecycle.json", {})
+    ob_apps = {a["client_application_id"]: a for a in base.get("client_applications", [])}
+    ob_decisions = {d["admission_decision_id"]: d for d in base.get("admission_decisions", [])}
+    for problem in onboarding_problems(onboarding_doc.get("tenant_onboarding_requests", []), ob_apps, ob_decisions):
+        fail(f"examples/tenant-onboarding.json: {problem}")
+    command_fields = set(SCHEMAS["onboarding.schema.json"]["$defs"]["TenantOnboardingRequestCommand"]["properties"])
+    decided = {"subscription_type", "market_scope", "product_requirements", "status", "requested_by", "authorised_by",
+               "tenant_id", "correlation_id", "client_application_id"}
+    if command_fields & decided:
+        fail(f"TenantOnboardingRequestCommand accepts decision- or server-authoritative fields {sorted(command_fields & decided)}")
+
+ob_lifecycle = yaml.safe_load((PKG / "onboarding-lifecycle.yaml").read_text())
+OB_STATUSES = set(SCHEMAS["onboarding.schema.json"]["$defs"]["onboardingRequestStatus"]["enum"])
+ob_transitions = ob_lifecycle.get("transitions", [])
+ob_states = {t["from"] for t in ob_transitions} | {t["to"] for t in ob_transitions} | {ob_lifecycle.get("initial")}
+if ob_states != OB_STATUSES:
+    fail(f"onboarding-lifecycle.yaml states {sorted(ob_states ^ OB_STATUSES)} differ from onboardingRequestStatus")
+if ob_lifecycle.get("initial") != "REQUESTED" or set(ob_lifecycle.get("terminal", [])) != {"FULFILLED", "CANCELLED"}:
+    fail("onboarding-lifecycle.yaml: initial REQUESTED, terminal FULFILLED and CANCELLED")
+for t in ob_transitions:
+    if t["from"] in {"FULFILLED", "CANCELLED"}:
+        fail(f"onboarding-lifecycle.yaml: terminal {t['from']} has an outgoing transition")
+    if t["to"] == "AUTHORISED" and t["actor"] != "AUTHORISER":
+        fail("onboarding-lifecycle.yaml: only an AUTHORISER authorises")
+    if t["to"] == "FULFILLED" and t["from"] != "AUTHORISED":
+        fail("onboarding-lifecycle.yaml: only an AUTHORISED request can be fulfilled (approval activates nothing)")
 
 # 3. Lifecycle.
 lifecycle = yaml.safe_load((PKG / "lifecycle.yaml").read_text())
@@ -365,11 +449,55 @@ if {"capp_01k9kilima", "capp_01k9duma"} <= set(apps) and {"adm_01k9zuribeans", "
     negative("decision without a decider", "decision.schema.json", "AdmissionDecision", anonymous)
     foreign = {**copy.deepcopy(commercial), "admission_decision_id": "decision-1"}
     negative("decision id outside the adm_ form", "decision.schema.json", "AdmissionDecision", foreign)
+    # Tenant onboarding requests (sections 22-24, 39, 46).
+    if onboarding_doc is not None:
+        reqs = onboarding_doc["tenant_onboarding_requests"]
+        fulfilled = copy.deepcopy(next(r for r in reqs if r["status"] == "FULFILLED"))
+        requested = copy.deepcopy(next(r for r in reqs if r["status"] == "REQUESTED"))
+        negative("REQUESTED carrying an authorisation", "onboarding.schema.json", "TenantOnboardingRequest",
+                 {**requested, "authorised_by": "prn_x", "authorised_at": "2026-09-23T18:00:00Z"})
+        negative("FULFILLED without authorisation", "onboarding.schema.json", "TenantOnboardingRequest",
+                 {k: v for k, v in fulfilled.items() if k not in ("authorised_by", "authorised_at")})
+        negative("FULFILLED without a tenant", "onboarding.schema.json", "TenantOnboardingRequest",
+                 {k: v for k, v in fulfilled.items() if k != "tenant_id"})
+        negative("request without a correlation id", "onboarding.schema.json", "TenantOnboardingRequest",
+                 {k: v for k, v in requested.items() if k != "correlation_id"})
+        negative("request id outside the tor_ form", "onboarding.schema.json", "TenantOnboardingRequest",
+                 {**requested, "tenant_onboarding_request_id": "onboarding-1"})
+        negative("desired state without a subscription type", "onboarding.schema.json", "OnboardingDesiredState",
+                 {k: v for k, v in requested["desired_state"].items() if k != "subscription_type"})
+        negative("unsupported residency region", "onboarding.schema.json", "OnboardingDesiredState",
+                 {**requested["desired_state"], "residency_region": "Kenya"})
+        cmd = onboarding_doc["tenant_onboarding_request_commands"][0]
+        for field, value in (("subscription_type", "INTERNAL"), ("market_scope", ["KE"]), ("requested_by", "prn_x"),
+                             ("tenant_id", "tn_x"), ("status", "AUTHORISED")):
+            negative(f"onboarding command sets decision- or server-authoritative {field}", "onboarding.schema.json",
+                     "TenantOnboardingRequestCommand", {**cmd, field: value})
+        negative("onboarding command without a reason", "onboarding.schema.json", "TenantOnboardingRequestCommand",
+                 {k: v for k, v in cmd.items() if k != "reason"})
+        negative("authorisation without a reason", "onboarding.schema.json", "OnboardingAuthorisationCommand", {})
+        negative("fulfilment without a tenant", "onboarding.schema.json", "OnboardingFulfilmentCommand", {})
+        base = examples["client-application-lifecycle.json"]
+        ob_apps = {a["client_application_id"]: a for a in base["client_applications"]}
+        ob_decisions = {d["admission_decision_id"]: d for d in base["admission_decisions"]}
+        for label, mutate in (
+            ("request made by the decider", lambda rs: rs[2].update(requested_by="prn_01k9approver")),
+            ("request made by the applicant", lambda rs: rs[2].update(requested_by="prn_01k9kilima")),
+            ("authorised by its requester", lambda rs: rs[0].update(authorised_by=rs[0]["requested_by"])),
+            ("two live requests for one decision", lambda rs: rs[1].update(status="REQUESTED")),
+            ("desired markets widened beyond the decision", lambda rs: rs[2]["desired_state"].update(market_scope=["UG", "KE"])),
+            ("desired classification differs from the decision", lambda rs: rs[2]["desired_state"].update(subscription_type="INTERNAL")),
+        ):
+            mutated = copy.deepcopy(reqs)
+            mutate(mutated)
+            if not onboarding_problems(mutated, ob_apps, ob_decisions):
+                fail(f"semantic negative accepted: {label}")
+            NEGATIVE.append((label, "", "", {}))
 else:
     fail("client-application-lifecycle.json lacks the records the negative fixtures mutate")
 
 for label, schema_file, definition, record in NEGATIVE:
-    if not errors_for(schema_file, definition, record):
+    if schema_file and not errors_for(schema_file, definition, record):
         fail(f"negative fixture accepted: {label}")
 
 # 5. Events.
@@ -419,7 +547,8 @@ elif entries[0].get("schemas") != LOCKED_FILES:
 scopes = {entry["name"]: entry for entry in
           yaml.safe_load((CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
 for name, privileged in {"application:read": False, "application:write": False,
-                         "admission:review": True, "admission:decide": True}.items():
+                         "admission:review": True, "admission:decide": True,
+                         "onboarding:request": True, "onboarding:authorise": True}.items():
     entry = scopes.get(name)
     if entry is None:
         fail(f"scope-registry.yaml does not define {name}")

@@ -130,6 +130,114 @@
           "format": "date-time"
         }
       }
+    },
+    "TenantOnboardingRequested": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An APPROVED decision was handed to onboarding by an explicit request. Nothing is provisioned or activated yet.",
+      "required": [
+        "tenant_onboarding_request_id",
+        "client_application_id",
+        "admission_decision_id",
+        "requested_at"
+      ],
+      "properties": {
+        "tenant_onboarding_request_id": {
+          "$ref": "onboarding.schema.json#/$defs/tenantOnboardingRequestId"
+        },
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "admission_decision_id": {
+          "$ref": "decision.schema.json#/$defs/admissionDecisionId"
+        },
+        "requested_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TenantOnboardingAuthorised": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A second principal authorised provisioning for the request.",
+      "required": [
+        "tenant_onboarding_request_id",
+        "client_application_id",
+        "admission_decision_id",
+        "authorised_at"
+      ],
+      "properties": {
+        "tenant_onboarding_request_id": {
+          "$ref": "onboarding.schema.json#/$defs/tenantOnboardingRequestId"
+        },
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "admission_decision_id": {
+          "$ref": "decision.schema.json#/$defs/admissionDecisionId"
+        },
+        "authorised_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TenantOnboardingFulfilled": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Provisioning registered the tenant produced from the request. Activation still requires readiness.",
+      "required": [
+        "tenant_onboarding_request_id",
+        "client_application_id",
+        "admission_decision_id",
+        "tenant_id",
+        "fulfilled_at"
+      ],
+      "properties": {
+        "tenant_onboarding_request_id": {
+          "$ref": "onboarding.schema.json#/$defs/tenantOnboardingRequestId"
+        },
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "admission_decision_id": {
+          "$ref": "decision.schema.json#/$defs/admissionDecisionId"
+        },
+        "tenant_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
+        },
+        "fulfilled_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "TenantOnboardingCancelled": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The request was cancelled before fulfilment. The admission decision is unchanged.",
+      "required": [
+        "tenant_onboarding_request_id",
+        "client_application_id",
+        "admission_decision_id",
+        "cancelled_at"
+      ],
+      "properties": {
+        "tenant_onboarding_request_id": {
+          "$ref": "onboarding.schema.json#/$defs/tenantOnboardingRequestId"
+        },
+        "client_application_id": {
+          "$ref": "application.schema.json#/$defs/clientApplicationId"
+        },
+        "admission_decision_id": {
+          "$ref": "decision.schema.json#/$defs/admissionDecisionId"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
     }
   }
 }
