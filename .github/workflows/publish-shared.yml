@@ -267,16 +267,16 @@ jobs:
           #
           # Therefore publishing always rebuilds packages in the same runner
           # before they are sent to GitHub Packages.
-          publish: pnpm release
+          publish-script: pnpm release
 
           # Keep release commits/PRs predictable.
-          title: "chore(release): version shared packages"
-          commit: "chore(release): version shared packages"
+          pr-title: "chore(release): version shared packages"
+          commit-message: "chore(release): version shared packages"
 
           # This repository already has GitHub-release infrastructure.
           # Changesets should nevertheless create package releases/tags when
           # publishing package versions.
-          createGithubReleases: true
+          create-github-releases: true
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -287,9 +287,9 @@ jobs:
         shell: bash
         env:
           PUBLISHED: ${{ steps.changesets.outputs.published }}
-          PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
-          HAS_CHANGESETS: ${{ steps.changesets.outputs.hasChangesets }}
-          PR_NUMBER: ${{ steps.changesets.outputs.pullRequestNumber }}
+          PACKAGES: ${{ steps.changesets.outputs.published-packages }}
+          HAS_CHANGESETS: ${{ steps.changesets.outputs.has-changesets }}
+          PR_NUMBER: ${{ steps.changesets.outputs.pr-number }}
         run: |
           {
             echo "## Baobab-Platform Shared Package Release"
