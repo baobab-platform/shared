@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: >
     Billing events published by baobab-platform/baobab-subscriptions
-    (ADR-SUB-0001, ADR-SHARED-011) from its own outbox, in the same
+    (ADR-SUB-0001, ADR-SUB-0003, ADR-SHARED-011) from its own outbox, in the same
     transaction as the change; a replay that changes nothing publishes
     nothing. Tenant-scoped. Distinct from the Control Plane's
     com.baobab-platform.product.subscription.* events.
@@ -15,7 +15,8 @@ channels:
     messages:
       billingSubscriptionCreated: { $ref: "#/components/messages/BillingSubscriptionCreated" }
       billingSubscriptionSuspended: { $ref: "#/components/messages/BillingSubscriptionSuspended" }
-      billingSubscriptionCancelled: { $ref: "#/components/messages/BillingSubscriptionCancelled" }
+      billingSubscriptionResumed: { $ref: "#/components/messages/BillingSubscriptionResumed" }
+      billingSubscriptionTerminated: { $ref: "#/components/messages/BillingSubscriptionTerminated" }
       usageRecorded: { $ref: "#/components/messages/UsageRecorded" }
 operations:
   publishBillingEvents:
@@ -39,14 +40,22 @@ components:
           - type: object
             properties:
               data: { $ref: "./events.schema.json#/$defs/BillingSubscriptionSuspended" }
-    BillingSubscriptionCancelled:
-      name: com.baobab-platform.subscriptions.billing-subscription.cancelled.v1
+    BillingSubscriptionResumed:
+      name: com.baobab-platform.subscriptions.billing-subscription.resumed.v1
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
           - type: object
             properties:
-              data: { $ref: "./events.schema.json#/$defs/BillingSubscriptionCancelled" }
+              data: { $ref: "./events.schema.json#/$defs/BillingSubscriptionResumed" }
+    BillingSubscriptionTerminated:
+      name: com.baobab-platform.subscriptions.billing-subscription.terminated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/BillingSubscriptionTerminated" }
     UsageRecorded:
       name: com.baobab-platform.subscriptions.usage.recorded.v1
       payload:

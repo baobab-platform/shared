@@ -1,9 +1,10 @@
 {
-  "_comment": "Illustrative ADR-SUB-0001 instances. ZuriBeans' INTERNAL subscription is billing-ready at zero charge with metering on and no payment dependency; its usage is metered but not billable. An external COMMERCIAL subscription on the temporary provider is honestly BLOCKED: billing requires money and no real provider exists yet.",
+  "_comment": "Illustrative ADR-SUB-0001 instances. ZuriBeans' INTERNAL subscription is billing-ready at zero charge with metering on and no payment dependency; its usage is metered but not billable. An external COMMERCIAL subscription on the temporary provider is honestly BLOCKED: billing requires money and no real provider exists yet. Readiness is reported as separate facts with ADR-SUB-0006 blockers: the COMMERCIAL projection names every missing piece (pricing, billing account, provider, payment path) rather than claiming readiness.",
   "ensure_requests": [
     {
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
       "product_subscription_id": "sub_01k9zuribeansxbt",
+      "authoritative_revision": 2,
       "product_id": "baobab-xbt",
       "legal_entity_id": "ZURIBEANS",
       "subscription_type": "INTERNAL",
@@ -17,6 +18,7 @@
     {
       "tenant_id": "tn_01k9acmeltd",
       "product_subscription_id": "sub_01k9acmexbt",
+      "authoritative_revision": 2,
       "product_id": "baobab-xbt",
       "platform_account_id": "pacct_01k9acme",
       "legal_entity_id": "LE-01K9ACMELTD",
@@ -34,6 +36,7 @@
       "billing_subscription_id": "bsub_01k9zuri",
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
       "product_subscription_id": "sub_01k9zuribeansxbt",
+      "authoritative_revision": 2,
       "product_id": "baobab-xbt",
       "legal_entity_id": "ZURIBEANS",
       "subscription_type": "INTERNAL",
@@ -50,9 +53,18 @@
         "payment_execution": "NEVER"
       },
       "billing_state": "ACTIVE",
+      "operational_condition": "HEALTHY",
       "readiness": {
         "status": "READY",
-        "reasons": []
+        "facts": {
+          "classification_valid": true,
+          "projection_valid": true,
+          "metering_available": true,
+          "billing_configuration_complete": true,
+          "provider_ready": true,
+          "payment_path_ready": true
+        },
+        "blockers": []
       },
       "provider": {
         "kind": "TEMPORARY",
@@ -66,6 +78,7 @@
       "billing_subscription_id": "bsub_01k9acme",
       "tenant_id": "tn_01k9acmeltd",
       "product_subscription_id": "sub_01k9acmexbt",
+      "authoritative_revision": 2,
       "product_id": "baobab-xbt",
       "platform_account_id": "pacct_01k9acme",
       "legal_entity_id": "LE-01K9ACMELTD",
@@ -83,11 +96,22 @@
         "payment_execution": "REQUIRED"
       },
       "billing_state": "PENDING_CONFIGURATION",
+      "operational_condition": "HEALTHY",
       "readiness": {
         "status": "BLOCKED",
-        "reasons": [
+        "facts": {
+          "classification_valid": true,
+          "projection_valid": true,
+          "metering_available": true,
+          "billing_configuration_complete": false,
+          "provider_ready": false,
+          "payment_path_ready": false
+        },
+        "blockers": [
+          "PRICING_CONFIGURATION_MISSING",
+          "BILLING_ACCOUNT_MISSING",
           "BILLING_PROVIDER_NOT_CONFIGURED",
-          "PAYMENT_PROVIDER_NOT_CONFIGURED"
+          "PAYMENT_PATH_NOT_READY"
         ]
       },
       "provider": {
@@ -127,6 +151,7 @@
   "commands": [
     {
       "tenant_id": "tn_01k9acmeltd",
+      "authoritative_revision": 3,
       "reason": "Customer requested suspension pending contract renewal."
     }
   ]
