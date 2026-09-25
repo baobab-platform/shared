@@ -252,9 +252,8 @@
           "$ref": "domain.schema.json#/$defs/evidenceReference"
         },
         "bound_by": {
-          "type": "string",
-          "pattern": "^prn_[a-z0-9]+$",
-          "description": "The Control Plane principal that made the binding."
+          "$ref": "../../admission/v1/application.schema.json#/$defs/principalId",
+          "description": "The Control Plane principal that made the binding. Never an IAM-internal id."
         },
         "effective_from": {
           "type": "string",
@@ -270,8 +269,7 @@
           "maxLength": 2000
         },
         "ended_by": {
-          "type": "string",
-          "pattern": "^prn_[a-z0-9]+$"
+          "$ref": "../../admission/v1/application.schema.json#/$defs/principalId"
         }
       },
       "allOf": [
