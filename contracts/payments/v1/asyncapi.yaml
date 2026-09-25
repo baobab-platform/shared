@@ -1,0 +1,74 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab-Platform payment events
+  version: 1.0.0
+  description: >
+    Payment events published by baobab-platform/baobab-payments (ADR-PAY-0001,
+    ADR-SHARED-011) from its own outbox. Tenant-scoped. Emitted only for
+    state that actually occurred; every payload carries simulated so sandbox
+    outcomes are never mistaken for real-world settlement.
+defaultContentType: application/json
+channels:
+  paymentEvents:
+    address: baobab-platform.payments.payment.v1
+    messages:
+      paymentCreated: { $ref: "#/components/messages/PaymentCreated" }
+      paymentAuthorized: { $ref: "#/components/messages/PaymentAuthorized" }
+      paymentCaptured: { $ref: "#/components/messages/PaymentCaptured" }
+      paymentFailed: { $ref: "#/components/messages/PaymentFailed" }
+      paymentCancelled: { $ref: "#/components/messages/PaymentCancelled" }
+      paymentRefunded: { $ref: "#/components/messages/PaymentRefunded" }
+operations:
+  publishPaymentEvents:
+    action: send
+    channel: { $ref: "#/channels/paymentEvents" }
+components:
+  messages:
+    PaymentCreated:
+      name: com.baobab-platform.payments.payment.created.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PaymentCreated" }
+    PaymentAuthorized:
+      name: com.baobab-platform.payments.payment.authorized.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PaymentAuthorized" }
+    PaymentCaptured:
+      name: com.baobab-platform.payments.payment.captured.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PaymentCaptured" }
+    PaymentFailed:
+      name: com.baobab-platform.payments.payment.failed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PaymentFailed" }
+    PaymentCancelled:
+      name: com.baobab-platform.payments.payment.cancelled.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PaymentCancelled" }
+    PaymentRefunded:
+      name: com.baobab-platform.payments.payment.refunded.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/PaymentRefunded" }

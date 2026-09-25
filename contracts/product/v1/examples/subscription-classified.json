@@ -1,0 +1,21 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000000301",
+  "type": "com.baobab-platform.product.subscription.classified.v1",
+  "source": "urn:baobab-platform:service:baobab-cp",
+  "subject": "subscription:sub_01k9zuribeansxbt",
+  "time": "2026-09-22T10:05:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/product/v1/events.schema.json#/$defs/subscriptionClassifiedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-0000000003ff",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "subscription_id": "sub_01k9zuribeansxbt",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "classification_id": "subcls_01k9zuriinternal",
+    "subscription_type": "INTERNAL",
+    "classification_source": "ADMISSION_DECISION",
+    "classified_at": "2026-09-22T10:05:00Z"
+  }
+}

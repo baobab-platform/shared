@@ -48,6 +48,7 @@ contracts:
       - events.schema.json
       - namespace-registry.yaml
       - scope-specificity.yaml
+      - registration.schema.json
   - domain: product
     version: v1
     schemas:
@@ -55,6 +56,21 @@ contracts:
       - product.schema.json
       - subscription.schema.json
       - events.schema.json
+      - billing-policy.yaml
+  - domain: subscriptions
+    version: v1
+    schemas:
+      - domain.schema.json
+      - billing.schema.json
+      - events.schema.json
+      - capabilities.json
+  - domain: payments
+    version: v1
+    schemas:
+      - domain.schema.json
+      - payment.schema.json
+      - events.schema.json
+      - capabilities.json
   - domain: organisation
     version: v1
     schemas:

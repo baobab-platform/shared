@@ -112,6 +112,25 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "subscription:read"
+    description: >-
+      A platform operator reads ProductSubscription classifications and their
+      explanation ("why is this subscription INTERNAL?", ADR-SHARED-011).
+      Exposes relationship identifiers, never the corporate graph.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "subscription:classify"
+    description: >-
+      A platform approver classifies or reclassifies a ProductSubscription
+      (ADR-BCP-017 section 48, ADR-BCP-018 ORG-11). INTERNAL is accepted only
+      when the Control Plane itself establishes eligibility; never by the
+      subscription's own organisation.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "erp:integrate"
     description: >-
       Allows a workload to call baobab-erp's own application-service integration
