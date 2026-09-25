@@ -1,0 +1,28 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000000403",
+  "type": "com.baobab-platform.payments.payment.captured.v1",
+  "source": "urn:baobab-platform:service:baobab-payments",
+  "subject": "payment:pay_01k9acme0001",
+  "time": "2026-09-24T00:05:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/payments/v1/events.schema.json#/$defs/PaymentCaptured",
+  "baobabscope": "tenant",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-0000000004ff",
+  "tenantid": "tn_01k9acmeltd",
+  "data": {
+    "payment_intent_id": "payint_01k9acme0001",
+    "payment_id": "pay_01k9acme0001",
+    "tenant_id": "tn_01k9acmeltd",
+    "legal_entity_id": "LE-01K9ACMELTD",
+    "source_engine": "baobab-subscriptions",
+    "source_reference": "bsub_01k9acme",
+    "amount": {
+      "currency": "UGX",
+      "amount_minor": 500000
+    },
+    "captured_amount_minor": 500000,
+    "simulated": true,
+    "occurred_at": "2026-09-24T09:05:00Z"
+  }
+}

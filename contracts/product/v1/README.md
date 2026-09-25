@@ -71,3 +71,16 @@ following the same pattern as `capability/v1/domain.schema.json`'s `cap_`/
   `com.baobab-platform.<context>.<...>.v<N>` convention (ADR-SHARED-008).
 
 All asynchronous messages use `contracts/events/v1/envelope.schema.json`.
+
+## Subscription classification (ADR-SHARED-011, ADR-BCP-018 gate ORG-11)
+
+A ProductSubscription's commercial classification, and why it holds, is Control Plane data defined here.
+
+- **`subscriptionType`** is the ADR-BCP-005 vocabulary: COMMERCIAL, INTERNAL, TRIAL, PARTNER, MANUAL and MIGRATION. It is identical to `admission/v1`, and there is no INTERNAL_GROUP.
+- **`productSubscription.classification`** holds the current type, its source (`ADMISSION_DECISION`, `RECLASSIFICATION`, `MIGRATION` or `MANUAL_GOVERNANCE`), its reference (the `admission_decision_id` for an admission) and when it was made.
+- **`SubscriptionClassificationRecord`** is each immutable classification. An INTERNAL record always carries the server-evaluated `InternalEligibilityEvidence`: the qualifying platform relationships. Reclassification appends a record to the same subscription; it never replaces the tenant, organisation or subscription identity.
+- **`ClassificationExplanation`** answers "why is this subscription INTERNAL?" from Control Plane records. It gives the current record, the history, eligibility re-evaluated now (drift is visible) and the billing policy.
+- **`billing-policy.yaml`** says what each type means for billing. INTERNAL is zero monetary charge and no billing, but it stays metered, entitled, audited, readiness- and isolation-controlled, and payments are never invoked.
+- **`com.baobab-platform.product.subscription.classified.v1`** is published on every (re)classification.
+
+Classification never changes CapabilityGrant semantics. INTERNAL still grants through ProductSubscription → ProductVersion → CapabilityComposition → CapabilityGrant.

@@ -37,6 +37,9 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/validate-commercial-contracts.py to the governance-contracts
+#   job: product/v1 subscription classification, subscriptions/v1 and
+#   payments/v1 (ADR-SHARED-011, ADR-BCP-018 gate ORG-11).
 # * Added scripts/validate-admission-contracts.py to the governance-contracts
 #   job, covering the new contracts/admission/v1 package (ADR-BCP-017
 #   ClientApplication, AdmissionDecision, lifecycle and events).
@@ -84,6 +87,7 @@ on:
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
+      - "scripts/validate-commercial-contracts.py"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
     paths:
@@ -103,6 +107,7 @@ on:
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
+      - "scripts/validate-commercial-contracts.py"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
 
@@ -143,6 +148,8 @@ jobs:
         run: python scripts/validate-organisation-contracts.py
       - name: Validate admission contracts, lifecycle and examples (Draft 2020-12)
         run: python scripts/validate-admission-contracts.py
+      - name: Validate classification, billing and payment contracts (Draft 2020-12)
+        run: python scripts/validate-commercial-contracts.py
 
   action-pinning:
     name: Enforce action pinning (self-check)

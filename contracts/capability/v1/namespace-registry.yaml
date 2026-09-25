@@ -64,6 +64,8 @@ domains:
     description: "Trade, inspection and proof-of-delivery document capabilities."
   - key: finance
     description: "Invoicing, receivables and settlement capabilities (e.g. baobab-erp/iDempiere)."
+  - key: billing
+    description: "Subscription billing, usage metering and credit capabilities (e.g. baobab-subscriptions/Kill Bill). Distinct from finance (ERP invoicing, receivables, ledger) and payment (payment execution). Added per ADR-SHARED-011."
   - key: payment
     description: "Payment authorization and processing capabilities."
   - key: settlement

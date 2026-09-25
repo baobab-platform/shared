@@ -1,0 +1,112 @@
+{
+  "_comment": "Illustrative ADR-PAY-0001 instances on the non-production SandboxProvider: every result is simulated and nothing settles. No INTERNAL subscription appears here: INTERNAL never reaches payments.",
+  "intent_requests": [
+    {
+      "context": {
+        "tenant_id": "tn_01k9acmeltd",
+        "legal_entity_id": "LE-01K9ACMELTD",
+        "market_id": "market_01k9ug",
+        "platform_account_id": "pacct_01k9acme",
+        "currency": "UGX",
+        "source_engine": "baobab-subscriptions",
+        "source_reference": "bsub_01k9acme",
+        "correlation_id": "0192a1b0-7c3e-7a10-8000-0000000005ff"
+      },
+      "amount": {
+        "currency": "UGX",
+        "amount_minor": 500000
+      },
+      "capture_method": "MANUAL",
+      "description": "Monthly platform subscription"
+    }
+  ],
+  "intents": [
+    {
+      "payment_intent_id": "payint_01k9acme0001",
+      "context": {
+        "tenant_id": "tn_01k9acmeltd",
+        "legal_entity_id": "LE-01K9ACMELTD",
+        "market_id": "market_01k9ug",
+        "platform_account_id": "pacct_01k9acme",
+        "currency": "UGX",
+        "source_engine": "baobab-subscriptions",
+        "source_reference": "bsub_01k9acme",
+        "correlation_id": "0192a1b0-7c3e-7a10-8000-0000000005ff"
+      },
+      "amount": {
+        "currency": "UGX",
+        "amount_minor": 500000
+      },
+      "capture_method": "MANUAL",
+      "status": "REQUIRES_CAPTURE",
+      "payment_id": "pay_01k9acme0001",
+      "provider": {
+        "kind": "SANDBOX",
+        "simulated": true,
+        "provider_reference": "sandbox_01k9pay0001"
+      },
+      "version": 2,
+      "created_at": "2026-09-24T09:00:00Z",
+      "updated_at": "2026-09-24T09:01:00Z"
+    }
+  ],
+  "confirm_requests": [
+    {
+      "tenant_id": "tn_01k9acmeltd",
+      "payment_method_reference": "pmref_sandbox_success"
+    }
+  ],
+  "payments": [
+    {
+      "payment_id": "pay_01k9acme0001",
+      "payment_intent_id": "payint_01k9acme0001",
+      "tenant_id": "tn_01k9acmeltd",
+      "legal_entity_id": "LE-01K9ACMELTD",
+      "amount": {
+        "currency": "UGX",
+        "amount_minor": 500000
+      },
+      "captured_amount_minor": 500000,
+      "refunded_amount_minor": 100000,
+      "status": "PARTIALLY_REFUNDED",
+      "provider": {
+        "kind": "SANDBOX",
+        "simulated": true,
+        "provider_reference": "sandbox_01k9pay0001"
+      },
+      "created_at": "2026-09-24T09:01:00Z",
+      "updated_at": "2026-09-24T09:10:00Z"
+    }
+  ],
+  "capture_requests": [
+    {
+      "tenant_id": "tn_01k9acmeltd"
+    }
+  ],
+  "refund_requests": [
+    {
+      "tenant_id": "tn_01k9acmeltd",
+      "amount_minor": 100000,
+      "reason": "Pro-rated credit"
+    }
+  ],
+  "refunds": [
+    {
+      "refund_id": "refund_01k9acme0001",
+      "payment_id": "pay_01k9acme0001",
+      "tenant_id": "tn_01k9acmeltd",
+      "amount": {
+        "currency": "UGX",
+        "amount_minor": 100000
+      },
+      "status": "SUCCEEDED",
+      "reason": "Pro-rated credit",
+      "provider": {
+        "kind": "SANDBOX",
+        "simulated": true,
+        "provider_reference": "sandbox_01k9pay0001"
+      },
+      "created_at": "2026-09-24T09:10:00Z"
+    }
+  ]
+}

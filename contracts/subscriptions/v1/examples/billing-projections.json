@@ -1,0 +1,133 @@
+{
+  "_comment": "Illustrative ADR-SUB-0001 instances. ZuriBeans' INTERNAL subscription is billing-ready at zero charge with metering on and no payment dependency; its usage is metered but not billable. An external COMMERCIAL subscription on the temporary provider is honestly BLOCKED: billing requires money and no real provider exists yet.",
+  "ensure_requests": [
+    {
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+      "product_subscription_id": "sub_01k9zuribeansxbt",
+      "product_id": "baobab-xbt",
+      "legal_entity_id": "ZURIBEANS",
+      "subscription_type": "INTERNAL",
+      "classification": {
+        "classification_id": "subcls_01k9zuriinternal",
+        "classification_source": "ADMISSION_DECISION",
+        "classification_reference": "adm_01k9zuribeans",
+        "classified_at": "2026-09-22T10:05:00Z"
+      }
+    },
+    {
+      "tenant_id": "tn_01k9acmeltd",
+      "product_subscription_id": "sub_01k9acmexbt",
+      "product_id": "baobab-xbt",
+      "platform_account_id": "pacct_01k9acme",
+      "legal_entity_id": "LE-01K9ACMELTD",
+      "subscription_type": "COMMERCIAL",
+      "classification": {
+        "classification_id": "subcls_01k9acmecommercial",
+        "classification_source": "ADMISSION_DECISION",
+        "classification_reference": "adm_01k9kilima",
+        "classified_at": "2026-09-23T15:05:00Z"
+      }
+    }
+  ],
+  "projections": [
+    {
+      "billing_subscription_id": "bsub_01k9zuri",
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+      "product_subscription_id": "sub_01k9zuribeansxbt",
+      "product_id": "baobab-xbt",
+      "legal_entity_id": "ZURIBEANS",
+      "subscription_type": "INTERNAL",
+      "classification": {
+        "classification_id": "subcls_01k9zuriinternal",
+        "classification_source": "ADMISSION_DECISION",
+        "classification_reference": "adm_01k9zuribeans",
+        "classified_at": "2026-09-22T10:05:00Z"
+      },
+      "billing_policy": {
+        "monetary_charge": "ZERO",
+        "billing_required": false,
+        "usage_metering": true,
+        "payment_execution": "NEVER"
+      },
+      "billing_state": "ACTIVE",
+      "readiness": {
+        "status": "READY",
+        "reasons": []
+      },
+      "provider": {
+        "kind": "TEMPORARY",
+        "simulated": true
+      },
+      "version": 1,
+      "created_at": "2026-09-22T10:06:00Z",
+      "updated_at": "2026-09-22T10:06:00Z"
+    },
+    {
+      "billing_subscription_id": "bsub_01k9acme",
+      "tenant_id": "tn_01k9acmeltd",
+      "product_subscription_id": "sub_01k9acmexbt",
+      "product_id": "baobab-xbt",
+      "platform_account_id": "pacct_01k9acme",
+      "legal_entity_id": "LE-01K9ACMELTD",
+      "subscription_type": "COMMERCIAL",
+      "classification": {
+        "classification_id": "subcls_01k9acmecommercial",
+        "classification_source": "ADMISSION_DECISION",
+        "classification_reference": "adm_01k9kilima",
+        "classified_at": "2026-09-23T15:05:00Z"
+      },
+      "billing_policy": {
+        "monetary_charge": "PRICED",
+        "billing_required": true,
+        "usage_metering": true,
+        "payment_execution": "REQUIRED"
+      },
+      "billing_state": "PENDING_CONFIGURATION",
+      "readiness": {
+        "status": "BLOCKED",
+        "reasons": [
+          "BILLING_PROVIDER_NOT_CONFIGURED",
+          "PAYMENT_PROVIDER_NOT_CONFIGURED"
+        ]
+      },
+      "provider": {
+        "kind": "TEMPORARY",
+        "simulated": true
+      },
+      "version": 1,
+      "created_at": "2026-09-23T15:06:00Z",
+      "updated_at": "2026-09-23T15:06:00Z"
+    }
+  ],
+  "usage_requests": [
+    {
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+      "metric_key": "api.calls",
+      "quantity": 1250,
+      "unit": "call",
+      "occurred_at": "2026-09-24T00:00:00Z",
+      "source_reference": "meter-window-2026-09-24"
+    }
+  ],
+  "usage_records": [
+    {
+      "usage_record_id": "usage_01k9zuri0001",
+      "billing_subscription_id": "bsub_01k9zuri",
+      "product_subscription_id": "sub_01k9zuribeansxbt",
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+      "metric_key": "api.calls",
+      "quantity": 1250,
+      "unit": "call",
+      "occurred_at": "2026-09-24T00:00:00Z",
+      "source_reference": "meter-window-2026-09-24",
+      "recorded_at": "2026-09-24T00:05:00Z",
+      "billable": false
+    }
+  ],
+  "commands": [
+    {
+      "tenant_id": "tn_01k9acmeltd",
+      "reason": "Customer requested suspension pending contract renewal."
+    }
+  ]
+}

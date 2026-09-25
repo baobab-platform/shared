@@ -25,6 +25,7 @@ channels:
       subscriptionActivated: { $ref: "#/components/messages/SubscriptionActivated" }
       subscriptionSuspended: { $ref: "#/components/messages/SubscriptionSuspended" }
       subscriptionCancelled: { $ref: "#/components/messages/SubscriptionCancelled" }
+      subscriptionClassified: { $ref: "#/components/messages/SubscriptionClassified" }
       entitlementProjectionUpdated: { $ref: "#/components/messages/EntitlementProjectionUpdated" }
 operations:
   publishProductEvents:
@@ -96,6 +97,14 @@ components:
           - type: object
             properties:
               data: { $ref: ./events.schema.json#/$defs/subscriptionLifecycleEventData }
+    SubscriptionClassified:
+      name: com.baobab-platform.product.subscription.classified.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/subscriptionClassifiedEventData }
     EntitlementProjectionUpdated:
       name: com.baobab-platform.product.entitlement-projection.updated.v1
       payload:

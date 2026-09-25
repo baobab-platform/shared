@@ -1,0 +1,23 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000000402",
+  "type": "com.baobab-platform.subscriptions.usage.recorded.v1",
+  "source": "urn:baobab-platform:service:baobab-subscriptions",
+  "subject": "billing-subscription:bsub_01k9zuri",
+  "time": "2026-09-24T00:05:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/subscriptions/v1/events.schema.json#/$defs/UsageRecorded",
+  "baobabscope": "tenant",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-0000000004ff",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "usage_record_id": "usage_01k9zuri0001",
+    "billing_subscription_id": "bsub_01k9zuri",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "metric_key": "api.calls",
+    "quantity": 1250,
+    "unit": "call",
+    "billable": false,
+    "occurred_at": "2026-09-24T00:00:00Z"
+  }
+}
