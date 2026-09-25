@@ -1,6 +1,6 @@
 {
   "name": "@baobab-platform/contracts-ts",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Generated TypeScript contracts (gRPC via Protobuf, GraphQL via SDL) for Baobab/Baobab-Platform interfaces. PLACEHOLDER ONLY — Trade Intelligence, Property Intelligence, and BIE schemas have not been defined yet; see ADR-0001.",
   "private": false,
   "publishConfig": {
