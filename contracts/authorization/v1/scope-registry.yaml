@@ -140,3 +140,45 @@ scopes:
       NOT also work against ERP (ADR-0007 §§24-25; ADR-0014 §111).
     audience: ["baobab-erp"]
     allowed_actors: ["workload"]
+
+  # ADR-SHARED-011 section 5: engine workload scopes. Each is issued only
+  # for its engine's audience, so a token for one engine never works
+  # against another or against the Control Plane.
+  - name: "billing:manage"
+    description: >-
+      The Control Plane ensures, suspends and cancels the billing projection of
+      a classified ProductSubscription (baobab-subscriptions,
+      billing.subscription.manage). Tenant, legal entity and classification are
+      asserted by the caller and never accepted from browsers.
+    audience: ["baobab-subscriptions"]
+    allowed_actors: ["workload"]
+
+  - name: "billing:read"
+    description: "Read billing projections and their readiness (baobab-subscriptions)."
+    audience: ["baobab-subscriptions"]
+    allowed_actors: ["workload"]
+
+  - name: "usage:record"
+    description: >-
+      Meter usage against a billing projection (baobab-subscriptions,
+      billing.usage.record). Usage is metered for every subscription type.
+    audience: ["baobab-subscriptions"]
+    allowed_actors: ["workload"]
+
+  - name: "payment:execute"
+    description: >-
+      Create, confirm, capture and cancel payment intents (baobab-payments,
+      payment.intent.create, payment.payment.authorize, payment.payment.capture).
+      Never issued for INTERNAL billing, which never invokes payments.
+    audience: ["baobab-payments"]
+    allowed_actors: ["workload"]
+
+  - name: "payment:refund"
+    description: "Refund a captured payment (baobab-payments, payment.refund.create)."
+    audience: ["baobab-payments"]
+    allowed_actors: ["workload"]
+
+  - name: "payment:read"
+    description: "Read payment intents, payments and refunds (baobab-payments)."
+    audience: ["baobab-payments"]
+    allowed_actors: ["workload"]
