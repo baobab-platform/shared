@@ -46,7 +46,7 @@ RESPONSIBILITIES = {
         "Organisation", "LegalEntityProfile", "organisationForm", "verificationState",
         "lifecycleStatus", "legalStatus", "organisationIdentifier", "organisationAddress",
         "corporateRelationshipId", "corporateGroupId", "corporateGroupMembershipId",
-        "platformRelationshipId", "platformAccountId", "platformAccountMembershipId",
+        "platformRelationshipId", "platformAccountId", "platformAccountMembershipId", "tenantPlatformAccountBindingId",
         "tenantOrganisationMappingId", "tenantLegalEntityMappingId", "platformId",
         "evidenceReference", "relationshipClassification", "iamOrganisationReferenceId",
     },
@@ -56,7 +56,9 @@ RESPONSIBILITIES = {
     },
     "platform.schema.json": {
         "PlatformRelationship", "PlatformAccount", "PlatformAccountMembership",
-        "platformRelationshipType", "platformAccountRole",
+        "platformRelationshipType", "platformAccountRole", "platformAccountStatus", "platformAccountTransitions",
+        "PlatformAccountStatusChangeRequest", "TenantPlatformAccountBinding", "tenantPlatformAccountBindingStatus",
+        "TenantPlatformAccountBindingRequest", "TenantPlatformAccountBindingEndRequest",
     },
     "mapping.schema.json": {
         "TenantOrganisationMapping", "TenantLegalEntityMapping", "mappingStatus",
@@ -85,6 +87,7 @@ RESPONSIBILITIES = {
         "CorporateRelationshipActivated", "CorporateRelationshipEnded", "CorporateRelationshipConflicted",
         "PlatformRelationshipActivated", "PlatformRelationshipEnded", "PlatformAccountCreated",
         "PlatformAccountMembershipChanged", "TenantOrganisationMappingActivated", "TenantLegalEntityMappingActivated",
+        "PlatformAccountStatusChanged", "TenantPlatformAccountBound", "TenantPlatformAccountBindingEnded",
     },
 }
 
@@ -104,6 +107,9 @@ EVENT_TYPES = {
     "com.baobab-platform.control-plane.platform-account-membership.changed.v1": "PlatformAccountMembershipChanged",
     "com.baobab-platform.control-plane.tenant-organisation-mapping.activated.v1": "TenantOrganisationMappingActivated",
     "com.baobab-platform.control-plane.tenant-legal-entity-mapping.activated.v1": "TenantLegalEntityMappingActivated",
+    "com.baobab-platform.control-plane.platform-account.status-changed.v1": "PlatformAccountStatusChanged",
+    "com.baobab-platform.control-plane.tenant-platform-account-binding.bound.v1": "TenantPlatformAccountBound",
+    "com.baobab-platform.control-plane.tenant-platform-account-binding.ended.v1": "TenantPlatformAccountBindingEnded",
 }
 ENVELOPE_REF = "../../events/v1/envelope.schema.json"
 # Section 125: payloads carry identifiers and state, never these.
@@ -123,6 +129,7 @@ EXAMPLE_KEYS = {
     "platform_relationships": ("platform.schema.json", "PlatformRelationship"),
     "platform_accounts": ("platform.schema.json", "PlatformAccount"),
     "platform_account_memberships": ("platform.schema.json", "PlatformAccountMembership"),
+    "tenant_platform_account_bindings": ("platform.schema.json", "TenantPlatformAccountBinding"),
     "tenant_organisation_mappings": ("mapping.schema.json", "TenantOrganisationMapping"),
     "tenant_legal_entity_mappings": ("mapping.schema.json", "TenantLegalEntityMapping"),
     "iam_organisation_references": ("iam.schema.json", "IamOrganisationReference"),
@@ -298,6 +305,41 @@ def parse_time(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
+def binding_problems(doc: dict) -> list[str]:
+    """ORG-07 (ADR-BCP-018 sections 45, 119, 152): a tenant has at most one
+    ACTIVE PlatformAccount binding; an ACTIVE binding names a live account
+    and the tenant's ACTIVE primary organisation, which holds a live
+    membership in that account. Nothing here is inferred from membership:
+    the binding must exist explicitly."""
+    problems = []
+    accounts = {a["id"]: a for a in doc.get("platform_accounts", [])}
+    primary = {m["tenant_id"]: m["organisation_id"] for m in doc.get("tenant_organisation_mappings", [])
+               if m["mapping_role"] == "PRIMARY_ORGANISATION" and m["status"] == "ACTIVE"}
+    members = {(m["platform_account_id"], m["organisation_id"]) for m in doc.get("platform_account_memberships", [])
+               if m["status"] in LIVE_ROLE_STATUSES}
+    active: dict[str, str] = {}
+    for b in doc.get("tenant_platform_account_bindings", []):
+        account = accounts.get(b["platform_account_id"])
+        if account is None:
+            problems.append(f"{b['id']} binds unknown account {b['platform_account_id']}")
+            continue
+        if b["status"] != "ACTIVE":
+            continue
+        if b["tenant_id"] in active:
+            problems.append(f"{b['id']} and {active[b['tenant_id']]} are both ACTIVE for {b['tenant_id']}")
+        active[b["tenant_id"]] = b["id"]
+        if account["status"] == "CLOSED":
+            problems.append(f"{b['id']} is ACTIVE on CLOSED account {account['id']}")
+        org = primary.get(b["tenant_id"])
+        if org is None:
+            problems.append(f"{b['id']} binds {b['tenant_id']}, which has no ACTIVE primary organisation")
+        elif b.get("organisation_id", org) != org:
+            problems.append(f"{b['id']} records {b['organisation_id']}, not the tenant's primary organisation {org}")
+        elif (b["platform_account_id"], org) not in members:
+            problems.append(f"{b['id']}: the tenant's primary organisation {org} holds no live membership in {b['platform_account_id']}")
+    return problems
+
+
 def check_example_semantics(label: str, doc: dict) -> None:
     orgs = {o["canonical_entity_id"]: o for o in doc.get("organisations", [])}
     crs = {c["id"]: c for c in doc.get("corporate_relationships", [])}
@@ -364,6 +406,8 @@ def check_example_semantics(label: str, doc: dict) -> None:
             fail(f"{label}: {m['id']} references unknown account")
     for m in doc.get("tenant_organisation_mappings", []):
         need_org(m["id"], m["organisation_id"])
+    for problem in binding_problems(doc):
+        fail(f"{label}: {problem}")
     defaults: dict[str, int] = {}
     for m in doc.get("tenant_legal_entity_mappings", []):
         if m["legal_entity_id"] not in les:
@@ -544,6 +588,39 @@ if nabhold is not None and acme is not None and "legacy-buyer-supplier-migration
     negative("permission-like PlatformAccount role", "platform.schema.json", "PlatformAccountMembership", r)
     r = first(A, "platform_accounts"); r["tenant_id"] = "tn_01k8z3v1food"
     negative("PlatformAccount carrying a tenant identity", "platform.schema.json", "PlatformAccount", r)
+    r = by(A, "tenant_platform_account_bindings", status="ACTIVE"); r["effective_to"] = "2026-05-01T00:00:00Z"
+    negative("ACTIVE tenant binding with an end", "platform.schema.json", "TenantPlatformAccountBinding", r)
+    r = by(A, "tenant_platform_account_bindings", status="ENDED"); del r["end_reason"]
+    negative("ENDED tenant binding without an end reason", "platform.schema.json", "TenantPlatformAccountBinding", r)
+    r = by(A, "tenant_platform_account_bindings", status="ACTIVE"); del r["bound_by"]
+    negative("tenant binding without its principal", "platform.schema.json", "TenantPlatformAccountBinding", r)
+    r = by(A, "tenant_platform_account_bindings", status="ACTIVE"); r["scopes"] = ["trade:read"]
+    negative("tenant binding granting access", "platform.schema.json", "TenantPlatformAccountBinding", r)
+    r = by(A, "tenant_platform_account_bindings", status="ACTIVE"); r["id"] = "tpab_Acme-Foods"
+    negative("human-readable tenant binding id", "platform.schema.json", "TenantPlatformAccountBinding", r)
+    r = by(A, "tenant_platform_account_bindings", status="ACTIVE"); r["status"] = "SUSPENDED"
+    negative("suspended tenant binding", "platform.schema.json", "TenantPlatformAccountBinding", r)
+    negative("account moved back to PENDING", "platform.schema.json", "PlatformAccountStatusChangeRequest",
+             {"status": "PENDING", "reason": "reopen"})
+    negative("account status change without a reason", "platform.schema.json", "PlatformAccountStatusChangeRequest",
+             {"status": "SUSPENDED"})
+    negative("binding request naming its tenant's organisation", "platform.schema.json", "TenantPlatformAccountBindingRequest",
+             {"platform_account_id": "pacct_01k8z3t0acme", "reason": "x", "organisation_id": "ce_01k8z3m5r2fd"})
+
+    # Semantic negatives: rules a schema cannot express.
+    for label, mutate in (
+        ("two ACTIVE bindings for one tenant", lambda d: d["tenant_platform_account_bindings"].append(
+            dict(by(A, "tenant_platform_account_bindings", status="ACTIVE"), id="tpab_01k8z3w9dupe"))),
+        ("ACTIVE binding on a CLOSED account", lambda d: d["platform_accounts"][0].update(status="CLOSED")),
+        ("binding inferred without account membership", lambda d: d.update(platform_account_memberships=[
+            m for m in d["platform_account_memberships"] if m["organisation_id"] != "ce_01k8z3m5r2fd"])),
+        ("binding a tenant without a primary organisation", lambda d: d.update(tenant_organisation_mappings=[])),
+    ):
+        doc = copy.deepcopy(examples[A])
+        mutate(doc)
+        if not binding_problems(doc):
+            fail(f"semantic negative accepted: {label}")
+        NEGATIVE.append((label, "", "", {}))
 
     r = first(A, "tenant_legal_entity_mappings"); del r["provenance"]
     negative("TenantLegalEntityMapping without provenance", "mapping.schema.json", "TenantLegalEntityMapping", r)

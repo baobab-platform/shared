@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Tenant PlatformAccount binding and account lifecycle (ADR-BCP-018 gate ORG-07).**
+  `contracts/organisation/v1/platform.schema.json` adds `TenantPlatformAccountBinding` (explicit, effective-dated, at most one ACTIVE per tenant, commercial only), its bind/end commands, and the §83 PlatformAccount lifecycle (`platformAccountStatus`, `platformAccountTransitions`, `PlatformAccountStatusChangeRequest`). New events: `platform-account.status-changed`, `tenant-platform-account-binding.bound` and `.ended`. The validator gains 13 negative fixtures, including semantic ones: two ACTIVE bindings, binding on a CLOSED account, and binding without account membership.
 - **Organisation drift, audit lineage and metrics (ADR-BCP-018 gate ORG-15).**
   `contracts/organisation/v1/observability.schema.json` defines
   `RelationshipDriftFinding` and `RelationshipDriftReport` (relationship

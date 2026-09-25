@@ -307,6 +307,33 @@
       "effective_from": "2026-04-01T00:00:00Z"
     }
   ],
+  "tenant_platform_account_bindings": [
+    {
+      "id": "tpab_01k8z3w0food",
+      "tenant_id": "tn_01k8z3v1food",
+      "platform_account_id": "pacct_01k8z3t0acme",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "status": "ENDED",
+      "reason": "Bound under the pilot order form.",
+      "evidence_reference": "msa_01k8z3t0pilot",
+      "bound_by": "prn_01k8z3w1ops",
+      "effective_from": "2026-03-01T00:00:00Z",
+      "effective_to": "2026-04-01T00:00:00Z",
+      "end_reason": "Superseded by the master service agreement.",
+      "ended_by": "prn_01k8z3w1ops"
+    },
+    {
+      "id": "tpab_01k8z3w2food",
+      "tenant_id": "tn_01k8z3v1food",
+      "platform_account_id": "pacct_01k8z3t0acme",
+      "organisation_id": "ce_01k8z3m5r2fd",
+      "status": "ACTIVE",
+      "reason": "Acme Foods consumes under the Acme Global Group MSA.",
+      "evidence_reference": "msa_01k8z3t1",
+      "bound_by": "prn_01k8z3w1ops",
+      "effective_from": "2026-04-01T00:00:00Z"
+    }
+  ],
   "tenant_legal_entity_mappings": [
     {
       "id": "tlem_01k8z3v0food",

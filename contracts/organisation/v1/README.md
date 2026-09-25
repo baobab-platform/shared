@@ -18,7 +18,7 @@ Every file is a definition library. Validate a resource against its fragment URI
 |------|-----------------|
 | `domain.schema.json` | `Organisation`, `LegalEntityProfile`, shared enums (form, verification state, legal status, classification) and the opaque resource-ID grammars used by every file below |
 | `relationship.schema.json` | `CorporateRelationship`, `CorporateGroup`, `CorporateGroupMembership` |
-| `platform.schema.json` | `PlatformRelationship`, `PlatformAccount`, `PlatformAccountMembership` |
+| `platform.schema.json` | `PlatformRelationship`, `PlatformAccount` (and its §83 lifecycle), `PlatformAccountMembership`, `TenantPlatformAccountBinding` and their commands |
 | `mapping.schema.json` | `TenantOrganisationMapping`, `TenantLegalEntityMapping` |
 | `iam.schema.json` | `IamOrganisationReference` (canonical Organisation ↔ IAM-native organisation), `IamOrganisationEvidence` and the `keycloakOrganizationClaim` form |
 | `admission.schema.json` | `OrganisationAdmissionRequest` and `OrganisationAdmissionOutcome`: the organisation stages of external admission (identity resolution, legal verification, corporate relationship claims, PlatformAccount assignment) |
@@ -85,6 +85,8 @@ The Control Plane publishes these events on the `baobab-platform.control-plane.o
 | `platform-relationship.activated` / `.ended` | A platform relationship becomes VERIFIED and ACTIVE, or stops being in force |
 | `platform-account.created` | A PlatformAccount is created |
 | `platform-account-membership.changed` | An organisation joins an account, or its membership status changes |
+| `platform-account.status-changed` | A governed account status change (§83) |
+| `tenant-platform-account-binding.bound` / `.ended` | A tenant is explicitly bound to an account, or that binding ends |
 | `tenant-organisation-mapping.activated` / `tenant-legal-entity-mapping.activated` | An explicit tenant mapping becomes ACTIVE (for a new DEFAULT legal entity, `replaces_mapping_id` names the default it ended) |
 
 Rules the validator enforces:
@@ -92,6 +94,16 @@ Rules the validator enforces:
 - **Payloads carry identifiers and state only (§125).** No names, evidence references, registration numbers, contacts or metadata. Verification events report `evidence_reference_count`, never the references themselves. Consumers dereference authorized details through the Control Plane.
 - **Events come from the transactional outbox.** The Control Plane writes each event in the same transaction as the state change. A replayed command that changes nothing publishes nothing, so consumers see at most one event per real transition.
 - **Pending records publish no activation event.** A relationship or mapping created as PENDING or unverified publishes nothing until it actually becomes ACTIVE, so no consumer can act on an unverified relationship.
+
+## Tenant PlatformAccount bindings (ORG-07)
+
+`TenantPlatformAccountBinding` records which PlatformAccount's commercial terms a tenant consumes under (§48, §119):
+
+- **Explicit.** A binding is made by a Control Plane principal with a reason. It is never inferred from organisation or account membership (§45, §141).
+- **At most one ACTIVE binding per tenant.** Bindings are effective-dated and history is kept. Moving a tenant means ending the old binding and making a new one. A tenant with no binding is valid (§152).
+- **Justified, not derived.** A binding can only be made to an ACTIVE account in which the tenant's ACTIVE primary organisation holds a live membership. It records that organisation, but the organisation never resolves access.
+- **Commercial only.** A binding grants no access, joins no tenants and changes no subscription or grant.
+- **Account lifecycle (§83).** `PENDING → ACTIVE ⇄ SUSPENDED`, and any of them `→ CLOSED` (final). A SUSPENDED account accepts no new bindings. An account with ACTIVE bindings cannot close until each binding is ended explicitly; nothing cascades.
 
 ## Architectural invariants (normative)
 
@@ -126,7 +138,7 @@ Any consequential decision that depends on a relationship MUST fail closed when 
 - Existing `BUYER_ORGANISATION` and `SUPPLIER_ORGANISATION` CanonicalEntity records (ADR-BCP-016 / ADR-0006) stay valid and migrate forward without any destructive rewrite.
 - The singular `Tenant.LegalEntityID` field remains a compatibility projection of the default `TenantLegalEntityMapping` until consumers migrate.
 - `TenantLegalEntityMapping.is_default` and `TenantOrganisationMapping.is_default` have been removed. They duplicated `mapping_role` and could contradict it. `mapping_role: DEFAULT` is now the only default marker.
-- `PlatformAccountMembership` now links Organisations only, using the ADR §43 account roles. Tenant-to-account binding (§45, §119) is a separate explicit concept and does not yet have a contract.
+- `PlatformAccountMembership` now links Organisations only, using the ADR §43 account roles. Tenant-to-account binding (§45, §119) is the separate, explicit `TenantPlatformAccountBinding`.
 - External customers no longer need an entry in the legal-entity registry (see `contracts/tenancy/tenancy.yaml` v1.1). A tenant must still resolve to an active canonical LegalEntity in the Control Plane.
 
 ## Related contracts
