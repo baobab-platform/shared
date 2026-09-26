@@ -34,6 +34,9 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Administrative OpenAPI, phase 1: applications, admission and onboarding (ADR-BCP-022 sections 17-20, CP Console FE-00 gap B2).**
+  `contracts/control-plane/v1/openapi.yaml` (1.2.0) describes the Control Plane's 21 ADR-BCP-017 operations under the tags Applications, Admission and Onboarding. It reuses the `admission/v1` schemas for every body and response, and documents the status codes, pagination and separation-of-duties refusals the Control Plane implements. `scripts/validate-authorization-contracts.rb` now fails when an OpenAPI operation requires a scope that is unregistered or not issued for the Control Plane.
+
 - **Bootstrap tenant registration (migration only).**
   `contracts/control-plane/v1/tenant-bootstrap-registration.schema.json` and `POST /tenants/bootstrap-registrations` register a tenant that predates the admission workflow. It needs the new privileged scope `tenant:bootstrap` and records `bootstrap_reason` and `evidence_reference`. It is never a route for a new customer.
 - **CorporateGroup derivation metric (ADR-BCP-018 gate ORG-05).**

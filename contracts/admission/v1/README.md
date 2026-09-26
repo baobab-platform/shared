@@ -23,6 +23,7 @@ Every JSON file is a definition library. Validate a resource against its fragmen
 | `lifecycle.yaml` | Every permitted status transition, the command that performs it and the actor allowed to issue it |
 | `events.schema.json` | Data payloads of the §40 lifecycle events |
 | `asyncapi.yaml` | Registers those events and composes each with the canonical envelope (`contracts/events/v1`) |
+| `control-plane/v1/openapi.yaml` | The HTTP operations over these contracts, tagged Applications, Admission and Onboarding |
 | `examples/` | A Nabhold Group affiliate approved INTERNAL, an external applicant approved COMMERCIAL after an information request, and an incomplete draft; `examples/events/` holds example envelopes |
 
 `scripts/validate-admission-contracts.py` validates the schemas, examples, lifecycle, negative fixtures, events and lock entry.

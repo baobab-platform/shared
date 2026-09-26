@@ -105,4 +105,27 @@ workloads.each do |client_id, entry|
   end
 end
 
+# 5. Every scope an OpenAPI operation requires is registered, and a
+#    Control Plane operation's scope is issued for the Control Plane's
+#    audience (ADR-BCP-022 section 18: the contract never names a scope the
+#    registry does not govern).
+{ "contracts/control-plane/v1/openapi.yaml" => "baobab-control-plane" }.each do |path, audience|
+  load_yaml(path).fetch("paths").each do |route, item|
+    item.each do |method, operation|
+      next unless operation.is_a?(Hash) && operation.key?("security")
+      operation.fetch("security").each do |requirement|
+        requirement.each_value do |required|
+          required.each do |name|
+            scope = scopes[name]
+            fail_contract("#{path} #{method.upcase} #{route} requires unregistered scope #{name}") if scope.nil?
+            unless Array(scope["audience"]).include?(audience)
+              fail_contract("#{path} #{method.upcase} #{route} requires #{name}, which is not issued for #{audience}")
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 puts "Authorization contract validation passed"
