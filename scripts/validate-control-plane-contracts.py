@@ -41,6 +41,11 @@ RESPONSIBILITIES = {
         "canonicalKey", "entityType", "canonicalEntityStatus", "canonicalEntityClassification",
         "canonicalEntityAuthority", "CanonicalEntityCreateRequest", "CanonicalEntity",
     },
+    "canonical-mapping.schema.json": {
+        "mapping", "mappingScope", "externalReference", "resolutionRequest", "resolutionResponse",
+        "externalReferenceCreateRequest", "externalReferenceList", "mappingCreateRequest", "mappingUpdateRequest",
+        "mappingRetireRequest", "externalReferenceResolutionRequest", "externalReferenceResolutionResponse",
+    },
     "capability-explanation.schema.json": {
         "opaqueId", "CapabilityExplanationRequest", "CapabilityExplanation",
     },
@@ -164,6 +169,57 @@ def check_capability_explanation() -> None:
     rejects(schema, "CapabilityExplanation", {**failed, "grant_id": ""}, "empty stage identifier")
 
 
+def check_mapping_administration() -> None:
+    schema = "canonical-mapping.schema.json"
+    example = json.loads((CP / "examples" / "mapping-administration.json").read_text())
+    for key, definition in (("external_reference_create_request", "externalReferenceCreateRequest"),
+                            ("external_reference", "externalReference"),
+                            ("mapping_create_request", "mappingCreateRequest"),
+                            ("mapping", "mapping"),
+                            ("migrated_canonical_mapping", "mapping"),
+                            ("resolution_request", "externalReferenceResolutionRequest"),
+                            ("resolution_response", "externalReferenceResolutionResponse")):
+        accepts(schema, definition, example[key], f"mapping-administration {key}")
+
+    registry = yaml.safe_load((CP / "external-systems.yaml").read_text())
+    registered = {(system["system_namespace"], engine) for system in registry["systems"] for engine in system["engine_ids"]}
+    for key in ("external_reference_create_request", "external_reference", "resolution_request"):
+        pair = (example[key]["system_namespace"], example[key]["engine_id"])
+        if pair not in registered:
+            fail(f"mapping-administration {key} names unregistered system {pair}")
+
+    create = example["external_reference_create_request"]
+    for field, value in (("external_reference_id", "ref_0199a1b2c3d47e8f"), ("status", "active"),
+                         ("source_authority", "engine"), ("created_at", "2026-09-26T09:00:00Z"), ("metadata", {})):
+        rejects(schema, "externalReferenceCreateRequest", {**create, field: value}, f"external reference create naming {field}")
+    rejects(schema, "externalReferenceCreateRequest", {**create, "engine_id": "baobab_trade"}, "snake_case engine id")
+
+    proposal = example["mapping_create_request"]
+    for field, value in (("mapping_id", "map_0199a1b2c3d47e8f"), ("status", "ACTIVE"), ("revision", 1),
+                         ("created_by", "someone"), ("approved_by", "someone"), ("approved_at", "2026-09-26T09:00:00Z")):
+        rejects(schema, "mappingCreateRequest", {**proposal, field: value}, f"mapping proposal naming {field}")
+    rejects(schema, "mappingCreateRequest", {**proposal, "target_canonical_entity_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6d"},
+            "mapping proposal with both targets")
+    neither = copy.deepcopy(proposal)
+    del neither["external_reference_id"]
+    rejects(schema, "mappingCreateRequest", neither, "mapping proposal with no target")
+
+    mapping = example["migrated_canonical_mapping"]
+    without_subject = copy.deepcopy(mapping)
+    del without_subject["canonical_entity_id"]
+    rejects(schema, "mapping", without_subject, "mapping without its canonical entity")
+    rejects(schema, "mapping", {**mapping, "external_reference_id": "ref_0199a1b2c3d47e8f"}, "mapping with both targets")
+    rejects(schema, "mapping", {**mapping, "authority": "baobab"}, "mapping authority outside the enum")
+
+    rejects(schema, "mappingUpdateRequest", {}, "empty mapping change")
+    rejects(schema, "mappingUpdateRequest", {"tenant_id": proposal["tenant_id"]}, "mapping change moving its tenant")
+    rejects(schema, "mappingUpdateRequest", {"external_reference_id": "ref_0199a1b2c3d47e8f"}, "mapping change moving its target")
+    rejects(schema, "mappingRetireRequest", {"reason": "superseded", "retired_by": "someone"}, "retirement naming its actor")
+    rejects(schema, "mappingRetireRequest", {}, "retirement without a reason")
+    rejects(schema, "externalReferenceList", {"items": [example["external_reference"], example["external_reference"]]},
+            "two references for one native identity")
+
+
 def check_openapi_references() -> None:
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
     pattern = re.compile(r"^\./(" + "|".join(re.escape(n) for n in RESPONSIBILITIES) + r")#/\$defs/(\w+)$")
@@ -270,6 +326,7 @@ def main() -> int:
     check_schemas()
     check_canonical_entity()
     check_capability_explanation()
+    check_mapping_administration()
     check_openapi_references()
     check_topology_identifiers()
     check_external_systems()

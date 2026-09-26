@@ -50,13 +50,13 @@ scopes:
     allowed_actors: ["workload"]
 
   - name: "mapping:write"
-    description: "Create, update, or retire a canonical mapping (privileged)."
+    description: "Record external references and propose, change, validate or retire canonical mappings (privileged; the actor is always the verified caller)."
     audience: ["baobab-control-plane"]
     allowed_actors: ["human"]
     privileged: true
 
   - name: "mapping:approve"
-    description: "Transition a mapping from VALIDATED to ACTIVE (privileged)."
+    description: "Transition a mapping from VALIDATED to ACTIVE (privileged; four-eyes: never the mapping's creator)."
     audience: ["baobab-control-plane"]
     allowed_actors: ["human"]
     privileged: true
