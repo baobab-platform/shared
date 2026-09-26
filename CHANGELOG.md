@@ -23,6 +23,9 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **`tenant:write` is registered in `contracts/authorization/v1/scope-registry.yaml`.**
+  The Control Plane and `control-plane/v1` (`security-policy.yaml`, `openapi.yaml`) already required it for tenant registration and management, but the registry did not define it. It is a privileged, human-only scope for the `baobab-control-plane` audience. `scripts/validate-admission-contracts.py` now checks it and `tenant:bootstrap`.
+
 - **Breaking: tenant registration requires an AUTHORISED onboarding request (ADR-BCP-017 sections 22-24).**
   `contracts/control-plane/v1/tenant-registration.schema.json` now requires `tenant_onboarding_request_id`. The command must match the request's desired state; the request is recorded FULFILLED and produces at most one tenant. The OpenAPI `registerTenant` operation gains a 422 response. Approval still activates nothing, and there is no longer a direct registration path.
 

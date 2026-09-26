@@ -548,7 +548,8 @@ scopes = {entry["name"]: entry for entry in
           yaml.safe_load((CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
 for name, privileged in {"application:read": False, "application:write": False,
                          "admission:review": True, "admission:decide": True,
-                         "onboarding:request": True, "onboarding:authorise": True}.items():
+                         "onboarding:request": True, "onboarding:authorise": True,
+                         "tenant:write": True, "tenant:bootstrap": True}.items():
     entry = scopes.get(name)
     if entry is None:
         fail(f"scope-registry.yaml does not define {name}")
