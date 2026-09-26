@@ -23,6 +23,9 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Workload identities for the Control Plane -> Subscriptions -> Payments chain (assessment §22, EA-04).**
+  `contracts/identity/v1/workload-registry.yaml` registers `baobab-cp-workload` (audience `baobab-subscriptions`; `billing:manage`, `billing:read`) and `baobab-subscriptions-workload` (audience `baobab-payments`; `payment:execute`, `payment:refund`, `payment:read`). Both are PROVISIONED with the new `federated_workload_token` credential type, which uses no static secret, and have no IdP client until the identity-provider migration ADR. `scripts/validate-authorization-contracts.rb` now checks every workload: each scope is registered, usable by workloads, not privileged and issued for one of its audiences, and each audience is used.
+
 - **`tenant:write` is registered in `contracts/authorization/v1/scope-registry.yaml`.**
   The Control Plane and `control-plane/v1` (`security-policy.yaml`, `openapi.yaml`) already required it for tenant registration and management, but the registry did not define it. It is a privileged, human-only scope for the `baobab-control-plane` audience. `scripts/validate-admission-contracts.py` now checks it and `tenant:bootstrap`.
 

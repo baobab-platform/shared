@@ -73,4 +73,36 @@ requirement = load_json("contracts/identity/v1/assurance-requirement.schema.json
   fail_contract("assurance-requirement.schema.json is missing required field #{field.inspect}") unless requirement.fetch("required", []).include?(field)
 end
 
+# 4. workload-registry.yaml (ADR-0007 §§22-25, §42): every workload is
+#    least-privilege and audience-bound. Each allowed scope is registered,
+#    usable by workloads, never privileged, and issued for one of the
+#    workload's audiences; each audience is used by at least one scope.
+scopes = load_yaml("contracts/authorization/v1/scope-registry.yaml").fetch("scopes").to_h { |s| [s.fetch("name"), s] }
+workloads = load_yaml("contracts/identity/v1/workload-registry.yaml").fetch("workloads")
+fail_contract("workload-registry.yaml declares no workloads") if workloads.nil? || workloads.empty?
+known_statuses = %w[PROVISIONED ACTIVE SUSPENDED REVOKED RETIRED]
+known_credentials = %w[client_credentials federated_workload_token]
+workloads.each do |client_id, entry|
+  %w[repository owner runtime environment allowed_audiences allowed_scopes credential_type rotation_owner status].each do |field|
+    fail_contract("workload #{client_id} is missing #{field}") if entry[field].nil? || entry[field].to_s.strip.empty?
+  end
+  fail_contract("workload #{client_id} has unknown status #{entry['status'].inspect}") unless known_statuses.include?(entry["status"])
+  fail_contract("workload #{client_id} has unknown credential_type #{entry['credential_type'].inspect}") unless known_credentials.include?(entry["credential_type"])
+  audiences = entry.fetch("allowed_audiences")
+  fail_contract("workload #{client_id} must name at least one audience and one scope") if audiences.empty? || entry.fetch("allowed_scopes").empty?
+  used = []
+  entry.fetch("allowed_scopes").each do |name|
+    scope = scopes[name]
+    fail_contract("workload #{client_id} allows unregistered scope #{name}") if scope.nil?
+    fail_contract("workload #{client_id} allows #{name}, which is not a workload scope") unless Array(scope["allowed_actors"]).include?("workload")
+    fail_contract("workload #{client_id} allows privileged scope #{name}") if scope["privileged"]
+    shared = Array(scope["audience"]) & audiences
+    fail_contract("workload #{client_id} allows #{name}, which is not issued for any of its audiences #{audiences}") if shared.empty?
+    used.concat(shared)
+  end
+  (audiences - used).each do |audience|
+    fail_contract("workload #{client_id} allows audience #{audience} but no scope issued for it")
+  end
+end
+
 puts "Authorization contract validation passed"
