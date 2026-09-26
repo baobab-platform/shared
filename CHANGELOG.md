@@ -36,6 +36,10 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Administrative OpenAPI, phase 3a: Organisation administration (ADR-BCP-018 ORG-07, 09, 10, 13 and 15).**
+  `contracts/control-plane/v1/openapi.yaml` (1.4.0) describes 19 more operations under the Organisations, Counterparties, Platform accounts, Audit and Diagnostics tags: IAM organisation links, organisation admission onboarding, legacy reconciliation, resolution candidates, counterparty roles, platform accounts and bindings, relationship drift and audit lineage. `organisation/v1/iam.schema.json` gains `IamOrganisationLinkRequest`, `IamOrganisationRetireRequest` and `IamOrganisationResolution`. `organisation/v1/counterparty.schema.json` gains `CounterpartyRoleAssignRequest`, `CounterpartyRoleEndRequest` and `CounterpartyReconciliationReport`. None of these requests can name its own Organisation, tenant or source authority.
+- **`canonical:read`, `canonical:write`, `capabilities:explain` and `metrics:read` are registered.** The Control Plane already required them.
+
 - **Administrative OpenAPI, phase 2: tenants and classification.**
   `contracts/control-plane/v1/openapi.yaml` (1.3.0) describes the tenant routes and the classification routes, 9 operations in all: tenant read, the suspend, activate and decommission commands, entitlements, classification, reclassification and the two explanations. New `control-plane/v1/tenant.schema.json` defines what the tenant routes return (`Tenant`, `Entitlement`, `TenantLifecycleResult`). `product/v1/subscription.schema.json` gains the request bodies `SubscriptionClassificationCommand` and `SubscriptionReclassificationCommand`. Provisioning is deferred to a later phase: its tenant manifest has no Shared schema yet.
 

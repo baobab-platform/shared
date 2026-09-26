@@ -115,6 +115,43 @@
           }
         }
       }
+    },
+    "IamOrganisationLinkRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "issuer", "provider_organisation_id"],
+      "description": "Links a canonical Organisation to its IAM-native projection (ADR-BCP-018 gate ORG-10). The Organisation comes from the path and the source authority from the Control Plane. Repeating an existing link returns it; a link held by another Organisation is refused.",
+      "properties": {
+        "provider": { "$ref": "#/$defs/iamProvider" },
+        "issuer": { "$ref": "#/$defs/iamIssuer" },
+        "provider_organisation_id": { "$ref": "#/$defs/providerOrganisationId" },
+        "effective_from": { "type": "string", "format": "date-time", "description": "Defaults to now." }
+      }
+    },
+    "IamOrganisationRetireRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "description": "Retires a link. A RETIRED link never resolves.",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S",
+          "description": "Why, recorded in the audit trail."
+        },
+        "effective_to": { "type": "string", "format": "date-time", "description": "Defaults to now." }
+      }
+    },
+    "IamOrganisationResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organisation_id"],
+      "description": "The canonical Organisation that IAM evidence resolves to now, through an ACTIVE link in effect.",
+      "properties": {
+        "organisation_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId" }
+      }
     }
   }
 }

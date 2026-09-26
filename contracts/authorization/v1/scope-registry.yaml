@@ -129,6 +129,46 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "canonical:read"
+    description: >-
+      Read canonical entities and Organisation administration in the Control
+      Plane: IAM organisation links, external references, resolution
+      candidates, platform accounts, drift and audit lineage (ADR-BCP-016,
+      ADR-BCP-018). Necessary but not sufficient: the Control Plane also
+      requires platform-administrator authority.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "canonical:write"
+    description: >-
+      Create canonical entities and change them through their lifecycle, link
+      IAM organisations and external references, run organisation
+      reconciliation, decide resolution candidates and change platform
+      account status (ADR-BCP-016, ADR-BCP-018). Necessary but not
+      sufficient: the Control Plane also requires platform-administrator
+      authority. It never merges Organisations.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "capabilities:explain"
+    description: >-
+      Explain how the Control Plane resolved, or refused, a capability for a
+      stored context: the mapping, grant, binding, engine instance, policy
+      and topology it used (ADR-BCP-022 section 47). A privileged diagnostic
+      exposing internal topology; never an access path.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "metrics:read"
+    description: >-
+      Scrape the Control Plane's metrics endpoint. Labels are bounded
+      vocabularies and carry no identifiers.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
   - name: "tenant:bootstrap"
     description: >-
       Registers a tenant that predates the admission workflow, without a
