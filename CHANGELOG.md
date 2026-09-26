@@ -44,6 +44,19 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Administrative OpenAPI, phase 3c: external references and canonical mappings (ADR-SHARED-013).**
+  `contracts/control-plane/v1/openapi.yaml` (1.6.0) adds a Mappings tag.
+  - New operations: `createExternalReference`, `listExternalReferences` (by native identity), `getExternalReference`, `resolveExternalReference` (`POST /resolution/external-references`) and `validateMapping`.
+  - Corrected operations:
+    - `createMapping` and `updateMapping` now take `mappingCreateRequest` and `mappingUpdateRequest`, which carry no identifier, status, revision or actor.
+    - `activateMapping` takes no body and enforces four-eyes approval.
+    - `retireMapping` takes `mappingRetireRequest`, which carries a reason and no actor.
+    - Every mapping command requires `If-Match`.
+    - `getMapping` is readable by administrators through `canonical:read`.
+  - `canonical-mapping.schema.json` gains the request, list and resolution definitions.
+  - Its `mapping` read model now follows Canonical Mapping Model §9.2: the canonical entity is always set, with exactly one target. It previously let a canonical-to-canonical mapping omit its canonical entity.
+  - `scripts/validate-control-plane-contracts.py` validates the new definitions and examples, with 20 more negative fixtures, and checks that examples name registered external systems.
+
 - **Administrative OpenAPI, phase 3b: canonical registry and capability explanation (ADR-BCP-016, ADR-BCP-022 sections 47 and 123-131).**
   `contracts/control-plane/v1/openapi.yaml` (1.5.0) describes seven more operations. Under a new Canonical registry tag: `createCanonicalEntity`, `getCanonicalEntity` and the `validate`, `activate`, `suspend` and `retire` commands. Each command requires the entity's version in `If-Match`: a missing version is refused with 428, and a stale one with 412. Under Diagnostics: `explainCapability`. The new `canonical-entity.schema.json` defines `CanonicalEntityCreateRequest`, which cannot name an identifier, status, version or timestamp, so every entity starts DRAFT. It also defines `CanonicalEntity`. The new `capability-explanation.schema.json` defines the explanation request and response. The new `scripts/validate-control-plane-contracts.py` runs in CI and validates both schemas, their examples, negative fixtures and the OpenAPI references to them.
 
