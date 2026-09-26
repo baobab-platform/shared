@@ -1,0 +1,30 @@
+{
+  "request": {
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a70",
+    "canonical_entity_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "capability_key": "commerce.order.create"
+  },
+  "routed": {
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a70",
+    "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "canonical_entity_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "capability_key": "commerce.order.create",
+    "outcome": "ROUTED",
+    "reason": "",
+    "mapping_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a71",
+    "grant_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a72",
+    "binding_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a73",
+    "engine_instance_id": "trade-eu-1",
+    "policy": { "allowed": true, "reason": "residency and isolation satisfied" },
+    "topology": { "id": "trade-eu-1", "environment": "production" }
+  },
+  "failed": {
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a70",
+    "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "canonical_entity_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "capability_key": "commerce.order.create",
+    "outcome": "FAILED",
+    "reason": "no active grant for commerce.order.create in this scope",
+    "mapping_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a71"
+  }
+}
