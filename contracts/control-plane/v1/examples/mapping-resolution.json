@@ -1,13 +1,13 @@
 {
   "resolution_request": {
-    "context_id": "ctx_0199a1b2c3d47e8f9a0b1c2d3e4f5a70",
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a70",
     "canonical_entity_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c",
     "target_system_namespace": "medusa",
     "target_engine_id": "baobab-trade",
     "effective_timestamp": "2026-09-26T10:00:00Z"
   },
   "resolution_response": {
-    "context_id": "ctx_0199a1b2c3d47e8f9a0b1c2d3e4f5a70",
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a70",
     "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
     "mapping_id": "map_0199a1b2c3d47e8f9a0b1c2d3e4f5a81",
     "canonical_entity_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c",
@@ -19,7 +19,7 @@
     "resolved_at": "2026-09-26T10:00:01Z"
   },
   "canonical_resolution_response": {
-    "context_id": "ctx_0199a1b2c3d47e8f9a0b1c2d3e4f5a70",
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a70",
     "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
     "mapping_id": "map_0199a1b2c3d47e8f9a0b1c2d3e4f5a82",
     "canonical_entity_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c",
