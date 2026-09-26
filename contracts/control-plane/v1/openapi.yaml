@@ -1,11 +1,24 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab Control Plane API
-  version: 1.1.0
-  description: Contract for tenant lifecycle management. Implementations live in baobab-platform/baobab-cp.
+  version: 1.2.0
+  description: >-
+    The Control Plane's runtime and administrative API (ADR-BCP-022).
+    Implementations live in baobab-platform/baobab-cp. Every adminOidc
+    operation also requires Control Plane authority beyond its scope (the
+    platform-administrator role, or tenant-administrator membership for
+    tenant-scoped operations) and, for administrative commands, a registered
+    Control Plane principal; the scope is necessary, never sufficient.
   license:
     name: Apache-2.0
     identifier: Apache-2.0
+tags:
+  - name: Applications
+    description: An applicant's own ClientApplications (ADR-BCP-017).
+  - name: Admission
+    description: Platform review and decision of ClientApplications (ADR-BCP-017, ADR-BCP-020 sections 34-35).
+  - name: Onboarding
+    description: TenantOnboardingRequests between an APPROVED decision and tenant registration (ADR-BCP-017 sections 22-24).
 servers:
   - url: https://control.baobab-platform.com/v1
     description: Production placeholder; activation requires an approved domain binding.
@@ -570,6 +583,658 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+  # ---------------------------------------------------------------------------
+  # Applications (ADR-BCP-017): the applicant's own ClientApplications.
+  # Another applicant's application is reported as not found.
+  # ---------------------------------------------------------------------------
+  /client-applications:
+    post:
+      tags: [Applications]
+      operationId: createClientApplication
+      summary: Open a DRAFT ClientApplication as the authenticated applicant
+      description: >-
+        The applicant's first request registers their Control Plane principal
+        (ADR-BCP-017 section 5). The body is a ClientApplicationDraft without
+        a version. Status, channel, classification and verification are
+        server-authoritative and cannot be supplied. A replay with the same
+        Idempotency-Key returns the original application with 200.
+      security:
+        - adminOidc: [application:write]
+      parameters:
+        - $ref: "#/components/parameters/OptionalIdempotencyKey"
+        - $ref: "#/components/parameters/CorrelationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/application.schema.json#/$defs/ClientApplicationDraft
+      responses:
+        "201":
+          $ref: "#/components/responses/ClientApplication"
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    get:
+      tags: [Applications]
+      operationId: listMyClientApplications
+      summary: List the authenticated applicant's own applications, newest first
+      security:
+        - adminOidc: [application:read]
+      parameters:
+        - $ref: "#/components/parameters/PageLimit"
+        - $ref: "#/components/parameters/ApplicationCursor"
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplicationPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /client-applications/{application_id}:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    get:
+      tags: [Applications]
+      operationId: getMyClientApplication
+      summary: Read one of the authenticated applicant's own applications
+      security:
+        - adminOidc: [application:read]
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    patch:
+      tags: [Applications]
+      operationId: updateMyClientApplication
+      summary: Replace the editable content of a DRAFT or INFORMATION_REQUIRED application
+      description: >-
+        The body is a complete ClientApplicationDraft naming the version it
+        was based on; a stale version is refused with VERSION_CONFLICT.
+      security:
+        - adminOidc: [application:write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/application.schema.json#/$defs/ClientApplicationDraft
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /client-applications/{application_id}/submit:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Applications]
+      operationId: submitMyClientApplication
+      summary: Submit a complete DRAFT application for admission
+      description: Takes no body. An incomplete application is refused with APPLICATION_INCOMPLETE (422).
+      security:
+        - adminOidc: [application:write]
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /client-applications/{application_id}/response:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Applications]
+      operationId: respondToInformationRequest
+      summary: Answer an information request, returning the application to VALIDATING
+      security:
+        - adminOidc: [application:write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/application.schema.json#/$defs/ApplicantResponseCommand
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /client-applications/{application_id}/withdraw:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Applications]
+      operationId: withdrawMyClientApplication
+      summary: Withdraw an open application
+      security:
+        - adminOidc: [application:write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/application.schema.json#/$defs/ClosureCommand
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  # ---------------------------------------------------------------------------
+  # Admission (ADR-BCP-017, ADR-BCP-020 sections 34-35): platform review and
+  # decision. Every operation also requires Control Plane platform-administrator
+  # authority and a registered principal.
+  # ---------------------------------------------------------------------------
+  /admission/applications:
+    get:
+      tags: [Admission]
+      operationId: listAdmissionQueue
+      summary: List applications for review, newest first
+      description: Without a status filter, lists SUBMITTED, VALIDATING, INFORMATION_REQUIRED and UNDER_REVIEW applications.
+      security:
+        - adminOidc: [admission:review]
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Comma-separated application statuses.
+          style: form
+          explode: false
+          schema:
+            type: array
+            minItems: 1
+            items:
+              $ref: ../../admission/v1/application.schema.json#/$defs/applicationStatus
+        - $ref: "#/components/parameters/PageLimit"
+        - $ref: "#/components/parameters/ApplicationCursor"
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplicationPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /admission/applications/{application_id}:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    get:
+      tags: [Admission]
+      operationId: getApplicationForReview
+      summary: Read any application for review
+      security:
+        - adminOidc: [admission:review]
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /admission/applications/{application_id}/begin-validation:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Admission]
+      operationId: beginApplicationValidation
+      summary: Move a SUBMITTED application to VALIDATING
+      description: Takes no body.
+      security:
+        - adminOidc: [admission:review]
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /admission/applications/{application_id}/information-request:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Admission]
+      operationId: requestApplicationInformation
+      summary: Ask the applicant for more information
+      security:
+        - adminOidc: [admission:review]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/application.schema.json#/$defs/InformationRequestCommand
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /admission/applications/{application_id}/begin-review:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Admission]
+      operationId: beginApplicationReview
+      summary: Move a VALIDATING application to UNDER_REVIEW
+      description: Takes no body.
+      security:
+        - adminOidc: [admission:review]
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /admission/applications/{application_id}/cancel:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Admission]
+      operationId: cancelApplication
+      summary: Cancel an open application on the platform's side
+      security:
+        - adminOidc: [admission:review]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/application.schema.json#/$defs/ClosureCommand
+      responses:
+        "200":
+          $ref: "#/components/responses/ClientApplication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /admission/applications/{application_id}/decision:
+    parameters:
+      - $ref: "#/components/parameters/ApplicationId"
+      - $ref: "#/components/parameters/CorrelationId"
+    get:
+      tags: [Admission]
+      operationId: getAdmissionDecision
+      summary: Read the application's AdmissionDecision
+      description: Not found when the application does not exist or has not been decided.
+      security:
+        - adminOidc: [admission:review]
+      responses:
+        "200":
+          $ref: "#/components/responses/AdmissionDecision"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    post:
+      tags: [Admission]
+      operationId: decideApplication
+      summary: Approve or reject an application UNDER_REVIEW
+      description: >-
+        The decider comes from authentication, never the body, and is never
+        the application's applicant (SELF_DECISION_FORBIDDEN, 403). An
+        approval outside the requested markets is refused with
+        MARKET_SCOPE_EXCEEDED, and INTERNAL without Control Plane-established
+        eligibility with NOT_INTERNAL_ELIGIBLE (both 422). The decision is
+        immutable.
+      security:
+        - adminOidc: [admission:decide]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/decision.schema.json#/$defs/AdmissionDecisionRequest
+      responses:
+        "201":
+          $ref: "#/components/responses/AdmissionDecision"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  # ---------------------------------------------------------------------------
+  # Onboarding (ADR-BCP-017 sections 22-24, 39): the handoff from an APPROVED
+  # decision to tenant registration. Every operation also requires Control
+  # Plane platform-administrator authority and a registered principal;
+  # onboarding:request and onboarding:authorise each also require their IAM
+  # client role, and the service enforces separation of duties per principal.
+  # ---------------------------------------------------------------------------
+  /tenant-onboarding-requests:
+    post:
+      tags: [Onboarding]
+      operationId: requestTenantOnboarding
+      summary: Hand an APPROVED AdmissionDecision to onboarding
+      description: >-
+        Desired state is copied from the decision. There is one live request
+        per decision: repeating the request returns the live one with 200.
+        The requester is never the applicant or the decider
+        (SEPARATION_OF_DUTIES, 403).
+      security:
+        - adminOidc: [onboarding:request]
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/onboarding.schema.json#/$defs/TenantOnboardingRequestCommand
+      responses:
+        "201":
+          $ref: "#/components/responses/TenantOnboardingRequest"
+        "200":
+          $ref: "#/components/responses/TenantOnboardingRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+    get:
+      tags: [Onboarding]
+      operationId: listTenantOnboardingRequests
+      summary: List onboarding requests, newest first
+      security:
+        - adminOidc: [onboarding:request]
+        - adminOidc: [onboarding:authorise]
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: ../../admission/v1/onboarding.schema.json#/$defs/onboardingRequestStatus
+        - name: limit
+          in: query
+          required: false
+          description: 1 to 200; any other value lists 50.
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Onboarding requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantOnboardingRequestList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /tenant-onboarding-requests/{request_id}:
+    parameters:
+      - $ref: "#/components/parameters/OnboardingRequestId"
+      - $ref: "#/components/parameters/CorrelationId"
+    get:
+      tags: [Onboarding]
+      operationId: getTenantOnboardingRequest
+      summary: Read one onboarding request
+      security:
+        - adminOidc: [onboarding:request]
+        - adminOidc: [onboarding:authorise]
+      responses:
+        "200":
+          $ref: "#/components/responses/TenantOnboardingRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /tenant-onboarding-requests/{request_id}/authorisation:
+    parameters:
+      - $ref: "#/components/parameters/OnboardingRequestId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Onboarding]
+      operationId: authoriseTenantOnboarding
+      summary: Authorise a REQUESTED onboarding request
+      description: The authoriser is never the requester or the applicant (SEPARATION_OF_DUTIES, 403).
+      security:
+        - adminOidc: [onboarding:authorise]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/onboarding.schema.json#/$defs/OnboardingAuthorisationCommand
+      responses:
+        "200":
+          $ref: "#/components/responses/TenantOnboardingRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /tenant-onboarding-requests/{request_id}/cancellation:
+    parameters:
+      - $ref: "#/components/parameters/OnboardingRequestId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Onboarding]
+      operationId: cancelTenantOnboarding
+      summary: Cancel a REQUESTED or AUTHORISED onboarding request
+      description: The admission decision is never rewritten.
+      security:
+        - adminOidc: [onboarding:request]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/onboarding.schema.json#/$defs/OnboardingCancellationCommand
+      responses:
+        "200":
+          $ref: "#/components/responses/TenantOnboardingRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /tenant-onboarding-requests/{request_id}/fulfilment:
+    parameters:
+      - $ref: "#/components/parameters/OnboardingRequestId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Onboarding]
+      operationId: fulfilTenantOnboarding
+      summary: Record the tenant an AUTHORISED request produced
+      description: >-
+        Registration (registerTenant) already fulfils its request; this
+        records a tenant produced elsewhere. The tenant must exist
+        (TENANT_NOT_FOUND, 422), must not belong to another request
+        (TENANT_ALREADY_ONBOARDED, 409) and must match the desired state
+        (DESIRED_STATE_MISMATCH, 422).
+      security:
+        - adminOidc: [onboarding:request]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../admission/v1/onboarding.schema.json#/$defs/OnboardingFulfilmentCommand
+      responses:
+        "200":
+          $ref: "#/components/responses/TenantOnboardingRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
 components:
   parameters:
     IdempotencyKey:
@@ -581,6 +1246,40 @@ components:
         pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         minLength: 16
         maxLength: 128
+    OptionalIdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Makes the command replayable; a replay with a different body is refused with IDEMPOTENCY_KEY_REUSED (409).
+      schema:
+        type: string
+        pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        minLength: 16
+        maxLength: 128
+    ApplicationId:
+      name: application_id
+      in: path
+      required: true
+      schema:
+        $ref: ../../admission/v1/application.schema.json#/$defs/clientApplicationId
+    OnboardingRequestId:
+      name: request_id
+      in: path
+      required: true
+      schema:
+        $ref: ../../admission/v1/onboarding.schema.json#/$defs/tenantOnboardingRequestId
+    PageLimit:
+      name: limit
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+    ApplicationCursor:
+      name: before
+      in: query
+      required: false
+      description: The previous page's next cursor; lists applications older than it.
+      schema:
+        $ref: ../../admission/v1/application.schema.json#/$defs/clientApplicationId
     CorrelationId:
       name: X-Correlation-ID
       in: header
@@ -614,6 +1313,27 @@ components:
   schemas:
     ProblemDetails:
       $ref: ../../errors/v1/problem-details.schema.json
+    ClientApplicationPage:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: ../../admission/v1/application.schema.json#/$defs/ClientApplication
+        next:
+          description: Cursor for the next (older) page, passed as before; absent on the last page.
+          $ref: ../../admission/v1/application.schema.json#/$defs/clientApplicationId
+    TenantOnboardingRequestList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: ../../admission/v1/onboarding.schema.json#/$defs/TenantOnboardingRequest
     ProvisioningOperation:
       type: object
       additionalProperties: false
@@ -629,6 +1349,48 @@ components:
         updated_at: { type: string, format: date-time }
         failure_code: { type: [string, "null"] }
   responses:
+    ClientApplication:
+      description: The ClientApplication
+      content:
+        application/json:
+          schema:
+            $ref: ../../admission/v1/application.schema.json#/$defs/ClientApplication
+    ClientApplicationPage:
+      description: A page of ClientApplications
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ClientApplicationPage"
+    AdmissionDecision:
+      description: The immutable AdmissionDecision
+      content:
+        application/json:
+          schema:
+            $ref: ../../admission/v1/decision.schema.json#/$defs/AdmissionDecision
+    TenantOnboardingRequest:
+      description: The TenantOnboardingRequest
+      content:
+        application/json:
+          schema:
+            $ref: ../../admission/v1/onboarding.schema.json#/$defs/TenantOnboardingRequest
+    NotFound:
+      description: No such resource, or one the caller may not see
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    PayloadTooLarge:
+      description: The request body exceeds 1 MiB
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    ServiceUnavailable:
+      description: A dependency is unavailable; the problem is retryable
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
     BadRequest:
       description: Invalid request
       content:
