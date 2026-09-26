@@ -21,8 +21,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Changes that have been merged but have not yet been included in a released version are recorded here.
 
+## Changed
+
+- **Breaking: tenant registration requires an AUTHORISED onboarding request (ADR-BCP-017 sections 22-24).**
+  `contracts/control-plane/v1/tenant-registration.schema.json` now requires `tenant_onboarding_request_id`. The command must match the request's desired state; the request is recorded FULFILLED and produces at most one tenant. The OpenAPI `registerTenant` operation gains a 422 response. Approval still activates nothing, and there is no longer a direct registration path.
+
 ## Added
 
+- **Bootstrap tenant registration (migration only).**
+  `contracts/control-plane/v1/tenant-bootstrap-registration.schema.json` and `POST /tenants/bootstrap-registrations` register a tenant that predates the admission workflow. It needs the new privileged scope `tenant:bootstrap` and records `bootstrap_reason` and `evidence_reference`. It is never a route for a new customer.
 - **CorporateGroup derivation metric (ADR-BCP-018 gate ORG-05).**
   The organisation/v1 metric catalogue gains `corporate_group_derivation_total`, which counts derivable CorporateGroups by `status` (CURRENT, PENDING, RETRYING). It uses the existing bounded label set.
 - **Tenant onboarding handoff (ADR-BCP-017 sections 22-24, 39, 46).**
