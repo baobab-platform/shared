@@ -67,6 +67,7 @@ RESPONSIBILITIES = {
     "iam.schema.json": {
         "IamOrganisationReference", "IamOrganisationEvidence", "keycloakOrganizationClaim",
         "iamProvider", "iamIssuer", "providerOrganisationId", "iamReferenceStatus",
+        "IamOrganisationLinkRequest", "IamOrganisationRetireRequest", "IamOrganisationResolution",
     },
     "admission.schema.json": {
         "OrganisationAdmissionRequest", "OrganisationAdmissionOutcome", "admissionDecisionId",
@@ -77,6 +78,7 @@ RESPONSIBILITIES = {
         "CounterpartyRole", "OrganisationResolutionCandidate", "ResolutionCandidateDecision",
         "counterpartyRoleId", "resolutionCandidateId", "counterpartyRoleType", "counterpartyRoleStatus",
         "legacyOrganisationKind", "resolutionCandidateStatus", "matchedIdentifier",
+        "CounterpartyRoleAssignRequest", "CounterpartyRoleEndRequest", "CounterpartyReconciliationReport",
     },
     "observability.schema.json": {
         "RelationshipDriftFinding", "RelationshipDriftReport", "OrganisationAuditEntry", "driftRule",
@@ -653,6 +655,17 @@ if nabhold is not None and acme is not None and "legacy-buyer-supplier-migration
               "provider_organisation_id": "7f1c2a9e-3b4d-4e8f-9a1b-2c3d4e5f6a7b", "organisation_id": "ce_01k8z3m5r2fd"})
     negative("IAM evidence without a provider organisation id", "iam.schema.json", "IamOrganisationEvidence",
              {"provider": "keycloak", "issuer": "https://id.baobab-platform.com/realms/baobab"})
+    # Admin API requests (ORG-10): the Organisation comes from the path and
+    # the source authority from the Control Plane, never the body.
+    link = {"provider": "keycloak", "issuer": "https://id.baobab-platform.com/realms/baobab",
+            "provider_organisation_id": "7f1c2a9e-3b4d-4e8f-9a1b-2c3d4e5f6a7b"}
+    for error in errors_for("iam.schema.json", "IamOrganisationLinkRequest", link):
+        fail(f"a valid IAM organisation link request is rejected: {error}")
+    negative("IAM link request naming its organisation", "iam.schema.json", "IamOrganisationLinkRequest",
+             {**link, "organisation_id": "ce_01k8z3m5r2fd"})
+    negative("IAM link request naming its source authority", "iam.schema.json", "IamOrganisationLinkRequest",
+             {**link, "source_authority": "applicant"})
+    negative("IAM link retirement without a reason", "iam.schema.json", "IamOrganisationRetireRequest", {"reason": "  "})
     negative("alias-only organization claim", "iam.schema.json", "keycloakOrganizationClaim", ["acme-foods"])
     negative("organization claim entry without id", "iam.schema.json", "keycloakOrganizationClaim", {"acme-foods": {}})
     negative("empty organization claim", "iam.schema.json", "keycloakOrganizationClaim", {})
@@ -717,6 +730,18 @@ if nabhold is not None and acme is not None and "legacy-buyer-supplier-migration
     negative("decision naming its own reviewer", "counterparty.schema.json", "ResolutionCandidateDecision",
              {"decision": "DISTINCT", "reason": "different companies", "decided_by": "prn_01k8z4f1rvwr"})
     negative("decision without a reason", "counterparty.schema.json", "ResolutionCandidateDecision", {"decision": "DISTINCT"})
+    # Admin API requests (ORG-13): the tenant comes from the path and the
+    # source authority from the Control Plane; a new role is never ENDED.
+    assign = {"organisation_id": "ce_01k8z3m5r2fd", "role": "BUYER"}
+    for error in errors_for("counterparty.schema.json", "CounterpartyRoleAssignRequest", assign):
+        fail(f"a valid counterparty role assignment is rejected: {error}")
+    negative("counterparty role created ENDED", "counterparty.schema.json", "CounterpartyRoleAssignRequest",
+             {**assign, "status": "ENDED"})
+    negative("counterparty role assignment naming its tenant", "counterparty.schema.json", "CounterpartyRoleAssignRequest",
+             {**assign, "tenant_id": "tn_01k8z3m5r2fd"})
+    negative("counterparty role assignment naming its source authority", "counterparty.schema.json",
+             "CounterpartyRoleAssignRequest", {**assign, "source_authority": "applicant"})
+    negative("counterparty role ended without a reason", "counterparty.schema.json", "CounterpartyRoleEndRequest", {})
 
     # Drift and audit lineage (ORG-15).
     D = "organisation-drift-and-audit.json"

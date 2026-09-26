@@ -357,6 +357,64 @@
           }
         }
       ]
+    },
+    "CounterpartyRoleAssignRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organisation_id", "role"],
+      "description": "Assigns a tenant-scoped counterparty role to a canonical Organisation (ADR-BCP-018 gate ORG-13). The tenant comes from the path and the source authority from the Control Plane, never the body. Repeating a live assignment returns the stored role.",
+      "properties": {
+        "organisation_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId" },
+        "role": { "$ref": "#/$defs/counterpartyRoleType" },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "ACTIVE", "SUSPENDED"],
+          "description": "The new role's status; ACTIVE when omitted. A new role is never ENDED."
+        },
+        "effective_from": { "type": "string", "format": "date-time", "description": "Defaults to now." }
+      }
+    },
+    "CounterpartyRoleEndRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "description": "Ends a counterparty role. The role stays queryable as history.",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "pattern": "\\S",
+          "description": "Why, recorded in the audit trail."
+        },
+        "effective_to": { "type": "string", "format": "date-time", "description": "Defaults to now." }
+      }
+    },
+    "CounterpartyReconciliationReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profiles_attached", "roles_materialised", "backlog", "candidates"],
+      "description": "The outcome of one ORG-13 reconciliation run: legacy buyer and supplier records migrated, what could not be migrated and why, and the duplicate-organisation candidates refreshed. A run merges nothing and is safe to repeat.",
+      "properties": {
+        "profiles_attached": { "type": "integer", "minimum": 0 },
+        "roles_materialised": { "type": "integer", "minimum": 0 },
+        "backlog": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 },
+          "description": "Legacy records still awaiting migration, counted by the reason they could not be migrated."
+        },
+        "candidates": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["opened", "reopened", "updated", "unchanged"],
+          "properties": {
+            "opened": { "type": "array", "items": { "$ref": "#/$defs/resolutionCandidateId" } },
+            "reopened": { "type": "array", "items": { "$ref": "#/$defs/resolutionCandidateId" } },
+            "updated": { "type": "array", "items": { "$ref": "#/$defs/resolutionCandidateId" } },
+            "unchanged": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
     }
   }
 }
