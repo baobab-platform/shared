@@ -9,8 +9,9 @@
 // here as their respective .proto/.graphql sources are authored — see
 // ADR-0001 for why they are absent from this initial scaffold.
 
-// Canonical Mapping Model implementations (§23-24)
-export * from './canonical-mapping-resolver';
+// Mapping resolution (§23-24) is the Control Plane's resolveMapping, in a
+// context it resolved and stored (ADR-SHARED-014); there is no client-side
+// resolver.
 
 // Context Resolution Flow (§17, §22)
 export * from './context-resolver';

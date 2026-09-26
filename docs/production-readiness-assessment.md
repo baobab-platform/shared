@@ -224,11 +224,9 @@
 **Unit Testing**
 - Algorithm implementations exist but have no unit tests
 - Need test suites for:
-  - `canonical-mapping-resolver.ts` (10-step algorithm)
-    - All edge cases: empty candidates, temporal invalidity, scope mismatches, ambiguity detection
-    - Specificity ranking correctness
-    - Determinism verification
-    - Estimated: 150+ test cases
+  - Mapping resolution (§23-24) is no longer a client-side module: the Control
+    Plane's `resolveMapping` resolves in a stored context (ADR-SHARED-014) and
+    is tested there
   - `context-resolver.ts` (9-step flow)
     - All resolution paths (authenticate, tenant, property, estate, etc.)
     - Trust boundary enforcement (malicious header injection)

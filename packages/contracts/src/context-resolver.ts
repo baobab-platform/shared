@@ -5,7 +5,24 @@
 // Authenticate → Tenant → Property → Estate → Legal Entity → Market → Country/Locale/Currency →
 // Authorize → Construct → Capability → Binding → Mappings → Engine
 
-import { ResolutionContext } from './canonical-mapping-resolver';
+/**
+ * The resolved context's scope dimensions (§17). A context is resolved and
+ * stored by the Control Plane; mapping resolution redeems it by context_id
+ * and never accepts one from a caller (ADR-SHARED-014).
+ */
+export interface ResolutionContext {
+  tenant_id: string;
+  legal_entity_id?: string;
+  market_id?: string;
+  country?: string;
+  estate_id?: string;
+  digital_property_id?: string;
+  channel_id?: string;
+  currency?: string;
+  locale?: string;
+  environment?: string;
+  [key: string]: string | undefined;
+}
 
 /**
  * Trust boundary for context provenance tracking (§17.3)
