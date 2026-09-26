@@ -23,6 +23,15 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Breaking: `resolveMapping` resolves in a trusted context (ADR-SHARED-014).**
+  `contracts/control-plane/v1/openapi.yaml` (1.7.0) and `canonical-mapping.schema.json`:
+  - `resolutionRequest` now requires `context_id`, a context the Control Plane resolved and stored. It no longer takes an inline `context`, so a caller cannot assert its tenant or scope.
+  - `target_system` becomes `target_system_namespace`, and `target_engine_id` is added in the ADR-SHARED-012 grammar. `target_capability` is removed: capability resolution selects the engine.
+  - `resolutionResponse` adds `context_id`, `tenant_id` and `target_canonical_entity_id`, requires exactly one target, and requires `mapping_version` and `resolved_at`.
+  - The operation documents `CONTEXT_NOT_FOUND`, `TENANT_CONTEXT_MISMATCH`, `MAPPING_NOT_FOUND` and `MAPPING_AMBIGUOUS`.
+  - No service implemented the previous shape.
+  - `scripts/validate-control-plane-contracts.py` validates the new example and 12 negative fixtures.
+
 - **Breaking: one grammar per topology identifier, and an external system registry (ADR-SHARED-012).**
   `control-plane/v1` `domain.schema.json` now defines `engineId`, the engine named as its repository (for example `baobab-trade`), and `engineInstanceId`, the Control Plane-minted `ei_[a-z0-9]+`.
   - `canonical-mapping` (`externalReference` and `mappingScope`), `capability/v1` binding and resolution, and `capability-explanation` reference them.

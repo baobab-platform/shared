@@ -220,6 +220,41 @@ def check_mapping_administration() -> None:
             "two references for one native identity")
 
 
+def check_mapping_resolution() -> None:
+    schema = "canonical-mapping.schema.json"
+    example = json.loads((CP / "examples" / "mapping-resolution.json").read_text())
+    accepts(schema, "resolutionRequest", example["resolution_request"], "mapping-resolution request")
+    for key in ("resolution_response", "canonical_resolution_response"):
+        accepts(schema, "resolutionResponse", example[key], f"mapping-resolution {key}")
+
+    registry = yaml.safe_load((CP / "external-systems.yaml").read_text())
+    registered = {(system["system_namespace"], engine) for system in registry["systems"] for engine in system["engine_ids"]}
+    request = example["resolution_request"]
+    if (request["target_system_namespace"], request["target_engine_id"]) not in registered:
+        fail("mapping-resolution request names an unregistered system")
+
+    # The context is redeemed, never supplied (ADR-SHARED-014).
+    for field, value in (("context", {"tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"}),
+                         ("tenant_id", "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"), ("market_id", "mkt_kenya"),
+                         ("legal_entity_id", "le_0199a1b2c3d47e8f"), ("target_capability", "commerce.catalog")):
+        rejects(schema, "resolutionRequest", {**request, field: value}, f"mapping resolution naming {field}")
+    without_context = copy.deepcopy(request)
+    del without_context["context_id"]
+    rejects(schema, "resolutionRequest", without_context, "mapping resolution without a context")
+    rejects(schema, "resolutionRequest", {**request, "target_engine_id": "baobab_trade"}, "snake_case target engine")
+
+    response = example["resolution_response"]
+    rejects(schema, "resolutionResponse", {**response, "target_canonical_entity_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6d"},
+            "resolution naming both targets")
+    neither = copy.deepcopy(response)
+    del neither["external_reference_id"]
+    rejects(schema, "resolutionResponse", neither, "resolution naming no target")
+    for field in ("tenant_id", "context_id", "mapping_version"):
+        missing = copy.deepcopy(response)
+        del missing[field]
+        rejects(schema, "resolutionResponse", missing, f"resolution without {field}")
+
+
 def check_openapi_references() -> None:
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
     pattern = re.compile(r"^\./(" + "|".join(re.escape(n) for n in RESPONSIBILITIES) + r")#/\$defs/(\w+)$")
@@ -327,6 +362,7 @@ def main() -> int:
     check_canonical_entity()
     check_capability_explanation()
     check_mapping_administration()
+    check_mapping_resolution()
     check_openapi_references()
     check_topology_identifiers()
     check_external_systems()
