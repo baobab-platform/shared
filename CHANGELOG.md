@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **CorporateGroup derivation metric (ADR-BCP-018 gate ORG-05).**
+  The organisation/v1 metric catalogue gains `corporate_group_derivation_total`, which counts derivable CorporateGroups by `status` (CURRENT, PENDING, RETRYING). It uses the existing bounded label set.
 - **Tenant onboarding handoff (ADR-BCP-017 sections 22-24, 39, 46).**
   `contracts/admission/v1/onboarding.schema.json` defines `TenantOnboardingRequest` (`tor_`), its desired state (subscription type, markets, products and isolation taken from the AdmissionDecision) and its commands. `onboarding-lifecycle.yaml` sets the lifecycle: REQUESTED → AUTHORISED → FULFILLED, with CANCELLED from either open state. New privileged scopes `onboarding:request` and `onboarding:authorise`. Four `tenant-onboarding.*` events. The validator gains 21 negatives, including separation of duties, one live request per decision, and desired state that departs from the decision.
 - **Tenant PlatformAccount binding and account lifecycle (ADR-BCP-018 gate ORG-07).**

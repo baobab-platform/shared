@@ -152,7 +152,7 @@
     },
     "organisationMetric": {
       "type": "string",
-      "description": "ADR-BCP-018 section 130 metric names, exposed in Prometheus form. Gauges report current counts; counters (the *_denied, *_failure, *_review and *_reclassification totals) count events since process start.",
+      "description": "ADR-BCP-018 section 130 metric names, exposed in Prometheus form. Gauges report current counts; counters (the *_denied, *_failure, *_review and *_reclassification totals) count events since process start. corporate_group_derivation_total counts derivable CorporateGroups by derivation status (CURRENT, PENDING, RETRYING); membership is derived state kept current by the Control Plane (gate ORG-05).",
       "enum": [
         "organisation_total",
         "organisation_verification_total",
@@ -169,7 +169,8 @@
         "internal_eligibility_review_total",
         "relationship_drift_total",
         "relationship_resolution_failure_total",
-        "cross_tenant_group_access_denied_total"
+        "cross_tenant_group_access_denied_total",
+        "corporate_group_derivation_total"
       ]
     },
     "organisationMetricLabel": {

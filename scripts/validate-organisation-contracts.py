@@ -149,7 +149,7 @@ SECTION_130_METRICS = {
     "platform_relationship_total", "platform_relationship_reclassification_total", "platform_account_total",
     "platform_account_membership_total", "tenant_organisation_mapping_total", "tenant_legal_entity_mapping_total",
     "internal_eligibility_review_total", "relationship_drift_total", "relationship_resolution_failure_total",
-    "cross_tenant_group_access_denied_total",
+    "cross_tenant_group_access_denied_total", "corporate_group_derivation_total",
 }
 FORBIDDEN_METRIC_LABELS = {"tenant_id", "organisation_id", "legal_entity_id", "name", "display_name",
                            "registration_number", "identifier", "user_id", "principal_id"}
