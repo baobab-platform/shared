@@ -15,7 +15,12 @@ paths:
       security:
         - adminOidc: [tenant:write]
       operationId: registerTenant
-      summary: Register a tenant and start an idempotent provisioning operation
+      summary: Register the tenant of an AUTHORISED TenantOnboardingRequest and start an idempotent provisioning operation
+      description: >-
+        There is no direct registration (ADR-BCP-017 sections 22-24). The
+        command names an AUTHORISED TenantOnboardingRequest whose desired
+        state it must match; the request is recorded FULFILLED with the minted
+        tenant, and produces at most one tenant.
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
         - $ref: "#/components/parameters/CorrelationId"
@@ -44,6 +49,46 @@ paths:
                     state: accepted
                     revision: 1
                     created_at: "2026-08-31T12:00:00Z"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+  /tenants/bootstrap-registrations:
+    post:
+      security:
+        - adminOidc: [tenant:bootstrap]
+      operationId: bootstrapRegisterTenant
+      summary: Register a tenant that predates the admission workflow (migration and platform bootstrap only)
+      description: >-
+        The only registration path without a TenantOnboardingRequest. It needs
+        the privileged tenant:bootstrap scope, is disabled unless the Control
+        Plane explicitly enables it, and audits its reason and evidence
+        reference. It is never a route for a new customer.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/CausationId"
+        - $ref: "#/components/parameters/Traceparent"
+        - $ref: "#/components/parameters/Tracestate"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./tenant-bootstrap-registration.schema.json
+      responses:
+        "202":
+          description: Registration accepted or an existing idempotent result returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProvisioningOperation"
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -604,6 +649,12 @@ components:
             $ref: "#/components/schemas/ProblemDetails"
     Conflict:
       description: Lifecycle conflict or incompatible idempotent replay
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    Unprocessable:
+      description: The command is well formed but contradicts governed state, e.g. it departs from the onboarding request's desired state
       content:
         application/problem+json:
           schema:

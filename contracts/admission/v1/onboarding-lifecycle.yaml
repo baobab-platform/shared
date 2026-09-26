@@ -9,8 +9,13 @@
 #               the application's applicant or the decision's decider
 #   AUTHORISER  a platform onboarding authoriser (onboarding:authorise),
 #               never the requester or the applicant
-#   OPERATOR    a platform provisioning operator (onboarding:request)
-#               recording the tenant provisioning produced
+#   OPERATOR    a platform provisioning operator: tenant registration
+#               (control-plane/v1 registerTenant, tenant:write) fulfils the
+#               request in the same operation that registers its tenant, and
+#               a request's tenant can be registered no other way; the
+#               explicit fulfil command (onboarding:request) remains only to
+#               link a tenant registered before registration required an
+#               AUTHORISED request
 version: 1
 initial: REQUESTED
 created_by: REQUESTER

@@ -1,9 +1,12 @@
 {
+  "tenant_onboarding_request_id": "tor_0190a1b2c3d4e5f60718293a4b5c6d7e",
   "legal_entity_id": "ZURIBEANS",
   "display_name": "Zuribeans",
   "isolation_strategy": "schema_per_tenant",
   "residency_region": "af-south-1",
-  "requested_products": ["baobab-trade"],
+  "requested_products": [
+    "baobab-trade"
+  ],
   "metadata": {
     "business_model": "b2b"
   }

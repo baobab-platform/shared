@@ -112,6 +112,17 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "tenant:bootstrap"
+    description: >-
+      Registers a tenant that predates the admission workflow, without a
+      TenantOnboardingRequest (migration and platform bootstrap only; the
+      Control Plane keeps it disabled unless explicitly enabled). Every use
+      records its reason and evidence reference. Never a route for a new
+      customer, which is registered from an AUTHORISED onboarding request.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "onboarding:request"
     description: >-
       A platform onboarding requester hands an APPROVED AdmissionDecision to

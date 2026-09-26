@@ -1,0 +1,9 @@
+{
+  "legal_entity_id": "NABHOLD",
+  "display_name": "Nabhold Group Africa",
+  "isolation_strategy": "schema_per_tenant",
+  "residency_region": "af-south-1",
+  "requested_products": [],
+  "bootstrap_reason": "Pre-ADR-BCP-017 first-party tenant migrated into the Control Plane registry.",
+  "evidence_reference": "migration-record/2026-09-nabhold-group"
+}

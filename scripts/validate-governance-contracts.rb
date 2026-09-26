@@ -77,6 +77,14 @@ fail_contract("registration commands must not accept caller-selected tenant_id")
 fail_contract("registration legal_entity_id must be the compatibility input boundary") unless registration_schema.dig("properties", "legal_entity_id", "$ref") == "domain.schema.json#/$defs/legalEntityIdInput"
 fail_contract("context responses must emit canonical legal-entity IDs") unless context_schema.dig("$defs", "response", "properties", "entity_id", "$ref") == "domain.schema.json#/$defs/legalEntityId"
 fail_contract("registration example must let the Control Plane mint tenant_id") if register_example.key?("tenant_id")
+fail_contract("registration must require an AUTHORISED onboarding request (ADR-BCP-017 sections 22-24)") unless registration_schema.fetch("required").include?("tenant_onboarding_request_id")
+fail_contract("registration example must name its onboarding request") unless register_example["tenant_onboarding_request_id"].to_s.match?(/\Ator_[a-z0-9]+\z/)
+bootstrap_schema = load_json("contracts/control-plane/v1/tenant-bootstrap-registration.schema.json")
+bootstrap_example = load_json("contracts/control-plane/v1/examples/bootstrap-register-tenant.json")
+fail_contract("bootstrap registration must record its reason and evidence") unless (%w[bootstrap_reason evidence_reference] - bootstrap_schema.fetch("required")).empty?
+fail_contract("bootstrap registration must not name an onboarding request or a tenant_id") if bootstrap_schema.fetch("properties").key?("tenant_onboarding_request_id") || bootstrap_schema.fetch("properties").key?("tenant_id")
+fail_contract("bootstrap registration example references an unknown legal entity") unless entity_ids.include?(bootstrap_example.fetch("legal_entity_id"))
+fail_contract("OpenAPI bootstrap registration must require tenant:bootstrap") unless openapi.dig("paths", "/tenants/bootstrap-registrations", "post", "security") == [{ "adminOidc" => ["tenant:bootstrap"] }]
 example_tenant_ids = [
   registration_response_example.fetch("tenant_id"),
   context_example.dig("response", "tenant_id"),
