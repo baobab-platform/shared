@@ -13,9 +13,7 @@
         "capability_key": { "$ref": "domain.schema.json#/$defs/capabilityKey" },
         "provider_id": { "$ref": "domain.schema.json#/$defs/capabilityProviderId" },
         "engine_instance_id": {
-          "type": "string",
-          "pattern": "^ei_[a-z0-9]+$",
-          "maxLength": 63,
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/engineInstanceId",
           "description": "Concrete runtime deployment. binding.provider_id's engine_key must equal this engine instance's engine_key; validated by the Control Plane before activation, not by this schema alone."
         },
         "scope_id": { "$ref": "domain.schema.json#/$defs/capabilityScopeId" },

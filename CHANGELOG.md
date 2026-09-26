@@ -23,6 +23,14 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Breaking: one grammar per topology identifier, and an external system registry (ADR-SHARED-012).**
+  `control-plane/v1` `domain.schema.json` now defines `engineId`, the engine named as its repository (for example `baobab-trade`), and `engineInstanceId`, the Control Plane-minted `ei_[a-z0-9]+`.
+  - `canonical-mapping` (`externalReference` and `mappingScope`), `capability/v1` binding and resolution, and `capability-explanation` reference them.
+  - `authorization/v1` context and `identity/v1` external references repeat the instance pattern.
+  - Before this, engine ids were snake_case in one contract and repository names in two others, and engine instance ids were unconstrained, slugs or `ei_`.
+  - The new `control-plane/v1/external-systems.yaml` registers each ExternalReference `system_namespace` with the engines allowed to hold it: `medusa`↔`baobab-trade`, `idempiere`↔`baobab-erp`, `payload`↔`baobab-cms`.
+  - `scripts/validate-control-plane-contracts.py` checks every copy of the grammar, rejects UUID, slug and snake_case identifiers in negative fixtures, and checks the registry.
+
 - **`tenant:read` is issued for `baobab-control-plane`.** It was registered for the audience `baobab-cp`, which the Control Plane does not use. The authorization validator now fails when an OpenAPI operation requires a scope that is not issued for its service, and it caught this.
 
 - **Workload identities for the Control Plane -> Subscriptions -> Payments chain (assessment §22, EA-04).**

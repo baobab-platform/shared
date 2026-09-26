@@ -206,14 +206,10 @@
           "maxLength": 128
         },
         "engine_id": {
-          "type": ["string", "null"],
-          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
-          "maxLength": 128
+          "anyOf": [{ "$ref": "./domain.schema.json#/$defs/engineId" }, { "type": "null" }]
         },
         "engine_instance_id": {
-          "type": ["string", "null"],
-          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
-          "maxLength": 128
+          "anyOf": [{ "$ref": "./domain.schema.json#/$defs/engineInstanceId" }, { "type": "null" }]
         },
         "environment": { "$ref": "./domain.schema.json#/$defs/environment" },
         "deployment_region": {
@@ -252,15 +248,11 @@
           "description": "Logical namespace for native IDs (e.g., 'medusa', 'payload', 'idempiere')."
         },
         "engine_id": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
-          "maxLength": 128,
-          "description": "Engine type identifier."
+          "$ref": "./domain.schema.json#/$defs/engineId",
+          "description": "The engine whose system holds the native object. It and system_namespace must be a pair registered in external-systems.yaml."
         },
         "engine_instance_id": {
-          "type": ["string", "null"],
-          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
-          "maxLength": 128,
+          "anyOf": [{ "$ref": "./domain.schema.json#/$defs/engineInstanceId" }, { "type": "null" }],
           "description": "Specific engine instance (for multi-instance engines)."
         },
         "environment": { "$ref": "./domain.schema.json#/$defs/environment" },

@@ -9,7 +9,9 @@ libraries that ADR-BCP-022 requires before an operation counts as complete:
      name and which defines exactly the $defs it is responsible for;
   2. every example validates against its definition;
   3. negative fixtures prove the load-bearing rules reject bad data;
-  4. every openapi.yaml reference to these schemas names a real definition.
+  4. every openapi.yaml reference to these schemas names a real definition;
+  5. the topology identifiers have one grammar everywhere and
+     external-systems.yaml registers well-formed systems (ADR-SHARED-012).
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -191,11 +193,86 @@ def check_openapi_references() -> None:
             fail(f"openapi.yaml does not use {required[0]}#/$defs/{required[1]}")
 
 
+def check_topology_identifiers() -> None:
+    domain = json.loads((CP / "domain.schema.json").read_text())["$defs"]
+    expected = {"engineId": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$", "engineInstanceId": "^ei_[a-z0-9]+$"}
+    for name, pattern in expected.items():
+        if domain.get(name, {}).get("pattern") != pattern:
+            fail(f"domain.schema.json#/$defs/{name} must have pattern {pattern}")
+
+    def ref_of(node: dict) -> str:
+        if "$ref" in node:
+            return node["$ref"]
+        return next((option["$ref"] for option in node.get("anyOf", []) if "$ref" in option), "")
+
+    mapping = json.loads((CP / "canonical-mapping.schema.json").read_text())["$defs"]
+    for definition in ("externalReference", "mappingScope"):
+        properties = mapping[definition]["properties"]
+        for field, target in (("engine_id", "engineId"), ("engine_instance_id", "engineInstanceId")):
+            if not ref_of(properties[field]).endswith(f"domain.schema.json#/$defs/{target}"):
+                fail(f"canonical-mapping {definition}.{field} must reference domain.schema.json#/$defs/{target}")
+    capability = CONTRACTS / "capability" / "v1"
+    binding = json.loads((capability / "binding.schema.json").read_text())["$defs"]
+    resolution = json.loads((capability / "resolution.schema.json").read_text())["$defs"]
+    for label, node in (("capability/v1 binding", next(iter(binding.values()))["properties"]["engine_instance_id"]),
+                        ("capability/v1 resolution invocationDescriptor", resolution["invocationDescriptor"]["properties"]["engine_instance_id"])):
+        if not ref_of(node).endswith("control-plane/v1/domain.schema.json#/$defs/engineInstanceId"):
+            fail(f"{label}.engine_instance_id must reference control-plane/v1 engineInstanceId")
+    # These packages use another $id base, so they repeat the grammar.
+    for path in ("authorization/v1/context.schema.json", "identity/v1/external-reference.schema.json"):
+        node = json.loads((CONTRACTS / path).read_text())["properties"]["engine_instance_id"]
+        if node.get("pattern") != expected["engineInstanceId"]:
+            fail(f"{path} engine_instance_id must repeat the engineInstanceId pattern")
+
+    reference = {
+        "external_reference_id": "ref_0199a1b2c3d47e8f",
+        "system_namespace": "medusa",
+        "engine_id": "baobab-trade",
+        "engine_instance_id": "ei_0199a1b2c3d47e8f",
+        "native_entity_type": "customer",
+        "native_id": "cus_01k4",
+    }
+    accepts("canonical-mapping.schema.json", "externalReference", reference, "external reference with canonical engine identifiers")
+    rejects("canonical-mapping.schema.json", "externalReference", {**reference, "engine_instance_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b"}, "UUID engine instance id")
+    rejects("canonical-mapping.schema.json", "externalReference", {**reference, "engine_instance_id": "trade_eu_1"}, "slug engine instance id")
+    rejects("canonical-mapping.schema.json", "externalReference", {**reference, "engine_id": "baobab_trade"}, "snake_case engine id")
+
+
+def check_external_systems() -> None:
+    registry = yaml.safe_load((CP / "external-systems.yaml").read_text())
+    if registry.get("schema") != "baobab-external-system-registry" or registry.get("version") != "1.0":
+        fail("external-systems.yaml must declare schema baobab-external-system-registry, version 1.0")
+    mapping = json.loads((CP / "canonical-mapping.schema.json").read_text())["$defs"]["externalReference"]["properties"]
+    namespace_pattern = re.compile(mapping["system_namespace"]["pattern"])
+    engine_pattern = re.compile(json.loads((CP / "domain.schema.json").read_text())["$defs"]["engineId"]["pattern"])
+    systems = registry.get("systems") or []
+    if not systems:
+        fail("external-systems.yaml registers no systems")
+    seen: set[str] = set()
+    for system in systems:
+        namespace = system.get("system_namespace", "")
+        if not namespace_pattern.fullmatch(namespace):
+            fail(f"external-systems.yaml: {namespace!r} does not match externalReference system_namespace")
+        if namespace in seen:
+            fail(f"external-systems.yaml registers {namespace} twice")
+        seen.add(namespace)
+        engines = system.get("engine_ids") or []
+        if not engines or len(set(engines)) != len(engines):
+            fail(f"external-systems.yaml: {namespace} needs distinct engine_ids")
+        for engine in engines:
+            if not engine_pattern.fullmatch(engine):
+                fail(f"external-systems.yaml: {namespace} engine {engine!r} does not match engineId")
+        if not str(system.get("description", "")).strip():
+            fail(f"external-systems.yaml: {namespace} needs a description")
+
+
 def main() -> int:
     check_schemas()
     check_canonical_entity()
     check_capability_explanation()
     check_openapi_references()
+    check_topology_identifiers()
+    check_external_systems()
     if FAILURES:
         for message in FAILURES:
             print(f"FAIL: {message}", file=sys.stderr)

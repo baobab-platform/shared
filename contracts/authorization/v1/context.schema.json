@@ -38,7 +38,10 @@
     },
     "engine_instance_id": {
       "type": "string",
-      "description": "Resolved engine instance to route the request."
+      "pattern": "^ei_[a-z0-9]+$",
+      "minLength": 6,
+      "maxLength": 63,
+      "description": "Resolved engine instance to route the request Same grammar as control-plane/v1 domain.schema.json#/$defs/engineInstanceId (ADR-SHARED-012)."
     },
     "resolved_at": {
       "type": "string",
