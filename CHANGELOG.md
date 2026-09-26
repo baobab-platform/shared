@@ -23,6 +23,9 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Breaking: `@baobab-platform/contracts-ts` drops its client-side `CanonicalMappingResolver` (ADR-SHARED-014).**
+  It resolved mappings against a context its caller supplied, so a consumer could select any tenant's scope. Mapping resolution is the Control Plane's `resolveMapping`, which redeems a stored context. `ResolutionContext` moves to `context-resolver`.
+
 - **Breaking: `resolveMapping` resolves in a trusted context (ADR-SHARED-014).**
   `contracts/control-plane/v1/openapi.yaml` (1.7.0) and `canonical-mapping.schema.json`:
   - `resolutionRequest` now requires `context_id`, a context the Control Plane resolved and stored. It no longer takes an inline `context`, so a caller cannot assert its tenant or scope.

@@ -50,3 +50,4 @@ No service implemented it.
 - `control-plane/v1` `openapi.yaml` is 1.7.0. The request change breaks callers of `resolveMapping`, which no service served.
 - The Control Plane implements `resolveMapping` by redeeming the stored context, as its capability resolution does. It removes the operation from its list of described-but-unimplemented routes.
 - A workload that needs a canonical entity's representation in an engine resolves context first, then optionally the capability, then the mapping.
+- `@baobab-platform/contracts-ts` no longer exports `CanonicalMappingResolver`, which resolved against a context its caller supplied. No client resolves mappings itself.
