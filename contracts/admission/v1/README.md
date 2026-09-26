@@ -92,6 +92,8 @@ The scopes are registered in `contracts/authorization/v1/scope-registry.yaml`:
 | `admission:decide` (privileged) | platform approver | Approving or rejecting an application under review. The approver is never the application's applicant. |
 | `onboarding:request` (privileged) | platform onboarding requester | Handing an APPROVED decision to onboarding as a TenantOnboardingRequest, recording the tenant provisioning produced, and cancelling a request. The requester is never the applicant or the decider. |
 | `onboarding:authorise` (privileged) | platform onboarding authoriser | Authorising a REQUESTED onboarding request before provisioning. The authoriser is never the requester or the applicant. |
+| `tenant:write` (privileged) | platform or tenant administrator | Registering the tenant for an AUTHORISED onboarding request, then managing it (lifecycle, organisation admission, PlatformAccount binding, provisioning) |
+| `tenant:bootstrap` (privileged) | platform administrator, migration only | Registering a tenant that predates this workflow, with a recorded reason and evidence. The Control Plane keeps it disabled by default. |
 
 A scope is necessary but not sufficient. An applicant reaches only applications they own. The review and decision scopes also require platform-administrator authority in the Control Plane. The reviewer role does not include the decision (ADR-BCP-020 §34).
 

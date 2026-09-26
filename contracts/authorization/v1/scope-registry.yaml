@@ -112,6 +112,19 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "tenant:write"
+    description: >-
+      A platform or tenant administrator manages tenants in the Control Plane:
+      registers a tenant from an AUTHORISED TenantOnboardingRequest, suspends,
+      activates or decommissions it, and manages its organisation admission,
+      counterparty roles, PlatformAccount binding and provisioning. Necessary
+      but not sufficient: the Control Plane also requires platform-administrator
+      authority, or tenant-administrator authority over that tenant. Never
+      registers a tenant without an onboarding request (see tenant:bootstrap).
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "tenant:bootstrap"
     description: >-
       Registers a tenant that predates the admission workflow, without a
