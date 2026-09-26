@@ -67,7 +67,7 @@
         "protocol": { "type": "string", "enum": ["http", "grpc"] },
         "contract_version": { "type": "integer", "minimum": 1 },
         "provider_id": { "$ref": "domain.schema.json#/$defs/capabilityProviderId" },
-        "engine_instance_id": { "type": "string", "maxLength": 63 },
+        "engine_instance_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/engineInstanceId" },
         "metadata": { "type": "object" }
       }
     },

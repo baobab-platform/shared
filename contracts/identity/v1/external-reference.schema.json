@@ -19,7 +19,10 @@
     },
     "engine_instance_id": {
       "type": "string",
-      "description": "Which instance of the engine this mapping belongs to."
+      "pattern": "^ei_[a-z0-9]+$",
+      "minLength": 6,
+      "maxLength": 63,
+      "description": "Which instance of the engine this mapping belongs to Same grammar as control-plane/v1 domain.schema.json#/$defs/engineInstanceId (ADR-SHARED-012)."
     },
     "external_type": {
       "type": "string",
