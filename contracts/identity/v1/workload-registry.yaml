@@ -36,10 +36,23 @@
 #                             SHALL follow least privilege; scope=* or
 #                             scope=admin for an internal workload is
 #                             prohibited).
-#   credential_type        -- how this workload authenticates today.
-#                             client_credentials is the only type baobab-iam
-#                             issues as of this registry's creation; mTLS
-#                             client-certificate auth is owned by
+#   credential_type        -- how this workload authenticates:
+#                             client_credentials   -- an IdP-issued client
+#                                                     credential (the type
+#                                                     baobab-iam issues for
+#                                                     the older entries);
+#                             federated_workload_token -- the workload
+#                                                     presents a short-lived,
+#                                                     platform-projected token
+#                                                     (for example a Kubernetes
+#                                                     service-account token)
+#                                                     and holds no static
+#                                                     secret (assessment EA-04).
+#                                                     The IdP mechanism that
+#                                                     exchanges it is decided
+#                                                     by the identity-provider
+#                                                     migration ADR.
+#                             mTLS client-certificate auth is owned by
 #                             baobab-platform/infrastructure (ADR-0007 §§34-41,
 #                             §94, §99) and is not modelled here until
 #                             that repository defines how it registers.
@@ -47,10 +60,16 @@
 #                              this workload's credential.
 #   status                  -- PROVISIONED | ACTIVE | SUSPENDED | REVOKED |
 #                              RETIRED (ADR-0007 §45's workload lifecycle
-#                              states). All entries below start ACTIVE,
-#                              reflecting the already-provisioned Keycloak
-#                              clients in baobab-platform/baobab-iam's config/
-#                              clients/*-workload.json.
+#                              states). An entry is ACTIVE once its IdP
+#                              client exists (the older entries reflect
+#                              baobab-platform/baobab-iam's config/clients/
+#                              *-workload.json); PROVISIONED entries are
+#                              registered but have no IdP client yet, and
+#                              baobab-cp rejects their tokens until ACTIVE.
+#
+# scripts/validate-authorization-contracts.rb checks every entry: its scopes
+# are registered, workload-usable and issued for one of its audiences; it
+# grants no privileged scope; and each audience is used by one of its scopes.
 #
 # Adding a workload: add an entry here first (this is the registration
 # ADR-0007 §42 requires), then provision the matching Keycloak client in
@@ -134,3 +153,30 @@ workloads:
     credential_type: client_credentials
     rotation_owner: baobab-platform/zuribeans
     status: ACTIVE
+
+  # Assessment §22 / EA-04: the Control Plane -> Subscriptions -> Payments
+  # chain. Each identity is issued only for the one engine it calls, and is
+  # separate from the Control Plane's browser and admin clients. Neither
+  # has an IdP client yet: IdP work waits on the identity-provider migration
+  # ADR, so both are PROVISIONED.
+  baobab-cp-workload:
+    repository: baobab-platform/baobab-cp
+    owner: baobab-platform/baobab-cp
+    runtime: "baobab-cp service (billing projection of classified ProductSubscriptions)"
+    environment: production
+    allowed_audiences: ["baobab-subscriptions"]
+    allowed_scopes: ["billing:manage", "billing:read"]
+    credential_type: federated_workload_token
+    rotation_owner: baobab-platform/baobab-cp
+    status: PROVISIONED
+
+  baobab-subscriptions-workload:
+    repository: baobab-platform/baobab-subscriptions
+    owner: baobab-platform/baobab-subscriptions
+    runtime: "baobab-subscriptions service (payment execution for billing that requires it)"
+    environment: production
+    allowed_audiences: ["baobab-payments"]
+    allowed_scopes: ["payment:execute", "payment:refund", "payment:read"]
+    credential_type: federated_workload_token
+    rotation_owner: baobab-platform/baobab-subscriptions
+    status: PROVISIONED
