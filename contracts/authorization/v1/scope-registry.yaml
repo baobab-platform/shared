@@ -31,8 +31,12 @@ scopes:
     privileged: true
 
   - name: "tenant:read"
-    description: "Read tenant metadata."
-    audience: ["baobab-cp"]
+    description: >-
+      Read tenants, their product entitlements, provisioning runs and
+      counterparty roles in the Control Plane. Necessary but not sufficient:
+      the Control Plane also requires platform-administrator authority, or
+      tenant-administrator authority over that tenant.
+    audience: ["baobab-control-plane"]
     allowed_actors: ["workload", "human"]
 
   - name: "events:publish"

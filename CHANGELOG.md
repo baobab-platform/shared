@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **`tenant:read` is issued for `baobab-control-plane`.** It was registered for the audience `baobab-cp`, which the Control Plane does not use. The authorization validator now fails when an OpenAPI operation requires a scope that is not issued for its service, and it caught this.
+
 - **Workload identities for the Control Plane -> Subscriptions -> Payments chain (assessment §22, EA-04).**
   `contracts/identity/v1/workload-registry.yaml` registers `baobab-cp-workload` (audience `baobab-subscriptions`; `billing:manage`, `billing:read`) and `baobab-subscriptions-workload` (audience `baobab-payments`; `payment:execute`, `payment:refund`, `payment:read`). Both are PROVISIONED with the new `federated_workload_token` credential type, which uses no static secret, and have no IdP client until the identity-provider migration ADR. `scripts/validate-authorization-contracts.rb` now checks every workload: each scope is registered, usable by workloads, not privileged and issued for one of its audiences, and each audience is used.
 
@@ -33,6 +35,9 @@ Changes that have been merged but have not yet been included in a released versi
   `contracts/control-plane/v1/tenant-registration.schema.json` now requires `tenant_onboarding_request_id`. The command must match the request's desired state; the request is recorded FULFILLED and produces at most one tenant. The OpenAPI `registerTenant` operation gains a 422 response. Approval still activates nothing, and there is no longer a direct registration path.
 
 ## Added
+
+- **Administrative OpenAPI, phase 2: tenants and classification.**
+  `contracts/control-plane/v1/openapi.yaml` (1.3.0) describes the tenant routes and the classification routes, 9 operations in all: tenant read, the suspend, activate and decommission commands, entitlements, classification, reclassification and the two explanations. New `control-plane/v1/tenant.schema.json` defines what the tenant routes return (`Tenant`, `Entitlement`, `TenantLifecycleResult`). `product/v1/subscription.schema.json` gains the request bodies `SubscriptionClassificationCommand` and `SubscriptionReclassificationCommand`. Provisioning is deferred to a later phase: its tenant manifest has no Shared schema yet.
 
 - **Administrative OpenAPI, phase 1: applications, admission and onboarding (ADR-BCP-022 sections 17-20, CP Console FE-00 gap B2).**
   `contracts/control-plane/v1/openapi.yaml` (1.2.0) describes the Control Plane's 21 ADR-BCP-017 operations under the tags Applications, Admission and Onboarding. It reuses the `admission/v1` schemas for every body and response, and documents the status codes, pagination and separation-of-duties refusals the Control Plane implements. `scripts/validate-authorization-contracts.rb` now fails when an OpenAPI operation requires a scope that is unregistered or not issued for the Control Plane.
