@@ -11,7 +11,9 @@ libraries that ADR-BCP-022 requires before an operation counts as complete:
   3. negative fixtures prove the load-bearing rules reject bad data;
   4. every openapi.yaml reference to these schemas names a real definition;
   5. the topology identifiers have one grammar everywhere and
-     external-systems.yaml registers well-formed systems (ADR-SHARED-012).
+     external-systems.yaml registers well-formed systems (ADR-SHARED-012);
+  6. every provisioning blocking reason is a registered code
+     (ADR-SHARED-015).
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -492,6 +494,46 @@ def check_external_systems() -> None:
             fail(f"external-systems.yaml: {namespace} needs a description")
 
 
+BLOCKING_CATEGORIES = ("capability_resolution_denial", "provisioning_blocker")
+
+
+# Where a blocking reason is carried: TenantProvisioning and readiness
+# blocking_reasons, and ProvisioningPlan blockers. Plan warnings are not
+# blocking reasons.
+BLOCKING_KEYS = ("blocking_reasons", "blockers")
+
+
+def blocking_codes(document: object) -> list[str]:
+    """The code of every blocking reason anywhere in document."""
+    codes: list[str] = []
+    if isinstance(document, dict):
+        for key, value in document.items():
+            if key in BLOCKING_KEYS and isinstance(value, list):
+                codes.extend(reason["code"] for reason in value if isinstance(reason, dict) and "code" in reason)
+            else:
+                codes.extend(blocking_codes(value))
+    elif isinstance(document, list):
+        for item in document:
+            codes.extend(blocking_codes(item))
+    return codes
+
+
+def check_blocking_reason_codes() -> None:
+    registry = yaml.safe_load((CONTRACTS / "authorization" / "v1" / "reason-code-registry.yaml").read_text())
+    registered = {entry["code"] for entry in registry["reason_codes"] if entry["category"] in BLOCKING_CATEGORIES}
+    if not registered:
+        fail("reason-code-registry.yaml registers no provisioning blocking codes")
+    # The traversal finds plan blockers and blocking reasons, never warnings.
+    probe = {"plan": {"blockers": [{"code": "A_BLOCKER", "message": "m"}], "warnings": [{"code": "A_WARNING", "message": "m"}]},
+             "readiness": {"snapshots": [{"blocking_reasons": [{"code": "A_REASON"}]}]}}
+    if sorted(blocking_codes(probe)) != ["A_BLOCKER", "A_REASON"]:
+        fail(f"blocking_codes collects {sorted(blocking_codes(probe))} from a plan and readiness probe")
+    for path in sorted((CP / "examples").glob("*.json")):
+        for code in blocking_codes(json.loads(path.read_text())):
+            if code not in registered:
+                fail(f"examples/{path.name}: blocking reason {code!r} is not registered under {' or '.join(BLOCKING_CATEGORIES)}")
+
+
 def main() -> int:
     check_schemas()
     check_canonical_entity()
@@ -502,6 +544,7 @@ def main() -> int:
     check_openapi_references()
     check_topology_identifiers()
     check_external_systems()
+    check_blocking_reason_codes()
     if FAILURES:
         for message in FAILURES:
             print(f"FAIL: {message}", file=sys.stderr)

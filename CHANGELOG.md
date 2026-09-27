@@ -21,6 +21,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Changes that have been merged but have not yet been included in a released version are recorded here.
 
+## Added
+
+- **Provisioning blocking reasons are registered codes (ADR-SHARED-015 §8, amending ADR-SHARED-009).**
+  - `authorization/v1` `reason-code-registry.yaml` adds the `provisioning_blocker` category. It holds the fourteen codes that plan blockers, `TenantProvisioning.blocking_reasons` and readiness `blocking_reasons` use where no `capability_resolution_denial` code names the condition, for example `MARKET_NOT_AVAILABLE`, `PLAN_STALE` and `EXECUTION_CANCELLED`.
+  - `readiness.schema.json` and `tenant-provisioning.schema.json` name both categories.
+  - `validate-control-plane-contracts.py` requires every blocking reason in the control-plane examples to be a registered code of one of them.
+- `control-plane/v1` `driftObjectType` adds `TRADE_LANE`. A provisioning's trade lanes carry desired and observed state, and the Control Plane's reconciliation already compares them.
+
 ## Changed
 
 - **Breaking: onboarding requests declare market participation (ADR-BCP-011 §6, ADR-SHARED-015).**

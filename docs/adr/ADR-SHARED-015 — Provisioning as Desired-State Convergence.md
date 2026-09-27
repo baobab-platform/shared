@@ -57,6 +57,16 @@ Shared also held a misnamed `provisioning-plan.schema.json` whose only definitio
 
    Operations have their own routes: `/admin/operations/{operation_id}`, with `/retry` and `/cancel`.
 7. **Legacy projection.** The coarse `provisioning-state-machine.yaml` states become a deprecated projection of the canonical lifecycle, mapped in `tenant-provisioning-lifecycle.yaml`, for consumers of the existing provisioning events. New consumers use the canonical state.
+8. **Blocking reasons are registered codes.** Plan blockers, `TenantProvisioning.blocking_reasons` and readiness `blocking_reasons` use a code from `authorization/v1` `reason-code-registry.yaml`:
+   - the `capability_resolution_denial` code, where one names the condition (for example `BINDING_NOT_FOUND`, `GRANT_NOT_FOUND`, `PROVIDER_UNAVAILABLE`, `ISOLATION_POLICY_MISMATCH`);
+   - otherwise a code in the new `provisioning_blocker` category.
+
+   This amends ADR-SHARED-009, which reused `capability_resolution_denial` alone because "a provisioning blocker is, at root, always a capability resolution failure". Desired-state planning ends that premise. A plan is also blocked:
+   - by the market, product and composition it is planned from (`MARKET_NOT_AVAILABLE`, `MARKET_ACTIVITIES_UNDECLARED`);
+   - by its own validity (`PLAN_STALE`);
+   - by its execution (`EXECUTION_CANCELLED`).
+
+   None of these is a capability resolution. The categories stay one vocabulary: a condition has exactly one code.
 
 ## Consequences
 
