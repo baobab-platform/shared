@@ -65,8 +65,8 @@ RESPONSIBILITIES = {
         "operationStatus", "operationType", "ExecutionOperation", "OperationCommandRequest",
     },
     "tenant-provisioning.schema.json": {
-        "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningPage",
-        "ProvisioningReadiness", "ProvisioningDrift",
+        "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningReplanRequest",
+        "ProvisioningCommandRequest", "TenantProvisioningPage", "ProvisioningReadiness", "ProvisioningDrift",
     },
 }
 
@@ -332,11 +332,28 @@ def check_tenant_provisioning() -> None:
     rejects("approval-decision.schema.json", "ApprovalDecisionRequest", without_digest, "approval without the plan digest")
     rejects("approval-decision.schema.json", "ApprovalDecisionRequest", {**request, "approved_by": "someone"}, "approval naming its approver")
     rejects("approval-decision.schema.json", "ApprovalDecisionRequest", {**request, "decision": "REJECTED"}, "rejection without a reason")
+    approval = example["approval"]
+    for outcome in ("REJECTED", "CHANGES_REQUESTED"):
+        rejects("approval-decision.schema.json", "ApprovalDecision", {**approval, "decision": outcome}, f"recorded {outcome} without its reason")
+        rejects("approval-decision.schema.json", "ApprovalDecision", {**approval, "decision": outcome, "reason": ""}, f"recorded {outcome} with an empty reason")
+    accepts("approval-decision.schema.json", "ApprovalDecision", {**approval, "decision": "REJECTED", "reason": "Residency not met"}, "recorded rejection with its reason")
 
     # Three lifecycles stay distinct.
     operation = example["operation"]
     rejects("execution-operation.schema.json", "ExecutionOperation", {**operation, "status": "FAILED"}, "failed operation without a problem")
     rejects("execution-operation.schema.json", "ExecutionOperation", {**operation, "status": "ACTIVE"}, "operation in a tenant state")
+    succeeded = {**operation, "status": "SUCCEEDED", "completed_at": "2026-09-27T09:20:00Z"}
+    rejects("execution-operation.schema.json", "ExecutionOperation", succeeded, "succeeded operation without its result")
+    result = {"resource_type": "TENANT_PROVISIONING", "resource_id": operation["subject"]["id"]}
+    rejects("execution-operation.schema.json", "ExecutionOperation", {**succeeded, "result": result}, "succeeded operation without the resource's state")
+    accepts("execution-operation.schema.json", "ExecutionOperation", {**succeeded, "result": {**result, "resource_state": "READY"}},
+            "succeeded operation naming the resource's state")
+    readiness = example["readiness"]
+    rejects("tenant-provisioning.schema.json", "ProvisioningReadiness", {**readiness, "snapshots": []}, "evaluated readiness without snapshots")
+    unknown = {key: value for key, value in readiness.items() if key != "evaluated_at"}
+    accepts("tenant-provisioning.schema.json", "ProvisioningReadiness", {**unknown, "status": "UNKNOWN", "snapshots": []}, "unevaluated readiness")
+    rejects("tenant-provisioning.schema.json", "TenantProvisioningReplanRequest", {"desired_state_version": 2}, "replan without a reason")
+    rejects("tenant-provisioning.schema.json", "TenantProvisioningReplanRequest", {"reason": "stale", "manifest": {}}, "replan carrying a manifest")
     provisioning = example["provisioning"]
     rejects("tenant-provisioning.schema.json", "TenantProvisioning", {**provisioning, "state": "provisioning"}, "provisioning in the legacy coarse state")
     rejects("tenant-provisioning.schema.json", "TenantProvisioning", {**provisioning, "state": "RUNNING"}, "provisioning in an operation status")
@@ -353,6 +370,18 @@ def check_tenant_provisioning() -> None:
                 fail(f"tenant-provisioning-lifecycle.yaml {state}.{command} targets unknown state {target}")
             if command == "apply" and state != "PLANNED":
                 fail(f"tenant-provisioning-lifecycle.yaml applies from {state}; only a PLANNED provisioning is applied")
+    # Every transition has a trigger, and every command is an operation (no dead-end state).
+    openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
+    operation_ids = {op.get("operationId") for item in openapi["paths"].values() for op in item.values() if isinstance(op, dict)}
+    commands, system = lifecycle["triggers"]["commands"], set(lifecycle["triggers"]["system"])
+    if set(commands) & system:
+        fail(f"tenant-provisioning-lifecycle.yaml transitions {sorted(set(commands) & system)} are both command and system")
+    for transition, operation_id in commands.items():
+        if operation_id not in operation_ids:
+            fail(f"tenant-provisioning-lifecycle.yaml command {transition} names unknown operation {operation_id}")
+    used = {command for spec in lifecycle["states"].values() for command in (spec or {}).get("transitions", {})}
+    if used != set(commands) | system:
+        fail(f"tenant-provisioning-lifecycle.yaml triggers differ from transitions: {sorted(used ^ (set(commands) | system))}")
     for terminal in lifecycle["terminal_states"]:
         if terminal in lifecycle["states"]:
             fail(f"tenant-provisioning-lifecycle.yaml terminal state {terminal} has transitions")

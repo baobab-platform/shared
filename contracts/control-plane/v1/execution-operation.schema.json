@@ -11,15 +11,23 @@
     },
     "operationType": {
       "type": "string",
-      "enum": ["TENANT_PROVISIONING_APPLY"],
+      "enum": ["TENANT_PROVISIONING_APPLY", "TENANT_PROVISIONING_REMEDIATE"],
       "description": "The class of work. Extended additively as other long-running commands adopt operations."
     },
     "ExecutionOperation": {
       "type": "object",
       "additionalProperties": false,
       "required": ["operation_id", "operation_type", "status", "subject", "requested_by", "retryable", "revision", "created_at", "updated_at"],
-      "if": { "properties": { "status": { "const": "FAILED" } } },
-      "then": { "required": ["problem"] },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "FAILED" } } },
+          "then": { "required": ["problem"] }
+        },
+        {
+          "if": { "properties": { "status": { "const": "SUCCEEDED" } } },
+          "then": { "required": ["result", "completed_at"] }
+        }
+      ],
       "properties": {
         "operation_id": { "$ref": "domain.schema.json#/$defs/operationId" },
         "operation_type": { "$ref": "#/$defs/operationType" },
@@ -62,8 +70,8 @@
         "result": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["resource_type", "resource_id"],
-          "description": "The resulting resource and its state, rather than a copy of it (ADR-BCP-022 SS63).",
+          "required": ["resource_type", "resource_id", "resource_state"],
+          "description": "The resulting resource and its state, rather than a copy of it (ADR-BCP-022 SS63). Required once the operation SUCCEEDED: the operation's success is not the subject's, so resource_state says where the subject is (for example READY rather than ACTIVE).",
           "properties": {
             "resource_type": { "type": "string", "enum": ["TENANT_PROVISIONING", "CHANGESET"] },
             "resource_id": { "type": "string", "maxLength": 63 },

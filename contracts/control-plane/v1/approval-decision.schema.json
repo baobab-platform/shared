@@ -39,11 +39,13 @@
         "plan_version": { "type": "integer", "minimum": 1 },
         "plan_digest": { "$ref": "domain.schema.json#/$defs/planDigest" },
         "decision": { "$ref": "#/$defs/approvalOutcome" },
-        "reason": { "type": "string", "maxLength": 1000 },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 1000 },
         "decided_by": { "$ref": "../../admission/v1/application.schema.json#/$defs/principalId" },
         "decided_at": { "type": "string", "format": "date-time" },
         "correlation_id": { "$ref": "domain.schema.json#/$defs/uuid" }
-      }
+      },
+      "if": { "properties": { "decision": { "enum": ["REJECTED", "CHANGES_REQUESTED"] } } },
+      "then": { "required": ["reason"] }
     }
   }
 }

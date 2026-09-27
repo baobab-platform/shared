@@ -11,7 +11,7 @@ states:
   DRAFT:
     transitions:
       validate: VALIDATING
-      cancel: CANCELLED
+      withdraw: CANCELLED
   VALIDATING:
     transitions:
       plan: PLANNED
@@ -23,7 +23,7 @@ states:
     transitions:
       apply: REGISTERING
       replan: VALIDATING
-      cancel: CANCELLED
+      withdraw: CANCELLED
   REGISTERING:
     transitions:
       advance: CONFIGURING_CONTEXT
@@ -58,10 +58,11 @@ states:
     transitions:
       remediate: REMEDIATING
       replan: VALIDATING
-      cancel: CANCELLED
+      withdraw: CANCELLED
   REMEDIATING:
     transitions:
       verify: VERIFYING_READINESS
+      block: BLOCKED
       fail: FAILED
   READY:
     transitions:
@@ -76,12 +77,35 @@ states:
     transitions:
       resume: REGISTERING
       replan: VALIDATING
-      cancel: CANCELLED
+      withdraw: CANCELLED
+# What causes each transition. A command names the OpenAPI operation that
+# requests it; a system transition is taken by the Control Plane while it
+# plans, executes or observes, and is never requested directly.
+triggers:
+  commands:
+    apply: applyTenantProvisioning
+    replan: replanTenantProvisioning
+    withdraw: withdrawTenantProvisioning
+    remediate: remediateTenantProvisioning
+    resume: retryOperation
+  system:
+    - validate
+    - plan
+    - advance
+    - block
+    - fail
+    - ready
+    - verify
+    # The tenant lifecycle's activateTenant and decommissionTenant drive these.
+    - activate
+    - deprovision
 invariants:
   - Planning is side-effect free; no runtime resource, grant, binding, IAM projection or provider configuration changes before apply.
   - Apply requires an APPROVED ApprovalDecision whose plan_digest equals the current plan's, on a plan that is not stale.
   - The approver of a plan is never the principal who requested the provisioning.
-  - Apply is asynchronous and returns an ExecutionOperation; retry and cancel are operation commands.
+  - Apply and remediate are asynchronous and return an ExecutionOperation; retrying or cancelling that execution is an operation command.
+  - Withdrawing abandons a provisioning that is not executing; it is a provisioning command, distinct from cancelling an operation.
+  - A cancelled apply or remediation leaves the provisioning BLOCKED with the reason EXECUTION_CANCELLED.
   - Transitions require optimistic revision matching.
   - Every accepted transition writes an audit record and outbox event atomically.
 # The deprecated coarse projection (provisioning-state-machine.yaml) of each

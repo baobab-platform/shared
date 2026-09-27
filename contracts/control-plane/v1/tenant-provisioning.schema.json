@@ -76,6 +76,29 @@
       "if": { "properties": { "state": { "const": "BLOCKED" } } },
       "then": { "required": ["blocking_reasons"], "properties": { "blocking_reasons": { "minItems": 1 } } }
     },
+    "TenantProvisioningReplanRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "description": "Regenerates the plan from the current, or the named, desired-state version. The previous plan is superseded, never edited, and any decision on it lapses; the new plan needs its own approval. Business intent is never changed by replanning.",
+      "properties": {
+        "desired_state_version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The desired-state version the caller reviewed. When given, a different current version is refused rather than planned."
+        },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "ProvisioningCommandRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "description": "Withdrawing or remediating a provisioning records why. The actor is the verified caller.",
+      "properties": {
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
     "TenantProvisioningPage": {
       "type": "object",
       "additionalProperties": false,
@@ -96,6 +119,12 @@
         "status": { "$ref": "domain.schema.json#/$defs/readinessStatus" },
         "evaluated_at": { "type": "string", "format": "date-time" },
         "snapshots": { "type": "array", "items": { "$ref": "readiness.schema.json#/$defs/readinessSnapshot" } }
+      },
+      "if": { "properties": { "status": { "not": { "const": "UNKNOWN" } } } },
+      "then": {
+        "description": "An evaluated verdict carries the snapshots it derives from.",
+        "required": ["evaluated_at"],
+        "properties": { "snapshots": { "minItems": 1 } }
       }
     },
     "ProvisioningDrift": {

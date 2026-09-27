@@ -50,12 +50,18 @@ paths:
       security:
         - adminOidc: [tenant:write]
       operationId: registerTenant
-      summary: Register the tenant of an AUTHORISED TenantOnboardingRequest and start an idempotent provisioning operation
+      summary: Record the tenant of an AUTHORISED TenantOnboardingRequest
       description: >-
         There is no direct registration (ADR-BCP-017 sections 22-24). The
         command names an AUTHORISED TenantOnboardingRequest whose desired
         state it must match; the request is recorded FULFILLED with the minted
-        tenant, and produces at most one tenant.
+        tenant, and produces at most one tenant. It only records the tenant
+        identity in the Control Plane registry and has no runtime effect:
+        nothing is registered with engines, granted, bound, configured or
+        projected. The tenant's provisioning is planned with
+        createTenantProvisioning and takes effect only when an approved plan
+        is applied (ADR-SHARED-015). The ProvisioningOperation returned is
+        the deprecated coarse projection and is `accepted` until then.
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
         - $ref: "#/components/parameters/CorrelationId"
@@ -104,7 +110,9 @@ paths:
         The only registration path without a TenantOnboardingRequest. It needs
         the privileged tenant:bootstrap scope, is disabled unless the Control
         Plane explicitly enables it, and audits its reason and evidence
-        reference. It is never a route for a new customer.
+        reference. It is never a route for a new customer. Like
+        registerTenant, it only records the tenant and has no runtime effect
+        (ADR-SHARED-015).
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
         - $ref: "#/components/parameters/CorrelationId"
@@ -2740,6 +2748,51 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+    post:
+      tags: [Provisioning]
+      operationId: replanTenantProvisioning
+      summary: Regenerate the plan
+      description: >-
+        Valid from PLANNED, BLOCKED and FAILED (PROVISIONING_STATE_CONFLICT,
+        409). Supersedes the current plan with a new plan_version generated
+        from authoritative state and the current, or named, desired-state
+        version; a decision on the superseded plan lapses and the new plan
+        needs its own approval. Side-effect free, like planning. The way
+        forward from a stale plan, a REJECTED or CHANGES_REQUESTED decision,
+        or a blocker that needs another plan. The provisioning's revision is
+        required in If-Match.
+      security:
+        - adminOidc: [tenant:write]
+      parameters:
+        - $ref: "#/components/parameters/ProvisioningIfMatch"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./tenant-provisioning.schema.json#/$defs/TenantProvisioningReplanRequest
+      responses:
+        "200":
+          $ref: "#/components/responses/TenantProvisioning"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
   /tenants/{tenant_id}/provisioning/{tenant_provisioning_id}/approve:
     parameters:
       - $ref: "#/components/parameters/TenantId"
@@ -2813,6 +2866,101 @@ paths:
       parameters:
         - $ref: "#/components/parameters/ProvisioningIfMatch"
         - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "202":
+          $ref: "#/components/responses/ExecutionOperationAccepted"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /tenants/{tenant_id}/provisioning/{tenant_provisioning_id}/withdraw:
+    parameters:
+      - $ref: "#/components/parameters/TenantId"
+      - $ref: "#/components/parameters/TenantProvisioningId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Provisioning]
+      operationId: withdrawTenantProvisioning
+      summary: Abandon a provisioning that is not executing
+      description: >-
+        Moves a DRAFT, PLANNED, BLOCKED or FAILED provisioning to CANCELLED
+        (PROVISIONING_STATE_CONFLICT, 409, otherwise). It changes no runtime
+        state: resources an earlier apply created remain and are reported as
+        drift. An executing provisioning is stopped with cancelOperation on
+        its operation instead. The provisioning's revision is required in
+        If-Match.
+      security:
+        - adminOidc: [tenant:write]
+      parameters:
+        - $ref: "#/components/parameters/ProvisioningIfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./tenant-provisioning.schema.json#/$defs/ProvisioningCommandRequest
+      responses:
+        "200":
+          $ref: "#/components/responses/TenantProvisioning"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /tenants/{tenant_id}/provisioning/{tenant_provisioning_id}/remediate:
+    parameters:
+      - $ref: "#/components/parameters/TenantId"
+      - $ref: "#/components/parameters/TenantProvisioningId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Provisioning]
+      operationId: remediateTenantProvisioning
+      summary: Resolve a BLOCKED provisioning's blockers under its approved plan
+      description: >-
+        Deliberate remediation, not a retry: valid only while the
+        provisioning is BLOCKED (PROVISIONING_STATE_CONFLICT, 409) and its
+        blockers can be resolved within the approved, non-stale plan, for
+        example re-establishing a binding that is not found. A blocker that
+        needs another plan is PLAN_CHANGE_REQUIRED (409) and is replanned
+        instead. Returns 202 with a TENANT_PROVISIONING_REMEDIATE operation;
+        the provisioning is REMEDIATING, then verifies readiness. The
+        provisioning's revision is required in If-Match.
+      security:
+        - adminOidc: [tenant:write]
+      parameters:
+        - $ref: "#/components/parameters/ProvisioningIfMatch"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./tenant-provisioning.schema.json#/$defs/ProvisioningCommandRequest
       responses:
         "202":
           $ref: "#/components/responses/ExecutionOperationAccepted"
@@ -2968,10 +3116,12 @@ paths:
       summary: Request cancellation of a running operation
       description: >-
         Moves the operation to CANCEL_REQUESTED; it reaches CANCELLED, or a
-        compensation status, when execution stops at a safe point. Cancelling
-        a provisioning that was never applied is not an operation command:
-        such a provisioning is replanned or left PLANNED. A finished
-        operation is OPERATION_NOT_CANCELLABLE (409).
+        compensation status, when execution stops at a safe point. A
+        cancelled provisioning apply or remediation leaves the provisioning
+        BLOCKED with the reason EXECUTION_CANCELLED. Abandoning a
+        provisioning that is not executing is withdrawTenantProvisioning, not
+        an operation command. A finished operation is
+        OPERATION_NOT_CANCELLABLE (409).
       security:
         - adminOidc: [operation:control]
       requestBody:
