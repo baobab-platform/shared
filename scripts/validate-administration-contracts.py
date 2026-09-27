@@ -270,6 +270,23 @@ must_reject("STEP_UP_REQUIRED without the step-up obligation", D, mutate(example
 must_reject("an effective grant exposing who granted it", "grant.schema.json#/$defs/EffectiveAuthority",
             mutate(authority, grants=[dict(authority["grants"][0], granted_by="prn_platformops")]))
 
+# 6b. Metrics: the catalogue's labels are closed, and the permission label
+#     can only take registered keys or "unregistered", so series stay bounded.
+if domain["administrativeMetricLabel"]["enum"] != ["permission", "legacy", "grants", "agreement"]:
+    fail("administrativeMetricLabel must be exactly permission, legacy, grants and agreement")
+for name in domain["administrativeMetric"]["enum"]:
+    if not name.endswith("_total") or errors("domain.schema.json#/$defs/administrativeMetric", name):
+        fail(f"metric {name} must be a counter name ending _total")
+outcome_labels = {"ALLOW": "allow", "DENY": "deny", "STEP_UP_REQUIRED": "step_up",
+                  "APPROVAL_REQUIRED": "approval_required", "NOT_READY": "not_ready"}
+if set(outcome_labels) != set(domain["decisionOutcome"]["enum"]):
+    fail("every decisionOutcome needs a shadowGrantsOutcome label")
+for outcome, label in outcome_labels.items():
+    if label not in domain["shadowGrantsOutcome"]["enum"]:
+        fail(f"decisionOutcome {outcome} has no shadowGrantsOutcome label {label}")
+if "unregistered" in permissions:
+    fail("unregistered is reserved as the permission label of an unmapped route")
+
 # 7. OpenAPI and scope.
 openapi = load_yaml(CONTRACTS / "control-plane" / "v1" / "openapi.yaml")
 operation = openapi["paths"].get("/admin/effective-authority", {}).get("get")
