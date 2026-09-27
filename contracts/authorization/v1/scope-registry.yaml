@@ -98,6 +98,16 @@ scopes:
     audience: ["baobab-control-plane"]
     allowed_actors: ["human"]
 
+  - name: "authority:self"
+    description: >-
+      A human administrator reads their own effective administrative
+      authority: the ACTIVE, currently valid AdministrativeGrants the CP
+      Console drives navigation and scope display from (ADR-BCP-020 sections
+      99-102, 110). Reveals only the caller's own grants, never another
+      principal's, and confers no authority itself.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+
   - name: "admission:review"
     description: >-
       A platform admission reviewer inspects applications, moves them through

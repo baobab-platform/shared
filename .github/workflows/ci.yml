@@ -90,6 +90,7 @@ on:
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
+      - "scripts/validate-administration-contracts.py"
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
       - ".github/foundation-tests/requirements.txt"
@@ -111,6 +112,7 @@ on:
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
+      - "scripts/validate-administration-contracts.py"
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
       - ".github/foundation-tests/requirements.txt"
@@ -153,6 +155,8 @@ jobs:
         run: python scripts/validate-organisation-contracts.py
       - name: Validate admission contracts, lifecycle and examples (Draft 2020-12)
         run: python scripts/validate-admission-contracts.py
+      - name: Validate administrative authority contracts (ADR-BCP-020, Draft 2020-12)
+        run: python scripts/validate-administration-contracts.py
       - name: Validate classification, billing and payment contracts (Draft 2020-12)
         run: python scripts/validate-commercial-contracts.py
       - name: Validate Control Plane administrative read models (Draft 2020-12)

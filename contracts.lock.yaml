@@ -92,3 +92,12 @@ contracts:
       - events.schema.json
       - lifecycle.yaml
       - onboarding-lifecycle.yaml
+  - domain: administration
+    version: v1
+    schemas:
+      - domain.schema.json
+      - scope.schema.json
+      - grant.schema.json
+      - permission-registry.yaml
+      - profile-registry.yaml
+      - lifecycle.yaml
