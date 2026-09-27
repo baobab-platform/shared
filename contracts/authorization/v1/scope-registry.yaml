@@ -220,6 +220,26 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "topology:read"
+    description: >-
+      A platform administrator reads provider topology and provider
+      migrations, and previews a migration plan, which is side-effect free
+      (ADR-BCP-006 sections 119-122). Necessary but not sufficient: the
+      Control Plane also requires platform-administrator authority.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "topology:write"
+    description: >-
+      A platform administrator creates a provider migration and its plan
+      (ADR-BCP-006 sections 44-58). Planning binds nothing: advancing a
+      migration is approved separately. Necessary but not sufficient: the
+      Control Plane also requires platform-administrator authority.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "operation:read"
     description: >-
       Poll durable long-running operations within the caller's administrative

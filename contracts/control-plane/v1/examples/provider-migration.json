@@ -1,0 +1,887 @@
+{
+  "request": {
+    "source_provider_key": "baobab-erp.idempiere",
+    "target_provider_key": "baobab-erp.ledgerx",
+    "capabilities": [
+      {
+        "capability_key": "finance.invoice.issue",
+        "contract_version": 1
+      },
+      {
+        "capability_key": "finance.invoice.read",
+        "contract_version": 1
+      }
+    ],
+    "migration_mode": "STATEFUL_CUTOVER",
+    "data_strategy": "BULK_MIGRATE_THEN_CUTOVER",
+    "rollback_strategy": "RESTORE_AND_REBIND_SOURCE",
+    "shadow": false,
+    "cohorts": [
+      {
+        "cohort_key": "internal-canary",
+        "selector": {
+          "tenant_ids": [
+            "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+          ]
+        }
+      },
+      {
+        "cohort_key": "za-tenants",
+        "selector": {
+          "markets": [
+            "ZA"
+          ]
+        }
+      },
+      {
+        "cohort_key": "remaining"
+      }
+    ],
+    "validation_checks": [
+      {
+        "check": "INVOICE_TOTALS_RECONCILE",
+        "description": "Issued invoice totals per legal entity match between source and target for the cohort."
+      }
+    ],
+    "cutover_window": {
+      "starts_at": "2026-10-10T22:00:00Z",
+      "ends_at": "2026-10-11T04:00:00Z"
+    },
+    "owners": [
+      "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+      "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a02"
+    ],
+    "reason": "Replace the ERP ledger provider; canonical finance contracts are unchanged."
+  },
+  "preview": {
+    "plan_id": "plan_0199a1b2c3d47e8f9a0b1c2d3e4f5b01",
+    "plan_version": 1,
+    "plan_digest": "sha256:4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f",
+    "base_revision": 1,
+    "generated_at": "2026-09-28T09:00:00Z",
+    "expires_at": "2026-10-05T09:00:00Z",
+    "risk_class": "CRITICAL",
+    "request": {
+      "source_provider_key": "baobab-erp.idempiere",
+      "target_provider_key": "baobab-erp.ledgerx",
+      "capabilities": [
+        {
+          "capability_key": "finance.invoice.issue",
+          "contract_version": 1
+        },
+        {
+          "capability_key": "finance.invoice.read",
+          "contract_version": 1
+        }
+      ],
+      "migration_mode": "STATEFUL_CUTOVER",
+      "data_strategy": "BULK_MIGRATE_THEN_CUTOVER",
+      "rollback_strategy": "RESTORE_AND_REBIND_SOURCE",
+      "shadow": false,
+      "cohorts": [
+        {
+          "cohort_key": "internal-canary",
+          "selector": {
+            "tenant_ids": [
+              "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+            ]
+          }
+        },
+        {
+          "cohort_key": "za-tenants",
+          "selector": {
+            "markets": [
+              "ZA"
+            ]
+          }
+        },
+        {
+          "cohort_key": "remaining"
+        }
+      ],
+      "validation_checks": [
+        {
+          "check": "INVOICE_TOTALS_RECONCILE",
+          "description": "Issued invoice totals per legal entity match between source and target for the cohort."
+        }
+      ],
+      "cutover_window": {
+        "starts_at": "2026-10-10T22:00:00Z",
+        "ends_at": "2026-10-11T04:00:00Z"
+      },
+      "owners": [
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a02"
+      ],
+      "reason": "Replace the ERP ledger provider; canonical finance contracts are unchanged."
+    },
+    "source_provider_key": "baobab-erp.idempiere",
+    "target_provider_key": "baobab-erp.ledgerx",
+    "migration_mode": "STATEFUL_CUTOVER",
+    "discovery": {
+      "binding_count": 6,
+      "tenant_ids": [
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6c",
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6d"
+      ],
+      "estate_ids": [
+        "zuribeans_web",
+        "thamani_portal"
+      ],
+      "markets": [
+        "KE",
+        "ZA"
+      ],
+      "cohorts": [
+        {
+          "cohort_key": "internal-canary",
+          "binding_count": 2,
+          "tenant_count": 1
+        },
+        {
+          "cohort_key": "za-tenants",
+          "binding_count": 2,
+          "tenant_count": 1
+        },
+        {
+          "cohort_key": "remaining",
+          "binding_count": 2,
+          "tenant_count": 1
+        }
+      ]
+    },
+    "steps": [
+      {
+        "step_id": "verify-target",
+        "operation": "VERIFY_TARGET_READINESS",
+        "depends_on": [],
+        "resources": {
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "bind-target",
+        "operation": "CREATE_MIGRATION_BINDING",
+        "depends_on": [
+          "verify-target"
+        ],
+        "resources": {
+          "capability_key": "finance.invoice.issue",
+          "provider_key": "baobab-erp.ledgerx",
+          "binding_mode": "MIGRATION",
+          "engine_instance_id": "ei_0199a1b2c3d47e8f",
+          "binding_count": 3
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-freeze-cohort-writes",
+        "operation": "FREEZE_COHORT_WRITES",
+        "depends_on": [
+          "bind-target"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-migrate-cohort-data",
+        "operation": "MIGRATE_COHORT_DATA",
+        "depends_on": [
+          "internal-canary-freeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-reconcile-cohort-data",
+        "operation": "RECONCILE_COHORT_DATA",
+        "depends_on": [
+          "internal-canary-migrate-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-shift-cohort",
+        "operation": "SHIFT_COHORT",
+        "depends_on": [
+          "internal-canary-reconcile-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-unfreeze-cohort-writes",
+        "operation": "UNFREEZE_COHORT_WRITES",
+        "depends_on": [
+          "internal-canary-shift-cohort"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-validate-cohort",
+        "operation": "VALIDATE_COHORT",
+        "depends_on": [
+          "internal-canary-unfreeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-freeze-cohort-writes",
+        "operation": "FREEZE_COHORT_WRITES",
+        "depends_on": [
+          "internal-canary-validate-cohort"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-migrate-cohort-data",
+        "operation": "MIGRATE_COHORT_DATA",
+        "depends_on": [
+          "za-tenants-freeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-reconcile-cohort-data",
+        "operation": "RECONCILE_COHORT_DATA",
+        "depends_on": [
+          "za-tenants-migrate-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-shift-cohort",
+        "operation": "SHIFT_COHORT",
+        "depends_on": [
+          "za-tenants-reconcile-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-unfreeze-cohort-writes",
+        "operation": "UNFREEZE_COHORT_WRITES",
+        "depends_on": [
+          "za-tenants-shift-cohort"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-validate-cohort",
+        "operation": "VALIDATE_COHORT",
+        "depends_on": [
+          "za-tenants-unfreeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-freeze-cohort-writes",
+        "operation": "FREEZE_COHORT_WRITES",
+        "depends_on": [
+          "za-tenants-validate-cohort"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-migrate-cohort-data",
+        "operation": "MIGRATE_COHORT_DATA",
+        "depends_on": [
+          "remaining-freeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-reconcile-cohort-data",
+        "operation": "RECONCILE_COHORT_DATA",
+        "depends_on": [
+          "remaining-migrate-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-shift-cohort",
+        "operation": "SHIFT_COHORT",
+        "depends_on": [
+          "remaining-reconcile-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-unfreeze-cohort-writes",
+        "operation": "UNFREEZE_COHORT_WRITES",
+        "depends_on": [
+          "remaining-shift-cohort"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-validate-cohort",
+        "operation": "VALIDATE_COHORT",
+        "depends_on": [
+          "remaining-unfreeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "retire-source",
+        "operation": "RETIRE_SOURCE_BINDING",
+        "depends_on": [
+          "remaining-validate-cohort"
+        ],
+        "resources": {
+          "capability_key": "finance.invoice.issue",
+          "provider_key": "baobab-erp.idempiere",
+          "binding_count": 3
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [
+      {
+        "check": "TARGET_ISOLATION_COMPATIBLE",
+        "description": "Every target instance satisfies each cohort's isolation and residency."
+      }
+    ],
+    "readiness_requirements": [
+      {
+        "check": "TARGET_HEALTHY",
+        "description": "The target provider and its instances have a current HEALTHY observation."
+      }
+    ],
+    "blockers": [
+      {
+        "code": "MIGRATION_TARGET_UNHEALTHY",
+        "message": "Engine instance ei_0199a1b2c3d47e8f has no current HEALTHY observation."
+      }
+    ],
+    "warnings": [
+      {
+        "code": "MIGRATION_COHORT_EMPTY",
+        "message": "Cohort remaining matches no context today."
+      }
+    ],
+    "impact_analysis": {
+      "summary": "Moves invoice issue and read for three tenants from iDempiere to LedgerX in three cohorts, freezing writes per cohort during cutover.",
+      "resources_created": 6,
+      "resources_changed": 6,
+      "resources_removed": 6,
+      "availability_impact": "Invoice issue is frozen for each cohort during its cutover window."
+    },
+    "verification_strategy": "Each cohort passes RECONCILE_COHORT_DATA and INVOICE_TOTALS_RECONCILE before the next cohort shifts.",
+    "compensation_strategy": "Restore target writes to the source, then rebind the cohort to the source (RESTORE_AND_REBIND_SOURCE)."
+  },
+  "plan": {
+    "plan_id": "plan_0199a1b2c3d47e8f9a0b1c2d3e4f5b01",
+    "plan_version": 1,
+    "plan_digest": "sha256:4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f",
+    "base_revision": 1,
+    "generated_at": "2026-09-28T09:00:00Z",
+    "expires_at": "2026-10-05T09:00:00Z",
+    "risk_class": "CRITICAL",
+    "request": {
+      "source_provider_key": "baobab-erp.idempiere",
+      "target_provider_key": "baobab-erp.ledgerx",
+      "capabilities": [
+        {
+          "capability_key": "finance.invoice.issue",
+          "contract_version": 1
+        },
+        {
+          "capability_key": "finance.invoice.read",
+          "contract_version": 1
+        }
+      ],
+      "migration_mode": "STATEFUL_CUTOVER",
+      "data_strategy": "BULK_MIGRATE_THEN_CUTOVER",
+      "rollback_strategy": "RESTORE_AND_REBIND_SOURCE",
+      "shadow": false,
+      "cohorts": [
+        {
+          "cohort_key": "internal-canary",
+          "selector": {
+            "tenant_ids": [
+              "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+            ]
+          }
+        },
+        {
+          "cohort_key": "za-tenants",
+          "selector": {
+            "markets": [
+              "ZA"
+            ]
+          }
+        },
+        {
+          "cohort_key": "remaining"
+        }
+      ],
+      "validation_checks": [
+        {
+          "check": "INVOICE_TOTALS_RECONCILE",
+          "description": "Issued invoice totals per legal entity match between source and target for the cohort."
+        }
+      ],
+      "cutover_window": {
+        "starts_at": "2026-10-10T22:00:00Z",
+        "ends_at": "2026-10-11T04:00:00Z"
+      },
+      "owners": [
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a02"
+      ],
+      "reason": "Replace the ERP ledger provider; canonical finance contracts are unchanged."
+    },
+    "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "source_provider_key": "baobab-erp.idempiere",
+    "target_provider_key": "baobab-erp.ledgerx",
+    "migration_mode": "STATEFUL_CUTOVER",
+    "discovery": {
+      "binding_count": 6,
+      "tenant_ids": [
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6c",
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6d"
+      ],
+      "estate_ids": [
+        "zuribeans_web",
+        "thamani_portal"
+      ],
+      "markets": [
+        "KE",
+        "ZA"
+      ],
+      "cohorts": [
+        {
+          "cohort_key": "internal-canary",
+          "binding_count": 2,
+          "tenant_count": 1
+        },
+        {
+          "cohort_key": "za-tenants",
+          "binding_count": 2,
+          "tenant_count": 1
+        },
+        {
+          "cohort_key": "remaining",
+          "binding_count": 2,
+          "tenant_count": 1
+        }
+      ]
+    },
+    "steps": [
+      {
+        "step_id": "verify-target",
+        "operation": "VERIFY_TARGET_READINESS",
+        "depends_on": [],
+        "resources": {
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "bind-target",
+        "operation": "CREATE_MIGRATION_BINDING",
+        "depends_on": [
+          "verify-target"
+        ],
+        "resources": {
+          "capability_key": "finance.invoice.issue",
+          "provider_key": "baobab-erp.ledgerx",
+          "binding_mode": "MIGRATION",
+          "engine_instance_id": "ei_0199a1b2c3d47e8f",
+          "binding_count": 3
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-freeze-cohort-writes",
+        "operation": "FREEZE_COHORT_WRITES",
+        "depends_on": [
+          "bind-target"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-migrate-cohort-data",
+        "operation": "MIGRATE_COHORT_DATA",
+        "depends_on": [
+          "internal-canary-freeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-reconcile-cohort-data",
+        "operation": "RECONCILE_COHORT_DATA",
+        "depends_on": [
+          "internal-canary-migrate-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-shift-cohort",
+        "operation": "SHIFT_COHORT",
+        "depends_on": [
+          "internal-canary-reconcile-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-unfreeze-cohort-writes",
+        "operation": "UNFREEZE_COHORT_WRITES",
+        "depends_on": [
+          "internal-canary-shift-cohort"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "internal-canary-validate-cohort",
+        "operation": "VALIDATE_COHORT",
+        "depends_on": [
+          "internal-canary-unfreeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "internal-canary",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-freeze-cohort-writes",
+        "operation": "FREEZE_COHORT_WRITES",
+        "depends_on": [
+          "internal-canary-validate-cohort"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-migrate-cohort-data",
+        "operation": "MIGRATE_COHORT_DATA",
+        "depends_on": [
+          "za-tenants-freeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-reconcile-cohort-data",
+        "operation": "RECONCILE_COHORT_DATA",
+        "depends_on": [
+          "za-tenants-migrate-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-shift-cohort",
+        "operation": "SHIFT_COHORT",
+        "depends_on": [
+          "za-tenants-reconcile-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-unfreeze-cohort-writes",
+        "operation": "UNFREEZE_COHORT_WRITES",
+        "depends_on": [
+          "za-tenants-shift-cohort"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "za-tenants-validate-cohort",
+        "operation": "VALIDATE_COHORT",
+        "depends_on": [
+          "za-tenants-unfreeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "za-tenants",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-freeze-cohort-writes",
+        "operation": "FREEZE_COHORT_WRITES",
+        "depends_on": [
+          "za-tenants-validate-cohort"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-migrate-cohort-data",
+        "operation": "MIGRATE_COHORT_DATA",
+        "depends_on": [
+          "remaining-freeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-reconcile-cohort-data",
+        "operation": "RECONCILE_COHORT_DATA",
+        "depends_on": [
+          "remaining-migrate-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-shift-cohort",
+        "operation": "SHIFT_COHORT",
+        "depends_on": [
+          "remaining-reconcile-cohort-data"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-unfreeze-cohort-writes",
+        "operation": "UNFREEZE_COHORT_WRITES",
+        "depends_on": [
+          "remaining-shift-cohort"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "remaining-validate-cohort",
+        "operation": "VALIDATE_COHORT",
+        "depends_on": [
+          "remaining-unfreeze-cohort-writes"
+        ],
+        "resources": {
+          "cohort_key": "remaining",
+          "provider_key": "baobab-erp.ledgerx"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "retire-source",
+        "operation": "RETIRE_SOURCE_BINDING",
+        "depends_on": [
+          "remaining-validate-cohort"
+        ],
+        "resources": {
+          "capability_key": "finance.invoice.issue",
+          "provider_key": "baobab-erp.idempiere",
+          "binding_count": 3
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [
+      {
+        "check": "TARGET_ISOLATION_COMPATIBLE",
+        "description": "Every target instance satisfies each cohort's isolation and residency."
+      }
+    ],
+    "readiness_requirements": [
+      {
+        "check": "TARGET_HEALTHY",
+        "description": "The target provider and its instances have a current HEALTHY observation."
+      }
+    ],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Moves invoice issue and read for three tenants from iDempiere to LedgerX in three cohorts, freezing writes per cohort during cutover.",
+      "resources_created": 6,
+      "resources_changed": 6,
+      "resources_removed": 6,
+      "availability_impact": "Invoice issue is frozen for each cohort during its cutover window."
+    },
+    "verification_strategy": "Each cohort passes RECONCILE_COHORT_DATA and INVOICE_TOTALS_RECONCILE before the next cohort shifts.",
+    "compensation_strategy": "Restore target writes to the source, then rebind the cohort to the source (RESTORE_AND_REBIND_SOURCE)."
+  },
+  "migration": {
+    "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "request": {
+      "source_provider_key": "baobab-erp.idempiere",
+      "target_provider_key": "baobab-erp.ledgerx",
+      "capabilities": [
+        {
+          "capability_key": "finance.invoice.issue",
+          "contract_version": 1
+        },
+        {
+          "capability_key": "finance.invoice.read",
+          "contract_version": 1
+        }
+      ],
+      "migration_mode": "STATEFUL_CUTOVER",
+      "data_strategy": "BULK_MIGRATE_THEN_CUTOVER",
+      "rollback_strategy": "RESTORE_AND_REBIND_SOURCE",
+      "shadow": false,
+      "cohorts": [
+        {
+          "cohort_key": "internal-canary",
+          "selector": {
+            "tenant_ids": [
+              "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+            ]
+          }
+        },
+        {
+          "cohort_key": "za-tenants",
+          "selector": {
+            "markets": [
+              "ZA"
+            ]
+          }
+        },
+        {
+          "cohort_key": "remaining"
+        }
+      ],
+      "validation_checks": [
+        {
+          "check": "INVOICE_TOTALS_RECONCILE",
+          "description": "Issued invoice totals per legal entity match between source and target for the cohort."
+        }
+      ],
+      "cutover_window": {
+        "starts_at": "2026-10-10T22:00:00Z",
+        "ends_at": "2026-10-11T04:00:00Z"
+      },
+      "owners": [
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a02"
+      ],
+      "reason": "Replace the ERP ledger provider; canonical finance contracts are unchanged."
+    },
+    "stage": "PLAN",
+    "plan_id": "plan_0199a1b2c3d47e8f9a0b1c2d3e4f5b01",
+    "plan_version": 1,
+    "plan_digest": "sha256:4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f",
+    "blocked": false,
+    "created_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+    "created_at": "2026-09-28T09:00:00Z",
+    "updated_at": "2026-09-28T09:00:00Z",
+    "revision": 1
+  }
+}
