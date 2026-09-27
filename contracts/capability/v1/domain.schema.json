@@ -107,6 +107,11 @@
       "enum": ["UNKNOWN", "HEALTHY", "DEGRADED", "UNAVAILABLE"],
       "description": "Ephemeral operational health of a provider or engine instance, distinct from lifecycle. Health is never persisted as a substitute for lifecycle state."
     },
+    "capabilityHealthCriticality": {
+      "type": "string",
+      "enum": ["CRITICAL", "STANDARD"],
+      "description": "Which provider health a capability tolerates (ADR-BCP-006 SS22). A per-capability policy, independent of any composition's membership criticality. CRITICAL, e.g. payment authorisation: only HEALTHY is eligible. STANDARD: HEALTHY or UNKNOWN. See health-policy.yaml."
+    },
     "healthObservationSource": {
       "type": "string",
       "enum": ["ACTIVE_PROBE", "PASSIVE_TELEMETRY", "ENGINE_REPORT", "OPERATOR"],

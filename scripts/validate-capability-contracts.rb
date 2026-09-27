@@ -165,35 +165,35 @@ health_examples.each do |path|
 end
 
 # 9. health-policy.yaml never lets missing or expired health count as
-#    healthy, never makes UNKNOWN or UNAVAILABLE eligible for a critical
-#    capability, names only real statuses and criticalities, and denies
-#    only with registered codes (ADR-BCP-006).
+#    healthy, never makes UNKNOWN or DEGRADED eligible for a CRITICAL
+#    capability or UNAVAILABLE for any, covers exactly the declared
+#    health criticalities, keeps the engine instance level always checked,
+#    and denies only with registered codes (ADR-BCP-006 SS21-22, SS73).
 health_policy = yaml_documents.fetch(File.join(CAPABILITY_ROOT, "health-policy.yaml"))
 effective = health_policy.fetch("effective_status")
-%w[expired_observation missing_observation].each do |key|
+%w[expired_observation missing_observation future_observation].each do |key|
   fail_contract("health-policy.yaml effective_status.#{key} must be UNKNOWN") unless effective.fetch(key) == "UNKNOWN"
 end
-criticalities = domain.dig("$defs", "capabilityMembershipCriticality", "enum")
-critical = health_policy.fetch("critical_membership_criticalities")
-fail_contract("health-policy.yaml must name at least one critical membership criticality") if critical.empty?
-fail_contract("health-policy.yaml critical_membership_criticalities must include MANDATORY") unless critical.include?("MANDATORY")
-critical.each do |value|
-  fail_contract("health-policy.yaml names unknown criticality #{value.inspect}") unless criticalities.include?(value)
-end
+levels = health_policy.fetch("levels").to_h { |level| [level.fetch("level"), level] }
+fail_contract("health-policy.yaml must declare exactly the ENGINE_INSTANCE, PROVIDER and PROVIDER_CAPABILITY levels") unless levels.keys.sort == %w[ENGINE_INSTANCE PROVIDER PROVIDER_CAPABILITY]
+fail_contract("health-policy.yaml must always check the ENGINE_INSTANCE level") unless levels.fetch("ENGINE_INSTANCE").fetch("always_checked") == true
+health_criticalities = domain.dig("$defs", "capabilityHealthCriticality", "enum")
 eligible = health_policy.fetch("eligible_statuses")
-%w[critical non_critical].each do |klass|
-  statuses = eligible.fetch(klass)
+fail_contract("health-policy.yaml eligible_statuses must cover exactly #{health_criticalities.inspect}") unless eligible.keys.sort == health_criticalities.sort
+eligible.each do |criticality, statuses|
   statuses.each do |status|
-    fail_contract("health-policy.yaml eligible_statuses.#{klass} names unknown status #{status.inspect}") unless health_statuses.include?(status)
+    fail_contract("health-policy.yaml eligible_statuses.#{criticality} names unknown status #{status.inspect}") unless health_statuses.include?(status)
   end
-  fail_contract("health-policy.yaml makes UNAVAILABLE eligible for #{klass} capabilities") if statuses.include?("UNAVAILABLE")
+  fail_contract("health-policy.yaml makes UNAVAILABLE eligible for #{criticality} capabilities") if statuses.include?("UNAVAILABLE")
 end
-fail_contract("health-policy.yaml makes UNKNOWN eligible for critical capabilities") if eligible.fetch("critical").include?("UNKNOWN")
-denials = health_policy.fetch("denial_reason_codes")
-denials.fetch("resolution").each_value do |code|
+fail_contract("health-policy.yaml must make only HEALTHY eligible for CRITICAL capabilities") unless eligible.fetch("CRITICAL") == ["HEALTHY"]
+resolution_denials = health_policy.fetch("denial_reason_codes").fetch("resolution")
+ineligible_somewhere = health_statuses.reject { |status| eligible.values.all? { |statuses| statuses.include?(status) } }
+fail_contract("health-policy.yaml must name a resolution denial for every status some criticality rejects") unless resolution_denials.keys.sort == ineligible_somewhere.sort
+resolution_denials.each_value do |code|
   fail_contract("health-policy.yaml resolution denial #{code.inspect} is not registered under capability_resolution_denial") unless capability_reason_codes.include?(code)
 end
 provisioning_codes = registry.fetch("reason_codes").select { |entry| entry["category"] == "provisioning_blocker" }.map { |entry| entry.fetch("code") }
-fail_contract("health-policy.yaml provisioning denial is not registered under provisioning_blocker") unless provisioning_codes.include?(denials.fetch("provisioning"))
+fail_contract("health-policy.yaml provisioning denial is not registered under provisioning_blocker") unless provisioning_codes.include?(health_policy.fetch("denial_reason_codes").fetch("provisioning"))
 
 puts "Capability contract validation passed"

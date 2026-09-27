@@ -24,10 +24,19 @@ Changes that have been merged but have not yet been included in a released versi
 ## Added
 
 - **Health observations (ADR-SHARED-007 §37.1, ADR-BCP-006).**
-  - `capability/v1` `health.schema.json` adds `HealthObservation`: subject, `status`, `observed_at`, `expires_at`, `source` and `reasons`. `domain.schema.json` adds `healthObservationSource` and `healthReasonCode`.
-  - `health-policy.yaml` makes a missing or expired observation UNKNOWN, and UNKNOWN ineligible for critical (MANDATORY) capabilities.
-  - `authorization/v1` `reason-code-registry.yaml` adds the `health_observation` category, `PROVIDER_HEALTH_UNKNOWN` (capability_resolution_denial) and `NO_HEALTHY_PROVIDER` (provisioning_blocker).
-  - `validate-capability-contracts.rb` checks health examples and the policy.
+  - `capability/v1` `health.schema.json` adds `HealthObservation`: `subject`, `status`, `observed_at`, `expires_at`, `source` and `reasons`. The subject is an engine instance, a provider, or one capability on a provider.
+  - `capability.schema.json` adds the optional `health_criticality` field (`CRITICAL` or `STANDARD`, default `STANDARD`).
+  - `domain.schema.json` adds `capabilityHealthCriticality`, `healthObservationSource` and `healthReasonCode`.
+  - `health-policy.yaml`:
+    - a missing, expired or future-dated observation counts as UNKNOWN;
+    - a `CRITICAL` capability accepts only HEALTHY;
+    - a `STANDARD` capability accepts HEALTHY or UNKNOWN;
+    - each level is checked separately.
+  - `authorization/v1` `reason-code-registry.yaml` adds three things:
+    - the `health_observation` category;
+    - `PROVIDER_HEALTH_UNKNOWN` (`capability_resolution_denial`);
+    - `NO_HEALTHY_PROVIDER` (`provisioning_blocker`).
+  - `validate-capability-contracts.rb` checks the health examples and the policy.
 - **Provisioning blocking reasons are registered codes (ADR-SHARED-015 §8, amending ADR-SHARED-009).**
   - `authorization/v1` `reason-code-registry.yaml` adds the `provisioning_blocker` category. It holds the fourteen codes that plan blockers, `TenantProvisioning.blocking_reasons` and readiness `blocking_reasons` use where no `capability_resolution_denial` code names the condition, for example `MARKET_NOT_AVAILABLE`, `PLAN_STALE` and `EXECUTION_CANCELLED`.
   - `readiness.schema.json` and `tenant-provisioning.schema.json` name both categories.

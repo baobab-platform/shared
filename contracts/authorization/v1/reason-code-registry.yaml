@@ -133,7 +133,7 @@ reason_codes:
     description: "The bound CapabilityProvider or engine instance is not currently healthy enough to serve the request."
   - code: PROVIDER_HEALTH_UNKNOWN
     category: capability_resolution_denial
-    description: "The requested capability is critical, and the bound provider or engine instance has no current health observation (none, or only an expired one)."
+    description: "The requested capability's health_criticality is CRITICAL, and the bound provider or engine instance has no current health observation (none, or only an expired one)."
   - code: PROVIDER_INCOMPATIBLE
     category: capability_resolution_denial
     description: "The bound provider does not declare support for the requested capability's contract version."
@@ -182,7 +182,7 @@ reason_codes:
     description: "No provider of a required capability is permitted to serve production."
   - code: NO_HEALTHY_PROVIDER
     category: provisioning_blocker
-    description: "Every otherwise eligible provider of a required critical capability is unavailable or has no current health observation."
+    description: "Every otherwise eligible provider of a required capability fails the health policy for that capability's health_criticality."
   - code: PLAN_STALE
     category: provisioning_blocker
     description: "Authoritative state changed since the plan was approved, or its validity window closed before execution; a new plan is required."

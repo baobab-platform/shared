@@ -1108,25 +1108,44 @@ Health SHALL remain separate from provider lifecycle.
 
 A health status on its own does not say when it was true. Health is
 therefore carried as a `HealthObservation`
-(`contracts/capability/v1/health.schema.json`): a subject (provider,
-engine instance, or both), a `status` from the four states above,
-`observed_at`, `expires_at`, a `source` (`ACTIVE_PROBE`,
-`PASSIVE_TELEMETRY`, `ENGINE_REPORT` or `OPERATOR`) and `reasons`.
+(`contracts/capability/v1/health.schema.json`) with these fields:
 
-- An observation says nothing after `expires_at`. A subject with no
-  observation, or only an expired one, has effective health UNKNOWN.
-- UNKNOWN SHALL NOT be eligible for a critical capability: one whose
-  membership criticality in the composition being served or provisioned
-  is MANDATORY. UNAVAILABLE is never eligible.
+- `subject`: the thing observed;
+- `status`: one of the four states above;
+- `observed_at` and `expires_at`;
+- `source`: `ACTIVE_PROBE`, `PASSIVE_TELEMETRY`, `ENGINE_REPORT` or `OPERATOR`;
+- `reasons`.
+
+The rules:
+
+- The subject is at exactly one of ADR-BCP-006 §73's three levels: an
+  engine instance, a provider, or one capability on a provider (§72). A
+  level is never inferred from another, and eligibility checks each level
+  separately.
+- An observation is current only from `observed_at` until `expires_at`.
+  A subject with no current observation has effective health UNKNOWN
+  (ADR-BCP-006 §21). This covers a subject never observed, one whose
+  newest observation has expired, and one whose newest observation is
+  dated in the future.
+- Each capability declares a `health_criticality` (ADR-BCP-006 §22).
+  This is a per-capability policy, independent of any composition's
+  membership criticality.
+  - A `CRITICAL` capability accepts only HEALTHY. UNKNOWN is never
+    eligible for it.
+  - A `STANDARD` capability (the default) accepts HEALTHY or UNKNOWN.
+  - UNAVAILABLE is never eligible.
 - The rule lives in `contracts/capability/v1/health-policy.yaml`. It is
   part of the eligibility gate (step 1 of `scope-specificity.yaml`), so
   resolution, relocation and provisioning planning all apply it.
 - `reasons` are codes in a fifth reason-code category,
   `health_observation`. They explain an observation and are never
-  returned as denials. A resolution excluded for UNKNOWN health is denied
-  with `PROVIDER_HEALTH_UNKNOWN`; a provisioning plan with no health-
-  eligible provider for a critical capability is blocked with
-  `NO_HEALTHY_PROVIDER`.
+  returned as denials.
+  - A resolution excluded for UNKNOWN health is denied with
+    `PROVIDER_HEALTH_UNKNOWN`.
+  - A resolution excluded for DEGRADED or UNAVAILABLE health is denied
+    with `PROVIDER_UNAVAILABLE`.
+  - A provisioning plan with no health-eligible provider is blocked with
+    `NO_HEALTHY_PROVIDER`.
 
 ---
 
