@@ -39,6 +39,11 @@ AsyncAPI and OpenAPI definitions only. It does **not**:
 - `provider.schema.json` -- `CapabilityProvider` and
   `ProviderCapabilitySupport` (implementation declaration).
 - `binding.schema.json` -- `CapabilityBinding` (routing).
+- `health.schema.json` -- `HealthObservation`: one provider's or engine
+  instance's health, valid only from `observed_at` until `expires_at`.
+- `health-policy.yaml` -- how health affects eligibility: a missing or
+  expired observation counts as UNKNOWN, and UNKNOWN is never eligible for
+  a critical (MANDATORY) capability (ADR-BCP-006).
 - `resolution.schema.json` -- the runtime resolution request/response
   shapes and the persisted `CapabilityResolution` record.
 - `namespace-registry.yaml` -- the governed set of top-level capability

@@ -1,0 +1,11 @@
+{
+  "subject": {
+    "provider_id": "provider_01k4z1a2b3",
+    "engine_instance_id": "ei_medusaprodza01"
+  },
+  "status": "DEGRADED",
+  "observed_at": "2026-09-27T10:00:00Z",
+  "expires_at": "2026-09-27T10:02:00Z",
+  "source": "ACTIVE_PROBE",
+  "reasons": ["HEALTH_LATENCY_ELEVATED"]
+}

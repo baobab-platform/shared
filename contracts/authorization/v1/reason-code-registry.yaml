@@ -6,7 +6,7 @@
 # SHALL not expose sensitive information indiscriminately to external
 # clients").
 #
-# Four categories exist for four different moments, not four different
+# Five categories exist for five different moments, not five different
 # vocabularies for the same thing:
 #
 #   authorization_denial          -- decision.schema.json's `reason_code`,
@@ -31,6 +31,11 @@
 #                                     TenantProvisioning.blocking_reasons and
 #                                     ReadinessSnapshot.blocking_reasons that no
 #                                     capability_resolution_denial code names.
+#   health_observation             -- contracts/capability/v1/health.schema.json's
+#                                     `reasons`: why a HealthObservation reports
+#                                     the status it does (ADR-SHARED-007 §37,
+#                                     ADR-BCP-006). These explain an observation;
+#                                     they are never returned as a denial.
 #
 # TENANT_SUSPENDED (authorization_denial) and TENANT_SUSPENSION
 # (lifecycle_revocation) are deliberately two distinct, near-identical-
@@ -126,6 +131,9 @@ reason_codes:
   - code: PROVIDER_UNAVAILABLE
     category: capability_resolution_denial
     description: "The bound CapabilityProvider or engine instance is not currently healthy enough to serve the request."
+  - code: PROVIDER_HEALTH_UNKNOWN
+    category: capability_resolution_denial
+    description: "The requested capability is critical, and the bound provider or engine instance has no current health observation (none, or only an expired one)."
   - code: PROVIDER_INCOMPATIBLE
     category: capability_resolution_denial
     description: "The bound provider does not declare support for the requested capability's contract version."
@@ -172,6 +180,9 @@ reason_codes:
   - code: NO_PRODUCTION_PERMITTED_PROVIDER
     category: provisioning_blocker
     description: "No provider of a required capability is permitted to serve production."
+  - code: NO_HEALTHY_PROVIDER
+    category: provisioning_blocker
+    description: "Every otherwise eligible provider of a required critical capability is unavailable or has no current health observation."
   - code: PLAN_STALE
     category: provisioning_blocker
     description: "Authoritative state changed since the plan was approved, or its validity window closed before execution; a new plan is required."
@@ -190,3 +201,34 @@ reason_codes:
   - code: TRADE_LANE_NOT_READY
     category: provisioning_blocker
     description: "A trade lane the provisioning requires is not active."
+  # -- health_observation (ADR-SHARED-007 §37, ADR-BCP-006) -------------
+  # Why a HealthObservation reports its status. Never a denial: resolution
+  # and provisioning deny with PROVIDER_UNAVAILABLE, PROVIDER_HEALTH_UNKNOWN
+  # or NO_HEALTHY_PROVIDER, whatever the observation's reasons were.
+  - code: HEALTH_PROBE_FAILED
+    category: health_observation
+    description: "The health probe reached the subject and got a failing answer."
+  - code: HEALTH_PROBE_TIMEOUT
+    category: health_observation
+    description: "The health probe did not get an answer in time."
+  - code: HEALTH_LATENCY_ELEVATED
+    category: health_observation
+    description: "The subject answers, but slower than its service objective allows."
+  - code: HEALTH_ERROR_RATE_ELEVATED
+    category: health_observation
+    description: "The subject's observed error rate is above its service objective."
+  - code: HEALTH_DEPENDENCY_DEGRADED
+    category: health_observation
+    description: "A dependency the subject needs is degraded."
+  - code: HEALTH_DEPENDENCY_UNAVAILABLE
+    category: health_observation
+    description: "A dependency the subject needs is unavailable."
+  - code: HEALTH_CAPACITY_EXHAUSTED
+    category: health_observation
+    description: "The subject is refusing work because it has no capacity left."
+  - code: HEALTH_MAINTENANCE
+    category: health_observation
+    description: "The subject is in a declared maintenance window."
+  - code: HEALTH_NOT_YET_OBSERVED
+    category: health_observation
+    description: "The subject has been registered but has not yet been observed."

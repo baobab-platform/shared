@@ -1104,6 +1104,30 @@ UNAVAILABLE
 
 Health SHALL remain separate from provider lifecycle.
 
+## 37.1 Health observations (amendment, ADR-BCP-006)
+
+A health status on its own does not say when it was true. Health is
+therefore carried as a `HealthObservation`
+(`contracts/capability/v1/health.schema.json`): a subject (provider,
+engine instance, or both), a `status` from the four states above,
+`observed_at`, `expires_at`, a `source` (`ACTIVE_PROBE`,
+`PASSIVE_TELEMETRY`, `ENGINE_REPORT` or `OPERATOR`) and `reasons`.
+
+- An observation says nothing after `expires_at`. A subject with no
+  observation, or only an expired one, has effective health UNKNOWN.
+- UNKNOWN SHALL NOT be eligible for a critical capability: one whose
+  membership criticality in the composition being served or provisioned
+  is MANDATORY. UNAVAILABLE is never eligible.
+- The rule lives in `contracts/capability/v1/health-policy.yaml`. It is
+  part of the eligibility gate (step 1 of `scope-specificity.yaml`), so
+  resolution, relocation and provisioning planning all apply it.
+- `reasons` are codes in a fifth reason-code category,
+  `health_observation`. They explain an observation and are never
+  returned as denials. A resolution excluded for UNKNOWN health is denied
+  with `PROVIDER_HEALTH_UNKNOWN`; a provisioning plan with no health-
+  eligible provider for a critical capability is blocked with
+  `NO_HEALTHY_PROVIDER`.
+
 ---
 
 # 38. CapabilityResolution Contract
