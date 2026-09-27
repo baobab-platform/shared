@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-The register of `baobab-platform/shared`'s architecture decisions and platform specifications, with the status each one declares. `baobab-platform/baobab-cp` keeps its own register in `docs/adr/index.md`.
+The register of `baobab-platform/shared`'s architecture decisions and platform specifications, with the status each one declares. It covers `docs/adr` and `docs/architecture/decisions`. `baobab-platform/baobab-cp` keeps its own register in `docs/adr/index.md`.
 
 An ADR marked *amended* or *refined* stays authoritative except where the document named in its `Amended By` or `Refined By` header, or its status, decides otherwise.
 
@@ -12,7 +12,7 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 | [ADR-0004: Canonical Cross-Engine Event, Error, and Idempotency Metadata](ADR-0004-canonical-cross-engine-metadata.md) | Accepted |
 | [ADR-0005: ERP System of Record and Boundary Contracts](ADR-0005-erp-system-of-record-and-boundary-contracts.md) | Accepted |
 | [ADR-0006: Supplier-Onboarding Domain Contracts](ADR-0006-supplier-onboarding-domain-contracts.md) | Accepted |
-| [ADR-SHARED-007 — Canonical Capability Contracts, Composition Registry and Cross-Engine Provider Model](ADR-SHARED-007%20%E2%80%94%20Canonical%20Capability%20Contracts%2C%20Composition%20Registry%20and%20Cross-Engine%20Provider%20Model.md) | Accepted — Normative Platform Contract, refined |
+| [ADR-SHARED-007 — Canonical Capability Contracts, Composition Registry and Cross-Engine Provider Model](ADR-SHARED-007%20%E2%80%94%20Canonical%20Capability%20Contracts%2C%20Composition%20Registry%20and%20Cross-Engine%20Provider%20Model.md) | Accepted — Normative Platform Contract, amended in part and refined |
 | [ADR-SHARED-008 — Gate ZB-01 Capability Domain Registration and Canonical Event-Type Convention Confirmation](ADR-SHARED-008%20%E2%80%94%20Gate%20ZB-01%20Capability%20Domain%20Registration%20and%20Canonical%20Event-Type%20Convention%20Confirmation.md) | Accepted — Normative Contract Amendment |
 | [ADR-SHARED-009 — Programme Gate P1 Shared Contract Foundation Completion](ADR-SHARED-009%20%E2%80%94%20Programme%20Gate%20P1%20Shared%20Contract%20Foundation%20Completion.md) | Accepted — Normative Contract Addition (reason codes for provisioning blockers amended by ADR-SHARED-015 §8) |
 | [ADR-SHARED-010 — Supplier KYB Evidence and Decision Contracts](ADR-SHARED-010%20%E2%80%94%20Supplier%20KYB%20Evidence%20and%20Decision%20Contracts.md) | Accepted |
@@ -22,3 +22,4 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 | [ADR-SHARED-014 — Mapping Resolution in a Trusted Context](ADR-SHARED-014%20%E2%80%94%20Mapping%20Resolution%20in%20a%20Trusted%20Context.md) | Accepted |
 | [ADR-SHARED-015 — Provisioning as Desired-State Convergence](ADR-SHARED-015%20%E2%80%94%20Provisioning%20as%20Desired-State%20Convergence.md) | Accepted |
 | [Baobab Canonical Mapping Model](Baobab%20Canonical%20Mapping%20Model.md) | Accepted — Canonical Architecture, refined |
+| [ADR-0020: Capability-driven Foundation CI](../architecture/decisions/ADR-0020-capability-driven-foundation-ci.md) | Accepted |

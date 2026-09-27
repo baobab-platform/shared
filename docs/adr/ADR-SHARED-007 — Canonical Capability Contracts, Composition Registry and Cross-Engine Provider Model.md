@@ -1,6 +1,7 @@
 # ADR-SHARED-007 — Canonical Capability Contracts, Composition Registry and Cross-Engine Provider Model
 
-**Status:** Accepted — Normative Platform Contract, refined  
+**Status:** Accepted — Normative Platform Contract, amended in part and refined  
+**Amended By:** ADR-SHARED-008 (§9 capability naming convention, §11 domain namespace governance, §42 event vocabulary: event types are `com.baobab-platform.<context>.<...>.v<N>`)  
 **Refined By:** ADR-SHARED-012 (one grammar for engine, engine-instance and provider identifiers, and the external system registry)  
 **Date:** 2026-09-10  
 **Decision Owners:** BAOBAB-PLATFORM / Baobab Platform Architecture  
@@ -2724,9 +2725,9 @@ This creates a distributed monolith disguised as reuse.
 
 # 97. Decision
 
-**ACCEPTED TARGET CONTRACT ARCHITECTURE, subject to formal approval.**
+**ACCEPTED TARGET CONTRACT ARCHITECTURE.**
 
-Upon approval:
+Accordingly:
 
 1. this ADR SHALL govern capability-contract development in `baobab-platform/shared`;
 2. Shared SHALL remain the canonical contract authority;

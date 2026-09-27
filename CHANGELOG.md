@@ -23,7 +23,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
-- **ADR status reconciliation.** ADR-SHARED-007 and the Baobab Canonical Mapping Model move from Proposed to Accepted. Later accepted ADRs depend on both, and the contracts implement them. Each records the ADRs that refine it: ADR-SHARED-012 for ADR-SHARED-007; ADR-SHARED-012, -013 and -014 for the Mapping Model. `docs/adr/README.md` is the new register of every Shared ADR and its status.
+- **ADR status reconciliation.** ADR-SHARED-007 and the Baobab Canonical Mapping Model move from Proposed to Accepted. Later accepted ADRs depend on both, and the contracts implement them. ADR-SHARED-007 records ADR-SHARED-008 as amending its §§9, 11 and 42 (capability naming, domain namespaces, event vocabulary) and ADR-SHARED-012 as refining it; the Mapping Model records ADR-SHARED-012, -013 and -014 as refining it. Both closing decisions no longer read "subject to formal approval". `docs/adr/README.md` is the new register of every Shared ADR and its status, including `docs/architecture/decisions/ADR-0020`.
 - **Provisioning blocking reasons are registered codes (ADR-SHARED-015 §8, amending ADR-SHARED-009).**
   - `authorization/v1` `reason-code-registry.yaml` adds the `provisioning_blocker` category. It holds the fourteen codes that plan blockers, `TenantProvisioning.blocking_reasons` and readiness `blocking_reasons` use where no `capability_resolution_denial` code names the condition, for example `MARKET_NOT_AVAILABLE`, `PLAN_STALE` and `EXECUTION_CANCELLED`.
   - `readiness.schema.json` and `tenant-provisioning.schema.json` name both categories.
