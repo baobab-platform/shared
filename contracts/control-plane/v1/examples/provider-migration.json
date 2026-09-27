@@ -61,6 +61,60 @@
     "generated_at": "2026-09-28T09:00:00Z",
     "expires_at": "2026-10-05T09:00:00Z",
     "risk_class": "CRITICAL",
+    "request": {
+      "source_provider_key": "baobab-erp.idempiere",
+      "target_provider_key": "baobab-erp.ledgerx",
+      "capabilities": [
+        {
+          "capability_key": "finance.invoice.issue",
+          "contract_version": 1
+        },
+        {
+          "capability_key": "finance.invoice.read",
+          "contract_version": 1
+        }
+      ],
+      "migration_mode": "STATEFUL_CUTOVER",
+      "data_strategy": "BULK_MIGRATE_THEN_CUTOVER",
+      "rollback_strategy": "RESTORE_AND_REBIND_SOURCE",
+      "shadow": false,
+      "cohorts": [
+        {
+          "cohort_key": "internal-canary",
+          "selector": {
+            "tenant_ids": [
+              "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+            ]
+          }
+        },
+        {
+          "cohort_key": "za-tenants",
+          "selector": {
+            "markets": [
+              "ZA"
+            ]
+          }
+        },
+        {
+          "cohort_key": "remaining"
+        }
+      ],
+      "validation_checks": [
+        {
+          "check": "INVOICE_TOTALS_RECONCILE",
+          "description": "Issued invoice totals per legal entity match between source and target for the cohort."
+        }
+      ],
+      "cutover_window": {
+        "starts_at": "2026-10-10T22:00:00Z",
+        "ends_at": "2026-10-11T04:00:00Z"
+      },
+      "owners": [
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a02"
+      ],
+      "reason": "Replace the ERP ledger provider; canonical finance contracts are unchanged."
+    },
     "source_provider_key": "baobab-erp.idempiere",
     "target_provider_key": "baobab-erp.ledgerx",
     "migration_mode": "STATEFUL_CUTOVER",
@@ -394,6 +448,60 @@
     "generated_at": "2026-09-28T09:00:00Z",
     "expires_at": "2026-10-05T09:00:00Z",
     "risk_class": "CRITICAL",
+    "request": {
+      "source_provider_key": "baobab-erp.idempiere",
+      "target_provider_key": "baobab-erp.ledgerx",
+      "capabilities": [
+        {
+          "capability_key": "finance.invoice.issue",
+          "contract_version": 1
+        },
+        {
+          "capability_key": "finance.invoice.read",
+          "contract_version": 1
+        }
+      ],
+      "migration_mode": "STATEFUL_CUTOVER",
+      "data_strategy": "BULK_MIGRATE_THEN_CUTOVER",
+      "rollback_strategy": "RESTORE_AND_REBIND_SOURCE",
+      "shadow": false,
+      "cohorts": [
+        {
+          "cohort_key": "internal-canary",
+          "selector": {
+            "tenant_ids": [
+              "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+            ]
+          }
+        },
+        {
+          "cohort_key": "za-tenants",
+          "selector": {
+            "markets": [
+              "ZA"
+            ]
+          }
+        },
+        {
+          "cohort_key": "remaining"
+        }
+      ],
+      "validation_checks": [
+        {
+          "check": "INVOICE_TOTALS_RECONCILE",
+          "description": "Issued invoice totals per legal entity match between source and target for the cohort."
+        }
+      ],
+      "cutover_window": {
+        "starts_at": "2026-10-10T22:00:00Z",
+        "ends_at": "2026-10-11T04:00:00Z"
+      },
+      "owners": [
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a02"
+      ],
+      "reason": "Replace the ERP ledger provider; canonical finance contracts are unchanged."
+    },
     "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
     "source_provider_key": "baobab-erp.idempiere",
     "target_provider_key": "baobab-erp.ledgerx",

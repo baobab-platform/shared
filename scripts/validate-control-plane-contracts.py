@@ -401,6 +401,44 @@ def check_tenant_provisioning() -> None:
         fail("tenant-provisioning-lifecycle.yaml legacy_projection must map every state to a legacy state")
 
 
+def stateful_order_problems(plan: dict, sequence: list[str]) -> list[str]:
+    """Why a STATEFUL_CUTOVER plan's cohorts could shift authority before
+    their data moves: each sequence step must reach the one before it
+    through depends_on, and the cohort's VALIDATE_COHORT must reach the last."""
+    if plan["migration_mode"] != "STATEFUL_CUTOVER":
+        return []
+    steps = {step["step_id"]: step for step in plan["steps"]}
+
+    def reaches(start: str, goal: str) -> bool:
+        seen, frontier = set(), [start]
+        while frontier:
+            current = frontier.pop()
+            for dependency in steps.get(current, {}).get("depends_on", []):
+                if dependency == goal:
+                    return True
+                if dependency not in seen:
+                    seen.add(dependency)
+                    frontier.append(dependency)
+        return False
+
+    problems = []
+    for cohort in plan["request"]["cohorts"]:
+        key = cohort["cohort_key"]
+        mine = [step for step in plan["steps"] if step["resources"].get("cohort_key") == key]
+        chain = []
+        for operation in sequence + ["VALIDATE_COHORT"]:
+            found = [step["step_id"] for step in mine if step["operation"] == operation]
+            if len(found) != 1:
+                problems.append(f"cohort {key} has {len(found)} {operation} steps, not one")
+                break
+            chain.append(found[0])
+        else:
+            for before, after in zip(chain, chain[1:]):
+                if not reaches(after, before):
+                    problems.append(f"cohort {key}: {after} does not depend on {before}")
+    return problems
+
+
 def check_provider_migration() -> None:
     schema = "provider-migration.schema.json"
     example = json.loads((CP / "examples" / "provider-migration.json").read_text())
@@ -486,18 +524,34 @@ def check_provider_migration() -> None:
     if not set(lifecycle["terminal_states"]) <= reachable:
         fail(f"provider-migration-lifecycle.yaml cannot reach {sorted(set(lifecycle['terminal_states']) - reachable)}")
 
-    # Exactly one authoritative writer: every stateful cohort runs the
-    # freeze, migrate, reconcile, shift, unfreeze sequence in order.
+    # Exactly one authoritative writer: in every stateful cohort each step
+    # of the sequence depends, directly or transitively, on the one before,
+    # so no executor that follows depends_on can shift authority before the
+    # cohort's data is frozen, migrated and reconciled.
     operations = set(json.loads((CP / schema).read_text())["$defs"]["migrationOperation"]["enum"])
     sequence = lifecycle["stateful_cohort_sequence"]
     if not set(sequence) <= operations:
         fail("provider-migration-lifecycle.yaml stateful_cohort_sequence names unknown operations")
-    if plan["migration_mode"] == "STATEFUL_CUTOVER":
-        for key in keys:
-            ordered = [step["operation"] for step in plan["steps"]
-                       if step["resources"].get("cohort_key") == key and step["operation"] in sequence]
-            if ordered != sequence:
-                fail(f"provider-migration plan: cohort {key} runs {ordered}, not {sequence}")
+    for problem in stateful_order_problems(plan, sequence):
+        fail(f"provider-migration plan: {problem}")
+    broken = copy.deepcopy(plan)
+    shift = next(s for s in broken["steps"] if s["operation"] == "SHIFT_COHORT")
+    freeze = next(s for s in broken["steps"] if s["operation"] == "FREEZE_COHORT_WRITES"
+                  and s["resources"].get("cohort_key") == shift["resources"].get("cohort_key"))
+    shift["depends_on"] = [freeze["step_id"]]
+    if not stateful_order_problems(broken, sequence):
+        fail("the stateful order check accepts a shift that depends only on the freeze")
+
+    # A plan embeds the request it executes; the fields it repeats agree.
+    for key in ("preview", "plan"):
+        document = example[key]
+        for field in ("source_provider_key", "target_provider_key", "migration_mode"):
+            if document[field] != document["request"][field]:
+                fail(f"provider-migration {key}: {field} differs from its request's")
+    without_request = copy.deepcopy(plan)
+    del without_request["request"]
+    rejects(schema, "ProviderMigrationPlan", without_request, "migration plan without its request")
+    rejects(schema, "ProviderMigration", {**migration, "stage": "DISCOVER"}, "a migration in DISCOVER, which is only the preview")
 
     registry = yaml.safe_load((CONTRACTS / "authorization" / "v1" / "reason-code-registry.yaml").read_text())
     registered = {entry["code"] for entry in registry["reason_codes"] if entry["category"] == "provider_migration_blocker"}

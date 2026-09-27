@@ -26,10 +26,10 @@ Changes that have been merged but have not yet been included in a released versi
 - **Provider migration contracts (ADR-BCP-006 sections 44-58, 119-122, Gate 8).**
   - `control-plane/v1/provider-migration.schema.json`:
     - `ProviderMigrationRequest`, whose cohorts are deterministic selectors, never percentages;
-    - `ProviderMigrationPlan`, a ChangePlan with discovery and canonical migration steps;
+    - `ProviderMigrationPlan`, a ChangePlan that embeds its request, with discovery and canonical migration steps;
     - the `ProviderMigration` aggregate.
     - A stateless rebind moves no data. A stateful cutover needs a data strategy and a cutover window. Dual write is not a strategy.
-  - `provider-migration-lifecycle.yaml`: the section 45 stages plus `CANCELLED` and `ROLLED_BACK`, the single-writer step order for stateful cohorts, and the plan's blocking and warning codes.
+  - `provider-migration-lifecycle.yaml`: the section 45 stages after DISCOVER (the preview) plus `CANCELLED` and `ROLLED_BACK`, the single-writer step order for stateful cohorts, and the plan's blocking and warning codes.
   - `control-plane/v1/openapi.yaml` 1.11.0 adds:
     - `POST /provider-migrations/plan`, a side-effect-free preview (section 122);
     - `POST /provider-migrations`;
@@ -38,13 +38,12 @@ Changes that have been merged but have not yet been included in a released versi
   - `providerMigrationId` (`pmg_`).
   - Scopes `topology:read` and `topology:write`.
   - Administrative permissions `topology.view` (LOW) and `provider-migration.plan` (HIGH, not delegable), both platform-scoped, in the OPERATIONS domain:
-    - `platform-administrator` holds both;
-    - `support-operator` holds `topology.view`.
+    - `platform-administrator` holds both.
   - Reason-code category `provider_migration_blocker`, with ten codes.
   - `validate-control-plane-contracts.py` checks:
     - the examples and negative fixtures;
     - that the lifecycle matches the stage enum;
-    - that every stateful cohort runs freeze, migrate, reconcile, shift, unfreeze in order;
+    - that every stateful cohort's steps depend on each other in the order freeze, migrate, reconcile, shift, unfreeze;
     - that plan blockers and warnings are registered codes.
 
 - `administration/v1` `domain.schema.json` adds a metric catalogue: `administrative_authority_shadow_total`, its four labels and their closed value sets (ADR-BCP-020 section 144 shadow evaluation).
