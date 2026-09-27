@@ -15,6 +15,24 @@
           "KE",
           "UG"
         ],
+        "market_participation": [
+          {
+            "market": "KE",
+            "activities": [
+              "SELLING",
+              "DISTRIBUTION"
+            ]
+          },
+          {
+            "market": "UG",
+            "activities": [
+              "LEGAL_PRESENCE",
+              "SOURCING",
+              "PROCESSING",
+              "EXPORTING"
+            ]
+          }
+        ],
         "product_requirements": [
           "b2b-trade",
           "erp"
@@ -42,6 +60,17 @@
         "market_scope": [
           "UG"
         ],
+        "market_participation": [
+          {
+            "market": "UG",
+            "activities": [
+              "LEGAL_PRESENCE",
+              "SOURCING",
+              "PROCUREMENT",
+              "SELLING"
+            ]
+          }
+        ],
         "product_requirements": [
           "b2b-trade",
           "procurement"
@@ -68,6 +97,17 @@
         "market_scope": [
           "UG"
         ],
+        "market_participation": [
+          {
+            "market": "UG",
+            "activities": [
+              "LEGAL_PRESENCE",
+              "SOURCING",
+              "PROCUREMENT",
+              "SELLING"
+            ]
+          }
+        ],
         "product_requirements": [
           "b2b-trade",
           "procurement"
@@ -84,6 +124,17 @@
       "admission_decision_id": "adm_01k9kilima",
       "display_name": "Kilima Traders",
       "residency_region": "eu-west-1",
+      "market_participation": [
+        {
+          "market": "UG",
+          "activities": [
+            "LEGAL_PRESENCE",
+            "SOURCING",
+            "PROCUREMENT",
+            "SELLING"
+          ]
+        }
+      ],
       "isolation_strategy": "row_level_security",
       "reason": "Onboard the approved client."
     }

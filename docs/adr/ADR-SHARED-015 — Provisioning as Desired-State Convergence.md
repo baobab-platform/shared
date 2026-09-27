@@ -28,6 +28,7 @@ Shared also held a misnamed `provisioning-plan.schema.json` whose only definitio
    - It records its provenance (onboarding request, admission decision, desired-state version) and a digest.
    - It never names engines, engine instances, providers, capability grants or bindings. Those are consequences of planning.
    - It is persisted independently of any plan, so a failed plan can be replanned (for example onto another engine instance) without changing intent.
+   - Market participation, with its participation capabilities (ADR-BCP-011 §6), is declared on the onboarding request for each admitted market and authorised with it. Planning copies it and never infers an activity.
    - Creating a provisioning names its source (`tenant_onboarding_request_id`). It never accepts a manifest.
 2. **Planning is side-effect free.** It reads, resolves, calculates and analyses, and never creates or changes runtime resources, grants, IAM or providers (ADR-BCP-021 §20).
    - The result is an immutable `ProvisioningPlan`: a `ChangePlan` (ADR-BCP-021 §21) with a version, `plan_digest`, `base_revision`, canonical operation steps, blockers, warnings, readiness requirements, security checks, impact analysis and risk class.
@@ -75,5 +76,5 @@ Shared also held a misnamed `provisioning-plan.schema.json` whose only definitio
   - its manifest becomes internal.
 
   Its current routes stay in its drift test's undescribed list until each conforms.
-- The onboarding request's desired state gains the specification's richer fields (legal entities, estates, market activities, product profiles) additively when admission starts to capture them. Until then those parts of `ProvisioningDesiredState` are empty.
+- The onboarding request's desired state gains the specification's other richer fields (legal entities, estates, product profiles) additively when admission starts to capture them. Until then those parts of `ProvisioningDesiredState` are empty.
 - The existing provisioning events keep their coarse states. A later change may add the canonical state to them additively.

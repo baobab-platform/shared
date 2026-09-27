@@ -23,6 +23,12 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Breaking: onboarding requests declare market participation (ADR-BCP-011 §6, ADR-SHARED-015).**
+  Provisioning plans market participation from the onboarding request, which recorded markets but not what the tenant does in them.
+  - `admission/v1` `TenantOnboardingRequestCommand` and `OnboardingDesiredState` require `market_participation`: each market of the decision's scope exactly once, with one or more participation capabilities. The validator checks the coverage.
+  - `control-plane/v1` `domain.schema.json` adds `marketParticipationCapability`, the eleven governed capabilities of ADR-BCP-011 §6. `ProvisioningDesiredState` uses it and requires at least one per market; the ungoverned `marketActivity` enum is removed.
+  - `openapi.yaml` is 1.9.0.
+
 - **Breaking: tenant provisioning is desired-state convergence (ADR-SHARED-015, Console gap B2).**
   Shared describes provisioning to the specification's target semantics, not the Control Plane's implementation.
   - `provisioning-desired-state.schema.json`: the business intent, frozen from an AUTHORISED TenantOnboardingRequest with its provenance and digest. It never names engines, instances, providers, grants or bindings. A provisioning is created from the onboarding request, never from a manifest.
