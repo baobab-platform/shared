@@ -1,0 +1,11 @@
+{
+  "subject": {
+    "provider_id": "provider_01k4z1a2b3",
+    "capability_key": "commerce.order.create"
+  },
+  "status": "HEALTHY",
+  "observed_at": "2026-09-27T10:00:30Z",
+  "expires_at": "2026-09-27T10:01:30Z",
+  "source": "ENGINE_REPORT",
+  "reasons": []
+}

@@ -21,7 +21,8 @@ algorithm_version: 1
 # binding.schema.json and resolution.schema.json). A binding must already
 # be ACTIVE, temporally effective, contract-compatible, environment-
 # matched, residency-compatible, isolation-compatible, and pass health
-# policy before it is a candidate for specificity scoring at all.
+# policy (health-policy.yaml) before it is a candidate for specificity
+# scoring at all.
 # Exclusion lists (scope.exclude_countries) are evaluated here, as a
 # hard eligibility gate -- a country match against exclude_countries
 # makes a binding ineligible, it does not merely lower its specificity

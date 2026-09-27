@@ -2,6 +2,7 @@
 
 require "json"
 require "yaml"
+require "time"
 
 ROOT = File.expand_path("..", __dir__)
 CAPABILITY_ROOT = File.join(ROOT, "contracts/capability/v1")
@@ -133,5 +134,67 @@ asyncapi.fetch("components").fetch("messages").each do |message_key, message|
   name = message.fetch("name")
   fail_contract("asyncapi.yaml message #{message_key} has event name #{name.inspect}, which does not match the com.baobab-platform.* convention") unless event_type_pattern.match?(name)
 end
+
+# 8. HealthObservation examples obey what health.schema.json cannot say
+#    on its own: an observation expires after it was made, every reason is
+#    registered under health_observation, and only HEALTHY may give none
+#    (ADR-SHARED-007 SS37, ADR-BCP-006).
+health_statuses = domain.dig("$defs", "providerHealthStatus", "enum")
+health_sources = domain.dig("$defs", "healthObservationSource", "enum")
+health_reason_codes = registry.fetch("reason_codes")
+                              .select { |entry| entry["category"] == "health_observation" }
+                              .map { |entry| entry.fetch("code") }
+fail_contract("reason-code-registry.yaml registers no health_observation codes") if health_reason_codes.empty?
+health_examples = Dir[File.join(CAPABILITY_ROOT, "examples/health-observation-*.json")].sort
+fail_contract("no HealthObservation example exists") if health_examples.empty?
+health_examples.each do |path|
+  observation = load_json(path)
+  %w[subject status observed_at expires_at source reasons].each do |field|
+    fail_contract("#{path} is missing #{field}") unless observation.key?(field)
+  end
+  fail_contract("#{path} status #{observation['status'].inspect} is not a providerHealthStatus") unless health_statuses.include?(observation["status"])
+  fail_contract("#{path} source #{observation['source'].inspect} is not a healthObservationSource") unless health_sources.include?(observation["source"])
+  observed_at = Time.iso8601(observation.fetch("observed_at"))
+  expires_at = Time.iso8601(observation.fetch("expires_at"))
+  fail_contract("#{path} expires_at must be later than observed_at") unless expires_at > observed_at
+  reasons = observation.fetch("reasons")
+  fail_contract("#{path} reports #{observation['status']} without a reason") if reasons.empty? && observation["status"] != "HEALTHY"
+  reasons.each do |code|
+    fail_contract("#{path} uses reason #{code.inspect}, which is not registered under health_observation") unless health_reason_codes.include?(code)
+  end
+end
+
+# 9. health-policy.yaml never lets missing or expired health count as
+#    healthy, never makes UNKNOWN or DEGRADED eligible for a CRITICAL
+#    capability or UNAVAILABLE for any, covers exactly the declared
+#    health criticalities, keeps the engine instance level always checked,
+#    and denies only with registered codes (ADR-BCP-006 SS21-22, SS73).
+health_policy = yaml_documents.fetch(File.join(CAPABILITY_ROOT, "health-policy.yaml"))
+effective = health_policy.fetch("effective_status")
+%w[expired_observation missing_observation future_observation].each do |key|
+  fail_contract("health-policy.yaml effective_status.#{key} must be UNKNOWN") unless effective.fetch(key) == "UNKNOWN"
+end
+fail_contract("health-policy.yaml equal_time_precedence must order every status from UNAVAILABLE to HEALTHY, most severe first") unless health_policy.fetch("equal_time_precedence") == %w[UNAVAILABLE UNKNOWN DEGRADED HEALTHY]
+levels = health_policy.fetch("levels").to_h { |level| [level.fetch("level"), level] }
+fail_contract("health-policy.yaml must declare exactly the ENGINE_INSTANCE, PROVIDER and PROVIDER_CAPABILITY levels") unless levels.keys.sort == %w[ENGINE_INSTANCE PROVIDER PROVIDER_CAPABILITY]
+fail_contract("health-policy.yaml must always check the ENGINE_INSTANCE level") unless levels.fetch("ENGINE_INSTANCE").fetch("always_checked") == true
+health_criticalities = domain.dig("$defs", "capabilityHealthCriticality", "enum")
+eligible = health_policy.fetch("eligible_statuses")
+fail_contract("health-policy.yaml eligible_statuses must cover exactly #{health_criticalities.inspect}") unless eligible.keys.sort == health_criticalities.sort
+eligible.each do |criticality, statuses|
+  statuses.each do |status|
+    fail_contract("health-policy.yaml eligible_statuses.#{criticality} names unknown status #{status.inspect}") unless health_statuses.include?(status)
+  end
+  fail_contract("health-policy.yaml makes UNAVAILABLE eligible for #{criticality} capabilities") if statuses.include?("UNAVAILABLE")
+end
+fail_contract("health-policy.yaml must make only HEALTHY eligible for CRITICAL capabilities") unless eligible.fetch("CRITICAL") == ["HEALTHY"]
+resolution_denials = health_policy.fetch("denial_reason_codes").fetch("resolution")
+ineligible_somewhere = health_statuses.reject { |status| eligible.values.all? { |statuses| statuses.include?(status) } }
+fail_contract("health-policy.yaml must name a resolution denial for every status some criticality rejects") unless resolution_denials.keys.sort == ineligible_somewhere.sort
+resolution_denials.each_value do |code|
+  fail_contract("health-policy.yaml resolution denial #{code.inspect} is not registered under capability_resolution_denial") unless capability_reason_codes.include?(code)
+end
+provisioning_codes = registry.fetch("reason_codes").select { |entry| entry["category"] == "provisioning_blocker" }.map { |entry| entry.fetch("code") }
+fail_contract("health-policy.yaml provisioning denial is not registered under provisioning_blocker") unless provisioning_codes.include?(health_policy.fetch("denial_reason_codes").fetch("provisioning"))
 
 puts "Capability contract validation passed"
