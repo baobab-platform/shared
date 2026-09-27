@@ -1,7 +1,8 @@
 # Baobab Canonical Mapping Model
 
 **Document Type:** Platform Architecture Specification  
-**Status:** Proposed Canonical Architecture  
+**Status:** Accepted — Canonical Architecture, refined  
+**Refined By:** ADR-SHARED-012 (identifier grammar and external system registry), ADR-SHARED-013 (ExternalReference and Mapping administration), ADR-SHARED-014 (mapping resolution in a trusted context)  
 **Architecture Domain:** Control Plane / Canonical Identity / Context / Mapping / Engine Integration  
 **Applies To:** Baobab Platform, all Baobab engines, all digital estates, `baobab-platform/shared`, integration services, future products and external integrations  
 **Target Maturity:** Production-grade, multi-tenant, multi-market, multi-region, polyrepo, polyglot enterprise platform

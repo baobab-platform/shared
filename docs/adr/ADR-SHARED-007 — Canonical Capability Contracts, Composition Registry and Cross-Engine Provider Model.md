@@ -1,6 +1,7 @@
 # ADR-SHARED-007 — Canonical Capability Contracts, Composition Registry and Cross-Engine Provider Model
 
-**Status:** Proposed — Normative Platform Contract  
+**Status:** Accepted — Normative Platform Contract, refined  
+**Refined By:** ADR-SHARED-012 (one grammar for engine, engine-instance and provider identifiers, and the external system registry)  
 **Date:** 2026-09-10  
 **Decision Owners:** BAOBAB-PLATFORM / Baobab Platform Architecture  
 **Repository:** `baobab-platform/shared`  
