@@ -23,6 +23,15 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Administrative authority contracts (ADR-BCP-020 gate ADA-01).**
+  - New `administration/v1` package:
+    - `AdministrativeGrant`, `AdministrativeScope`, `AdministrativeDecision` and `EffectiveAuthority`;
+    - the `AdministrativePermission` vocabulary (`permission-registry.yaml`, 42 permissions);
+    - administrative profiles (`profile-registry.yaml`, 11 templates);
+    - the grant lifecycle.
+  - `control-plane/v1` `openapi.yaml` 1.10.0 adds `GET /admin/effective-authority`, the caller's own ACTIVE grants for authority-aware navigation. It needs only the new, non-privileged `authority:self` scope.
+  - `authorization/v1` `reason-code-registry.yaml` adds the `administrative_denial` category (15 codes).
+  - `validate-administration-contracts.py` runs in CI. It checks the registries, the lifecycle, and the delegation, self-grant and bootstrap rules, including against negative fixtures.
 - **Health observations (ADR-SHARED-007 §37.1, ADR-BCP-006).**
   - `capability/v1` `health.schema.json` adds `HealthObservation`: `subject`, `status`, `observed_at`, `expires_at`, `source` and `reasons`. The subject is an engine instance, a provider, or one capability on a provider.
   - `capability.schema.json` adds the optional `health_criticality` field (`CRITICAL` or `STANDARD`, default `STANDARD`).

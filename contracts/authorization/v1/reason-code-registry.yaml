@@ -6,7 +6,7 @@
 # SHALL not expose sensitive information indiscriminately to external
 # clients").
 #
-# Five categories exist for five different moments, not five different
+# Six categories exist for six different moments, not six different
 # vocabularies for the same thing:
 #
 #   authorization_denial          -- decision.schema.json's `reason_code`,
@@ -36,6 +36,11 @@
 #                                     the status it does (ADR-SHARED-007 §37,
 #                                     ADR-BCP-006). These explain an observation;
 #                                     they are never returned as a denial.
+#   administrative_denial          -- contracts/administration/v1/grant.schema.json's
+#                                     AdministrativeDecision `reason_codes`: why a
+#                                     Control Plane administrative action was not
+#                                     allowed (ADR-BCP-020 sections 97-98). Safe to
+#                                     show the administrator; never internal policy.
 #
 # TENANT_SUSPENDED (authorization_denial) and TENANT_SUSPENSION
 # (lifecycle_revocation) are deliberately two distinct, near-identical-
@@ -232,3 +237,52 @@ reason_codes:
   - code: HEALTH_NOT_YET_OBSERVED
     category: health_observation
     description: "The subject has been registered but has not yet been observed."
+  # -- administrative_denial (ADR-BCP-020 sections 97-98) ---------------
+  # Why a Control Plane administrative action was not allowed. The grant
+  # lifecycle codes carry an ADMINISTRATIVE_ prefix: GRANT_EXPIRED,
+  # GRANT_SUSPENDED and GRANT_REVOKED already name capability grants.
+  - code: NO_ADMINISTRATIVE_GRANT
+    category: administrative_denial
+    description: "The principal holds no administrative grant for the requested action."
+  - code: SCOPE_MISMATCH
+    category: administrative_denial
+    description: "The principal's grants for the action do not cover the requested scope."
+  - code: SCOPE_AMBIGUOUS
+    category: administrative_denial
+    description: "The requested scope could not be resolved to exactly one anchor, so it is not guessed."
+  - code: ADMINISTRATIVE_GRANT_PENDING
+    category: administrative_denial
+    description: "The matching administrative grant is not yet active."
+  - code: ADMINISTRATIVE_GRANT_SUSPENDED
+    category: administrative_denial
+    description: "The matching administrative grant is suspended."
+  - code: ADMINISTRATIVE_GRANT_EXPIRED
+    category: administrative_denial
+    description: "The matching administrative grant's validity window has ended."
+  - code: ADMINISTRATIVE_GRANT_REVOKED
+    category: administrative_denial
+    description: "The matching administrative grant has been revoked."
+  - code: DELEGATION_INVALID
+    category: administrative_denial
+    description: "The matching grant was delegated from authority that is no longer valid, or exceeds it."
+  - code: SEPARATION_OF_DUTIES_VIOLATION
+    category: administrative_denial
+    description: "The action would breach a separation-of-duties policy."
+  - code: SELF_APPROVAL_PROHIBITED
+    category: administrative_denial
+    description: "The principal may not approve or grant something they requested or will receive."
+  - code: AUTHENTICATION_ASSURANCE_INSUFFICIENT
+    category: administrative_denial
+    description: "The session's authentication assurance is below what the grant requires."
+  - code: APPROVAL_REQUIRED
+    category: administrative_denial
+    description: "The action needs an approval that has not been recorded."
+  - code: PRINCIPAL_INACTIVE
+    category: administrative_denial
+    description: "The principal is not active."
+  - code: ORGANISATION_INACTIVE
+    category: administrative_denial
+    description: "The organisation the action concerns is not active."
+  - code: TENANT_STATE_PROHIBITS_ACTION
+    category: administrative_denial
+    description: "The tenant's lifecycle state does not permit the action."
