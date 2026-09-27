@@ -50,7 +50,7 @@ RESPONSIBILITIES = {
         "opaqueId", "CapabilityExplanationRequest", "CapabilityExplanation",
     },
     "provisioning-desired-state.schema.json": {
-        "marketActivity", "desiredStateProvenance", "ProvisioningDesiredState", "TenantProvisioningCreateRequest",
+        "desiredStateProvenance", "ProvisioningDesiredState", "TenantProvisioningCreateRequest",
     },
     "change-plan.schema.json": {
         "riskClass", "planFinding", "planCheck", "planStep", "impactAnalysis", "ChangePlan",

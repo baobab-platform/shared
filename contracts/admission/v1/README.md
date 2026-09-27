@@ -76,7 +76,8 @@ REQUESTED / AUTHORISED ──► CANCELLED (the decision is never rewritten)
 ```
 
 - **Approval activates nothing.** No request exists until someone makes one explicitly. Fulfilment records traceability only; activation still requires readiness.
-- **Desired state comes from the decision.** Subscription type, market scope, product requirements and isolation are copied from the AdmissionDecision. The request command accepts only the display name, residency region, isolation (only when the decision set none) and a reason.
+- **Desired state comes from the decision.** Subscription type, market scope, product requirements and isolation are copied from the AdmissionDecision. The request command accepts only the display name, residency region, market participation, isolation (only when the decision set none) and a reason.
+- **Market participation is declared, not inferred.** The requester declares, for each market of the decision's market scope exactly once, what the tenant will do there: one or more participation capabilities (ADR-BCP-011 §6, `control-plane/v1` `marketParticipationCapability`). The authoriser authorises it with the rest of the request, and provisioning plans market participation from it.
 - **One live request per decision.** Repeating the request returns the live one (§46).
 - **Registration requires an AUTHORISED request.** `control-plane/v1` `registerTenant` names the request, must match its desired state (display name, residency, isolation, and products equal to the product requirements), and fulfils it in the same operation. A request produces at most one tenant. The only registration without a request is `bootstrapRegisterTenant` (`tenant:bootstrap`), for tenants that predate this workflow.
 - **Traceable.** A request carries `client_application_id`, `admission_decision_id` and a stable `correlation_id` (§23, §41). Its events carry identifiers and state only.

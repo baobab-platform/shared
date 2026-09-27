@@ -58,7 +58,7 @@ RESPONSIBILITIES = {
         "InternalEligibilityEvidence", "AdmissionDecisionRequest", "AdmissionDecision",
     },
     "onboarding.schema.json": {
-        "tenantOnboardingRequestId", "onboardingRequestStatus", "OnboardingDesiredState", "TenantOnboardingRequest",
+        "tenantOnboardingRequestId", "onboardingRequestStatus", "marketParticipation", "OnboardingDesiredState", "TenantOnboardingRequest",
         "TenantOnboardingRequestCommand", "OnboardingAuthorisationCommand", "OnboardingCancellationCommand",
         "OnboardingFulfilmentCommand",
     },
@@ -270,6 +270,9 @@ def onboarding_problems(requests: list[dict], apps: dict, decisions: dict) -> li
             problems.append(f"{rid} desired subscription type differs from the decision")
         if set(ds["market_scope"]) != set(d.get("approved_market_scope", [])):
             problems.append(f"{rid} desired markets differ from the decision")
+        participating = [p["market"] for p in ds["market_participation"]]
+        if sorted(participating) != sorted(set(ds["market_scope"])):
+            problems.append(f"{rid} market participation does not cover each admitted market exactly once")
         if set(ds["product_requirements"]) != set(d.get("approved_product_requirements", [])):
             problems.append(f"{rid} desired products differ from the decision")
         if d.get("approved_isolation_requirements") and ds["isolation_strategy"] != d["approved_isolation_requirements"]:
@@ -454,6 +457,24 @@ if {"capp_01k9kilima", "capp_01k9duma"} <= set(apps) and {"adm_01k9zuribeans", "
         reqs = onboarding_doc["tenant_onboarding_requests"]
         fulfilled = copy.deepcopy(next(r for r in reqs if r["status"] == "FULFILLED"))
         requested = copy.deepcopy(next(r for r in reqs if r["status"] == "REQUESTED"))
+        # Market participation is declared, per admitted market, with at least
+        # one governed participation capability (ADR-BCP-011 section 6).
+        undeclared = copy.deepcopy(requested)
+        del undeclared["desired_state"]["market_participation"]
+        negative("desired state without market participation", "onboarding.schema.json", "TenantOnboardingRequest", undeclared)
+        idle = copy.deepcopy(requested)
+        idle["desired_state"]["market_participation"][0]["activities"] = []
+        negative("market participation without activities", "onboarding.schema.json", "TenantOnboardingRequest", idle)
+        ungoverned = copy.deepcopy(requested)
+        ungoverned["desired_state"]["market_participation"][0]["activities"] = ["BUYING"]
+        negative("market participation with an ungoverned activity", "onboarding.schema.json", "TenantOnboardingRequest", ungoverned)
+        command = copy.deepcopy(onboarding_doc["tenant_onboarding_request_commands"][0])
+        negative("onboarding command without market participation", "onboarding.schema.json", "TenantOnboardingRequestCommand",
+                 {k: v for k, v in command.items() if k != "market_participation"})
+        wrong_scope = copy.deepcopy(requested)
+        wrong_scope["desired_state"]["market_participation"].append({"market": "TZ", "activities": ["SELLING"]})
+        if not onboarding_problems([wrong_scope], ob_apps, ob_decisions):
+            fail("negative fixture accepted: market participation outside the admitted market scope")
         negative("REQUESTED carrying an authorisation", "onboarding.schema.json", "TenantOnboardingRequest",
                  {**requested, "authorised_by": "prn_x", "authorised_at": "2026-09-23T18:00:00Z"})
         negative("FULFILLED without authorisation", "onboarding.schema.json", "TenantOnboardingRequest",
