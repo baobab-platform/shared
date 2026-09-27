@@ -277,6 +277,13 @@ if domain["administrativeMetricLabel"]["enum"] != ["permission", "legacy", "gran
 for name in domain["administrativeMetric"]["enum"]:
     if not name.endswith("_total") or errors("domain.schema.json#/$defs/administrativeMetric", name):
         fail(f"metric {name} must be a counter name ending _total")
+outcome_labels = {"ALLOW": "allow", "DENY": "deny", "STEP_UP_REQUIRED": "step_up",
+                  "APPROVAL_REQUIRED": "approval_required", "NOT_READY": "not_ready"}
+if set(outcome_labels) != set(domain["decisionOutcome"]["enum"]):
+    fail("every decisionOutcome needs a shadowGrantsOutcome label")
+for outcome, label in outcome_labels.items():
+    if label not in domain["shadowGrantsOutcome"]["enum"]:
+        fail(f"decisionOutcome {outcome} has no shadowGrantsOutcome label {label}")
 if "unregistered" in permissions:
     fail("unregistered is reserved as the permission label of an unmapped route")
 
