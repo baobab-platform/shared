@@ -497,12 +497,18 @@ def check_external_systems() -> None:
 BLOCKING_CATEGORIES = ("capability_resolution_denial", "provisioning_blocker")
 
 
+# Where a blocking reason is carried: TenantProvisioning and readiness
+# blocking_reasons, and ProvisioningPlan blockers. Plan warnings are not
+# blocking reasons.
+BLOCKING_KEYS = ("blocking_reasons", "blockers")
+
+
 def blocking_codes(document: object) -> list[str]:
     """The code of every blocking reason anywhere in document."""
     codes: list[str] = []
     if isinstance(document, dict):
         for key, value in document.items():
-            if key == "blocking_reasons" and isinstance(value, list):
+            if key in BLOCKING_KEYS and isinstance(value, list):
                 codes.extend(reason["code"] for reason in value if isinstance(reason, dict) and "code" in reason)
             else:
                 codes.extend(blocking_codes(value))
@@ -517,6 +523,11 @@ def check_blocking_reason_codes() -> None:
     registered = {entry["code"] for entry in registry["reason_codes"] if entry["category"] in BLOCKING_CATEGORIES}
     if not registered:
         fail("reason-code-registry.yaml registers no provisioning blocking codes")
+    # The traversal finds plan blockers and blocking reasons, never warnings.
+    probe = {"plan": {"blockers": [{"code": "A_BLOCKER", "message": "m"}], "warnings": [{"code": "A_WARNING", "message": "m"}]},
+             "readiness": {"snapshots": [{"blocking_reasons": [{"code": "A_REASON"}]}]}}
+    if sorted(blocking_codes(probe)) != ["A_BLOCKER", "A_REASON"]:
+        fail(f"blocking_codes collects {sorted(blocking_codes(probe))} from a plan and readiness probe")
     for path in sorted((CP / "examples").glob("*.json")):
         for code in blocking_codes(json.loads(path.read_text())):
             if code not in registered:
