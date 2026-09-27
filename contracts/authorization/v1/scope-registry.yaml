@@ -200,6 +200,32 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "provisioning:approve"
+    description: >-
+      Approve, reject or request changes to one exact tenant provisioning plan,
+      bound to its digest (ADR-SHARED-015, ADR-BCP-021 sections 24 and 50).
+      Never held by the principal who requested the provisioning: the Control
+      Plane refuses self-approval.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "operation:read"
+    description: >-
+      Poll durable long-running operations within the caller's administrative
+      authority (ADR-BCP-022 sections 54-67).
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+
+  - name: "operation:control"
+    description: >-
+      Retry or cancel a durable long-running operation within the caller's
+      administrative authority (ADR-BCP-022 section 45). Never recomputes the
+      intent or plan the operation executes.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "subscription:read"
     description: >-
       A platform operator reads ProductSubscription classifications and their

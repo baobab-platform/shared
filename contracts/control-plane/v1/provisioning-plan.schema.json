@@ -1,109 +1,67 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.baobab-platform.com/control-plane/v1/provisioning-plan.schema.json",
-  "title": "TenantProvisioning",
-  "description": "The tenant onboarding process aggregate (Technical Specification SS21). It does not replace Tenant; it tracks onboarding orchestration. `state` is the coarse, already-implemented provisioning-state-machine.yaml lifecycle (requested/accepted/provisioning/reconciling/active/suspended/failed/decommissioning/cancelled); `current_phase` is the finer-grained orchestration phase within it (domain.schema.json#/$defs/tenantProvisioningPhase) that plan-before-apply (SS25-27) and the onboarding workflow (SS28) require and that the coarse state machine alone cannot express.",
+  "title": "Provisioning plan",
+  "description": "The immutable plan that makes a tenant's observed state converge on its desired state (Technical Specification SS25-27, ADR-SHARED-015): a ChangePlan (change-plan.schema.json) whose steps are canonical provisioning operations. Unlike the desired state, a plan names the resolved topology, always in ADR-SHARED-012 identifiers. Generating it is side-effect free; only an approved plan whose digest matches the approval is applied. A definition library; validate against provisioning-plan.schema.json#/$defs/ProvisioningPlan. (Before ADR-SHARED-015 this file defined the provisioning aggregate, now tenant-provisioning.schema.json.)",
   "$defs": {
-    "tenantProvisioning": {
+    "provisioningOperation": {
+      "type": "string",
+      "enum": [
+        "REGISTER_TENANT",
+        "REGISTER_LEGAL_ENTITY",
+        "CREATE_MARKET_PARTICIPATION",
+        "CREATE_DIGITAL_ESTATE",
+        "CREATE_PRODUCT_SUBSCRIPTION",
+        "CREATE_CAPABILITY_GRANT",
+        "CREATE_CAPABILITY_BINDING",
+        "CONFIGURE_PROVIDER",
+        "CREATE_MAPPING",
+        "CONFIGURE_IAM_PROJECTION",
+        "VERIFY_SECURITY",
+        "VERIFY_READINESS"
+      ],
+      "description": "Canonical, Baobab-native provisioning operation types (ADR-SHARED-015). Provider-specific work is a resolved resource of a step, never its type."
+    },
+    "provisioningStepResources": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["provisioning_id", "tenant_id", "request_version", "state", "current_phase", "version"],
+      "description": "The resolved resources a step acts on. Topology is named only in ADR-SHARED-012 identifiers.",
       "properties": {
-        "provisioning_id": { "$ref": "domain.schema.json#/$defs/tenantProvisioningId" },
         "tenant_id": { "$ref": "domain.schema.json#/$defs/tenantId" },
-        "request_version": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Version of the desired-state request this run is provisioning (Technical Specification SS24)."
-        },
-        "desired_state_version": { "type": "integer", "minimum": 1 },
-        "observed_state_version": { "type": "integer", "minimum": 0 },
-        "state": {
-          "type": "string",
-          "enum": ["requested", "accepted", "provisioning", "reconciling", "active", "suspended", "failed", "decommissioning", "cancelled"],
-          "description": "The coarse lifecycle state, identical to provisioning-state-machine.yaml and provisioning-state-changed.schema.json's already-shipped enum. Not redefined here; kept in sync by convention."
-        },
-        "current_phase": { "$ref": "domain.schema.json#/$defs/tenantProvisioningPhase" },
-        "product_requests": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["product_id"],
-            "properties": {
-              "product_id": { "$ref": "domain.schema.json#/$defs/productId" },
-              "profiles": {
-                "type": "array",
-                "items": { "$ref": "../../capability/v1/domain.schema.json#/$defs/capabilityCompositionKey" },
-                "default": []
-              }
-            }
-          },
-          "default": []
-        },
-        "estate_requests": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["estate_id"],
-            "properties": {
-              "estate_id": { "$ref": "domain.schema.json#/$defs/estateId" },
-              "channel": { "type": "string", "maxLength": 64 }
-            }
-          },
-          "default": []
-        },
-        "market_requests": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["market"],
-            "properties": {
-              "market": { "type": "string", "maxLength": 64 },
-              "activities": {
-                "type": "array",
-                "items": { "type": "string", "maxLength": 64 },
-                "default": []
-              }
-            }
-          },
-          "default": []
-        },
-        "isolation_requirement": { "type": "string", "maxLength": 64 },
-        "residency_requirement": { "type": "string", "maxLength": 64 },
-        "readiness_status": { "$ref": "domain.schema.json#/$defs/readinessStatus" },
-        "blocking_reasons": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["code"],
-            "properties": {
-              "code": {
-                "type": "string",
-                "description": "A capability_resolution_denial code from contracts/authorization/v1/reason-code-registry.yaml (e.g. BINDING_NOT_FOUND), reused rather than duplicated into a fourth reason-code category -- a provisioning blocker is, at root, always a capability resolution failure for some mandatory capability."
-              },
-              "capability_key": { "$ref": "../../capability/v1/domain.schema.json#/$defs/capabilityKey" },
-              "detail": { "type": "string", "maxLength": 500 }
-            }
-          },
-          "default": []
-        },
-        "started_at": { "type": "string", "format": "date-time" },
-        "completed_at": { "type": ["string", "null"], "format": "date-time" },
-        "version": { "type": "integer", "minimum": 1 },
-        "metadata": { "type": "object" }
-      },
-      "if": {
-        "properties": { "readiness_status": { "const": "BLOCKED" } },
-        "required": ["readiness_status"]
-      },
-      "then": {
-        "required": ["blocking_reasons"],
-        "properties": { "blocking_reasons": { "minItems": 1 } }
+        "legal_entity_id": { "$ref": "domain.schema.json#/$defs/canonicalLegalEntityId" },
+        "market": { "$ref": "../../admission/v1/application.schema.json#/$defs/countryCode" },
+        "estate_key": { "$ref": "domain.schema.json#/$defs/resourceId" },
+        "product_id": { "$ref": "domain.schema.json#/$defs/productId" },
+        "capability_key": { "$ref": "../../capability/v1/domain.schema.json#/$defs/capabilityKey" },
+        "provider_key": { "$ref": "../../capability/v1/domain.schema.json#/$defs/capabilityProviderKey" },
+        "binding_mode": { "$ref": "../../capability/v1/domain.schema.json#/$defs/bindingMode" },
+        "engine_id": { "$ref": "domain.schema.json#/$defs/engineId" },
+        "system_namespace": { "$ref": "canonical-mapping.schema.json#/$defs/externalReference/properties/system_namespace" },
+        "engine_instance_id": { "$ref": "domain.schema.json#/$defs/engineInstanceId" }
       }
+    },
+    "provisioningStep": {
+      "allOf": [{ "$ref": "change-plan.schema.json#/$defs/planStep" }],
+      "properties": {
+        "operation": { "$ref": "#/$defs/provisioningOperation" },
+        "resources": { "$ref": "#/$defs/provisioningStepResources" }
+      },
+      "required": ["resources"]
+    },
+    "ProvisioningPlan": {
+      "allOf": [{ "$ref": "change-plan.schema.json#/$defs/ChangePlan" }],
+      "required": ["tenant_provisioning_id", "tenant_id", "desired_state_version", "desired_state_digest"],
+      "properties": {
+        "tenant_provisioning_id": { "$ref": "domain.schema.json#/$defs/tenantProvisioningId" },
+        "tenant_id": { "$ref": "domain.schema.json#/$defs/tenantId" },
+        "desired_state_version": { "type": "integer", "minimum": 1 },
+        "desired_state_digest": {
+          "$ref": "domain.schema.json#/$defs/planDigest",
+          "description": "The digest of the desired state the plan was generated from."
+        },
+        "steps": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/provisioningStep" } }
+      },
+      "unevaluatedProperties": false
     }
   }
 }

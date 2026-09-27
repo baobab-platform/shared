@@ -23,6 +23,19 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Breaking: tenant provisioning is desired-state convergence (ADR-SHARED-015, Console gap B2).**
+  Shared describes provisioning to the specification's target semantics, not the Control Plane's implementation.
+  - `provisioning-desired-state.schema.json`: the business intent, frozen from an AUTHORISED TenantOnboardingRequest with its provenance and digest. It never names engines, instances, providers, grants or bindings. A provisioning is created from the onboarding request, never from a manifest.
+  - `change-plan.schema.json`, `approval-decision.schema.json` and `execution-operation.schema.json`: the generic ChangePlan, ApprovalDecision and ExecutionOperation of ADR-BCP-021 and ADR-BCP-022, reusable by Changesets.
+  - `provisioning-plan.schema.json` now defines the real `ProvisioningPlan`: canonical operation steps with ADR-SHARED-012 topology, a digest, blockers, impact and risk. It previously held the process aggregate, now `tenant-provisioning.schema.json`.
+  - `tenant-provisioning-lifecycle.yaml`: the canonical lifecycle (Technical Specification §22) with BLOCKED and REMEDIATING. The coarse `provisioning-state-machine.yaml` states become a deprecated projection.
+  - `domain.schema.json`: `tenantProvisioningState`, `provisioningPlanId`, `approvalDecisionId`, `operationId` and `planDigest`. `readinessStatus` gains UNKNOWN, and `tenantProvisioningPhase` is deprecated.
+  - `openapi.yaml` 1.8.0 adds eleven Provisioning operations: create (plan only), list, read, plan, replan, approve (bound to the digest, never self-approval), apply and remediate (202 with an operation), withdraw, readiness and drift. It also adds three Operations operations: get, retry and cancel.
+  - `registerTenant` only records the tenant identity; it no longer starts provisioning, which takes effect only when an approved plan is applied.
+  - `tenant-provisioning-lifecycle.yaml` records each transition's trigger: a named command or a system transition.
+  - New scopes: `provisioning:approve`, `operation:read` and `operation:control`.
+  - `scripts/validate-control-plane-contracts.py` validates the new schemas, an example and negative fixtures, and checks the lifecycle's consistency, including that every command transition names an OpenAPI operation.
+
 - **Breaking: `@baobab-platform/contracts-ts` drops its client-side `CanonicalMappingResolver` (ADR-SHARED-014).**
   It resolved mappings against a context its caller supplied, so a consumer could select any tenant's scope. Mapping resolution is the Control Plane's `resolveMapping`, which redeems a stored context. `ResolutionContext` moves to `context-resolver`.
 

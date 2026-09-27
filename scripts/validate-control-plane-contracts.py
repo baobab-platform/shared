@@ -49,6 +49,25 @@ RESPONSIBILITIES = {
     "capability-explanation.schema.json": {
         "opaqueId", "CapabilityExplanationRequest", "CapabilityExplanation",
     },
+    "provisioning-desired-state.schema.json": {
+        "marketActivity", "desiredStateProvenance", "ProvisioningDesiredState", "TenantProvisioningCreateRequest",
+    },
+    "change-plan.schema.json": {
+        "riskClass", "planFinding", "planCheck", "planStep", "impactAnalysis", "ChangePlan",
+    },
+    "provisioning-plan.schema.json": {
+        "provisioningOperation", "provisioningStepResources", "provisioningStep", "ProvisioningPlan",
+    },
+    "approval-decision.schema.json": {
+        "approvalOutcome", "ApprovalDecisionRequest", "ApprovalDecision",
+    },
+    "execution-operation.schema.json": {
+        "operationStatus", "operationType", "ExecutionOperation", "OperationCommandRequest",
+    },
+    "tenant-provisioning.schema.json": {
+        "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningReplanRequest",
+        "ProvisioningCommandRequest", "TenantProvisioningPage", "ProvisioningReadiness", "ProvisioningDrift",
+    },
 }
 
 FAILURES: list[str] = []
@@ -255,6 +274,122 @@ def check_mapping_resolution() -> None:
         rejects(schema, "resolutionResponse", missing, f"resolution without {field}")
 
 
+def check_tenant_provisioning() -> None:
+    example = json.loads((CP / "examples" / "tenant-provisioning.json").read_text())
+    for key, schema, definition in (
+            ("create_request", "provisioning-desired-state.schema.json", "TenantProvisioningCreateRequest"),
+            ("desired_state", "provisioning-desired-state.schema.json", "ProvisioningDesiredState"),
+            ("plan", "provisioning-plan.schema.json", "ProvisioningPlan"),
+            ("approval_request", "approval-decision.schema.json", "ApprovalDecisionRequest"),
+            ("approval", "approval-decision.schema.json", "ApprovalDecision"),
+            ("provisioning", "tenant-provisioning.schema.json", "TenantProvisioning"),
+            ("operation", "execution-operation.schema.json", "ExecutionOperation"),
+            ("readiness", "tenant-provisioning.schema.json", "ProvisioningReadiness"),
+            ("drift", "tenant-provisioning.schema.json", "ProvisioningDrift")):
+        accepts(schema, definition, example[key], f"tenant-provisioning {key}")
+
+    # Callers never supply how engines are wired (ADR-SHARED-015).
+    create = example["create_request"]
+    for field, value in (("manifest", {}), ("capability_grants", []), ("capability_bindings", []),
+                         ("engine_instance", "ei_0199a1b2c3d47e8f"), ("tenant_id", "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b")):
+        rejects("provisioning-desired-state.schema.json", "TenantProvisioningCreateRequest", {**create, field: value},
+                f"provisioning create request naming {field}")
+    desired = example["desired_state"]
+    for field in ("capability_grants", "bindings", "engine_id", "engine_instance_id", "provider_key"):
+        rejects("provisioning-desired-state.schema.json", "ProvisioningDesiredState", {**desired, field: "baobab-trade"},
+                f"desired state naming {field}")
+    without_provenance = copy.deepcopy(desired)
+    del without_provenance["provenance"]
+    rejects("provisioning-desired-state.schema.json", "ProvisioningDesiredState", without_provenance, "desired state without provenance")
+
+    # The plan is canonical, digest-bound and names topology in ADR-SHARED-012 identifiers.
+    plan = example["plan"]
+    def with_step(**changes: object) -> dict:
+        changed = copy.deepcopy(plan)
+        step = changed["steps"][1]
+        for key, value in changes.items():
+            if key == "operation":
+                step["operation"] = value
+            else:
+                step["resources"][key] = value
+        return changed
+    for label, changed in (("a UUID engine instance", with_step(engine_instance_id="0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c")),
+                           ("a snake_case engine", with_step(engine_id="baobab_trade")),
+                           ("a provider-specific operation", with_step(operation="CALL_MEDUSA_API")),
+                           ("a provider-specific resource", with_step(medusa_store_id="store_1"))):
+        rejects("provisioning-plan.schema.json", "ProvisioningPlan", changed, f"plan step with {label}")
+    for field in ("plan_digest", "base_revision", "impact_analysis", "risk_class"):
+        missing = copy.deepcopy(plan)
+        del missing[field]
+        rejects("provisioning-plan.schema.json", "ProvisioningPlan", missing, f"plan without {field}")
+    rejects("provisioning-plan.schema.json", "ProvisioningPlan", {**plan, "plan_digest": "abc123"}, "plan with an unqualified digest")
+    rejects("provisioning-plan.schema.json", "ProvisioningPlan", {**plan, "approved": True}, "plan carrying its own approval")
+
+    # Approval binds the exact plan; the approver is never a body field.
+    request = example["approval_request"]
+    without_digest = copy.deepcopy(request)
+    del without_digest["plan_digest"]
+    rejects("approval-decision.schema.json", "ApprovalDecisionRequest", without_digest, "approval without the plan digest")
+    rejects("approval-decision.schema.json", "ApprovalDecisionRequest", {**request, "approved_by": "someone"}, "approval naming its approver")
+    rejects("approval-decision.schema.json", "ApprovalDecisionRequest", {**request, "decision": "REJECTED"}, "rejection without a reason")
+    approval = example["approval"]
+    for outcome in ("REJECTED", "CHANGES_REQUESTED"):
+        rejects("approval-decision.schema.json", "ApprovalDecision", {**approval, "decision": outcome}, f"recorded {outcome} without its reason")
+        rejects("approval-decision.schema.json", "ApprovalDecision", {**approval, "decision": outcome, "reason": ""}, f"recorded {outcome} with an empty reason")
+    accepts("approval-decision.schema.json", "ApprovalDecision", {**approval, "decision": "REJECTED", "reason": "Residency not met"}, "recorded rejection with its reason")
+
+    # Three lifecycles stay distinct.
+    operation = example["operation"]
+    rejects("execution-operation.schema.json", "ExecutionOperation", {**operation, "status": "FAILED"}, "failed operation without a problem")
+    rejects("execution-operation.schema.json", "ExecutionOperation", {**operation, "status": "ACTIVE"}, "operation in a tenant state")
+    succeeded = {**operation, "status": "SUCCEEDED", "completed_at": "2026-09-27T09:20:00Z"}
+    rejects("execution-operation.schema.json", "ExecutionOperation", succeeded, "succeeded operation without its result")
+    result = {"resource_type": "TENANT_PROVISIONING", "resource_id": operation["subject"]["id"]}
+    rejects("execution-operation.schema.json", "ExecutionOperation", {**succeeded, "result": result}, "succeeded operation without the resource's state")
+    accepts("execution-operation.schema.json", "ExecutionOperation", {**succeeded, "result": {**result, "resource_state": "READY"}},
+            "succeeded operation naming the resource's state")
+    readiness = example["readiness"]
+    rejects("tenant-provisioning.schema.json", "ProvisioningReadiness", {**readiness, "snapshots": []}, "evaluated readiness without snapshots")
+    unknown = {key: value for key, value in readiness.items() if key != "evaluated_at"}
+    accepts("tenant-provisioning.schema.json", "ProvisioningReadiness", {**unknown, "status": "UNKNOWN", "snapshots": []}, "unevaluated readiness")
+    rejects("tenant-provisioning.schema.json", "TenantProvisioningReplanRequest", {"desired_state_version": 2}, "replan without a reason")
+    rejects("tenant-provisioning.schema.json", "TenantProvisioningReplanRequest", {"reason": "stale", "manifest": {}}, "replan carrying a manifest")
+    provisioning = example["provisioning"]
+    rejects("tenant-provisioning.schema.json", "TenantProvisioning", {**provisioning, "state": "provisioning"}, "provisioning in the legacy coarse state")
+    rejects("tenant-provisioning.schema.json", "TenantProvisioning", {**provisioning, "state": "RUNNING"}, "provisioning in an operation status")
+    rejects("tenant-provisioning.schema.json", "TenantProvisioning", {**provisioning, "state": "BLOCKED", "blocking_reasons": []},
+            "BLOCKED provisioning without reasons")
+
+    lifecycle = yaml.safe_load((CP / "tenant-provisioning-lifecycle.yaml").read_text())
+    states = set(json.loads((CP / "domain.schema.json").read_text())["$defs"]["tenantProvisioningState"]["enum"])
+    if set(lifecycle["states"]) | set(lifecycle["terminal_states"]) != states:
+        fail("tenant-provisioning-lifecycle.yaml states differ from tenantProvisioningState")
+    for state, spec in lifecycle["states"].items():
+        for command, target in (spec or {}).get("transitions", {}).items():
+            if target not in states:
+                fail(f"tenant-provisioning-lifecycle.yaml {state}.{command} targets unknown state {target}")
+            if command == "apply" and state != "PLANNED":
+                fail(f"tenant-provisioning-lifecycle.yaml applies from {state}; only a PLANNED provisioning is applied")
+    # Every transition has a trigger, and every command is an operation (no dead-end state).
+    openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
+    operation_ids = {op.get("operationId") for item in openapi["paths"].values() for op in item.values() if isinstance(op, dict)}
+    commands, system = lifecycle["triggers"]["commands"], set(lifecycle["triggers"]["system"])
+    if set(commands) & system:
+        fail(f"tenant-provisioning-lifecycle.yaml transitions {sorted(set(commands) & system)} are both command and system")
+    for transition, operation_id in commands.items():
+        if operation_id not in operation_ids:
+            fail(f"tenant-provisioning-lifecycle.yaml command {transition} names unknown operation {operation_id}")
+    used = {command for spec in lifecycle["states"].values() for command in (spec or {}).get("transitions", {})}
+    if used != set(commands) | system:
+        fail(f"tenant-provisioning-lifecycle.yaml triggers differ from transitions: {sorted(used ^ (set(commands) | system))}")
+    for terminal in lifecycle["terminal_states"]:
+        if terminal in lifecycle["states"]:
+            fail(f"tenant-provisioning-lifecycle.yaml terminal state {terminal} has transitions")
+    legacy = set(json.loads((CP / "tenant-provisioning.schema.json").read_text())["$defs"]["legacyProvisioningState"]["enum"])
+    if set(lifecycle["legacy_projection"]) != states or not set(lifecycle["legacy_projection"].values()) <= legacy:
+        fail("tenant-provisioning-lifecycle.yaml legacy_projection must map every state to a legacy state")
+
+
 def check_openapi_references() -> None:
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
     pattern = re.compile(r"^\./(" + "|".join(re.escape(n) for n in RESPONSIBILITIES) + r")#/\$defs/(\w+)$")
@@ -363,6 +498,7 @@ def main() -> int:
     check_capability_explanation()
     check_mapping_administration()
     check_mapping_resolution()
+    check_tenant_provisioning()
     check_openapi_references()
     check_topology_identifiers()
     check_external_systems()

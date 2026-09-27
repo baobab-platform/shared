@@ -1,0 +1,129 @@
+# The canonical TenantProvisioning lifecycle (Technical Specification SS22,
+# ADR-SHARED-015). ExecutionOperation status and readiness status are
+# separate lifecycles (execution-operation.schema.json, readiness.schema.json)
+# and are never folded into this one.
+id: baobab-platform.control-plane.tenant-provisioning-lifecycle.v1
+initial_state: DRAFT
+terminal_states:
+  - CANCELLED
+  - DEPROVISIONED
+states:
+  DRAFT:
+    transitions:
+      validate: VALIDATING
+      withdraw: CANCELLED
+  VALIDATING:
+    transitions:
+      plan: PLANNED
+      block: BLOCKED
+      fail: FAILED
+  PLANNED:
+    # Planning was side-effect free. Only an approved, non-stale plan whose
+    # digest matches the approval is applied.
+    transitions:
+      apply: REGISTERING
+      replan: VALIDATING
+      withdraw: CANCELLED
+  REGISTERING:
+    transitions:
+      advance: CONFIGURING_CONTEXT
+      block: BLOCKED
+      fail: FAILED
+  CONFIGURING_CONTEXT:
+    transitions:
+      advance: PROVISIONING_ENTITLEMENTS
+      block: BLOCKED
+      fail: FAILED
+  PROVISIONING_ENTITLEMENTS:
+    transitions:
+      advance: PROVISIONING_PROVIDERS
+      block: BLOCKED
+      fail: FAILED
+  PROVISIONING_PROVIDERS:
+    transitions:
+      advance: VALIDATING_SECURITY
+      block: BLOCKED
+      fail: FAILED
+  VALIDATING_SECURITY:
+    transitions:
+      advance: VERIFYING_READINESS
+      block: BLOCKED
+      fail: FAILED
+  VERIFYING_READINESS:
+    transitions:
+      ready: READY
+      block: BLOCKED
+  BLOCKED:
+    # A known, remediable condition. Remediation is deliberate, not a retry.
+    transitions:
+      remediate: REMEDIATING
+      replan: VALIDATING
+      withdraw: CANCELLED
+  REMEDIATING:
+    transitions:
+      verify: VERIFYING_READINESS
+      block: BLOCKED
+      fail: FAILED
+  READY:
+    transitions:
+      activate: ACTIVE
+      block: BLOCKED
+  ACTIVE:
+    transitions:
+      deprovision: DEPROVISIONED
+  FAILED:
+    # An operational failure. Retrying the operation resumes the approved plan
+    # while it is not stale; otherwise the provisioning is replanned.
+    transitions:
+      resume: REGISTERING
+      replan: VALIDATING
+      withdraw: CANCELLED
+# What causes each transition. A command names the OpenAPI operation that
+# requests it; a system transition is taken by the Control Plane while it
+# plans, executes or observes, and is never requested directly.
+triggers:
+  commands:
+    apply: applyTenantProvisioning
+    replan: replanTenantProvisioning
+    withdraw: withdrawTenantProvisioning
+    remediate: remediateTenantProvisioning
+    resume: retryOperation
+  system:
+    - validate
+    - plan
+    - advance
+    - block
+    - fail
+    - ready
+    - verify
+    # The tenant lifecycle's activateTenant and decommissionTenant drive these.
+    - activate
+    - deprovision
+invariants:
+  - Planning is side-effect free; no runtime resource, grant, binding, IAM projection or provider configuration changes before apply.
+  - Apply requires an APPROVED ApprovalDecision whose plan_digest equals the current plan's, on a plan that is not stale.
+  - The approver of a plan is never the principal who requested the provisioning.
+  - Apply and remediate are asynchronous and return an ExecutionOperation; retrying or cancelling that execution is an operation command.
+  - Withdrawing abandons a provisioning that is not executing; it is a provisioning command, distinct from cancelling an operation.
+  - A cancelled apply or remediation leaves the provisioning BLOCKED with the reason EXECUTION_CANCELLED.
+  - Transitions require optimistic revision matching.
+  - Every accepted transition writes an audit record and outbox event atomically.
+# The deprecated coarse projection (provisioning-state-machine.yaml) of each
+# canonical state, for consumers of the existing provisioning events.
+legacy_projection:
+  DRAFT: accepted
+  VALIDATING: accepted
+  PLANNED: accepted
+  REGISTERING: provisioning
+  CONFIGURING_CONTEXT: provisioning
+  PROVISIONING_ENTITLEMENTS: provisioning
+  PROVISIONING_PROVIDERS: provisioning
+  VALIDATING_SECURITY: provisioning
+  VERIFYING_READINESS: reconciling
+  BLOCKED: reconciling
+  REMEDIATING: provisioning
+  READY: reconciling
+  ACTIVE: active
+  FAILED: failed
+  CANCELLED: cancelled
+  DEPROVISIONED: cancelled
