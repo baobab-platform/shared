@@ -1,0 +1,237 @@
+{
+  "create_request": {
+    "tenant_onboarding_request_id": "tor_0199a1b2c3d47e8f",
+    "desired_state_version": 1
+  },
+  "desired_state": {
+    "tenant": {
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+      "display_name": "Acme Uganda"
+    },
+    "legal_entities": [],
+    "products": [
+      {
+        "product_id": "baobab-xbt",
+        "profiles": []
+      }
+    ],
+    "market_participation": [
+      {
+        "market": "UG",
+        "activities": [
+          "LEGAL_PRESENCE",
+          "SOURCING",
+          "EXPORTING"
+        ]
+      },
+      {
+        "market": "ZA",
+        "activities": [
+          "SELLING",
+          "IMPORTING"
+        ]
+      }
+    ],
+    "digital_estates": [],
+    "isolation_requirement": "row_level_security",
+    "residency_requirement": "af-south-1",
+    "provenance": {
+      "tenant_onboarding_request_id": "tor_0199a1b2c3d47e8f",
+      "admission_decision_id": "adm_0199a1b2c3d47e8f",
+      "desired_state_version": 1
+    },
+    "desired_state_digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "frozen_at": "2026-09-27T09:00:00Z"
+  },
+  "plan": {
+    "plan_id": "plan_0199a1b2c3d47e8f",
+    "plan_version": 1,
+    "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "base_revision": 1,
+    "tenant_provisioning_id": "tp_0199a1b2c3d47e8f",
+    "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "desired_state_version": 1,
+    "desired_state_digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "generated_at": "2026-09-27T09:00:01Z",
+    "expires_at": "2026-10-04T09:00:01Z",
+    "risk_class": "MEDIUM",
+    "steps": [
+      {
+        "step_id": "grant-order-manage",
+        "operation": "CREATE_CAPABILITY_GRANT",
+        "irreversible": false,
+        "resources": {
+          "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+          "capability_key": "commerce.order.manage",
+          "market": "ZA"
+        }
+      },
+      {
+        "step_id": "bind-order-manage",
+        "operation": "CREATE_CAPABILITY_BINDING",
+        "depends_on": [
+          "grant-order-manage"
+        ],
+        "irreversible": false,
+        "resources": {
+          "capability_key": "commerce.order.manage",
+          "provider_key": "baobab-trade.medusa",
+          "binding_mode": "PRIMARY",
+          "engine_id": "baobab-trade",
+          "system_namespace": "medusa",
+          "engine_instance_id": "ei_0199a1b2c3d47e8f"
+        }
+      },
+      {
+        "step_id": "verify-readiness",
+        "operation": "VERIFY_READINESS",
+        "depends_on": [
+          "bind-order-manage"
+        ],
+        "irreversible": false,
+        "resources": {
+          "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+        }
+      }
+    ],
+    "security_checks": [
+      {
+        "check": "RESIDENCY_COMPATIBLE",
+        "description": "Every bound engine instance runs in an approved region for af-south-1."
+      }
+    ],
+    "readiness_requirements": [
+      {
+        "check": "MANDATORY_CAPABILITIES_BOUND",
+        "description": "Every mandatory capability of baobab-xbt has an active binding."
+      }
+    ],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Grants and binds commerce.order.manage for Acme Uganda in ZA.",
+      "resources_created": 2,
+      "resources_changed": 0,
+      "resources_removed": 0
+    },
+    "verification_strategy": "Resolve every granted capability for the tenant and require readiness READY.",
+    "compensation_strategy": "Retire created bindings and grants in reverse order; nothing irreversible is planned."
+  },
+  "approval_request": {
+    "plan_id": "plan_0199a1b2c3d47e8f",
+    "plan_version": 1,
+    "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "decision": "APPROVED"
+  },
+  "approval": {
+    "approval_id": "apd_0199a1b2c3d47e8f",
+    "subject_type": "TENANT_PROVISIONING",
+    "subject_id": "tp_0199a1b2c3d47e8f",
+    "plan_id": "plan_0199a1b2c3d47e8f",
+    "plan_version": 1,
+    "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "decision": "APPROVED",
+    "decided_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a91",
+    "decided_at": "2026-09-27T09:10:00Z"
+  },
+  "provisioning": {
+    "tenant_provisioning_id": "tp_0199a1b2c3d47e8f",
+    "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "state": "REGISTERING",
+    "legacy_state": "provisioning",
+    "provenance": {
+      "tenant_onboarding_request_id": "tor_0199a1b2c3d47e8f",
+      "admission_decision_id": "adm_0199a1b2c3d47e8f",
+      "desired_state_version": 1
+    },
+    "desired_state_digest": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "current_plan": {
+      "plan_id": "plan_0199a1b2c3d47e8f",
+      "plan_version": 1,
+      "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "generated_at": "2026-09-27T09:00:01Z",
+      "stale": false
+    },
+    "approval": {
+      "approval_id": "apd_0199a1b2c3d47e8f",
+      "decision": "APPROVED",
+      "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+      "decided_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a91",
+      "decided_at": "2026-09-27T09:10:00Z"
+    },
+    "operation_id": "op_0199a1b2c3d47e8f",
+    "readiness_status": "UNKNOWN",
+    "blocking_reasons": [],
+    "revision": 3,
+    "created_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a90",
+    "created_at": "2026-09-27T09:00:00Z",
+    "updated_at": "2026-09-27T09:11:00Z"
+  },
+  "operation": {
+    "operation_id": "op_0199a1b2c3d47e8f",
+    "operation_type": "TENANT_PROVISIONING_APPLY",
+    "status": "RUNNING",
+    "subject": {
+      "type": "TENANT_PROVISIONING",
+      "id": "tp_0199a1b2c3d47e8f",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "plan_id": "plan_0199a1b2c3d47e8f",
+    "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "approval_id": "apd_0199a1b2c3d47e8f",
+    "requested_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a90",
+    "current_phase": "REGISTERING",
+    "progress": {
+      "completed_steps": 1,
+      "total_steps": 3,
+      "current_step": "bind-order-manage"
+    },
+    "execution_attempt": 1,
+    "retryable": false,
+    "revision": 2,
+    "created_at": "2026-09-27T09:11:00Z",
+    "started_at": "2026-09-27T09:11:01Z",
+    "updated_at": "2026-09-27T09:11:05Z"
+  },
+  "readiness": {
+    "tenant_provisioning_id": "tp_0199a1b2c3d47e8f",
+    "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "status": "BLOCKED",
+    "evaluated_at": "2026-09-27T09:12:00Z",
+    "snapshots": [
+      {
+        "readiness_snapshot_id": "ready_0199a1b2c3d47e8f",
+        "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+        "level": "CAPABILITY",
+        "object_reference": "commerce.order.manage",
+        "status": "BLOCKED",
+        "blocking_reasons": [
+          {
+            "code": "BINDING_NOT_FOUND",
+            "capability_key": "commerce.order.manage"
+          }
+        ],
+        "computed_at": "2026-09-27T09:12:00Z"
+      }
+    ]
+  },
+  "drift": {
+    "tenant_provisioning_id": "tp_0199a1b2c3d47e8f",
+    "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "desired_state_version": 1,
+    "observed_at": "2026-09-27T09:12:00Z",
+    "items": [
+      {
+        "drift_record_id": "drift_0199a1b2c3d47e8f",
+        "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+        "object_type": "CAPABILITY_BINDING",
+        "object_reference": "cb_0199a1b2c3d47e8f",
+        "desired_state_version": 1,
+        "drift_description": "binding_mode=DISABLED observed, PRIMARY desired",
+        "safe_to_reconcile": true,
+        "resolution": "UNRESOLVED",
+        "detected_at": "2026-09-27T09:12:00Z"
+      }
+    ]
+  }
+}

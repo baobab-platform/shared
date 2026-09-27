@@ -1,0 +1,105 @@
+# The canonical TenantProvisioning lifecycle (Technical Specification SS22,
+# ADR-SHARED-015). ExecutionOperation status and readiness status are
+# separate lifecycles (execution-operation.schema.json, readiness.schema.json)
+# and are never folded into this one.
+id: baobab-platform.control-plane.tenant-provisioning-lifecycle.v1
+initial_state: DRAFT
+terminal_states:
+  - CANCELLED
+  - DEPROVISIONED
+states:
+  DRAFT:
+    transitions:
+      validate: VALIDATING
+      cancel: CANCELLED
+  VALIDATING:
+    transitions:
+      plan: PLANNED
+      block: BLOCKED
+      fail: FAILED
+  PLANNED:
+    # Planning was side-effect free. Only an approved, non-stale plan whose
+    # digest matches the approval is applied.
+    transitions:
+      apply: REGISTERING
+      replan: VALIDATING
+      cancel: CANCELLED
+  REGISTERING:
+    transitions:
+      advance: CONFIGURING_CONTEXT
+      block: BLOCKED
+      fail: FAILED
+  CONFIGURING_CONTEXT:
+    transitions:
+      advance: PROVISIONING_ENTITLEMENTS
+      block: BLOCKED
+      fail: FAILED
+  PROVISIONING_ENTITLEMENTS:
+    transitions:
+      advance: PROVISIONING_PROVIDERS
+      block: BLOCKED
+      fail: FAILED
+  PROVISIONING_PROVIDERS:
+    transitions:
+      advance: VALIDATING_SECURITY
+      block: BLOCKED
+      fail: FAILED
+  VALIDATING_SECURITY:
+    transitions:
+      advance: VERIFYING_READINESS
+      block: BLOCKED
+      fail: FAILED
+  VERIFYING_READINESS:
+    transitions:
+      ready: READY
+      block: BLOCKED
+  BLOCKED:
+    # A known, remediable condition. Remediation is deliberate, not a retry.
+    transitions:
+      remediate: REMEDIATING
+      replan: VALIDATING
+      cancel: CANCELLED
+  REMEDIATING:
+    transitions:
+      verify: VERIFYING_READINESS
+      fail: FAILED
+  READY:
+    transitions:
+      activate: ACTIVE
+      block: BLOCKED
+  ACTIVE:
+    transitions:
+      deprovision: DEPROVISIONED
+  FAILED:
+    # An operational failure. Retrying the operation resumes the approved plan
+    # while it is not stale; otherwise the provisioning is replanned.
+    transitions:
+      resume: REGISTERING
+      replan: VALIDATING
+      cancel: CANCELLED
+invariants:
+  - Planning is side-effect free; no runtime resource, grant, binding, IAM projection or provider configuration changes before apply.
+  - Apply requires an APPROVED ApprovalDecision whose plan_digest equals the current plan's, on a plan that is not stale.
+  - The approver of a plan is never the principal who requested the provisioning.
+  - Apply is asynchronous and returns an ExecutionOperation; retry and cancel are operation commands.
+  - Transitions require optimistic revision matching.
+  - Every accepted transition writes an audit record and outbox event atomically.
+# The deprecated coarse projection (provisioning-state-machine.yaml) of each
+# canonical state, for consumers of the existing provisioning events.
+legacy_projection:
+  DRAFT: accepted
+  VALIDATING: accepted
+  PLANNED: accepted
+  REGISTERING: provisioning
+  CONFIGURING_CONTEXT: provisioning
+  PROVISIONING_ENTITLEMENTS: provisioning
+  PROVISIONING_PROVIDERS: provisioning
+  VALIDATING_SECURITY: provisioning
+  VERIFYING_READINESS: reconciling
+  BLOCKED: reconciling
+  REMEDIATING: provisioning
+  READY: reconciling
+  ACTIVE: active
+  FAILED: failed
+  CANCELLED: cancelled
+  DEPROVISIONED: cancelled
