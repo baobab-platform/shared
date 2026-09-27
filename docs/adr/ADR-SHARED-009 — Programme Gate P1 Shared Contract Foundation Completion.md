@@ -1,6 +1,6 @@
 # ADR-SHARED-009 — Programme Gate P1 Shared Contract Foundation Completion
 
-**Status:** Accepted — Normative Contract Addition
+**Status:** Accepted — Normative Contract Addition (reason codes for provisioning blockers amended by ADR-SHARED-015 §8)
 **Date:** 2026-09-16
 **Decision Owners:** BAOBAB-PLATFORM / Baobab Platform Architecture
 **Primary Repository:** `baobab-platform/shared`

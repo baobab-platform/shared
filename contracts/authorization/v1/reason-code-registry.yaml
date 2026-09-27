@@ -6,7 +6,7 @@
 # SHALL not expose sensitive information indiscriminately to external
 # clients").
 #
-# Three categories exist for three different moments, not three different
+# Four categories exist for four different moments, not four different
 # vocabularies for the same thing:
 #
 #   authorization_denial          -- decision.schema.json's `reason_code`,
@@ -25,6 +25,12 @@
 #                                     §40). This is a richer, capability-resolution-
 #                                     specific vocabulary than authorization_denial's
 #                                     coarser decision.schema.json codes.
+#   provisioning_blocker           -- why a TenantProvisioning, its plan or its
+#                                     readiness is blocked (ADR-SHARED-015):
+#                                     the codes of ProvisioningPlan blockers,
+#                                     TenantProvisioning.blocking_reasons and
+#                                     ReadinessSnapshot.blocking_reasons that no
+#                                     capability_resolution_denial code names.
 #
 # TENANT_SUSPENDED (authorization_denial) and TENANT_SUSPENSION
 # (lifecycle_revocation) are deliberately two distinct, near-identical-
@@ -135,3 +141,52 @@ reason_codes:
   - code: CONTEXT_INVALID
     category: capability_resolution_denial
     description: "The referenced context_id is missing, expired, or was resolved for a different capability's operation scope requirements."
+  # -- provisioning_blocker (ADR-SHARED-015) ----------------------------
+  # Why a TenantProvisioning, its plan or its readiness is blocked: known,
+  # remediable conditions carried by ProvisioningPlan blockers,
+  # TenantProvisioning.blocking_reasons and ReadinessSnapshot.blocking_reasons.
+  # Conditions a capability resolution already names use its
+  # capability_resolution_denial code instead (for example GRANT_NOT_FOUND,
+  # BINDING_NOT_FOUND, PROVIDER_UNAVAILABLE, ISOLATION_POLICY_MISMATCH).
+  - code: MARKET_ACTIVITIES_UNDECLARED
+    category: provisioning_blocker
+    description: "The desired state declares no participation activities for a market it requires, so market participation cannot be planned."
+  - code: MARKET_NOT_AVAILABLE
+    category: provisioning_blocker
+    description: "A market the desired state requires is not registered or not active."
+  - code: PRODUCT_NOT_AVAILABLE
+    category: provisioning_blocker
+    description: "A product the desired state requires is not registered or not available."
+  - code: COMPOSITION_NOT_AVAILABLE
+    category: provisioning_blocker
+    description: "A required product's capability composition is not registered."
+  - code: CAPABILITY_NOT_AVAILABLE
+    category: provisioning_blocker
+    description: "A capability a required product composes is not registered or not active."
+  - code: NO_PROVIDER
+    category: provisioning_blocker
+    description: "No registered provider supports a capability the desired state requires."
+  - code: NO_RESIDENCY_COMPLIANT_PROVIDER
+    category: provisioning_blocker
+    description: "No provider of a required capability runs where the tenant's data must reside."
+  - code: NO_PRODUCTION_PERMITTED_PROVIDER
+    category: provisioning_blocker
+    description: "No provider of a required capability is permitted to serve production."
+  - code: PLAN_STALE
+    category: provisioning_blocker
+    description: "Authoritative state changed since the plan was approved, or its validity window closed before execution; a new plan is required."
+  - code: PLAN_DIGEST_MISMATCH
+    category: provisioning_blocker
+    description: "The plan being executed is no longer the plan the approval authorised."
+  - code: PLAN_NOT_EXECUTABLE
+    category: provisioning_blocker
+    description: "The approved plan could not be resolved to executable steps; a new plan is required."
+  - code: EXECUTION_CANCELLED
+    category: provisioning_blocker
+    description: "An apply or remediation was cancelled before it completed."
+  - code: MARKET_PARTICIPATION_NOT_READY
+    category: provisioning_blocker
+    description: "A market participation the desired state requires is not active with its declared activities."
+  - code: TRADE_LANE_NOT_READY
+    category: provisioning_blocker
+    description: "A trade lane the provisioning requires is not active."
