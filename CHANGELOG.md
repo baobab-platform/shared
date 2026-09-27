@@ -23,6 +23,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- `administration/v1` `domain.schema.json` adds a metric catalogue: `administrative_authority_shadow_total`, its four labels and their closed value sets (ADR-BCP-020 section 144 shadow evaluation).
 - **Administrative authority contracts (ADR-BCP-020 gate ADA-01).**
   - New `administration/v1` package:
     - `AdministrativeGrant`, `AdministrativeScope`, `AdministrativeDecision` and `EffectiveAuthority`;
