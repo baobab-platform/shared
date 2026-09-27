@@ -13,7 +13,11 @@ libraries that ADR-BCP-022 requires before an operation counts as complete:
   5. the topology identifiers have one grammar everywhere and
      external-systems.yaml registers well-formed systems (ADR-SHARED-012);
   6. every provisioning blocking reason is a registered code
-     (ADR-SHARED-015).
+     (ADR-SHARED-015);
+  7. the provider migration contract keeps cohorts deterministic, stateful
+     cutovers single-writer and its lifecycle, blockers and warnings in
+     step with provider-migration-lifecycle.yaml (ADR-BCP-006 sections
+     44-58, 119-122).
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -65,6 +69,11 @@ RESPONSIBILITIES = {
     },
     "execution-operation.schema.json": {
         "operationStatus", "operationType", "ExecutionOperation", "OperationCommandRequest",
+    },
+    "provider-migration.schema.json": {
+        "migrationStage", "migrationMode", "dataStrategy", "rollbackStrategy", "migrationCapability",
+        "cohortSelector", "migrationCohort", "cutoverWindow", "ProviderMigrationRequest", "migrationOperation",
+        "migrationStepResources", "migrationStep", "migrationDiscovery", "ProviderMigrationPlan", "ProviderMigration",
     },
     "tenant-provisioning.schema.json": {
         "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningReplanRequest",
@@ -392,6 +401,120 @@ def check_tenant_provisioning() -> None:
         fail("tenant-provisioning-lifecycle.yaml legacy_projection must map every state to a legacy state")
 
 
+def check_provider_migration() -> None:
+    schema = "provider-migration.schema.json"
+    example = json.loads((CP / "examples" / "provider-migration.json").read_text())
+    for key, definition in (("request", "ProviderMigrationRequest"), ("preview", "ProviderMigrationPlan"),
+                            ("plan", "ProviderMigrationPlan"), ("migration", "ProviderMigration")):
+        accepts(schema, definition, example[key], f"provider-migration {key}")
+    request = example["request"]
+
+    # The mode decides the data strategy: stateless moves no data, stateful
+    # moves it inside a cutover window, and dual write is never a strategy.
+    stateless = {**request, "migration_mode": "STATELESS_REBIND", "data_strategy": "NONE"}
+    stateless.pop("cutover_window")
+    accepts(schema, "ProviderMigrationRequest", stateless, "stateless rebind without data or window")
+    for label, changed in (
+            ("stateless migration moving data", {**stateless, "data_strategy": "BULK_MIGRATE_THEN_CUTOVER"}),
+            ("stateful migration moving no data", {**request, "data_strategy": "NONE"}),
+            ("stateful migration without a cutover window", {k: v for k, v in request.items() if k != "cutover_window"}),
+            ("a dual-write data strategy", {**request, "data_strategy": "DUAL_WRITE"}),
+            ("a percentage cohort", {**request, "cohorts": [{"cohort_key": "tenth", "selector": {"percentage": 10}}]}),
+            ("an empty cohort selector", {**request, "cohorts": [{"cohort_key": "none", "selector": {}}]}),
+            ("no cohorts", {**request, "cohorts": []}),
+            ("an owner email", {**request, "owners": ["ops@example.com"]}),
+            # The Control Plane discovers what is affected; the caller never says.
+            ("caller-supplied bindings", {**request, "binding_ids": ["cb_1"]}),
+            ("a caller-supplied engine instance", {**request, "engine_instance_id": "ei_0199a1b2c3d47e8f"})):
+        rejects(schema, "ProviderMigrationRequest", changed, f"migration request with {label}")
+
+    plan = example["plan"]
+    def with_step(**changes: object) -> dict:
+        changed = copy.deepcopy(plan)
+        step = changed["steps"][1]
+        for key, value in changes.items():
+            if key == "operation":
+                step["operation"] = value
+            else:
+                step["resources"][key] = value
+        return changed
+    for label, changed in (("a provider-specific operation", with_step(operation="CALL_IDEMPIERE_API")),
+                           ("a UUID engine instance", with_step(engine_instance_id="0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c")),
+                           ("a provider-specific resource", with_step(idempiere_client_id="11"))):
+        rejects(schema, "ProviderMigrationPlan", changed, f"migration plan step with {label}")
+    for field in ("plan_digest", "discovery", "impact_analysis", "risk_class"):
+        missing = copy.deepcopy(plan)
+        del missing[field]
+        rejects(schema, "ProviderMigrationPlan", missing, f"migration plan without {field}")
+    migration = example["migration"]
+    rejects(schema, "ProviderMigration", {**migration, "provider_migration_id": "0199a1b2-c3d4-7e8f"}, "migration with a raw UUID id")
+    rejects(schema, "ProviderMigration", {**migration, "stage": "CUTOVER"}, "migration with an unknown stage")
+
+    # Semantic rules the schema cannot express.
+    for key in ("preview", "plan"):
+        document = example[key]
+        if document["source_provider_key"] == document["target_provider_key"]:
+            fail(f"provider-migration {key}: source and target provider are the same")
+    if request["source_provider_key"] == request["target_provider_key"]:
+        fail("provider-migration request: source and target provider are the same")
+    open_cohorts = [i for i, cohort in enumerate(request["cohorts"]) if "selector" not in cohort]
+    if open_cohorts and open_cohorts != [len(request["cohorts"]) - 1]:
+        fail("provider-migration request: only the last cohort may omit its selector")
+    keys = [cohort["cohort_key"] for cohort in request["cohorts"]]
+    if len(keys) != len(set(keys)) or [c["cohort_key"] for c in plan["discovery"]["cohorts"]] != keys:
+        fail("provider-migration plan: discovery must list the request's cohorts once each, in order")
+
+    lifecycle = yaml.safe_load((CP / "provider-migration-lifecycle.yaml").read_text())
+    stages = set(json.loads((CP / schema).read_text())["$defs"]["migrationStage"]["enum"])
+    if set(lifecycle["states"]) | set(lifecycle["terminal_states"]) != stages:
+        fail("provider-migration-lifecycle.yaml states differ from migrationStage")
+    for stage, spec in lifecycle["states"].items():
+        for command, target in (spec or {}).get("transitions", {}).items():
+            if target not in stages:
+                fail(f"provider-migration-lifecycle.yaml {stage}.{command} targets unknown stage {target}")
+    if lifecycle["initial_state"] != "PLAN" or example["migration"]["stage"] != "PLAN":
+        fail("a provider migration is created in PLAN")
+    for terminal in lifecycle["terminal_states"]:
+        if terminal in lifecycle["states"]:
+            fail(f"provider-migration-lifecycle.yaml terminal stage {terminal} has transitions")
+    reachable, frontier = {lifecycle["initial_state"]}, [lifecycle["initial_state"]]
+    while frontier:
+        for target in (lifecycle["states"].get(frontier.pop()) or {}).get("transitions", {}).values():
+            if target not in reachable:
+                reachable.add(target)
+                frontier.append(target)
+    if not set(lifecycle["terminal_states"]) <= reachable:
+        fail(f"provider-migration-lifecycle.yaml cannot reach {sorted(set(lifecycle['terminal_states']) - reachable)}")
+
+    # Exactly one authoritative writer: every stateful cohort runs the
+    # freeze, migrate, reconcile, shift, unfreeze sequence in order.
+    operations = set(json.loads((CP / schema).read_text())["$defs"]["migrationOperation"]["enum"])
+    sequence = lifecycle["stateful_cohort_sequence"]
+    if not set(sequence) <= operations:
+        fail("provider-migration-lifecycle.yaml stateful_cohort_sequence names unknown operations")
+    if plan["migration_mode"] == "STATEFUL_CUTOVER":
+        for key in keys:
+            ordered = [step["operation"] for step in plan["steps"]
+                       if step["resources"].get("cohort_key") == key and step["operation"] in sequence]
+            if ordered != sequence:
+                fail(f"provider-migration plan: cohort {key} runs {ordered}, not {sequence}")
+
+    registry = yaml.safe_load((CONTRACTS / "authorization" / "v1" / "reason-code-registry.yaml").read_text())
+    registered = {entry["code"] for entry in registry["reason_codes"] if entry["category"] == "provider_migration_blocker"}
+    if set(lifecycle["blocking_codes"]) != registered:
+        fail(f"provider-migration-lifecycle.yaml blocking_codes differ from provider_migration_blocker codes: "
+             f"{sorted(set(lifecycle['blocking_codes']) ^ registered)}")
+    if set(lifecycle["warning_codes"]) & registered:
+        fail("a provider migration warning code is registered as a blocker")
+    for key in ("preview", "plan"):
+        for finding in example[key]["blockers"]:
+            if finding["code"] not in lifecycle["blocking_codes"]:
+                fail(f"provider-migration {key}: blocker {finding['code']} is not a provider migration blocking code")
+        for finding in example[key]["warnings"]:
+            if finding["code"] not in lifecycle["warning_codes"]:
+                fail(f"provider-migration {key}: warning {finding['code']} is not a provider migration warning code")
+
+
 def check_openapi_references() -> None:
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
     pattern = re.compile(r"^\./(" + "|".join(re.escape(n) for n in RESPONSIBILITIES) + r")#/\$defs/(\w+)$")
@@ -529,6 +652,8 @@ def check_blocking_reason_codes() -> None:
     if sorted(blocking_codes(probe)) != ["A_BLOCKER", "A_REASON"]:
         fail(f"blocking_codes collects {sorted(blocking_codes(probe))} from a plan and readiness probe")
     for path in sorted((CP / "examples").glob("*.json")):
+        if path.name == "provider-migration.json":
+            continue  # checked against its own category by check_provider_migration
         for code in blocking_codes(json.loads(path.read_text())):
             if code not in registered:
                 fail(f"examples/{path.name}: blocking reason {code!r} is not registered under {' or '.join(BLOCKING_CATEGORIES)}")
@@ -541,6 +666,7 @@ def main() -> int:
     check_mapping_administration()
     check_mapping_resolution()
     check_tenant_provisioning()
+    check_provider_migration()
     check_openapi_references()
     check_topology_identifiers()
     check_external_systems()

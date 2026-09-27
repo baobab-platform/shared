@@ -6,7 +6,7 @@
 # SHALL not expose sensitive information indiscriminately to external
 # clients").
 #
-# Six categories exist for six different moments, not six different
+# Seven categories exist for seven different moments, not six different
 # vocabularies for the same thing:
 #
 #   authorization_denial          -- decision.schema.json's `reason_code`,
@@ -41,6 +41,10 @@
 #                                     Control Plane administrative action was not
 #                                     allowed (ADR-BCP-020 sections 97-98). Safe to
 #                                     show the administrator; never internal policy.
+#   provider_migration_blocker     -- contracts/control-plane/v1/provider-migration.schema.json's
+#                                     ProviderMigrationPlan `blockers`: an unmet
+#                                     precondition that stops a provider migration
+#                                     advancing (ADR-BCP-006 sections 46-48, 55).
 #
 # TENANT_SUSPENDED (authorization_denial) and TENANT_SUSPENSION
 # (lifecycle_revocation) are deliberately two distinct, near-identical-
@@ -286,3 +290,37 @@ reason_codes:
   - code: TENANT_STATE_PROHIBITS_ACTION
     category: administrative_denial
     description: "The tenant's lifecycle state does not permit the action."
+
+  # -- provider_migration_blocker (ADR-BCP-006 sections 46-48, 55) ------
+  # Why a ProviderMigrationPlan cannot be approved or advanced. Each is a
+  # known, remediable condition found by discovery or validation.
+  - code: MIGRATION_SOURCE_NOT_BOUND
+    category: provider_migration_blocker
+    description: "The source provider serves none of the named capabilities through an active binding, so there is nothing to migrate."
+  - code: MIGRATION_TARGET_NOT_REGISTERED
+    category: provider_migration_blocker
+    description: "The target provider is not a registered, active provider."
+  - code: MIGRATION_TARGET_NOT_SUPPORTED
+    category: provider_migration_blocker
+    description: "The target provider does not declare support for a capability being migrated."
+  - code: MIGRATION_TARGET_CONTRACT_INCOMPATIBLE
+    category: provider_migration_blocker
+    description: "The target provider does not support the capability contract version the migrated bindings require."
+  - code: MIGRATION_TARGET_UNHEALTHY
+    category: provider_migration_blocker
+    description: "The target provider or an instance it would serve from has no current HEALTHY observation."
+  - code: MIGRATION_TARGET_NOT_ELIGIBLE
+    category: provider_migration_blocker
+    description: "The target cannot serve an affected context: its instances fail that context's region, isolation or residency requirements."
+  - code: MIGRATION_CONTEXT_UNASSIGNED
+    category: provider_migration_blocker
+    description: "An affected context belongs to no cohort, so it would never migrate."
+  - code: MIGRATION_COHORT_OVERLAP
+    category: provider_migration_blocker
+    description: "An affected context matches more than one cohort; each context migrates in exactly one."
+  - code: MIGRATION_SHADOW_UNSAFE
+    category: provider_migration_blocker
+    description: "A shadow stage was requested for a capability whose operations mutate state and are not declared shadow-safe."
+  - code: MIGRATION_ALREADY_IN_PROGRESS
+    category: provider_migration_blocker
+    description: "Another migration that has not ended already covers a named capability for the source provider."
