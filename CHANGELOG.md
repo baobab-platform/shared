@@ -29,6 +29,7 @@ Changes that have been merged but have not yet been included in a released versi
   - `domain.schema.json` adds `capabilityHealthCriticality`, `healthObservationSource` and `healthReasonCode`.
   - `health-policy.yaml`:
     - a missing, expired or future-dated observation counts as UNKNOWN;
+    - of two observations made at the same instant, the more severe status wins;
     - a `CRITICAL` capability accepts only HEALTHY;
     - a `STANDARD` capability accepts HEALTHY or UNKNOWN;
     - each level is checked separately.

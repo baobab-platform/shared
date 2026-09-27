@@ -1127,6 +1127,9 @@ The rules:
   (ADR-BCP-006 §21). This covers a subject never observed, one whose
   newest observation has expired, and one whose newest observation is
   dated in the future.
+- When two observations of one subject share an `observed_at`, the more
+  severe status is the newer (UNAVAILABLE, UNKNOWN, DEGRADED, HEALTHY), so
+  every replica derives the same health and a tie never favours health.
 - Each capability declares a `health_criticality` (ADR-BCP-006 §22).
   This is a per-capability policy, independent of any composition's
   membership criticality.

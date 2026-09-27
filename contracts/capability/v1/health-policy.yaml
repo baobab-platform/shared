@@ -19,6 +19,16 @@ effective_status:
   missing_observation: UNKNOWN
   future_observation: UNKNOWN
 
+# Two observations of one subject made at the same observed_at (say, a
+# probe and an operator report) are ordered by status, most severe first:
+# the more severe is the newest. Every replica therefore derives the same
+# effective status, and a tie never resolves toward health.
+equal_time_precedence:
+  - UNAVAILABLE
+  - UNKNOWN
+  - DEGRADED
+  - HEALTHY
+
 # The three levels of ADR-BCP-006 SS73 are checked separately, never
 # collapsed into one status. The engine instance level is always
 # checked. The provider and provider-capability levels are checked when

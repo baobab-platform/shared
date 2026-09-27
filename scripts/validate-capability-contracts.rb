@@ -174,6 +174,7 @@ effective = health_policy.fetch("effective_status")
 %w[expired_observation missing_observation future_observation].each do |key|
   fail_contract("health-policy.yaml effective_status.#{key} must be UNKNOWN") unless effective.fetch(key) == "UNKNOWN"
 end
+fail_contract("health-policy.yaml equal_time_precedence must order every status from UNAVAILABLE to HEALTHY, most severe first") unless health_policy.fetch("equal_time_precedence") == %w[UNAVAILABLE UNKNOWN DEGRADED HEALTHY]
 levels = health_policy.fetch("levels").to_h { |level| [level.fetch("level"), level] }
 fail_contract("health-policy.yaml must declare exactly the ENGINE_INSTANCE, PROVIDER and PROVIDER_CAPABILITY levels") unless levels.keys.sort == %w[ENGINE_INSTANCE PROVIDER PROVIDER_CAPABILITY]
 fail_contract("health-policy.yaml must always check the ENGINE_INSTANCE level") unless levels.fetch("ENGINE_INSTANCE").fetch("always_checked") == true
