@@ -27,6 +27,7 @@ Changes that have been merged but have not yet been included in a released versi
   - **Approval.** `decideProviderMigrationPlan` (`POST /provider-migrations/{id}/approve`, needs `provider-migration:approve`) records one `ApprovalDecision` with subject `PROVIDER_MIGRATION` on the current plan's digest. That one decision authorises the plan's whole sequence. The creator never approves, and a replan needs a new decision.
   - **Stage commands.** `advanceProviderMigration` (`POST /provider-migrations/{id}/advance`, needs `provider-migration:execute`, If-Match and Idempotency-Key) runs one lifecycle transition as a `PROVIDER_MIGRATION_ADVANCE` operation.
     - Forward transitions need the approval and a current plan; `canary` and `shift` also need an open cutover window.
+    - The plan's approver never advances it forward (`PROVIDER_MIGRATION_SELF_EXECUTION`).
     - `cancel` and `roll_back` need a reason instead.
   - **Engine migration tasks.** `engine-migration-task.schema.json` defines the tasks behind the stateful steps: freeze, migrate, reconcile and unfreeze.
     - Workloads with `provider-migration:task` list, claim (with a lease) and report the tasks assigned to the engine instances they are attested for.
@@ -35,7 +36,7 @@ Changes that have been merged but have not yet been included in a released versi
   - **Lifecycle.** `provider-migration-lifecycle.yaml` gains:
     - `stage_steps`: what each transition runs;
     - `engine_steps`: who performs each engine operation, forward and in reverse. The side losing authority freezes and the side gaining it unfreezes, so one writer at most exists at any time;
-    - `rollback_steps` (per strategy), `compensation` (for cancel), and the task lease and deadline.
+    - `rollback_release`, which first releases a cohort a failed advance left frozen, then `rollback_steps` (per strategy), `compensation` (for cancel), and the task lease and deadline.
   - **Schemas.**
     - `ApprovalDecision` and `ExecutionOperation` accept the `PROVIDER_MIGRATION` subject.
     - `ProviderMigration` gains `approval_id`, `operation_id` and `shifted_cohort_keys`.
@@ -43,6 +44,7 @@ Changes that have been merged but have not yet been included in a released versi
   - **Registries.**
     - scopes `provider-migration:approve`, `provider-migration:execute` and `provider-migration:task`;
     - permissions `provider-migration.approve` and `provider-migration.execute`, added to the platform-administrator profile;
+    - `provider-migration:task` in the `allowed_scopes` of the engine workloads (cms, erp, pulse, trade);
     - a new reason-code category, `provider_migration_task_failure`: `MIGRATION_RECONCILIATION_MISMATCH`, `MIGRATION_TASK_TIMEOUT`, `MIGRATION_TASK_REJECTED` and `MIGRATION_ADAPTER_UNAVAILABLE`.
 
 - **Market and mapping activation as Changesets (ADR-BCP-021; control-plane `openapi.yaml` 1.17.0).**

@@ -687,6 +687,10 @@ def check_migration_execution() -> None:
             fail(f"rollback_steps.{strategy} names unknown operations")
     if lifecycle["rollback_steps"]["FORWARD_FIX_ONLY"]:
         fail("FORWARD_FIX_ONLY moves no cohort back")
+    # A frozen cohort is always released by the side it was frozen on.
+    release = lifecycle["rollback_release"]
+    if release != ["UNFREEZE_COHORT_WRITES"] or engine["UNFREEZE_COHORT_WRITES"]["reverse"] != ["SOURCE"]:
+        fail("rollback_release must reverse the freeze on the source, which is still authoritative")
     if not set(lifecycle["compensation"]["cancel"]) <= operations:
         fail("compensation.cancel names unknown operations")
     for key in ("preview", "plan"):

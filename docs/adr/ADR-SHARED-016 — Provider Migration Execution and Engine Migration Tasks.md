@@ -44,6 +44,7 @@ Engines never touch the Control Plane's database. So the Control Plane needs a w
   - for the transitions that move authority (`canary` and `shift`), a cutover window that is open, where the request names one. Preparation, validation and retirement may run outside it.
 - `cancel` and `roll_back` need no approval. Leaving or undoing a change is always available to the authorised operator.
 - The operator may cancel only before any cohort's authority has moved.
+- The approver of the current plan never advances it forward (`PROVIDER_MIGRATION_SELF_EXECUTION`, 403): approval and execution are held by different people for each migration, not only by permission. `cancel` and `roll_back` stay available to any executor.
 
 `provider-migration-lifecycle.yaml` gains `stage_steps`, which fixes the plan operations each transition runs:
 
@@ -137,7 +138,7 @@ The workload routes, all requiring `provider-migration:task`:
   3. reconcile;
   4. move the bindings back;
   5. unfreeze the source.
-- **FORWARD_FIX_ONLY:** `roll_back` is refused once any cohort's authority has moved (`MIGRATION_NOT_REVERSIBLE`). Before that, it only releases a cohort frozen mid-step (SOURCE `UNFREEZE_COHORT_WRITES`).
+- **FORWARD_FIX_ONLY:** `roll_back` is refused once any cohort's authority has moved (`MIGRATION_NOT_REVERSIBLE`). Before that, it runs only the release (`rollback_release`) and the removal.
 
 Rollback tasks carry `direction: REVERSE`. The migration ends ROLLED_BACK once every cohort is back on the source and the MIGRATION bindings are removed.
 
@@ -148,7 +149,7 @@ The Shared registries gain the following:
 - the permissions `provider-migration.approve` and `provider-migration.execute` (OPERATIONS, HIGH, platform, not delegable);
 - the reason-code category `provider_migration_task_failure`: MIGRATION_RECONCILIATION_MISMATCH, MIGRATION_TASK_TIMEOUT, MIGRATION_TASK_REJECTED and MIGRATION_ADAPTER_UNAVAILABLE.
 
-`provider-migration.plan` no longer says advancing is a changeset. It is approved by `provider-migration.approve` and advanced by `provider-migration.execute`, and those two are held by different people.
+`provider-migration.plan` no longer says advancing is a changeset. It is approved by `provider-migration.approve` and advanced by `provider-migration.execute`. One administrator may hold both permissions, but never for the same migration: its approver never advances it forward (section 2).
 
 ## Consequences
 
