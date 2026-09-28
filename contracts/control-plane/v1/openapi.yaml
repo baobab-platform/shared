@@ -951,11 +951,10 @@ paths:
       summary: Move a verification case through its lifecycle
       description: >-
         Performs one reviewer command of evidence/v1 lifecycle.yaml
-        verification_case at the version If-Match names. complete_verified and
-        complete_not_verified conclude the case and also require
-        verification:decide; complete_verified requires every claim of the case
-        to be VERIFIED. A command the lifecycle does not allow from the case's
-        status is refused with VERIFICATION_CASE_STATE_CONFLICT (409).
+        verification_case, other than concluding it, at the version If-Match
+        names. A command the lifecycle does not allow from the case's status is
+        refused with VERIFICATION_CASE_STATE_CONFLICT (409). Concluding a case
+        is concludeVerificationCase, under verification:decide.
       security:
         - adminOidc: [verification:write]
       parameters:
@@ -969,6 +968,59 @@ paths:
       responses:
         "200":
           description: Transitioned
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+          content:
+            application/json:
+              schema:
+                $ref: ../../evidence/v1/verification.schema.json#/$defs/VerificationCase
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /admin/verification-cases/{case_id}/conclusion:
+    parameters:
+      - $ref: "#/components/parameters/VerificationCaseId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Verification]
+      operationId: concludeVerificationCase
+      summary: Conclude a verification case
+      description: >-
+        Concludes a VERIFYING case at the version If-Match names.
+        complete_verified requires every claim of the case to be VERIFIED;
+        complete_not_verified records that the evidence was insufficient, never
+        that a claim is false (ADR-BCP-023 section 33).
+      security:
+        - adminOidc: [verification:decide]
+      parameters:
+        - $ref: "#/components/parameters/VersionIfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../evidence/v1/verification.schema.json#/$defs/VerificationCaseConclusionRequest
+      responses:
+        "200":
+          description: Concluded
           headers:
             ETag:
               $ref: "#/components/headers/ETag"
@@ -1288,9 +1340,9 @@ paths:
       summary: Review or resolve a discrepancy
       description: >-
         Performs one reviewer command of evidence/v1 lifecycle.yaml
-        evidence_discrepancy at the version If-Match names. resolve,
-        accept_exception and dismiss close it, record the caller as
-        resolved_by, and also require verification:decide.
+        evidence_discrepancy other than closing it (begin_review) at the
+        version If-Match names. Closing a discrepancy is
+        resolveEvidenceDiscrepancy, under verification:decide.
       security:
         - adminOidc: [verification:write]
       parameters:
@@ -1304,6 +1356,58 @@ paths:
       responses:
         "200":
           description: Transitioned
+          headers:
+            ETag:
+              $ref: "#/components/headers/ETag"
+          content:
+            application/json:
+              schema:
+                $ref: ../../evidence/v1/verification.schema.json#/$defs/EvidenceDiscrepancy
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+  /admin/evidence-discrepancies/{discrepancy_id}/resolution:
+    parameters:
+      - $ref: "#/components/parameters/EvidenceDiscrepancyId"
+      - $ref: "#/components/parameters/CorrelationId"
+    post:
+      tags: [Verification]
+      operationId: resolveEvidenceDiscrepancy
+      summary: Close a discrepancy
+      description: >-
+        Closes a discrepancy under review at the version If-Match names, with a
+        resolution consistent with the command and a reason; the caller is
+        recorded as resolved_by (ADR-BCP-023 sections 74-76).
+      security:
+        - adminOidc: [verification:decide]
+      parameters:
+        - $ref: "#/components/parameters/VersionIfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../../evidence/v1/verification.schema.json#/$defs/EvidenceDiscrepancyResolutionRequest
+      responses:
+        "200":
+          description: Concluded
           headers:
             ETag:
               $ref: "#/components/headers/ETag"

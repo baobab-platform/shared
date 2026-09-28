@@ -552,7 +552,8 @@
         "conflicting_values",
         "severity",
         "status",
-        "detected_at"
+        "detected_at",
+        "version"
       ],
       "description": "Reliable sources disagree materially about one claim type. The platform records the disagreement and a reviewer resolves it; nothing picks the convenient value (sections 34, 74-76).",
       "properties": {
@@ -860,7 +861,7 @@
       "required": [
         "command"
       ],
-      "description": "One lifecycle.yaml verification_case command a reviewer may issue. The case must be at the revision If-Match names; commands only the platform performs (expire, supersede) are never accepted. complete_verified requires every claim of the case to be VERIFIED.",
+      "description": "One lifecycle.yaml verification_case command a reviewer may issue, other than the conclusions (see VerificationCaseConclusionRequest). The case must be at the version If-Match names; commands only the platform performs (expire, supersede) are never accepted.",
       "properties": {
         "command": {
           "type": "string",
@@ -872,8 +873,6 @@
             "respond",
             "conflict",
             "resume",
-            "complete_verified",
-            "complete_not_verified",
             "cancel"
           ]
         },
@@ -1039,7 +1038,7 @@
         "freshness",
         "reason_codes"
       ],
-      "description": "Records a claim's result from checks already recorded in the case; the claim's status becomes the outcome. The Control Plane mints result_id, records the caller as decided_by, and refuses a result the checks do not support: VERIFIED needs a positive check from a source trusted for the claim type in the claim's jurisdiction.",
+      "description": "Records a claim's result from checks already recorded in the case; the claim's status becomes the outcome, so only outcomes that are claim standings are accepted (an inconclusive check leaves the claim under verification, with no result). The Control Plane mints result_id, records the caller as decided_by, and refuses a result the checks do not support: VERIFIED needs a positive check from a source trusted for the claim type in the claim's jurisdiction.",
       "properties": {
         "claim_id": {
           "$ref": "domain.schema.json#/$defs/evidenceClaimId"
@@ -1050,8 +1049,7 @@
             "VERIFIED",
             "PARTIALLY_VERIFIED",
             "NOT_VERIFIED",
-            "CONFLICTED",
-            "INCONCLUSIVE"
+            "CONFLICTED"
           ]
         },
         "check_ids": {
@@ -1199,115 +1197,20 @@
       "required": [
         "command"
       ],
-      "description": "One lifecycle.yaml evidence_discrepancy command a reviewer may issue; the caller is recorded as resolved_by. Closing commands need a resolution consistent with the status and a reason.",
+      "description": "One lifecycle.yaml evidence_discrepancy command a reviewer may issue other than closing it (see EvidenceDiscrepancyResolutionRequest).",
       "properties": {
         "command": {
           "type": "string",
           "enum": [
-            "begin_review",
-            "resolve",
-            "accept_exception",
-            "dismiss"
+            "begin_review"
           ]
-        },
-        "resolution": {
-          "$ref": "domain.schema.json#/$defs/discrepancyResolution"
         },
         "reason": {
           "type": "string",
           "minLength": 1,
           "maxLength": 2000
         }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "command": {
-                "enum": [
-                  "resolve",
-                  "accept_exception",
-                  "dismiss"
-                ]
-              }
-            }
-          },
-          "then": {
-            "required": [
-              "resolution",
-              "reason"
-            ]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "command": {
-                "const": "begin_review"
-              }
-            }
-          },
-          "then": {
-            "not": {
-              "required": [
-                "resolution"
-              ]
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "command": {
-                "const": "resolve"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "resolution": {
-                "enum": [
-                  "SOURCE_VALUE_ADOPTED",
-                  "EXISTING_VALUE_CONFIRMED",
-                  "APPLICANT_CORRECTED"
-                ]
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "command": {
-                "const": "accept_exception"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "resolution": {
-                "const": "EXCEPTION_ACCEPTED"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "command": {
-                "const": "dismiss"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "resolution": {
-                "const": "NOT_MATERIAL"
-              }
-            }
-          }
-        }
-      ]
+      }
     },
     "VerificationCheckList": {
       "type": "object",
@@ -1365,6 +1268,111 @@
           "maxLength": 512
         }
       }
+    },
+    "VerificationCaseConclusionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "reason"
+      ],
+      "description": "Concludes a VERIFYING case: complete_verified requires every claim of the case to be VERIFIED; complete_not_verified closes a case whose evidence was insufficient (section 33). Served by a separate operation that requires verification:decide.",
+      "properties": {
+        "command": {
+          "type": "string",
+          "enum": [
+            "complete_verified",
+            "complete_not_verified"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "EvidenceDiscrepancyResolutionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "resolution",
+        "reason"
+      ],
+      "description": "Closes a discrepancy under review; the caller is recorded as resolved_by. Served by a separate operation that requires verification:decide. Nothing resolves a discrepancy silently (section 76).",
+      "properties": {
+        "command": {
+          "type": "string",
+          "enum": [
+            "resolve",
+            "accept_exception",
+            "dismiss"
+          ]
+        },
+        "resolution": {
+          "$ref": "domain.schema.json#/$defs/discrepancyResolution"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "const": "resolve"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolution": {
+                "enum": [
+                  "SOURCE_VALUE_ADOPTED",
+                  "EXISTING_VALUE_CONFIRMED",
+                  "APPLICANT_CORRECTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "const": "accept_exception"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolution": {
+                "const": "EXCEPTION_ACCEPTED"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "const": "dismiss"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolution": {
+                "const": "NOT_MATERIAL"
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

@@ -329,6 +329,8 @@ REQUESTS = {
     "result_record": "verification.schema.json#/$defs/VerificationResultRecordRequest",
     "discrepancy_record": "verification.schema.json#/$defs/EvidenceDiscrepancyRecordRequest",
     "discrepancy_transition": "verification.schema.json#/$defs/EvidenceDiscrepancyTransitionRequest",
+    "case_conclusion": "verification.schema.json#/$defs/VerificationCaseConclusionRequest",
+    "discrepancy_resolution": "verification.schema.json#/$defs/EvidenceDiscrepancyResolutionRequest",
 }
 requests = example.get("requests", {})
 for key, ref in REQUESTS.items():
@@ -344,11 +346,24 @@ def reviewer_commands(machine):
 
 
 verification_defs = json.loads((PKG / "verification.schema.json").read_text())["$defs"]
-for definition, machine in (("VerificationCaseTransitionRequest", "verification_case"),
-                            ("EvidenceDiscrepancyTransitionRequest", "evidence_discrepancy")):
-    commands = set(verification_defs[definition]["properties"]["command"]["enum"])
-    if commands != reviewer_commands(machine):
-        fail(f"{definition} commands {sorted(commands)} differ from the reviewer commands of {machine} {sorted(reviewer_commands(machine))}")
+# A reviewer's commands are split between a working operation and a
+# deciding one, together exactly the lifecycle's reviewer commands; only the
+# deciding one ends or concludes anything.
+for working, deciding, machine in (("VerificationCaseTransitionRequest", "VerificationCaseConclusionRequest", "verification_case"),
+                                   ("EvidenceDiscrepancyTransitionRequest", "EvidenceDiscrepancyResolutionRequest", "evidence_discrepancy")):
+    work = set(verification_defs[working]["properties"]["command"]["enum"])
+    decide = set(verification_defs[deciding]["properties"]["command"]["enum"])
+    if work & decide or work | decide != reviewer_commands(machine):
+        fail(f"{working} and {deciding} must split the reviewer commands of {machine} {sorted(reviewer_commands(machine))}")
+    # Conclusions are findings: a case verified or not verified, a
+    # discrepancy closed. Cancelling a case abandons it and is not one.
+    findings = {"verification_case": {"VERIFIED", "NOT_VERIFIED"},
+                "evidence_discrepancy": {"RESOLVED", "ACCEPTED_EXCEPTION", "FALSE_POSITIVE"}}[machine]
+    concluding = {t["command"] for t in lifecycle["machines"][machine]["transitions"] if t["to"] in findings}
+    if concluding != decide:
+        fail(f"{deciding} must carry exactly the commands that conclude {machine}: {sorted(concluding)}")
+    if work & concluding:
+        fail(f"{working} must not conclude anything: {sorted(work & concluding)}")
 
 # 4. Negative fixtures.
 def must_reject(label: str, ref: str, instance) -> None:
@@ -456,7 +471,7 @@ for key, field, value in (
         ("result_record", "result_id", "vres_mine"), ("evidence_registration", "artifact_id", "eart_x"),
         ("evidence_registration", "status", "AVAILABLE"), ("evidence_registration", "obtained_by", "principal:prn_kato"),
         ("evidence_registration", "submitted_by", "prn_kato"), ("discrepancy_record", "status", "RESOLVED"),
-        ("discrepancy_transition", "resolved_by", "prn_kato")):
+        ("discrepancy_resolution", "resolved_by", "prn_kato")):
     must_reject(f"{key} naming {field}", REQUESTS[key], mutate(R[key], **{field: value}))
 must_reject("a case transition only the platform performs", REQUESTS["case_transition"], {"command": "expire"})
 must_reject("a pending check recorded as performed", REQUESTS["check_record"], mutate(R["check_record"], outcome="PENDING"))
@@ -467,10 +482,16 @@ must_reject("a CONFLICTED result without its discrepancy", REQUESTS["result_reco
 must_reject("a result from no checks", REQUESTS["result_record"], mutate(R["result_record"], check_ids=[]))
 must_reject("evidence registered with no source record or credential", REQUESTS["evidence_registration"],
             mutate(R["evidence_registration"], source_record_reference=None))
-must_reject("a resolution without a reason", REQUESTS["discrepancy_transition"], mutate(R["discrepancy_transition"], reason=None))
-must_reject("an exception accepted as a source value", REQUESTS["discrepancy_transition"],
-            mutate(R["discrepancy_transition"], command="accept_exception"))
-must_reject("a review begun with a resolution", REQUESTS["discrepancy_transition"], mutate(R["discrepancy_transition"], command="begin_review"))
+must_reject("a resolution without a reason", REQUESTS["discrepancy_resolution"], mutate(R["discrepancy_resolution"], reason=None))
+must_reject("an exception accepted as a source value", REQUESTS["discrepancy_resolution"],
+            mutate(R["discrepancy_resolution"], command="accept_exception"))
+must_reject("a review begun with a resolution", REQUESTS["discrepancy_transition"], mutate(R["discrepancy_transition"], resolution="NOT_MATERIAL"))
+must_reject("a discrepancy closed by the working operation", REQUESTS["discrepancy_transition"], {"command": "resolve"})
+must_reject("a case concluded by the working operation", REQUESTS["case_transition"], {"command": "complete_verified"})
+must_reject("a conclusion without a reason", REQUESTS["case_conclusion"], {"command": "complete_verified"})
+must_reject("an inconclusive result recorded as a standing", REQUESTS["result_record"], mutate(R["result_record"], outcome="INCONCLUSIVE"))
+must_reject("a discrepancy without its version", "verification.schema.json#/$defs/EvidenceDiscrepancy",
+            {k: v for k, v in example["discrepancies"][0].items() if k != "version"})
 
 # The routes use the request schemas and the right scopes, and none serves
 # artifact content.
@@ -491,6 +512,8 @@ for operation_id, scope, body in (
         ("recordEvidenceDiscrepancy", "verification:write", "verification.schema.json#/$defs/EvidenceDiscrepancyRecordRequest"),
         ("listEvidenceDiscrepancies", "verification:read", None),
         ("transitionEvidenceDiscrepancy", "verification:write", "verification.schema.json#/$defs/EvidenceDiscrepancyTransitionRequest"),
+        ("concludeVerificationCase", "verification:decide", "verification.schema.json#/$defs/VerificationCaseConclusionRequest"),
+        ("resolveEvidenceDiscrepancy", "verification:decide", "verification.schema.json#/$defs/EvidenceDiscrepancyResolutionRequest"),
         ("registerEvidence", "verification:write", "evidence.schema.json#/$defs/EvidenceRegistrationRequest"),
         ("getEvidenceReference", "verification:read", None), ("listEvidenceSources", "verification:read", None)):
     if operation_id not in operations:

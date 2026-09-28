@@ -34,10 +34,10 @@ Assurance and compliance (sections 83-100) build on these, and are later gates.
   - `EvidenceDiscrepancy`: a material disagreement between sources.
 - `source-registry.yaml`: the evidence sources the Control Plane recognises (today URSB, CIPC and applicant submissions), and exactly which claim types in which jurisdictions each is authoritative for. Evidence and checks may name only registered sources.
 - Request schemas for the Control Plane's Verification routes (control-plane `openapi.yaml` 1.14.0, gate OEV-03). None accepts an identity, status or artifact the Control Plane derives:
-  - `VerificationCaseCreateRequest` and `VerificationCaseTransitionRequest`;
+  - `VerificationCaseCreateRequest`, `VerificationCaseTransitionRequest` and `VerificationCaseConclusionRequest`. Concluding is a separate operation under `verification:decide`;
   - `EvidenceRegistrationRequest`, for a source record or credential only (uploads are gate OEV-02);
   - `VerificationCheckRecordRequest` and `VerificationResultRecordRequest`;
-  - `EvidenceDiscrepancyRecordRequest` and `EvidenceDiscrepancyTransitionRequest`;
+  - `EvidenceDiscrepancyRecordRequest`, `EvidenceDiscrepancyTransitionRequest` and `EvidenceDiscrepancyResolutionRequest`. Closing is a separate operation under `verification:decide`;
   - and list responses.
 - `lifecycle.yaml`: four state machines (evidence record, claim, verification case and discrepancy), with the actors allowed to perform each transition.
 - `examples/organisation-admission-verification.json`: a Ugandan admission, following the evidence chain of section 178 end to end:

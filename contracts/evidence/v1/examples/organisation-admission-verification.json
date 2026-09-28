@@ -429,7 +429,8 @@
       ],
       "severity": "MEDIUM",
       "status": "OPEN",
-      "detected_at": "2026-10-02T10:00:00Z"
+      "detected_at": "2026-10-02T10:00:00Z",
+      "version": 1
     },
     {
       "discrepancy_id": "edis_addr",
@@ -457,7 +458,8 @@
       "resolution": "NOT_MATERIAL",
       "resolved_by": "prn_kato",
       "resolved_at": "2026-10-02T11:00:00Z",
-      "reason": "The same address, written differently; nothing material differs."
+      "reason": "The same address, written differently; nothing material differs.",
+      "version": 3
     }
   ],
   "references": [
@@ -568,6 +570,14 @@
       "severity": "MEDIUM"
     },
     "discrepancy_transition": {
+      "command": "begin_review",
+      "reason": "Comparing the registry extract with the certificate."
+    },
+    "case_conclusion": {
+      "command": "complete_not_verified",
+      "reason": "The registry records a different legal name; the applicant has not corrected it."
+    },
+    "discrepancy_resolution": {
       "command": "resolve",
       "resolution": "SOURCE_VALUE_ADOPTED",
       "reason": "The registry name is authoritative; the applicant confirmed the abbreviated form was informal."
