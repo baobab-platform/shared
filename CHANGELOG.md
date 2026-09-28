@@ -36,7 +36,9 @@ Changes that have been merged but have not yet been included in a released versi
     - a market approver is neither the market's creator nor its last editor (`MARKET_SELF_ACTIVATION`);
     - a mapping approver is not the mapping's creator (`MAPPING_SELF_APPROVAL`).
   - `changesetStepResources`:
-    - a step names exactly one of `tenant_id`, `market_id` or `mapping_id`, with statuses in that resource's own vocabulary;
+    - a step naming `market_id` or `mapping_id` is a market or mapping step, with statuses in that resource's own vocabulary, and never names a second resource;
+    - any other step is a tenant step, exactly as in v1 before this change: tenant resources are neither narrowed nor made to require `tenant_id`;
+    - each activation kind's steps must name that kind's resource, and the Control Plane plans them on the desired change's own id;
     - an optional `target_revision` binds a market or mapping plan to the revision that was reviewed. A moved revision is `PLAN_STALE`.
   - `affectedResource.resource_type` gains `MARKET` and `MAPPING`.
 

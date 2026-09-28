@@ -512,7 +512,7 @@
     "changesetStepResources": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The one resource a step acts on and the statuses it moves between, in that resource's own lifecycle vocabulary: a tenant's lifecycleStatus, a market's status or a mapping's mappingStatus.",
+      "description": "The one resource a step acts on and the statuses it moves between, in that resource's own lifecycle vocabulary. A step naming market_id is a market step (market status), one naming mapping_id a mapping step (mappingStatus); any other step is a tenant step, exactly as before market and mapping kinds existed (tenant lifecycleStatus). A step never names two resources. The Control Plane plans every step on the desired change's own resource; a plan whose step names another resource is never generated or applied.",
       "properties": {
         "tenant_id": {
           "$ref": "domain.schema.json#/$defs/tenantId"
@@ -535,85 +535,94 @@
           "description": "The target's revision the plan was computed against, where the target is revisioned (markets and mappings). Applying refuses a target whose revision has moved (PLAN_STALE), as the direct route's If-Match does."
         }
       },
-      "oneOf": [
+      "allOf": [
         {
-          "required": [
-            "tenant_id"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "market_id"
-                ]
-              },
-              {
-                "required": [
-                  "mapping_id"
-                ]
-              }
+          "if": {
+            "required": [
+              "market_id"
             ]
           },
-          "properties": {
-            "from_status": {
-              "$ref": "tenant.schema.json#/$defs/lifecycleStatus"
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "tenant_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "mapping_id"
+                  ]
+                }
+              ]
             },
-            "to_status": {
-              "$ref": "tenant.schema.json#/$defs/lifecycleStatus"
+            "properties": {
+              "from_status": {
+                "$ref": "market.schema.json#/$defs/market/properties/status"
+              },
+              "to_status": {
+                "$ref": "market.schema.json#/$defs/market/properties/status"
+              }
             }
           }
         },
         {
-          "required": [
-            "market_id"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "tenant_id"
-                ]
-              },
-              {
-                "required": [
-                  "mapping_id"
-                ]
-              }
+          "if": {
+            "required": [
+              "mapping_id"
             ]
           },
-          "properties": {
-            "from_status": {
-              "$ref": "market.schema.json#/$defs/market/properties/status"
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "tenant_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "market_id"
+                  ]
+                }
+              ]
             },
-            "to_status": {
-              "$ref": "market.schema.json#/$defs/market/properties/status"
+            "properties": {
+              "from_status": {
+                "$ref": "domain.schema.json#/$defs/mappingStatus"
+              },
+              "to_status": {
+                "$ref": "domain.schema.json#/$defs/mappingStatus"
+              }
             }
           }
         },
         {
-          "required": [
-            "mapping_id"
-          ],
-          "not": {
-            "anyOf": [
-              {
-                "required": [
-                  "tenant_id"
-                ]
-              },
-              {
-                "required": [
-                  "market_id"
-                ]
-              }
-            ]
+          "if": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "market_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "mapping_id"
+                  ]
+                }
+              ]
+            }
           },
-          "properties": {
-            "from_status": {
-              "$ref": "domain.schema.json#/$defs/mappingStatus"
-            },
-            "to_status": {
-              "$ref": "domain.schema.json#/$defs/mappingStatus"
+          "then": {
+            "properties": {
+              "from_status": {
+                "$ref": "tenant.schema.json#/$defs/lifecycleStatus"
+              },
+              "to_status": {
+                "$ref": "tenant.schema.json#/$defs/lifecycleStatus"
+              }
             }
           }
         }
@@ -747,6 +756,11 @@
                     "properties": {
                       "operation": {
                         "const": "ACTIVATE_MARKET"
+                      },
+                      "resources": {
+                        "required": [
+                          "market_id"
+                        ]
                       }
                     }
                   },
@@ -754,6 +768,11 @@
                     "properties": {
                       "operation": {
                         "const": "VERIFY_MARKET_STATE"
+                      },
+                      "resources": {
+                        "required": [
+                          "market_id"
+                        ]
                       }
                     }
                   }
@@ -787,6 +806,11 @@
                     "properties": {
                       "operation": {
                         "const": "ACTIVATE_MAPPING"
+                      },
+                      "resources": {
+                        "required": [
+                          "mapping_id"
+                        ]
                       }
                     }
                   },
@@ -794,6 +818,11 @@
                     "properties": {
                       "operation": {
                         "const": "VERIFY_MAPPING_STATE"
+                      },
+                      "resources": {
+                        "required": [
+                          "mapping_id"
+                        ]
                       }
                     }
                   }

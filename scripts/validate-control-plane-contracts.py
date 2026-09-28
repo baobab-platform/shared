@@ -763,6 +763,31 @@ def check_changeset() -> None:
         rejects(schema, "ChangesetCreateRequest",
                 {**create, "desired_change": {**activation["desired_change"], "verified": True}},
                 f"a {key} desired change with an extra property")
+        # Every step acts on the desired change's own resource: the schema
+        # requires the kind's resource, the example names the same id.
+        for index in range(len(activation["steps"])):
+            elsewhere = copy.deepcopy(activation)
+            resources = elsewhere["steps"][index]["resources"]
+            resources.pop(target_key)
+            resources[foreign] = other["desired_change"][foreign]
+            resources.pop("target_revision", None)
+            resources["from_status"] = resources.get("from_status") and "VALIDATED"
+            resources = {k: v for k, v in resources.items() if v is not None}
+            elsewhere["steps"][index]["resources"] = resources
+            rejects(schema, "ChangesetPlan", elsewhere, f"a {key} step {index} acting on another kind of resource")
+            untargeted = copy.deepcopy(activation)
+            untargeted["steps"][index]["resources"] = {"to_status": "ACTIVE"}
+            rejects(schema, "ChangesetPlan", untargeted, f"a {key} step {index} naming no resource")
+        for step in activation["steps"]:
+            if step["resources"][target_key] != activation["desired_change"][target_key]:
+                fail(f"changeset {key}: step {step['step_id']} acts on another {target_key} than its desired change")
+
+    # Tenant step resources keep their v1 shape: no resource at all, or
+    # statuses alone, stay valid tenant steps.
+    for resources in ({}, {"to_status": "suspended"}, {"from_status": "active", "to_status": "suspended"}):
+        compatible = copy.deepcopy(plan)
+        compatible["steps"][1]["resources"] = resources
+        accepts(schema, "ChangesetPlan", compatible, f"a v1 tenant step with resources {resources}")
     for step in plan["steps"][1:]:
         if not step["depends_on"]:
             fail(f"changeset plan step {step['step_id']} depends on nothing; a kind's operations run in order")
