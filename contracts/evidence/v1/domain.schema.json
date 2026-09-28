@@ -179,7 +179,7 @@
         "EXPIRED",
         "DESTROYED"
       ],
-      "description": "Section 237. Only AVAILABLE evidence is reviewer-accessible; nothing is accessible before scanning completes (section 238)."
+      "description": "Section 237. Content is reviewer-accessible only in the states lifecycle.yaml lists as content_accessible (AVAILABLE, SUPERSEDED, EXPIRED); never while RECEIVED, QUARANTINED, RESTRICTED or DESTROYED, and never before scanning completes (section 238)."
     },
     "dataClassification": {
       "type": "string",

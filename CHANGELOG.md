@@ -35,7 +35,7 @@ Changes that have been merged but have not yet been included in a released versi
   - `validate-evidence-contracts.py` runs in CI. It checks:
     - the lifecycles;
     - the evidence chain in the example: every id resolves; standing comes from results; VERIFIED rests on a trusted source; nobody verifies their own claim; quarantined evidence never supports a positive check;
-    - 31 negative fixtures.
+    - 36 negative fixtures.
 
 - **Changeset contracts (ADR-BCP-021 gate CCM-01; ADR-BCP-022 section 44).**
   - `control-plane/v1/changeset.schema.json`:

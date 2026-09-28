@@ -152,7 +152,13 @@ def check_lifecycle(doc) -> list[str]:
             accessible = set(machine["content_accessible"])
             if accessible & {"RECEIVED", "QUARANTINED", "DESTROYED", "RESTRICTED"}:
                 problems.append("evidence_record: content is never accessible while received, quarantined, restricted or destroyed (section 238)")
+            # Content becomes accessible only by accepting received material,
+            # releasing scanned material, or lifting a restriction; no other
+            # transition (supersession, for one) may open it (section 238).
+            openers = {("accept", "RECEIVED"), ("release", "QUARANTINED"), ("unrestrict", "RESTRICTED")}
             for t in machine["transitions"]:
+                if t["to"] in accessible and t["from"] not in accessible and (t["command"], t["from"]) not in openers:
+                    problems.append(f"evidence_record: {t['command']} {t['from']} -> {t['to']} would open content that is not accessible")
                 if t["from"] == "QUARANTINED" and t["to"] == "AVAILABLE" and t["actors"] != ["PLATFORM"]:
                     problems.append("evidence_record: only the platform's scan releases quarantined evidence")
     return problems
@@ -256,8 +262,9 @@ def cross_check(ex) -> list[str]:
                 problems.append(f"{where}: cites {chk['check_id']}, which is for another claim or case")
         for d in res.get("discrepancy_ids", []):
             disc = need("discrepancies", d, where)
-            if disc and claim and disc["claim_type"] != claim["claim_type"]:
-                problems.append(f"{where}: discrepancy {d} concerns {disc['claim_type']}, not {claim['claim_type']}")
+            if disc and claim and (disc["claim_type"] != claim["claim_type"] or disc["subject"] != claim["subject"]
+                                   or disc.get("case_id") != res["case_id"]):
+                problems.append(f"{where}: discrepancy {d} is not about this claim's type and subject in case {res['case_id']}")
         if res["outcome"] == "VERIFIED" and claim:
             def trusted(chk):
                 src = sources.get(chk["source_id"])
@@ -344,6 +351,10 @@ must_reject("a positive check that never matched the claim", CHK,
             mutate(reg_check, dimensions=[{"dimension": "DOCUMENT_INTEGRITY", "outcome": "PASSED"}]))
 must_reject("a human check with no reviewer", CHK, mutate(reg_check, performed_by=None))
 must_reject("a performed check with no time", CHK, mutate(name_check, performed_at=None))
+must_reject("a result answering one dimension twice", RES,
+            mutate(verified, dimensions=verified["dimensions"] + [{"dimension": "CLAIM_MATCH", "outcome": "FAILED"}]))
+must_reject("a check answering one dimension twice", CHK,
+            mutate(reg_check, dimensions=reg_check["dimensions"] + [{"dimension": "ISSUER_AUTHORITY", "outcome": "FAILED"}]))
 must_reject("VERIFIED without issuer authority", RES,
             mutate(verified, dimensions=[{"dimension": "CLAIM_MATCH", "outcome": "PASSED"}]))
 must_reject("a CONFLICTED result with no discrepancy", RES, mutate(conflicted, discrepancy_ids=None))
@@ -377,6 +388,14 @@ must_break("a result citing another claim's check",
            with_items("results", "result_id", "vres_regno", check_ids=["vchk_regnoreg", "vchk_namereg"]))
 must_break("a CONFLICTED case with no conflicted claim",
            with_items("claims", "claim_id", "ecl_name", status="UNDER_VERIFICATION", current_result_id=None))
+other_case = copy.deepcopy(example)
+other_case["cases"].append(mutate(example["cases"][0], case_id="vcase_adm02", status="VERIFYING"))
+other_case["discrepancies"] = [mutate(d, case_id="vcase_adm02") if d["discrepancy_id"] == "edis_name" else d
+                               for d in other_case["discrepancies"]]
+must_break("a result citing another case's discrepancy", other_case)
+must_break("a result citing a discrepancy about another subject",
+           with_items("discrepancies", "discrepancy_id", "edis_name",
+                      subject={"subject_type": "LEGAL_ENTITY", "subject_id": "LE-01k9otherentity"}))
 must_break("an unknown evidence reference", with_items("claims", "claim_id", "ecl_rep", evidence_ids=["evr_missing"]))
 
 bad = copy.deepcopy(lifecycle)
@@ -384,6 +403,11 @@ bad["machines"]["evidence_claim"]["transitions"].append(
     {"command": "self_verify", "from": "SELF_ASSERTED", "to": "VERIFIED", "actors": ["APPLICANT"]})
 if not check_lifecycle(bad):
     fail("negative fixture accepted: an applicant transition to VERIFIED")
+bad = copy.deepcopy(lifecycle)
+bad["machines"]["evidence_record"]["transitions"].append(
+    {"command": "supersede", "from": "RESTRICTED", "to": "SUPERSEDED", "actors": ["PLATFORM"]})
+if not check_lifecycle(bad):
+    fail("negative fixture accepted: supersession lifting a restriction")
 bad = copy.deepcopy(lifecycle)
 bad["machines"]["evidence_record"]["content_accessible"].append("QUARANTINED")
 if not check_lifecycle(bad):

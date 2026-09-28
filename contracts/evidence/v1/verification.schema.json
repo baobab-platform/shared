@@ -215,13 +215,7 @@
           "$ref": "domain.schema.json#/$defs/verificationOutcome"
         },
         "dimensions": {
-          "type": "array",
-          "uniqueItems": true,
-          "maxItems": 6,
-          "items": {
-            "$ref": "#/$defs/dimensionResult"
-          },
-          "description": "One answer per dimension assessed. Each dimension is a separate question (section 35)."
+          "$ref": "#/$defs/dimensionResults"
         },
         "reason_codes": {
           "type": "array",
@@ -379,13 +373,7 @@
           }
         },
         "dimensions": {
-          "type": "array",
-          "uniqueItems": true,
-          "maxItems": 6,
-          "items": {
-            "$ref": "#/$defs/dimensionResult"
-          },
-          "description": "One answer per dimension assessed. Each dimension is a separate question (section 35)."
+          "$ref": "#/$defs/dimensionResults"
         },
         "freshness": {
           "$ref": "domain.schema.json#/$defs/freshnessState"
@@ -720,6 +708,106 @@
               }
             }
           }
+        }
+      ]
+    },
+    "dimensionResults": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/dimensionResult"
+      },
+      "description": "One answer per dimension assessed: each dimension appears at most once. Each dimension is a separate question (section 35).",
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "dimension": {
+                "const": "DOCUMENT_INTEGRITY"
+              }
+            },
+            "required": [
+              "dimension"
+            ]
+          },
+          "minContains": 0,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "dimension": {
+                "const": "SOURCE_AUTHENTICITY"
+              }
+            },
+            "required": [
+              "dimension"
+            ]
+          },
+          "minContains": 0,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "dimension": {
+                "const": "ISSUER_AUTHORITY"
+              }
+            },
+            "required": [
+              "dimension"
+            ]
+          },
+          "minContains": 0,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "dimension": {
+                "const": "CLAIM_MATCH"
+              }
+            },
+            "required": [
+              "dimension"
+            ]
+          },
+          "minContains": 0,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "dimension": {
+                "const": "FRESHNESS"
+              }
+            },
+            "required": [
+              "dimension"
+            ]
+          },
+          "minContains": 0,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "dimension": {
+                "const": "REVOCATION_STATUS"
+              }
+            },
+            "required": [
+              "dimension"
+            ]
+          },
+          "minContains": 0,
+          "maxContains": 1
         }
       ]
     }

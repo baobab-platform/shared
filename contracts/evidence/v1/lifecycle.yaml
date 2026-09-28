@@ -18,6 +18,10 @@ machines:
   # completes; a malicious artifact stays quarantined until destroyed under
   # incident or retention policy. Material that is not an uploaded file (a
   # source record or credential) is accepted without quarantine.
+  # Content becomes accessible only through accept, release or unrestrict.
+  # Restricted evidence stays RESTRICTED when a newer record supersedes it
+  # (the newer record's supersedes names it), so supersession never lifts
+  # a restriction.
   evidence_record:
     states_from: evidenceStatus
     initial: RECEIVED
@@ -31,7 +35,6 @@ machines:
       - {command: restrict,   from: AVAILABLE,   to: RESTRICTED,  actors: [REVIEWER, PLATFORM]}
       - {command: unrestrict, from: RESTRICTED,  to: AVAILABLE,   actors: [REVIEWER]}
       - {command: supersede,  from: AVAILABLE,   to: SUPERSEDED,  actors: [PLATFORM]}
-      - {command: supersede,  from: RESTRICTED,  to: SUPERSEDED,  actors: [PLATFORM]}
       - {command: expire,     from: AVAILABLE,   to: EXPIRED,     actors: [PLATFORM]}
       - {command: destroy,    from: SUPERSEDED,  to: DESTROYED,   actors: [PLATFORM]}
       - {command: destroy,    from: EXPIRED,     to: DESTROYED,   actors: [PLATFORM]}
