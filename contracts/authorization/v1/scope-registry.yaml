@@ -264,8 +264,9 @@ scopes:
   - name: "provider-migration:task"
     description: >-
       An engine workload lists, claims and reports the engine migration tasks
-      assigned to the engine instances its client is attested for
-      (ADR-SHARED-016 section 4). The instance is never taken from the request.
+      assigned to the engine instances whose registration names its client as
+      their attested workload (ADR-SHARED-016 section 4). The instance is never
+      taken from the request.
     audience: ["baobab-control-plane"]
     allowed_actors: ["workload"]
 

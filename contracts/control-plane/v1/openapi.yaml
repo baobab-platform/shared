@@ -4244,9 +4244,9 @@ paths:
       operationId: listEngineMigrationTasks
       summary: The caller's open engine migration tasks
       description: >-
-        The PENDING and CLAIMED tasks assigned to the engine instances the
-        calling workload client is attested for in the Control Plane's
-        workload registry (ADR-SHARED-016 section 4), oldest first. The
+        The PENDING and CLAIMED tasks assigned to the engine instances whose
+        Control Plane registration names the calling workload client as
+        their attested workload (ADR-SHARED-016 section 4), oldest first. The
         instance is never taken from the request; a workload attested for no
         instance gets an empty page.
       security:

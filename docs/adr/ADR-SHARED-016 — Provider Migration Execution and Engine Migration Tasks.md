@@ -84,7 +84,7 @@ Tasks are assigned as follows:
 |---|---|---|
 | `FREEZE_COHORT_WRITES` | SOURCE | The source refuses writes for the cohort's contexts in the migrated capabilities. It keeps refusing after the shift, because it is no longer authoritative. |
 | `MIGRATE_COHORT_DATA` | TARGET | The target's migration adapter moves the cohort's state from the named source counterpart, adapter to adapter. The Control Plane never carries it. |
-| `RECONCILE_COHORT_DATA` | SOURCE and TARGET, one task each | Each reports `record_count` and `content_digest` over the cohort's canonical projection. The step succeeds only when both reports match. A mismatch fails the step with `MIGRATION_RECONCILIATION_MISMATCH`, and the cohort stays frozen. |
+| `RECONCILE_COHORT_DATA` | SOURCE and TARGET, one task each | Each reports `record_count` and `content_digest` over the cohort's canonical projection. The step succeeds only when both sides match: equal digests where each side serves the cohort from one instance, and equal total counts in every case, since digests over different partitions are not comparable. A mismatch fails the step with `MIGRATION_RECONCILIATION_MISMATCH`, and the cohort stays frozen. |
 | `UNFREEZE_COHORT_WRITES` | TARGET | Once the shift has made the target authoritative, the target accepts the cohort's writes. |
 
 At every moment one side at most accepts the cohort's writes:
@@ -103,7 +103,7 @@ The workload routes, all requiring `provider-migration:task`:
 - `POST /engine-migration-tasks/{id}/claim` takes a lease;
 - `POST /engine-migration-tasks/{id}/report` records SUCCEEDED or FAILED, with a result.
 
-**Identity.** The caller's engine instances are never taken from the request. They are the instances its workload client is attested for in the Control Plane's workload registry, which implements §95 attestation under workload identity with no static secrets. A task assigned to any other instance does not exist for the caller (404).
+**Identity.** The caller's engine instances are never taken from the request. They are the instances whose Control Plane registration names the caller's workload client as the instance's attested workload. This implements §95 attestation under workload identity, with no static secrets. An instance with no attested workload has no claimant, so its tasks time out safely. A task assigned to any other instance does not exist for the caller (404).
 
 **Leases.** A claim holds a lease, 300 seconds by default.
 - A lease that expires unreported returns the task to PENDING with its attempt incremented. The task is at-least-once, so engine work is idempotent on the task id.
@@ -154,7 +154,7 @@ The Shared registries gain the following:
   - `ApprovalDecision` and `ExecutionOperation` gain the `PROVIDER_MIGRATION` subject and the `PROVIDER_MIGRATION_ADVANCE` type;
   - `provider-migration-lifecycle.yaml` gains `stage_steps`, `engine_steps` and `rollback_steps`;
   - `openapi.yaml` describes the two administrative and three workload operations. This is a minor version bump, and every change is additive.
-- The Control Plane implements execution for both modes, and its workload registry records which engine instances each workload client is attested for.
+- The Control Plane implements execution for both modes. Its engine instance registration records each instance's attested workload client, which is set through the controlled registration workflow (ADR-BCP-006 §94), never by the engine itself.
 - Each engine that can be a migration source or target implements a migration adapter for its providers:
   - it polls or claims tasks for its instances;
   - it enforces the cohort write freeze;
