@@ -1,7 +1,7 @@
 asyncapi: 3.1.0
 info:
   title: Baobab-Platform organisation lifecycle events
-  version: 1.0.0
+  version: 1.1.0
   description: >
     ADR-BCP-018 section 124 lifecycle events for Organisation, LegalEntityProfile,
     CorporateRelationship, PlatformRelationship, PlatformAccount, the explicit

@@ -849,6 +849,27 @@ if event_examples:
     event_negatives.append(("legacy com.nabhold event type", legacy))
     missing_id = copy.deepcopy(sample); missing_id["data"] = {}
     event_negatives.append(("event payload without identifiers", missing_id))
+    # ADR-BCP-023 section 143: a case-decided verification names its case and
+    # results together, and evidence only by opaque evr_ identifier.
+    verified_path = ORG / "examples" / "events" / "legal-entity-verified.json"
+    if not verified_path.exists():
+        fail("examples/events/legal-entity-verified.json must show a case-decided verification (ADR-BCP-023 section 143)")
+    else:
+        verified = json.loads(verified_path.read_text())
+        no_results = copy.deepcopy(verified); del no_results["data"]["verification_result_ids"]
+        event_negatives.append(("verification case without its results", no_results))
+        no_case = copy.deepcopy(verified); del no_case["data"]["verification_case_id"]
+        event_negatives.append(("verification results without their case", no_case))
+        free_string = copy.deepcopy(verified); free_string["data"]["evidence_ids"] = ["share register reviewed"]
+        event_negatives.append(("free-string evidence in a verification event", free_string))
+        bad_reason = copy.deepcopy(verified); bad_reason["data"]["reason_codes"] = ["legal name differs"]
+        event_negatives.append(("prose reason in a verification event", bad_reason))
+        no_evidence = copy.deepcopy(verified); del no_evidence["data"]["evidence_ids"]
+        event_negatives.append(("case-decided verification without its evidence ids", no_evidence))
+        stray = copy.deepcopy(verified)
+        for key in ("verification_case_id", "verification_result_ids", "evidence_ids"):
+            del stray["data"][key]
+        event_negatives.append(("reason codes without the verification they came from", stray))
     for label, envelope in event_negatives:
         NEGATIVE.append((label, "", "", {}))
         if not event_errors(envelope):

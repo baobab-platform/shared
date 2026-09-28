@@ -37,7 +37,7 @@
     "OrganisationVerified": {
       "type": "object",
       "additionalProperties": false,
-      "description": "An Organisation became VERIFIED through evidence review.",
+      "description": "An Organisation became VERIFIED through evidence review. When a VerificationCase decided it, the payload names the case, its results and the evidence by opaque identifier (ADR-BCP-023 section 143).",
       "required": [
         "organisation_id",
         "verified_at",
@@ -55,7 +55,58 @@
           "type": "integer",
           "minimum": 1,
           "description": "Number of evidence references that supported the transition. The references themselves are never published (ADR-BCP-018 section 125); authorized consumers dereference the record."
+        },
+        "verification_case_id": {
+          "$ref": "../../evidence/v1/domain.schema.json#/$defs/verificationCaseId",
+          "description": "The ADR-BCP-023 VerificationCase whose outcome verified the record (section 143). Absent for first-party governance and for legacy verifications that predate verification cases."
+        },
+        "verification_result_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../evidence/v1/domain.schema.json#/$defs/verificationResultId"
+          },
+          "description": "The VerificationResults the verification rests on (sections 143 and 191)."
+        },
+        "evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../evidence/v1/domain.schema.json#/$defs/evidenceRecordId"
+          },
+          "description": "Opaque EvidenceRecord identifiers behind those results. Content and free-string references are never published (ADR-BCP-018 section 125); authorized consumers dereference the records."
+        },
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../evidence/v1/domain.schema.json#/$defs/reasonCode"
+          },
+          "description": "The reason codes the cited VerificationResults recorded, in the evidence/v1 reasonCode form (sections 143 and 231). Empty for a clean verification."
         }
+      },
+      "dependentRequired": {
+        "verification_case_id": [
+          "verification_result_ids",
+          "evidence_ids",
+          "reason_codes"
+        ],
+        "verification_result_ids": [
+          "verification_case_id",
+          "evidence_ids",
+          "reason_codes"
+        ],
+        "evidence_ids": [
+          "verification_case_id",
+          "verification_result_ids",
+          "reason_codes"
+        ],
+        "reason_codes": [
+          "verification_case_id",
+          "verification_result_ids",
+          "evidence_ids"
+        ]
       }
     },
     "OrganisationSuspended": {
@@ -79,7 +130,7 @@
     "LegalEntityVerified": {
       "type": "object",
       "additionalProperties": false,
-      "description": "A LegalEntityProfile became VERIFIED through evidence review.",
+      "description": "A LegalEntityProfile became VERIFIED through evidence review. When a VerificationCase decided it, the payload names the case, its results and the evidence by opaque identifier (ADR-BCP-023 section 143).",
       "required": [
         "legal_entity_id",
         "organisation_id",
@@ -101,7 +152,58 @@
           "type": "integer",
           "minimum": 1,
           "description": "Number of evidence references that supported the transition. The references themselves are never published (ADR-BCP-018 section 125); authorized consumers dereference the record."
+        },
+        "verification_case_id": {
+          "$ref": "../../evidence/v1/domain.schema.json#/$defs/verificationCaseId",
+          "description": "The ADR-BCP-023 VerificationCase whose outcome verified the record (section 143). Absent for first-party governance and for legacy verifications that predate verification cases."
+        },
+        "verification_result_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../evidence/v1/domain.schema.json#/$defs/verificationResultId"
+          },
+          "description": "The VerificationResults the verification rests on (sections 143 and 191)."
+        },
+        "evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../evidence/v1/domain.schema.json#/$defs/evidenceRecordId"
+          },
+          "description": "Opaque EvidenceRecord identifiers behind those results. Content and free-string references are never published (ADR-BCP-018 section 125); authorized consumers dereference the records."
+        },
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../evidence/v1/domain.schema.json#/$defs/reasonCode"
+          },
+          "description": "The reason codes the cited VerificationResults recorded, in the evidence/v1 reasonCode form (sections 143 and 231). Empty for a clean verification."
         }
+      },
+      "dependentRequired": {
+        "verification_case_id": [
+          "verification_result_ids",
+          "evidence_ids",
+          "reason_codes"
+        ],
+        "verification_result_ids": [
+          "verification_case_id",
+          "evidence_ids",
+          "reason_codes"
+        ],
+        "evidence_ids": [
+          "verification_case_id",
+          "verification_result_ids",
+          "reason_codes"
+        ],
+        "reason_codes": [
+          "verification_case_id",
+          "verification_result_ids",
+          "evidence_ids"
+        ]
       }
     },
     "CorporateRelationshipActivated": {
