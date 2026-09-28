@@ -41,7 +41,7 @@ Engines never touch the Control Plane's database. So the Control Plane needs a w
     - **Expiry** applies up to and including `prepare`. Once execution has started, the approved plan stays in force until the migration ends, because a migration may rightly run for days.
     - **Staleness** is judged against authoritative state other than this migration's own effects: its MIGRATION bindings, shifted cohorts and retired sources. A change made outside the migration is what makes the plan stale, for example a new binding in scope, a target instance that became ineligible, or a context that no longer belongs to its cohort. A stale plan cannot advance, and the operator rolls back or cancels.
   - no other operation of the migration still running;
-  - a cutover window that is open, where the request names one.
+  - for the transitions that move authority (`canary` and `shift`), a cutover window that is open, where the request names one. Preparation, validation and retirement may run outside it.
 - `cancel` and `roll_back` need no approval. Leaving or undoing a change is always available to the authorised operator.
 - The operator may cancel only before any cohort's authority has moved.
 

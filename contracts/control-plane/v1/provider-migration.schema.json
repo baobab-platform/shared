@@ -496,7 +496,7 @@
       "required": [
         "transition"
       ],
-      "description": "Advance the migration by one transition. Forward transitions need an APPROVED decision on the current, unblocked, unexpired, non-stale plan, no running operation of the migration, and an open cutover window where one is named; cancel and roll_back need no approval. The Control Plane derives the steps from the approved plan; a request never names them.",
+      "description": "Advance the migration by one transition. Forward transitions need an APPROVED decision on the current, unblocked, unexpired, non-stale plan, no running operation of the migration, and, for canary and shift, an open cutover window where one is named; cancel and roll_back need no approval. The Control Plane derives the steps from the approved plan; a request never names them.",
       "properties": {
         "transition": {
           "$ref": "#/$defs/migrationTransition"

@@ -4194,8 +4194,9 @@ paths:
         (PLAN_NOT_APPROVED), a plan that is not blocked, expired or stale
         (PROVIDER_MIGRATION_BLOCKED, PLAN_STALE; expiry applies up to prepare,
         and staleness ignores the migration's own effects), no other running operation
-        of the migration (PROVIDER_MIGRATION_OPERATION_RUNNING) and an open
-        cutover window where one is named (MIGRATION_CUTOVER_WINDOW_CLOSED);
+        of the migration (PROVIDER_MIGRATION_OPERATION_RUNNING) and, for
+        canary and shift, an open cutover window where one is named
+        (MIGRATION_CUTOVER_WINDOW_CLOSED);
         each is 409, as is a transition the lifecycle does not allow from the
         current stage (PROVIDER_MIGRATION_STAGE_CONFLICT). cancel (only
         before any cohort's authority moved) and roll_back need no approval,

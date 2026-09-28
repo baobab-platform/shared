@@ -26,7 +26,7 @@ Changes that have been merged but have not yet been included in a released versi
 - **Provider migration execution and engine migration tasks (ADR-SHARED-016, Proposed; control-plane `openapi.yaml` 1.18.0).**
   - **Approval.** `decideProviderMigrationPlan` (`POST /provider-migrations/{id}/approve`, needs `provider-migration:approve`) records one `ApprovalDecision` with subject `PROVIDER_MIGRATION` on the current plan's digest. That one decision authorises the plan's whole sequence. The creator never approves, and a replan needs a new decision.
   - **Stage commands.** `advanceProviderMigration` (`POST /provider-migrations/{id}/advance`, needs `provider-migration:execute`, If-Match and Idempotency-Key) runs one lifecycle transition as a `PROVIDER_MIGRATION_ADVANCE` operation.
-    - Forward transitions need the approval, a current plan and an open cutover window.
+    - Forward transitions need the approval and a current plan; `canary` and `shift` also need an open cutover window.
     - `cancel` and `roll_back` need a reason instead.
   - **Engine migration tasks.** `engine-migration-task.schema.json` defines the tasks behind the stateful steps: freeze, migrate, reconcile and unfreeze.
     - Workloads with `provider-migration:task` list, claim (with a lease) and report the tasks assigned to the engine instances they are attested for.
