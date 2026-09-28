@@ -331,6 +331,7 @@ REQUESTS = {
     "discrepancy_transition": "verification.schema.json#/$defs/EvidenceDiscrepancyTransitionRequest",
     "case_conclusion": "verification.schema.json#/$defs/VerificationCaseConclusionRequest",
     "discrepancy_resolution": "verification.schema.json#/$defs/EvidenceDiscrepancyResolutionRequest",
+    "applicant_claim": "evidence.schema.json#/$defs/ApplicantClaimSubmission",
 }
 requests = example.get("requests", {})
 for key, ref in REQUESTS.items():
@@ -408,6 +409,16 @@ must_reject("an applicant-supplied source trusted for a claim", S,
             mutate(applicant_source, trusted_for=[{"claim_type": "LEGAL_NAME", "jurisdiction": "UG"}]))
 must_reject("a claim submission asserting its own status", SUB, mutate(submission, status="VERIFIED"))
 must_reject("a claim submission asserting verification", SUB, mutate(submission, verified=True))
+# An applicant asserts only a claim type, jurisdiction and value about their
+# own application; everything else is derived (sections 9, 169, 191).
+APP = "evidence.schema.json#/$defs/ApplicantClaimSubmission"
+applicant_claim = example["requests"]["applicant_claim"]
+must_reject("an applicant claim naming its own subject", APP,
+            mutate(applicant_claim, subject={"subject_type": "LEGAL_ENTITY", "subject_id": "LE-01k9ug4acme"}))
+must_reject("an applicant claim asserting its own status", APP, mutate(applicant_claim, status="VERIFIED"))
+must_reject("an applicant claim asserting verification", APP, mutate(applicant_claim, verified=True))
+must_reject("an applicant claim citing evidence to vouch for itself", APP, mutate(applicant_claim, evidence_ids=["evr_cert01"]))
+must_reject("an applicant claim choosing its purpose", APP, mutate(applicant_claim, purpose="PERIODIC_REVIEW"))
 must_reject("a VERIFIED claim with no result", C, mutate(regno, current_result_id=None))
 must_reject("a positive check with no evidence or source record", CHK,
             mutate(reg_check, evidence_ids=[], source_record_reference=None))

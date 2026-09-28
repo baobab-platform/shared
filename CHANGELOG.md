@@ -23,6 +23,14 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Applicant claims on client applications (ADR-BCP-023 §7, §9, §191-192; control-plane `openapi.yaml` 1.16.0).**
+  - Applicant routes:
+    - `createApplicantClaim` and `listApplicantClaims`: `POST`/`GET /client-applications/{application_id}/claims`;
+    - `withdrawApplicantClaim`: `POST .../claims/{claim_id}/withdraw`, with If-Match.
+  - The request is `evidence/v1` `ApplicantClaimSubmission`: a claim type, jurisdiction and value only. The subject (the application), purpose, asserter, origin and `SELF_ASSERTED` status are all derived.
+  - `openClaimVerification`: `POST /admin/verification-cases/{case_id}/claims/{claim_id}/open-verification` (`verification:write`) takes a SELF_ASSERTED claim under verification.
+  - The admission request's `verification_case_id` may now name the admitted application's own case (subject `APPLICATION`). That is the usual case, since verification happens before approval.
+  - `validate-evidence-contracts.py` rejects five applicant-claim negatives: naming a subject, a status, verification, evidence or a purpose.
 - **Canonical mapping administrative permissions (ADR-BCP-020; ADR-SHARED-013).**
   - `administration/v1` adds three permissions in the ORGANISATION domain, at PLATFORM scope only:
     - `mapping.view` (LOW, read-only): external references, canonical mappings and reference resolution;

@@ -581,6 +581,13 @@
       "command": "resolve",
       "resolution": "SOURCE_VALUE_ADOPTED",
       "reason": "The registry name is authoritative; the applicant confirmed the abbreviated form was informal."
+    },
+    "applicant_claim": {
+      "claim_type": "LEGAL_NAME",
+      "jurisdiction": "UG",
+      "claimed_value": {
+        "value": "ACME Foods Limited"
+      }
     }
   }
 }
