@@ -59,8 +59,11 @@ Engines never touch the Control Plane's database. So the Control Plane needs a w
 | `cancel` | compensation: the MIGRATION bindings created by `prepare` are removed, and shadowing stops |
 | `roll_back` | compensation by `rollback_strategy` (section 5) |
 
-- A stage moves when its command is accepted. The operation reports the steps' progress, and on success the migration is in the transition's stage.
-- A failed step fails the operation and leaves the migration in that stage, with `failure_reason` set. The operator then retries the operation or rolls back.
+- A forward transition moves the stage when its command is accepted; `cancel` and `roll_back` move it when they finish. The operation reports the steps' progress, and it is RUNNING while it waits on engine migration tasks.
+- A failed step fails the operation and sets `failure_reason`:
+  - if no engine migration task had been issued, the transition is undone entirely and the stage is as it was, so the operator may issue it again;
+  - otherwise the migration stays in the transition's stage with its cohort in its safe state (frozen, or still on the source), and the operator rolls back.
+- An advance asked to stop through `/admin/operations/{id}/cancel` ends CANCELLED at its next resumption, its open tasks cancelled, leaving the same safe state.
 - A step never runs twice with effect: every step is idempotent on its `step_id` and the migration.
 
 ### 3. Local steps and engine steps
@@ -116,11 +119,11 @@ The workload routes, all requiring `provider-migration:task`:
 - Free text is at most 500 characters and never business data or card data.
 - Results never contain customer records.
 
-**Deadlines.** A task still unreported when its step's deadline passes (the cutover window's end, or 24 hours) fails with `MIGRATION_TASK_TIMEOUT`. The cohort is left frozen, which is the safe state, and the operator retries or rolls back.
+**Deadlines.** A task still unreported when its step's deadline passes (the cutover window's end, or 24 hours) fails with `MIGRATION_TASK_TIMEOUT`. The cohort is left frozen, which is the safe state, and the operator rolls back.
 
 ### 5. Rollback
 
-`roll_back` returns every cohort whose authority moved, most recent first, according to the request's `rollback_strategy`:
+`roll_back` first releases a cohort a failed advance left frozen but never shifted (SOURCE `UNFREEZE_COHORT_WRITES`, REVERSE). It then returns every cohort whose authority moved, most recent first, according to the request's `rollback_strategy`:
 
 - **REBIND_SOURCE:**
   1. freeze the target (TARGET `FREEZE_COHORT_WRITES`);
