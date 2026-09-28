@@ -6,7 +6,7 @@
 # SHALL not expose sensitive information indiscriminately to external
 # clients").
 #
-# Eight categories exist for eight different moments, not six different
+# Nine categories exist for nine different moments, not six different
 # vocabularies for the same thing:
 #
 #   authorization_denial          -- decision.schema.json's `reason_code`,
@@ -45,6 +45,11 @@
 #                                     ProviderMigrationPlan `blockers`: an unmet
 #                                     precondition that stops a provider migration
 #                                     advancing (ADR-BCP-006 sections 46-48, 55).
+#   provider_migration_task_failure -- contracts/control-plane/v1/engine-migration-task.schema.json's
+#                                     `result.reason_code`: why an engine migration
+#                                     task or its step failed (ADR-SHARED-016
+#                                     sections 3-4). Safe to show the operator;
+#                                     never business data.
 #   changeset_blocker              -- contracts/control-plane/v1/changeset.schema.json's
 #                                     Changeset `blocking_reasons` and ChangesetPlan
 #                                     `blockers`: why a changeset is INVALID or
@@ -332,6 +337,23 @@ reason_codes:
   - code: MIGRATION_ALREADY_IN_PROGRESS
     category: provider_migration_blocker
     description: "Another migration that has not ended already covers a named capability for the source provider."
+
+  # -- provider_migration_task_failure (ADR-SHARED-016 sections 3-4) -----
+  # Why an engine migration task, or the step it belongs to, failed. The
+  # cohort is left in its safe state (frozen or on the source); the
+  # operator retries or rolls back.
+  - code: MIGRATION_RECONCILIATION_MISMATCH
+    category: provider_migration_task_failure
+    description: "The source and target reported a different record count or content digest for the cohort's canonical projection."
+  - code: MIGRATION_TASK_TIMEOUT
+    category: provider_migration_task_failure
+    description: "The assigned engine instance did not report the task before its deadline."
+  - code: MIGRATION_TASK_REJECTED
+    category: provider_migration_task_failure
+    description: "The assigned engine instance refused the task: it cannot perform the operation for this cohort."
+  - code: MIGRATION_ADAPTER_UNAVAILABLE
+    category: provider_migration_task_failure
+    description: "The engine's migration adapter could not reach the counterpart or its own provider to complete the task."
 
   # -- changeset_blocker (ADR-BCP-021 sections 17-19, 66) ---------------
   # Why a changeset cannot be planned or approved as it stands.

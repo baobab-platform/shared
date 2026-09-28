@@ -240,6 +240,35 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "provider-migration:approve"
+    description: >-
+      Approve, reject or request changes to one exact provider migration plan,
+      bound to its digest (ADR-SHARED-016 section 1). One approval authorises
+      that plan's whole sequence; a replan needs a new decision. Never held by
+      the principal who created the migration: the Control Plane refuses
+      self-approval.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "provider-migration:execute"
+    description: >-
+      Advance an approved provider migration one lifecycle transition at a
+      time, as a durable operation, and cancel or roll it back (ADR-SHARED-016
+      section 2). Necessary but not sufficient: every forward advance also
+      needs an approval of the current plan.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "provider-migration:task"
+    description: >-
+      An engine workload lists, claims and reports the engine migration tasks
+      assigned to the engine instances its client is attested for
+      (ADR-SHARED-016 section 4). The instance is never taken from the request.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
   - name: "verification:read"
     description: >-
       Read verification cases, their claims, checks, results and

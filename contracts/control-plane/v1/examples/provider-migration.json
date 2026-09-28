@@ -959,5 +959,119 @@
     "created_at": "2026-09-28T09:00:00Z",
     "updated_at": "2026-09-28T09:00:00Z",
     "revision": 1
+  },
+  "approval": {
+    "approval_id": "apd_0199a1b2c3d47ec1",
+    "subject_type": "PROVIDER_MIGRATION",
+    "subject_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "plan_id": "plan_0199a1b2c3d47e8f9a0b1c2d3e4f5b01",
+    "plan_version": 1,
+    "plan_digest": "sha256:4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f",
+    "decision": "APPROVED",
+    "decided_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a03",
+    "decided_at": "2026-09-28T10:00:00Z"
+  },
+  "advance_request": {
+    "transition": "canary"
+  },
+  "rollback_request": {
+    "transition": "roll_back",
+    "reason": "Reconciliation mismatch on the canary cohort; returning it to the source."
+  },
+  "advancing": {
+    "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "request": {
+      "source_provider_key": "baobab-erp.idempiere",
+      "target_provider_key": "baobab-erp.ledgerx",
+      "capabilities": [
+        {
+          "capability_key": "finance.invoice.issue",
+          "contract_version": 1
+        },
+        {
+          "capability_key": "finance.invoice.read",
+          "contract_version": 1
+        }
+      ],
+      "migration_mode": "STATEFUL_CUTOVER",
+      "data_strategy": "BULK_MIGRATE_THEN_CUTOVER",
+      "rollback_strategy": "RESTORE_AND_REBIND_SOURCE",
+      "shadow": false,
+      "cohorts": [
+        {
+          "cohort_key": "internal-canary",
+          "selector": {
+            "tenant_ids": [
+              "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+            ]
+          }
+        },
+        {
+          "cohort_key": "za-tenants",
+          "selector": {
+            "markets": [
+              "ZA"
+            ]
+          }
+        },
+        {
+          "cohort_key": "remaining"
+        }
+      ],
+      "validation_checks": [
+        {
+          "check": "INVOICE_TOTALS_RECONCILE",
+          "description": "Issued invoice totals per legal entity match between source and target for the cohort."
+        }
+      ],
+      "cutover_window": {
+        "starts_at": "2026-10-10T22:00:00Z",
+        "ends_at": "2026-10-11T04:00:00Z"
+      },
+      "owners": [
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+        "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a02"
+      ],
+      "reason": "Replace the ERP ledger provider; canonical finance contracts are unchanged."
+    },
+    "stage": "CANARY",
+    "plan_id": "plan_0199a1b2c3d47e8f9a0b1c2d3e4f5b01",
+    "plan_version": 1,
+    "plan_digest": "sha256:4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f",
+    "blocked": false,
+    "created_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a01",
+    "created_at": "2026-09-28T09:00:00Z",
+    "updated_at": "2026-10-10T22:05:00Z",
+    "revision": 4,
+    "current_cohort_key": "internal-canary",
+    "approval_id": "apd_0199a1b2c3d47ec1",
+    "operation_id": "op_0199a1b2c3d47ec2",
+    "shifted_cohort_keys": [],
+    "started_at": "2026-10-10T22:05:00Z"
+  },
+  "operation": {
+    "operation_id": "op_0199a1b2c3d47ec2",
+    "operation_type": "PROVIDER_MIGRATION_ADVANCE",
+    "status": "RUNNING",
+    "subject": {
+      "type": "PROVIDER_MIGRATION",
+      "id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01"
+    },
+    "plan_id": "plan_0199a1b2c3d47e8f9a0b1c2d3e4f5b01",
+    "plan_digest": "sha256:4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f",
+    "approval_id": "apd_0199a1b2c3d47ec1",
+    "requested_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a02",
+    "current_phase": "CANARY",
+    "progress": {
+      "completed_steps": 1,
+      "total_steps": 5,
+      "current_step": "internal-canary-migrate-cohort-data"
+    },
+    "execution_attempt": 1,
+    "retryable": false,
+    "revision": 2,
+    "created_at": "2026-10-10T22:05:00Z",
+    "started_at": "2026-10-10T22:05:01Z",
+    "updated_at": "2026-10-10T22:09:30Z"
   }
 }

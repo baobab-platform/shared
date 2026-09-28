@@ -77,7 +77,12 @@ RESPONSIBILITIES = {
     "provider-migration.schema.json": {
         "migrationStage", "migrationMode", "dataStrategy", "rollbackStrategy", "migrationCapability",
         "cohortSelector", "migrationCohort", "cutoverWindow", "ProviderMigrationRequest", "migrationOperation",
-        "migrationStepResources", "migrationStep", "migrationDiscovery", "ProviderMigrationPlan", "ProviderMigration",
+        "migrationStepResources", "migrationStep", "migrationDiscovery", "ProviderMigrationPlan", "migrationTransition",
+        "ProviderMigrationAdvanceRequest", "ProviderMigration",
+    },
+    "engine-migration-task.schema.json": {
+        "engineMigrationTaskId", "taskOperation", "taskRole", "taskDirection", "taskStatus", "counterpart", "cohortContexts",
+        "taskResult", "EngineMigrationTask", "EngineMigrationTaskPage", "EngineMigrationTaskReport",
     },
     "changeset.schema.json": {
         "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "desiredChange",
@@ -609,6 +614,132 @@ def check_provider_migration() -> None:
                 fail(f"provider-migration {key}: warning {finding['code']} is not a provider migration warning code")
 
 
+def check_migration_execution() -> None:
+    """ADR-SHARED-016: approval, stage commands and engine migration tasks."""
+    schema = "provider-migration.schema.json"
+    tasks = "engine-migration-task.schema.json"
+    example = json.loads((CP / "examples" / "provider-migration.json").read_text())
+    accepts("approval-decision.schema.json", "ApprovalDecision", example["approval"], "provider-migration approval")
+    accepts(schema, "ProviderMigration", example["advancing"], "provider-migration advancing")
+    accepts("execution-operation.schema.json", "ExecutionOperation", example["operation"], "provider-migration operation")
+    for key in ("advance_request", "rollback_request"):
+        accepts(schema, "ProviderMigrationAdvanceRequest", example[key], f"provider-migration {key}")
+    advance = example["advance_request"]
+    for label, changed in (("named steps", {**advance, "steps": ["internal-canary-shift-cohort"]}),
+                           ("an unknown transition", {**advance, "transition": "cutover"}),
+                           ("replan, which is not an advance", {**advance, "transition": "replan"}),
+                           ("a caller-supplied approval", {**advance, "approval_id": "apd_0199a1b2c3d47ec1"})):
+        rejects(schema, "ProviderMigrationAdvanceRequest", changed, f"an advance with {label}")
+    for transition in ("cancel", "roll_back"):
+        rejects(schema, "ProviderMigrationAdvanceRequest", {"transition": transition}, f"a {transition} without a reason")
+    approval, migration = example["approval"], example["migration"]
+    if (approval["subject_id"], approval["plan_id"], approval["plan_version"], approval["plan_digest"]) != \
+            (migration["provider_migration_id"], migration["plan_id"], migration["plan_version"], migration["plan_digest"]):
+        fail("provider-migration approval does not bind the migration's current plan")
+    if approval["decided_by"] == migration["created_by"]:
+        fail("provider-migration approval is decided by the migration's creator")
+    operation = example["operation"]
+    if operation["operation_type"] != "PROVIDER_MIGRATION_ADVANCE" or operation["subject"]["type"] != "PROVIDER_MIGRATION" \
+            or example["advancing"]["operation_id"] != operation["operation_id"]:
+        fail("a provider migration advances by a PROVIDER_MIGRATION_ADVANCE operation on the migration")
+
+    # The lifecycle's execution rules name real transitions, operations,
+    # roles and strategies, and every advance runs the stateful sequence in
+    # order.
+    lifecycle = yaml.safe_load((CP / "provider-migration-lifecycle.yaml").read_text())
+    defs = json.loads((CP / schema).read_text())["$defs"]
+    task_defs = json.loads((CP / tasks).read_text())["$defs"]
+    operations = set(defs["migrationOperation"]["enum"])
+    transitions = {name for spec in lifecycle["states"].values() for name in (spec or {}).get("transitions", {})}
+    advance_enum = set(defs["migrationTransition"]["enum"])
+    if advance_enum != transitions - {"replan"}:
+        fail(f"migrationTransition differs from the lifecycle's command transitions: {sorted(advance_enum ^ (transitions - {'replan'}))}")
+    compensating = {"cancel", "roll_back"}
+    if set(lifecycle["stage_steps"]) != advance_enum - compensating:
+        fail(f"stage_steps differ from the forward transitions: {sorted(set(lifecycle['stage_steps']) ^ (advance_enum - compensating))}")
+    for transition, spec in lifecycle["stage_steps"].items():
+        if spec["scope"] not in {"MIGRATION", "FIRST_COHORT", "NEXT_COHORT", "CURRENT_COHORT"}:
+            fail(f"stage_steps.{transition} has an unknown scope {spec['scope']}")
+        if not set(spec["operations"]) <= operations - {"REMOVE_MIGRATION_BINDING"}:
+            fail(f"stage_steps.{transition} names operations that are not plan operations")
+    sequence = lifecycle["stateful_cohort_sequence"]
+    for transition in ("canary", "shift"):
+        ops = lifecycle["stage_steps"][transition]["operations"]
+        if [op for op in ops if op in sequence] != sequence:
+            fail(f"stage_steps.{transition} does not run the stateful cohort sequence in order")
+    if set(lifecycle["engine_steps"]) != set(task_defs["taskOperation"]["enum"]):
+        fail("engine_steps differ from the engine migration task operations")
+    roles = set(task_defs["taskRole"]["enum"])
+    for op, spec in lifecycle["engine_steps"].items():
+        if set(spec) != {"forward", "reverse"} or not set(spec["forward"]) | set(spec["reverse"]) <= roles:
+            fail(f"engine_steps.{op} must assign forward and reverse to known roles")
+    # One writer at a time: the freeze and the unfreeze are on opposite sides.
+    engine = lifecycle["engine_steps"]
+    if engine["FREEZE_COHORT_WRITES"]["forward"] != ["SOURCE"] or engine["UNFREEZE_COHORT_WRITES"]["forward"] != ["TARGET"] \
+            or engine["FREEZE_COHORT_WRITES"]["reverse"] != ["TARGET"] or engine["UNFREEZE_COHORT_WRITES"]["reverse"] != ["SOURCE"]:
+        fail("engine_steps must freeze the side losing authority and unfreeze the side gaining it")
+    if set(engine["RECONCILE_COHORT_DATA"]["forward"]) != roles or set(engine["RECONCILE_COHORT_DATA"]["reverse"]) != roles:
+        fail("reconciliation must be reported by both sides")
+    if set(lifecycle["rollback_steps"]) != set(defs["rollbackStrategy"]["enum"]):
+        fail("rollback_steps differ from rollbackStrategy")
+    for strategy, ops in lifecycle["rollback_steps"].items():
+        if not set(ops) <= operations:
+            fail(f"rollback_steps.{strategy} names unknown operations")
+    if lifecycle["rollback_steps"]["FORWARD_FIX_ONLY"]:
+        fail("FORWARD_FIX_ONLY moves no cohort back")
+    if not set(lifecycle["compensation"]["cancel"]) <= operations:
+        fail("compensation.cancel names unknown operations")
+    for key in ("preview", "plan"):
+        if any(step["operation"] == "REMOVE_MIGRATION_BINDING" for step in example[key]["steps"]):
+            fail(f"provider-migration {key}: REMOVE_MIGRATION_BINDING is compensation only")
+    if not (isinstance(lifecycle["task_lease_seconds"], int) and 0 < lifecycle["task_lease_seconds"] <= 3600):
+        fail("task_lease_seconds must be between 1 and 3600")
+
+    # Engine migration tasks.
+    task_example = json.loads((CP / "examples" / "engine-migration-task.json").read_text())
+    for key in ("pending", "claimed", "succeeded", "freeze_succeeded", "failed"):
+        accepts(tasks, "EngineMigrationTask", task_example[key], f"engine migration task {key}")
+        task = task_example[key]
+        if task["role"] not in engine[task["operation"]][task["direction"].lower()]:
+            fail(f"engine migration task {key}: {task['operation']} {task['direction']} is not assigned to {task['role']}")
+        if task["provider_migration_id"] != migration["provider_migration_id"]:
+            fail(f"engine migration task {key} belongs to another migration")
+    accepts(tasks, "EngineMigrationTaskPage", task_example["page"], "engine migration task page")
+    for key in ("report_succeeded", "report_failed"):
+        accepts(tasks, "EngineMigrationTaskReport", task_example[key], f"engine migration task {key}")
+    registry = yaml.safe_load((CONTRACTS / "authorization" / "v1" / "reason-code-registry.yaml").read_text())
+    failures = {entry["code"] for entry in registry["reason_codes"] if entry["category"] == "provider_migration_task_failure"}
+    for code in (task_example["failed"]["result"]["reason_code"], task_example["report_failed"]["reason_code"]):
+        if code not in failures:
+            fail(f"engine migration task failure {code} is not a provider_migration_task_failure code")
+    for code in ("MIGRATION_RECONCILIATION_MISMATCH", "MIGRATION_TASK_TIMEOUT"):
+        if code not in failures:
+            fail(f"ADR-SHARED-016 needs the provider_migration_task_failure code {code}")
+    claimed, succeeded, failed = task_example["claimed"], task_example["succeeded"], task_example["failed"]
+    for label, changed in (
+            ("a migrate task without its counterpart", {k: v for k, v in claimed.items() if k != "counterpart"}),
+            ("a claimed task without its lease", {k: v for k, v in claimed.items() if k != "lease_expires_at"}),
+            ("a claimed task without its claimant", {k: v for k, v in claimed.items() if k != "claimed_by"}),
+            ("a failed task without a reason code", {**failed, "result": {"detail": "failed"}}),
+            ("a reconciled task without its digest", {**succeeded, "result": {"record_count": 1}}),
+            ("a reported task without a result", {k: v for k, v in succeeded.items() if k != "result"}),
+            ("a task carrying an endpoint", {**claimed, "counterpart": {**claimed["counterpart"], "endpoint": "https://erp.internal"}}),
+            ("a task carrying a credential", {**claimed, "credentials": {"token": "x"}}),
+            ("a task carrying business data", {**succeeded, "result": {**succeeded["result"], "records": [{"invoice": 1}]}}),
+            ("a provider-specific operation", {**claimed, "operation": "RUN_IDEMPIERE_EXPORT"}),
+            ("a local operation as a task", {**claimed, "operation": "SHIFT_COHORT"}),
+            ("a UUID engine instance", {**claimed, "engine_instance_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c"}),
+            ("an overlong detail", {**failed, "result": {**failed["result"], "detail": "x" * 501}}),
+            ("a malformed digest", {**succeeded, "result": {**succeeded["result"], "content_digest": "md5:abc"}})):
+        rejects(tasks, "EngineMigrationTask", changed, f"engine migration task with {label}")
+    report = task_example["report_succeeded"]
+    for label, changed in (("its task id", {**report, "task_id": claimed["task_id"]}),
+                           ("its engine instance", {**report, "engine_instance_id": claimed["engine_instance_id"]}),
+                           ("a status other than an outcome", {**report, "outcome": "CLAIMED"})):
+        rejects(tasks, "EngineMigrationTaskReport", changed, f"a task report naming {label}")
+    rejects(tasks, "EngineMigrationTaskReport", {"outcome": "FAILED"}, "a FAILED report without a reason code")
+
+
 def check_changeset() -> None:
     schema = "changeset.schema.json"
     example = json.loads((CP / "examples" / "changeset.json").read_text())
@@ -1097,6 +1228,7 @@ def main() -> int:
     check_mapping_resolution()
     check_tenant_provisioning()
     check_provider_migration()
+    check_migration_execution()
     check_changeset()
     check_market()
     check_openapi_references()

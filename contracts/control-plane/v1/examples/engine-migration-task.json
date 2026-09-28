@@ -1,0 +1,235 @@
+{
+  "pending": {
+    "task_id": "emt_0199a1b2c3d47ed5",
+    "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "operation_id": "op_0199a1b2c3d47ec2",
+    "step_id": "internal-canary-unfreeze-cohort-writes",
+    "operation": "UNFREEZE_COHORT_WRITES",
+    "role": "TARGET",
+    "direction": "FORWARD",
+    "engine_instance_id": "ei_0199a1b2c3d47e8f",
+    "provider_key": "baobab-erp.ledgerx",
+    "cohort_key": "internal-canary",
+    "capabilities": [
+      "finance.invoice.issue",
+      "finance.invoice.read"
+    ],
+    "contexts": {
+      "tenant_ids": [
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+      ]
+    },
+    "status": "PENDING",
+    "attempt": 1,
+    "updated_at": "2026-10-10T22:25:00Z",
+    "revision": 1,
+    "deadline_at": "2026-10-11T04:00:00Z",
+    "created_at": "2026-10-10T22:05:01Z"
+  },
+  "claimed": {
+    "task_id": "emt_0199a1b2c3d47ed2",
+    "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "operation_id": "op_0199a1b2c3d47ec2",
+    "step_id": "internal-canary-migrate-cohort-data",
+    "operation": "MIGRATE_COHORT_DATA",
+    "role": "TARGET",
+    "direction": "FORWARD",
+    "engine_instance_id": "ei_0199a1b2c3d47e8f",
+    "provider_key": "baobab-erp.ledgerx",
+    "cohort_key": "internal-canary",
+    "capabilities": [
+      "finance.invoice.issue",
+      "finance.invoice.read"
+    ],
+    "contexts": {
+      "tenant_ids": [
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+      ]
+    },
+    "counterpart": {
+      "provider_key": "baobab-erp.idempiere",
+      "engine_instance_ids": [
+        "ei_0199a1b2c3d47e70"
+      ]
+    },
+    "status": "CLAIMED",
+    "attempt": 1,
+    "claimed_by": "baobab-erp-workload",
+    "lease_expires_at": "2026-10-10T22:11:30Z",
+    "updated_at": "2026-10-10T22:06:30Z",
+    "revision": 2,
+    "deadline_at": "2026-10-11T04:00:00Z",
+    "created_at": "2026-10-10T22:05:01Z"
+  },
+  "succeeded": {
+    "task_id": "emt_0199a1b2c3d47ed3",
+    "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "operation_id": "op_0199a1b2c3d47ec2",
+    "step_id": "internal-canary-reconcile-cohort-data",
+    "operation": "RECONCILE_COHORT_DATA",
+    "role": "SOURCE",
+    "direction": "FORWARD",
+    "engine_instance_id": "ei_0199a1b2c3d47e70",
+    "provider_key": "baobab-erp.idempiere",
+    "cohort_key": "internal-canary",
+    "capabilities": [
+      "finance.invoice.issue",
+      "finance.invoice.read"
+    ],
+    "contexts": {
+      "tenant_ids": [
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+      ]
+    },
+    "status": "SUCCEEDED",
+    "attempt": 1,
+    "result": {
+      "record_count": 1284,
+      "content_digest": "sha256:7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a"
+    },
+    "reported_at": "2026-10-10T22:20:00Z",
+    "updated_at": "2026-10-10T22:20:00Z",
+    "revision": 3,
+    "deadline_at": "2026-10-11T04:00:00Z",
+    "created_at": "2026-10-10T22:05:01Z"
+  },
+  "freeze_succeeded": {
+    "task_id": "emt_0199a1b2c3d47ed1",
+    "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "operation_id": "op_0199a1b2c3d47ec2",
+    "step_id": "internal-canary-freeze-cohort-writes",
+    "operation": "FREEZE_COHORT_WRITES",
+    "role": "SOURCE",
+    "direction": "FORWARD",
+    "engine_instance_id": "ei_0199a1b2c3d47e70",
+    "provider_key": "baobab-erp.idempiere",
+    "cohort_key": "internal-canary",
+    "capabilities": [
+      "finance.invoice.issue",
+      "finance.invoice.read"
+    ],
+    "contexts": {
+      "tenant_ids": [
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+      ]
+    },
+    "status": "SUCCEEDED",
+    "attempt": 1,
+    "result": {
+      "detail": "Cohort writes refused at the source."
+    },
+    "reported_at": "2026-10-10T22:06:10Z",
+    "updated_at": "2026-10-10T22:06:10Z",
+    "revision": 3,
+    "deadline_at": "2026-10-11T04:00:00Z",
+    "created_at": "2026-10-10T22:05:01Z"
+  },
+  "failed": {
+    "task_id": "emt_0199a1b2c3d47ed4",
+    "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+    "operation_id": "op_0199a1b2c3d47ec2",
+    "step_id": "internal-canary-reconcile-cohort-data",
+    "operation": "RECONCILE_COHORT_DATA",
+    "role": "TARGET",
+    "direction": "FORWARD",
+    "engine_instance_id": "ei_0199a1b2c3d47e8f",
+    "provider_key": "baobab-erp.ledgerx",
+    "cohort_key": "internal-canary",
+    "capabilities": [
+      "finance.invoice.issue",
+      "finance.invoice.read"
+    ],
+    "contexts": {
+      "tenant_ids": [
+        "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+      ]
+    },
+    "status": "FAILED",
+    "attempt": 1,
+    "result": {
+      "reason_code": "MIGRATION_ADAPTER_UNAVAILABLE",
+      "detail": "The ledger adapter could not read its own store for the cohort."
+    },
+    "reported_at": "2026-10-10T22:21:00Z",
+    "updated_at": "2026-10-10T22:21:00Z",
+    "revision": 3,
+    "deadline_at": "2026-10-11T04:00:00Z",
+    "created_at": "2026-10-10T22:05:01Z"
+  },
+  "page": {
+    "items": [
+      {
+        "task_id": "emt_0199a1b2c3d47ed2",
+        "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+        "operation_id": "op_0199a1b2c3d47ec2",
+        "step_id": "internal-canary-migrate-cohort-data",
+        "operation": "MIGRATE_COHORT_DATA",
+        "role": "TARGET",
+        "direction": "FORWARD",
+        "engine_instance_id": "ei_0199a1b2c3d47e8f",
+        "provider_key": "baobab-erp.ledgerx",
+        "cohort_key": "internal-canary",
+        "capabilities": [
+          "finance.invoice.issue",
+          "finance.invoice.read"
+        ],
+        "contexts": {
+          "tenant_ids": [
+            "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+          ]
+        },
+        "counterpart": {
+          "provider_key": "baobab-erp.idempiere",
+          "engine_instance_ids": [
+            "ei_0199a1b2c3d47e70"
+          ]
+        },
+        "status": "CLAIMED",
+        "attempt": 1,
+        "claimed_by": "baobab-erp-workload",
+        "lease_expires_at": "2026-10-10T22:11:30Z",
+        "updated_at": "2026-10-10T22:06:30Z",
+        "revision": 2,
+        "deadline_at": "2026-10-11T04:00:00Z",
+        "created_at": "2026-10-10T22:05:01Z"
+      },
+      {
+        "task_id": "emt_0199a1b2c3d47ed5",
+        "provider_migration_id": "pmg_0199a1b2c3d47e8f9a0b1c2d3e4f5c01",
+        "operation_id": "op_0199a1b2c3d47ec2",
+        "step_id": "internal-canary-unfreeze-cohort-writes",
+        "operation": "UNFREEZE_COHORT_WRITES",
+        "role": "TARGET",
+        "direction": "FORWARD",
+        "engine_instance_id": "ei_0199a1b2c3d47e8f",
+        "provider_key": "baobab-erp.ledgerx",
+        "cohort_key": "internal-canary",
+        "capabilities": [
+          "finance.invoice.issue",
+          "finance.invoice.read"
+        ],
+        "contexts": {
+          "tenant_ids": [
+            "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+          ]
+        },
+        "status": "PENDING",
+        "attempt": 1,
+        "updated_at": "2026-10-10T22:25:00Z",
+        "revision": 1,
+        "deadline_at": "2026-10-11T04:00:00Z",
+        "created_at": "2026-10-10T22:05:01Z"
+      }
+    ]
+  },
+  "report_succeeded": {
+    "outcome": "SUCCEEDED",
+    "record_count": 1284,
+    "content_digest": "sha256:7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a"
+  },
+  "report_failed": {
+    "outcome": "FAILED",
+    "reason_code": "MIGRATION_TASK_REJECTED",
+    "detail": "The cohort includes a closed accounting period this adapter cannot migrate."
+  }
+}
