@@ -23,6 +23,16 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Verification provenance on organisation events (ADR-BCP-023 §143 and §231; organisation `asyncapi.yaml` 1.1.0).**
+  - `OrganisationVerified` and `LegalEntityVerified` gain four optional fields: `verification_case_id`, `verification_result_ids`, `evidence_ids` (opaque `evr_` ids) and `reason_codes`.
+  - A case and its results appear together or not at all.
+  - Free-string references and prose reasons stay unpublishable (ADR-BCP-018 §125).
+  - The change is additive: existing payloads stay valid.
+  - `validate-organisation-contracts.py` adds a case-decided example and rejects four negatives:
+    - a case without its results;
+    - results without their case;
+    - free-string evidence;
+    - a prose reason.
 - **Verification routes (ADR-BCP-023 gate OEV-03; control-plane `openapi.yaml` 1.14.0).**
   - Eighteen `Verification` operations under `/admin`:
     - verification cases: open, list, read, transition and conclude;
