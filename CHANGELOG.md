@@ -37,7 +37,7 @@ Changes that have been merged but have not yet been included in a released versi
     - a mapping approver is not the mapping's creator (`MAPPING_SELF_APPROVAL`).
   - `changesetStepResources`:
     - a step names exactly one of `tenant_id`, `market_id` or `mapping_id`, with statuses in that resource's own vocabulary;
-    - an optional `target_revision` binds a market plan to the revision that was reviewed. A moved revision is `PLAN_STALE`.
+    - an optional `target_revision` binds a market or mapping plan to the revision that was reviewed. A moved revision is `PLAN_STALE`.
   - `affectedResource.resource_type` gains `MARKET` and `MAPPING`.
 
 - **Applicant claims on client applications (ADR-BCP-023 §7, §9, §191-192; control-plane `openapi.yaml` 1.16.0).**

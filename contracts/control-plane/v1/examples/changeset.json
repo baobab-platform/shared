@@ -325,7 +325,8 @@
         "resources": {
           "mapping_id": "map_01k9za7b2c",
           "from_status": "VALIDATED",
-          "to_status": "ACTIVE"
+          "to_status": "ACTIVE",
+          "target_revision": 2
         },
         "irreversible": false
       },

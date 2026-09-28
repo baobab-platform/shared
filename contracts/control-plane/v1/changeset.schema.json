@@ -532,7 +532,7 @@
         "target_revision": {
           "type": "integer",
           "minimum": 1,
-          "description": "The target's revision the plan was computed against, where the target is revisioned (markets). Applying refuses a target whose revision has moved (PLAN_STALE), as the direct route's If-Match does."
+          "description": "The target's revision the plan was computed against, where the target is revisioned (markets and mappings). Applying refuses a target whose revision has moved (PLAN_STALE), as the direct route's If-Match does."
         }
       },
       "oneOf": [
