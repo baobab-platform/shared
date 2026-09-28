@@ -694,6 +694,30 @@ def check_changeset() -> None:
             fail(f"change kind {kind} names unknown operations")
         if not set(spec["from_status"]) | {spec["to_status"]} <= tenant_statuses:
             fail(f"change kind {kind} names unknown tenant statuses")
+    # The schema itself binds every plan to its kind's type and exact
+    # operations, not only the example: a branch per kind, matching the
+    # lifecycle, and a crossed plan is rejected.
+    schema_branches = {}
+    for branch in defs["ChangesetPlan"]["allOf"][1:]:
+        kind_const = branch["if"]["properties"]["desired_change"]["properties"]["kind"]["const"]
+        then = branch["then"]["properties"]
+        schema_branches[kind_const] = (then["changeset_type"]["const"],
+                                       [item["properties"]["operation"]["const"] for item in then["steps"]["prefixItems"]],
+                                       then["steps"]["maxItems"])
+    for kind_name, spec in kinds.items():
+        if schema_branches.get(kind_name) != (spec["changeset_type"], spec["operations"], len(spec["operations"])):
+            fail(f"ChangesetPlan does not bind {kind_name} to its type and operations: {schema_branches.get(kind_name)}")
+    crossed = copy.deepcopy(plan)
+    crossed["steps"][0]["operation"] = "REINSTATE_TENANT"
+    rejects(schema, "ChangesetPlan", crossed, "a suspension plan that reinstates")
+    extra = copy.deepcopy(plan)
+    extra["steps"].append({**plan["steps"][0], "step_id": "suspend-again"})
+    rejects(schema, "ChangesetPlan", extra, "a plan with a step its kind does not run")
+    rejects(schema, "ChangesetPlan", {**plan, "changeset_type": "REINSTATE"}, "a suspension plan typed REINSTATE")
+    rejects(schema, "Changeset", {**draft, "changeset_type": "REINSTATE"}, "a suspension changeset typed REINSTATE")
+    compensated = {k: v for k, v in completed.items() if k != "operation_id"}
+    rejects(schema, "Changeset", {**compensated, "state": "COMPENSATED"}, "a COMPENSATED changeset without its operation")
+
     kind = kinds[plan["desired_change"]["kind"]]
     if [step["operation"] for step in plan["steps"]] != kind["operations"] or plan["changeset_type"] != kind["changeset_type"] \
             or draft["changeset_type"] != kind["changeset_type"]:
