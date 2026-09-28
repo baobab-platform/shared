@@ -52,7 +52,7 @@ Assurance and compliance (sections 83-100) build on these, and are later gates.
   - the subject: the application (`APPLICATION`), in the application's `ORGANISATION_ADMISSION` case, opened on the first claim;
   - the asserter, the origin `APPLICANT` and the status `SELF_ASSERTED`.
 
-  A reviewer takes a claim under verification (`open_verification`) before checking it. Admission promotes only the claims that case VERIFIED.
+  A reviewer takes a claim under verification (`open_verification`) before checking it. A withdrawn claim no longer stands, so it neither blocks nor counts towards concluding the case VERIFIED. Admission promotes only the claims the case VERIFIED. Creating a claim is replayable with an `Idempotency-Key`.
 - **Authority is per claim type and jurisdiction (sections 20-22).** A source verifies a claim only if its `trusted_for` names that claim type in the claim's jurisdiction. An `APPLICANT_SUPPLIED` source is trusted for nothing: it can corroborate, never verify.
 - **Integrity is not truth (sections 35-36).** A check or result answers each verification dimension separately. VERIFIED needs both `CLAIM_MATCH` and `ISSUER_AUTHORITY` to pass.
 - **No circular evidence (section 180).** A positive check cites independent evidence or a source record.

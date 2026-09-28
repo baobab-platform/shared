@@ -27,6 +27,8 @@ Changes that have been merged but have not yet been included in a released versi
   - Applicant routes:
     - `createApplicantClaim` and `listApplicantClaims`: `POST`/`GET /client-applications/{application_id}/claims`;
     - `withdrawApplicantClaim`: `POST .../claims/{claim_id}/withdraw`, with If-Match.
+  - Creating a claim takes an optional `Idempotency-Key`: a replay answers 200 with the original claim.
+  - `complete_verified` now requires at least one claim, and every claim that still stands (not WITHDRAWN or SUPERSEDED) to be VERIFIED. An applicant's withdrawal can therefore never make a case impossible to conclude.
   - The request is `evidence/v1` `ApplicantClaimSubmission`: a claim type, jurisdiction and value only. The subject (the application), purpose, asserter, origin and `SELF_ASSERTED` status are all derived.
   - `openClaimVerification`: `POST /admin/verification-cases/{case_id}/claims/{claim_id}/open-verification` (`verification:write`) takes a SELF_ASSERTED claim under verification.
   - The admission request's `verification_case_id` may now name the admitted application's own case (subject `APPLICATION`). That is the usual case, since verification happens before approval.
