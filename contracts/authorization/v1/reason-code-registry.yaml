@@ -6,7 +6,7 @@
 # SHALL not expose sensitive information indiscriminately to external
 # clients").
 #
-# Seven categories exist for seven different moments, not six different
+# Eight categories exist for eight different moments, not six different
 # vocabularies for the same thing:
 #
 #   authorization_denial          -- decision.schema.json's `reason_code`,
@@ -45,6 +45,10 @@
 #                                     ProviderMigrationPlan `blockers`: an unmet
 #                                     precondition that stops a provider migration
 #                                     advancing (ADR-BCP-006 sections 46-48, 55).
+#   changeset_blocker              -- contracts/control-plane/v1/changeset.schema.json's
+#                                     Changeset `blocking_reasons` and ChangesetPlan
+#                                     `blockers`: why a changeset is INVALID or
+#                                     BLOCKED (ADR-BCP-021 sections 17-19, 66).
 #
 # TENANT_SUSPENDED (authorization_denial) and TENANT_SUSPENSION
 # (lifecycle_revocation) are deliberately two distinct, near-identical-
@@ -324,3 +328,15 @@ reason_codes:
   - code: MIGRATION_ALREADY_IN_PROGRESS
     category: provider_migration_blocker
     description: "Another migration that has not ended already covers a named capability for the source provider."
+
+  # -- changeset_blocker (ADR-BCP-021 sections 17-19, 66) ---------------
+  # Why a changeset cannot be planned or approved as it stands.
+  - code: CHANGESET_TARGET_NOT_FOUND
+    category: changeset_blocker
+    description: "The resource the desired change names does not exist."
+  - code: CHANGESET_TARGET_STATE_CONFLICT
+    category: changeset_blocker
+    description: "The target is not in a state the desired change can start from, for example suspending a tenant that is not active."
+  - code: CHANGESET_TARGET_LOCKED
+    category: changeset_blocker
+    description: "Another changeset that has not ended already changes the same target; overlapping changes are serialised (section 66)."

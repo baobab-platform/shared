@@ -17,7 +17,11 @@ libraries that ADR-BCP-022 requires before an operation counts as complete:
   7. the provider migration contract keeps cohorts deterministic, stateful
      cutovers single-writer and its lifecycle, blockers and warnings in
      step with provider-migration-lifecycle.yaml (ADR-BCP-006 sections
-     44-58, 119-122).
+     44-58, 119-122);
+  8. the changeset contract derives what the caller must not supply, has
+     no dead-end state, names real operations for its commands, and keeps
+     change kinds, plan steps and blocking codes in step with
+     changeset-lifecycle.yaml (ADR-BCP-021 gate CCM-01).
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -74,6 +78,12 @@ RESPONSIBILITIES = {
         "migrationStage", "migrationMode", "dataStrategy", "rollbackStrategy", "migrationCapability",
         "cohortSelector", "migrationCohort", "cutoverWindow", "ProviderMigrationRequest", "migrationOperation",
         "migrationStepResources", "migrationStep", "migrationDiscovery", "ProviderMigrationPlan", "ProviderMigration",
+    },
+    "changeset.schema.json": {
+        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "desiredChange",
+        "ChangesetCreateRequest", "ChangesetCancelRequest", "planReference", "Changeset", "ChangesetPage",
+        "changesetOperation", "changesetStepResources", "changesetStep", "ChangesetPlan", "affectedResource",
+        "verificationResult", "ChangeOutcome",
     },
     "tenant-provisioning.schema.json": {
         "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningReplanRequest",
@@ -595,6 +605,115 @@ def check_provider_migration() -> None:
                 fail(f"provider-migration {key}: warning {finding['code']} is not a provider migration warning code")
 
 
+def check_changeset() -> None:
+    schema = "changeset.schema.json"
+    example = json.loads((CP / "examples" / "changeset.json").read_text())
+    for key, file, definition in (
+            ("create_request", schema, "ChangesetCreateRequest"), ("draft", schema, "Changeset"),
+            ("blocked", schema, "Changeset"), ("awaiting_approval", schema, "Changeset"), ("plan", schema, "ChangesetPlan"),
+            ("approval_request", "approval-decision.schema.json", "ApprovalDecisionRequest"),
+            ("approval", "approval-decision.schema.json", "ApprovalDecision"),
+            ("operation", "execution-operation.schema.json", "ExecutionOperation"),
+            ("completed", schema, "Changeset"), ("outcome", schema, "ChangeOutcome")):
+        accepts(file, definition, example[key], f"changeset {key}")
+
+    # The caller states intent; type, scope, source and requester are derived.
+    create = example["create_request"]
+    for field, value in (("changeset_type", "SUSPEND"), ("source", "API"), ("requested_by", "prn_someone"),
+                         ("target_scope", {"level": "PLATFORM"}), ("risk_class", "LOW"), ("state", "APPROVED")):
+        rejects(schema, "ChangesetCreateRequest", {**create, field: value}, f"changeset create request naming {field}")
+    for label, change in (("an unknown kind", {"kind": "TENANT_DELETION", "tenant_id": create["desired_change"]["tenant_id"]}),
+                          ("a provider command", {**create["desired_change"], "medusa_store_id": "store_1"}),
+                          ("no tenant", {"kind": "TENANT_SUSPENSION"})):
+        rejects(schema, "ChangesetCreateRequest", {**create, "desired_change": change}, f"changeset desired change with {label}")
+
+    # State requires its evidence.
+    draft, awaiting, completed = example["draft"], example["awaiting_approval"], example["completed"]
+    rejects(schema, "Changeset", {**draft, "state": "BLOCKED"}, "a BLOCKED changeset without blocking reasons")
+    rejects(schema, "Changeset", {k: v for k, v in awaiting.items() if k != "current_plan"}, "a changeset awaiting approval without a plan")
+    rejects(schema, "Changeset", {k: v for k, v in completed.items() if k != "operation_id"}, "a COMPLETED changeset without its operation")
+    rejects(schema, "Changeset", {k: v for k, v in completed.items() if k != "approval_id"}, "a COMPLETED changeset without its approval")
+    plan = example["plan"]
+    changed = copy.deepcopy(plan)
+    changed["steps"][0]["operation"] = "CALL_MEDUSA_API"
+    rejects(schema, "ChangesetPlan", changed, "a changeset plan step with a provider-specific operation")
+    rejects(schema, "ChangesetPlan", {k: v for k, v in plan.items() if k != "desired_change"}, "a changeset plan without its desired change")
+    outcome = example["outcome"]
+    rejects(schema, "ChangeOutcome", {k: v for k, v in outcome.items() if k != "applied_plan_digest"}, "a COMPLETED outcome without the applied plan")
+    rejects(schema, "ChangeOutcome", {**outcome, "final_state": "APPLYING"}, "an outcome of a changeset that has not ended")
+
+    # The lifecycle: states match the schema, no state is a dead end, and
+    # every command is a real operation.
+    lifecycle = yaml.safe_load((CP / "changeset-lifecycle.yaml").read_text())
+    defs = json.loads((CP / schema).read_text())["$defs"]
+    states = set(defs["changesetState"]["enum"])
+    terminals = set(lifecycle["terminal_states"])
+    if set(lifecycle["states"]) | terminals != states:
+        fail(f"changeset-lifecycle.yaml states differ from changesetState: {sorted((set(lifecycle['states']) | terminals) ^ states)}")
+    graph = {state: set((spec or {}).get("transitions", {}).values()) for state, spec in lifecycle["states"].items()}
+    for state, targets in graph.items():
+        if state in terminals:
+            fail(f"changeset-lifecycle.yaml terminal state {state} has transitions")
+        for target in targets - states:
+            fail(f"changeset-lifecycle.yaml {state} targets unknown state {target}")
+
+    def reach(start: str) -> set[str]:
+        seen, frontier = {start}, [start]
+        while frontier:
+            for target in graph.get(frontier.pop(), set()):
+                if target not in seen:
+                    seen.add(target)
+                    frontier.append(target)
+        return seen
+    if not terminals <= reach(lifecycle["initial_state"]) or not states <= reach(lifecycle["initial_state"]):
+        fail(f"changeset-lifecycle.yaml leaves states unreachable: {sorted(states - reach(lifecycle['initial_state']))}")
+    for state in graph:
+        if not reach(state) & terminals:
+            fail(f"changeset-lifecycle.yaml state {state} can never end")
+    commands, system = lifecycle["triggers"]["commands"], set(lifecycle["triggers"]["system"])
+    used = {name for spec in lifecycle["states"].values() for name in (spec or {}).get("transitions", {})}
+    if set(commands) & system or used != set(commands) | system:
+        fail(f"changeset-lifecycle.yaml triggers differ from transitions: {sorted(used ^ (set(commands) | system))}")
+    openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
+    operation_ids = {op.get("operationId") for item in openapi["paths"].values() for op in item.values() if isinstance(op, dict)}
+    for command, operation_id in commands.items():
+        if operation_id not in operation_ids:
+            fail(f"changeset-lifecycle.yaml command {command} names unknown operation {operation_id}")
+
+    # Change kinds: one per desiredChange branch, a real type, real
+    # operations and tenant statuses; the example plan runs its kind's steps.
+    kinds = lifecycle["change_kinds"]
+    branch_kinds = {defs[ref["$ref"].split("/")[-1]]["properties"]["kind"]["const"] for ref in defs["desiredChange"]["oneOf"]}
+    if set(kinds) != branch_kinds:
+        fail(f"changeset-lifecycle.yaml change_kinds differ from desiredChange: {sorted(set(kinds) ^ branch_kinds)}")
+    tenant_statuses = set(json.loads((CP / "tenant.schema.json").read_text())["$defs"]["lifecycleStatus"]["enum"])
+    for kind, spec in kinds.items():
+        if spec["changeset_type"] not in defs["changesetType"]["enum"]:
+            fail(f"change kind {kind} derives unknown type {spec['changeset_type']}")
+        if not set(spec["operations"]) <= set(defs["changesetOperation"]["enum"]):
+            fail(f"change kind {kind} names unknown operations")
+        if not set(spec["from_status"]) | {spec["to_status"]} <= tenant_statuses:
+            fail(f"change kind {kind} names unknown tenant statuses")
+    kind = kinds[plan["desired_change"]["kind"]]
+    if [step["operation"] for step in plan["steps"]] != kind["operations"] or plan["changeset_type"] != kind["changeset_type"] \
+            or draft["changeset_type"] != kind["changeset_type"]:
+        fail("the example changeset's plan does not run its change kind's operations and type")
+    for step in plan["steps"][1:]:
+        if not step["depends_on"]:
+            fail(f"changeset plan step {step['step_id']} depends on nothing; a kind's operations run in order")
+
+    registry = yaml.safe_load((CONTRACTS / "authorization" / "v1" / "reason-code-registry.yaml").read_text())
+    registered = {entry["code"] for entry in registry["reason_codes"] if entry["category"] == "changeset_blocker"}
+    if set(lifecycle["blocking_codes"]) != registered:
+        fail(f"changeset-lifecycle.yaml blocking_codes differ from changeset_blocker codes: {sorted(set(lifecycle['blocking_codes']) ^ registered)}")
+    for key in ("blocked", "plan"):
+        for finding in example[key].get("blocking_reasons", []) + example[key].get("blockers", []):
+            if finding["code"] not in registered:
+                fail(f"changeset {key}: {finding['code']} is not a changeset_blocker code")
+    if example["approval"]["subject_type"] != "CHANGESET" or example["operation"]["operation_type"] != "CHANGESET_APPLY":
+        fail("a changeset's approval and operation name the CHANGESET subject and CHANGESET_APPLY")
+
+
 def check_openapi_references() -> None:
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
     pattern = re.compile(r"^\./(" + "|".join(re.escape(n) for n in RESPONSIBILITIES) + r")#/\$defs/(\w+)$")
@@ -732,8 +851,8 @@ def check_blocking_reason_codes() -> None:
     if sorted(blocking_codes(probe)) != ["A_BLOCKER", "A_REASON"]:
         fail(f"blocking_codes collects {sorted(blocking_codes(probe))} from a plan and readiness probe")
     for path in sorted((CP / "examples").glob("*.json")):
-        if path.name == "provider-migration.json":
-            continue  # checked against its own category by check_provider_migration
+        if path.name in ("provider-migration.json", "changeset.json"):
+            continue  # checked against their own categories by check_provider_migration and check_changeset
         for code in blocking_codes(json.loads(path.read_text())):
             if code not in registered:
                 fail(f"examples/{path.name}: blocking reason {code!r} is not registered under {' or '.join(BLOCKING_CATEGORIES)}")
@@ -747,6 +866,7 @@ def main() -> int:
     check_mapping_resolution()
     check_tenant_provisioning()
     check_provider_migration()
+    check_changeset()
     check_openapi_references()
     check_topology_identifiers()
     check_external_systems()
