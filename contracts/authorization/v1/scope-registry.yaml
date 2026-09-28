@@ -240,6 +240,34 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "changeset:read"
+    description: >-
+      Read changesets, their plans and outcomes (ADR-BCP-021, ADR-BCP-022
+      section 44). Necessary but not sufficient: the Control Plane also
+      requires administrative authority over the changeset's target.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "changeset:write"
+    description: >-
+      Draft, submit, apply and cancel changesets (ADR-BCP-021). Submitting
+      plans side-effect free; applying executes only a plan approved by
+      someone else. Necessary but not sufficient.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "changeset:approve"
+    description: >-
+      Approve, reject or request changes to one exact changeset plan, bound
+      to its digest (ADR-BCP-021 sections 24, 49-52). Never held to decide a
+      changeset the caller requested: the Control Plane refuses
+      self-approval.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "operation:read"
     description: >-
       Poll durable long-running operations within the caller's administrative

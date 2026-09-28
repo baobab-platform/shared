@@ -21,7 +21,7 @@ def load_yaml(path)
 end
 
 # 1. reason-code-registry.yaml: every entry is well-formed, every code is
-#    unique, every category is one of the seven this registry documents, and
+#    unique, every category is one of the eight this registry documents, and
 #    every code matches the same UPPER_SNAKE_CASE convention
 #    contracts/errors/v1/problem-details.schema.json already enforces for
 #    Baobab machine-readable codes generally.
@@ -29,7 +29,7 @@ registry = load_yaml("contracts/authorization/v1/reason-code-registry.yaml")
 entries = registry.fetch("reason_codes")
 fail_contract("reason-code-registry.yaml declares no codes") if entries.empty?
 
-known_categories = %w[authorization_denial lifecycle_revocation capability_resolution_denial provisioning_blocker health_observation administrative_denial provider_migration_blocker]
+known_categories = %w[authorization_denial lifecycle_revocation capability_resolution_denial provisioning_blocker health_observation administrative_denial provider_migration_blocker changeset_blocker]
 seen_codes = {}
 entries.each do |entry|
   code = entry["code"]

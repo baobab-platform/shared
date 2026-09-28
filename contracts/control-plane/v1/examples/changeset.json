@@ -1,0 +1,252 @@
+{
+  "create_request": {
+    "title": "Suspend Acme Uganda pending payment",
+    "reason": "Account 60 days past due; commercial hold agreed with finance.",
+    "desired_change": {
+      "kind": "TENANT_SUSPENSION",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    }
+  },
+  "draft": {
+    "changeset_id": "cs_0199a1b2c3d47e8f",
+    "changeset_type": "SUSPEND",
+    "title": "Suspend Acme Uganda pending payment",
+    "reason": "Account 60 days past due; commercial hold agreed with finance.",
+    "source": "API",
+    "requested_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a90",
+    "requested_at": "2026-09-28T08:00:00Z",
+    "target_scope": {
+      "level": "TENANT",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "base_revision": 4,
+    "desired_change": {
+      "kind": "TENANT_SUSPENSION",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "state": "DRAFT",
+    "correlation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "created_at": "2026-09-28T08:00:00Z",
+    "updated_at": "2026-09-28T08:00:00Z",
+    "revision": 1
+  },
+  "blocked": {
+    "changeset_id": "cs_0199a1b2c3d47e8f",
+    "changeset_type": "SUSPEND",
+    "title": "Suspend Acme Uganda pending payment",
+    "reason": "Account 60 days past due; commercial hold agreed with finance.",
+    "source": "API",
+    "requested_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a90",
+    "requested_at": "2026-09-28T08:00:00Z",
+    "target_scope": {
+      "level": "TENANT",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "base_revision": 4,
+    "desired_change": {
+      "kind": "TENANT_SUSPENSION",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "state": "BLOCKED",
+    "correlation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "created_at": "2026-09-28T08:00:00Z",
+    "updated_at": "2026-09-28T08:01:00Z",
+    "revision": 2,
+    "blocking_reasons": [
+      {
+        "code": "CHANGESET_TARGET_STATE_CONFLICT",
+        "message": "Tenant is suspended; a suspension starts from active."
+      }
+    ]
+  },
+  "awaiting_approval": {
+    "changeset_id": "cs_0199a1b2c3d47e8f",
+    "changeset_type": "SUSPEND",
+    "title": "Suspend Acme Uganda pending payment",
+    "reason": "Account 60 days past due; commercial hold agreed with finance.",
+    "source": "API",
+    "requested_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a90",
+    "requested_at": "2026-09-28T08:00:00Z",
+    "target_scope": {
+      "level": "TENANT",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "base_revision": 4,
+    "desired_change": {
+      "kind": "TENANT_SUSPENSION",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "state": "AWAITING_APPROVAL",
+    "correlation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "created_at": "2026-09-28T08:00:00Z",
+    "updated_at": "2026-09-28T08:01:00Z",
+    "revision": 2,
+    "risk_class": "HIGH",
+    "current_plan": {
+      "plan_id": "plan_0199a1b2c3d47e90",
+      "plan_version": 1,
+      "plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+    }
+  },
+  "plan": {
+    "plan_id": "plan_0199a1b2c3d47e90",
+    "plan_version": 1,
+    "plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "base_revision": 4,
+    "generated_at": "2026-09-28T08:01:00Z",
+    "expires_at": "2026-09-29T08:01:00Z",
+    "risk_class": "HIGH",
+    "changeset_id": "cs_0199a1b2c3d47e8f",
+    "changeset_type": "SUSPEND",
+    "desired_change": {
+      "kind": "TENANT_SUSPENSION",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "steps": [
+      {
+        "step_id": "suspend-tenant",
+        "operation": "SUSPEND_TENANT",
+        "depends_on": [],
+        "resources": {
+          "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+          "from_status": "active",
+          "to_status": "suspended"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "verify-tenant-state",
+        "operation": "VERIFY_TENANT_STATE",
+        "depends_on": [
+          "suspend-tenant"
+        ],
+        "resources": {
+          "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+          "to_status": "suspended"
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [],
+    "readiness_requirements": [],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Suspends tenant Acme Uganda: capability resolution for the tenant is refused until it is reinstated.",
+      "resources_created": 0,
+      "resources_changed": 1,
+      "resources_removed": 0,
+      "availability_impact": "Every digital estate of the tenant stops resolving capabilities."
+    },
+    "verification_strategy": "Read the tenant back and require desired and observed status suspended.",
+    "compensation_strategy": "Reinstate the tenant with a REINSTATE changeset; nothing irreversible is planned."
+  },
+  "approval_request": {
+    "plan_id": "plan_0199a1b2c3d47e90",
+    "plan_version": 1,
+    "plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "decision": "APPROVED"
+  },
+  "approval": {
+    "approval_id": "apd_0199a1b2c3d47e90",
+    "subject_type": "CHANGESET",
+    "subject_id": "cs_0199a1b2c3d47e8f",
+    "plan_id": "plan_0199a1b2c3d47e90",
+    "plan_version": 1,
+    "plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "decision": "APPROVED",
+    "decided_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a91",
+    "decided_at": "2026-09-28T08:30:00Z"
+  },
+  "operation": {
+    "operation_id": "op_0199a1b2c3d47e90",
+    "operation_type": "CHANGESET_APPLY",
+    "status": "SUCCEEDED",
+    "subject": {
+      "type": "CHANGESET",
+      "id": "cs_0199a1b2c3d47e8f",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "plan_id": "plan_0199a1b2c3d47e90",
+    "plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "approval_id": "apd_0199a1b2c3d47e90",
+    "requested_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a90",
+    "current_phase": "COMPLETED",
+    "progress": {
+      "completed_steps": 2,
+      "total_steps": 2
+    },
+    "execution_attempt": 1,
+    "retryable": false,
+    "result": {
+      "resource_type": "CHANGESET",
+      "resource_id": "cs_0199a1b2c3d47e8f",
+      "resource_state": "COMPLETED",
+      "summary": "Tenant suspended and verified."
+    },
+    "revision": 3,
+    "created_at": "2026-09-28T08:31:00Z",
+    "started_at": "2026-09-28T08:31:01Z",
+    "updated_at": "2026-09-28T08:31:03Z",
+    "completed_at": "2026-09-28T08:31:03Z"
+  },
+  "completed": {
+    "changeset_id": "cs_0199a1b2c3d47e8f",
+    "changeset_type": "SUSPEND",
+    "title": "Suspend Acme Uganda pending payment",
+    "reason": "Account 60 days past due; commercial hold agreed with finance.",
+    "source": "API",
+    "requested_by": "prn_0199a1b2c3d47e8f9a0b1c2d3e4f5a90",
+    "requested_at": "2026-09-28T08:00:00Z",
+    "target_scope": {
+      "level": "TENANT",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "base_revision": 4,
+    "desired_change": {
+      "kind": "TENANT_SUSPENSION",
+      "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b"
+    },
+    "state": "COMPLETED",
+    "correlation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "created_at": "2026-09-28T08:00:00Z",
+    "updated_at": "2026-09-28T08:31:03Z",
+    "revision": 5,
+    "risk_class": "HIGH",
+    "current_plan": {
+      "plan_id": "plan_0199a1b2c3d47e90",
+      "plan_version": 1,
+      "plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3"
+    },
+    "approval_id": "apd_0199a1b2c3d47e90",
+    "operation_id": "op_0199a1b2c3d47e90"
+  },
+  "outcome": {
+    "changeset_id": "cs_0199a1b2c3d47e8f",
+    "operation_id": "op_0199a1b2c3d47e90",
+    "final_state": "COMPLETED",
+    "applied_plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "started_at": "2026-09-28T08:31:01Z",
+    "completed_at": "2026-09-28T08:31:03Z",
+    "affected_resources": [
+      {
+        "resource_type": "TENANT",
+        "resource_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+        "before": "active",
+        "after": "suspended"
+      }
+    ],
+    "verification_result": {
+      "status": "PASSED",
+      "checks": [
+        {
+          "check": "TENANT_STATUS_MATCHES",
+          "passed": true
+        }
+      ]
+    },
+    "residual_risks": [],
+    "correlation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "recorded_at": "2026-09-28T08:31:03Z"
+  }
+}

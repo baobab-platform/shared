@@ -23,6 +23,30 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Changeset contracts (ADR-BCP-021 gate CCM-01; ADR-BCP-022 section 44).**
+  - `control-plane/v1/changeset.schema.json`:
+    - `ChangesetCreateRequest`: typed intent only. The Control Plane derives type, scope, source, requester and risk.
+    - `Changeset`: the aggregate. Each state requires its evidence: blocking reasons, the current plan, the approval, the operation.
+    - `ChangesetPlan`: a ChangePlan that embeds its desired change.
+    - `ChangeOutcome` (section 114).
+    - The first change kinds are `TENANT_SUSPENSION` and `TENANT_REINSTATEMENT`.
+  - `changeset-lifecycle.yaml`:
+    - the section 15 lifecycle, with command and system transitions;
+    - change kinds with their derived type, tenant statuses and ordered operations;
+    - blocking codes.
+  - `control-plane/v1/openapi.yaml` 1.12.0 adds nine routes under `/admin/changesets`: create, list, read, submit, plan, approve (an ApprovalDecision with subject `CHANGESET`), apply (202, `CHANGESET_APPLY` operation), cancel and outcome.
+  - Other additions:
+    - `changesetId` (`cs_`);
+    - scopes `changeset:read`, `changeset:write` and `changeset:approve`;
+    - reason-code category `changeset_blocker`, with three codes;
+    - operation type `CHANGESET_APPLY`.
+  - `validate-control-plane-contracts.py` checks that:
+    - derived fields cannot be supplied;
+    - each state carries its evidence;
+    - no lifecycle state is a dead end, and every command names a real operation;
+    - change kinds agree with the schema and the example plan;
+    - blocking codes are registered.
+
 - `control-plane/v1` provider migration steps record binding assignments. A `CREATE_MIGRATION_BINDING` step names its source `binding_ids` together with the one target `engine_instance_id` they move to, so an approved plan fixes every binding's target instance (review of baobab-cp#199). The validator checks the counts, that no binding appears twice, and that an unblocked plan covers every discovered binding.
 - **Provider migration contracts (ADR-BCP-006 sections 44-58, 119-122, Gate 8).**
   - `control-plane/v1/provider-migration.schema.json`:
