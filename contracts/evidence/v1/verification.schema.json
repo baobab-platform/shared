@@ -552,7 +552,8 @@
         "conflicting_values",
         "severity",
         "status",
-        "detected_at"
+        "detected_at",
+        "version"
       ],
       "description": "Reliable sources disagree materially about one claim type. The platform records the disagreement and a reviewer resolves it; nothing picks the convenient value (sections 34, 74-76).",
       "properties": {
@@ -600,6 +601,11 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 2000
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Optimistic-concurrency version; a transition names it in If-Match."
         }
       },
       "allOf": [
@@ -808,6 +814,563 @@
           },
           "minContains": 0,
           "maxContains": 1
+        }
+      ]
+    },
+    "VerificationCaseCreateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject",
+        "purpose"
+      ],
+      "description": "Opens a DRAFT verification case. The Control Plane mints case_id and derives opened_at; claims are added to the case afterwards.",
+      "properties": {
+        "subject": {
+          "$ref": "domain.schema.json#/$defs/subjectReference"
+        },
+        "purpose": {
+          "$ref": "domain.schema.json#/$defs/verificationPurpose"
+        },
+        "application_id": {
+          "$ref": "../../admission/v1/application.schema.json#/$defs/clientApplicationId"
+        },
+        "organisation_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+        },
+        "policy_profile": {
+          "$ref": "domain.schema.json#/$defs/compliancePolicyRef"
+        },
+        "policy_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "supersedes": {
+          "$ref": "domain.schema.json#/$defs/verificationCaseId"
+        }
+      },
+      "dependentRequired": {
+        "policy_version": [
+          "policy_profile"
+        ]
+      }
+    },
+    "VerificationCaseTransitionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command"
+      ],
+      "description": "One lifecycle.yaml verification_case command a reviewer may issue, other than the conclusions (see VerificationCaseConclusionRequest). The case must be at the version If-Match names; commands only the platform performs (expire, supersede) are never accepted.",
+      "properties": {
+        "command": {
+          "type": "string",
+          "enum": [
+            "start_collection",
+            "submit",
+            "begin_verification",
+            "request_information",
+            "respond",
+            "conflict",
+            "resume",
+            "cancel"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "VerificationCasePage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/VerificationCase"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "maxLength": 512
+        }
+      }
+    },
+    "VerificationCheckRecordRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "method",
+        "source_id",
+        "outcome",
+        "dimensions",
+        "reason_codes",
+        "evidence_ids"
+      ],
+      "description": "Records a check the caller performed on one claim of the case. The Control Plane mints check_id and records the caller as performed_by and the time as performed_at; the caller is never the claim's asserter (section 169).",
+      "properties": {
+        "claim_id": {
+          "$ref": "domain.schema.json#/$defs/evidenceClaimId"
+        },
+        "method": {
+          "$ref": "domain.schema.json#/$defs/verificationMethod"
+        },
+        "source_id": {
+          "$ref": "domain.schema.json#/$defs/evidenceSourceId"
+        },
+        "provider": {
+          "$ref": "domain.schema.json#/$defs/verificationProviderKey"
+        },
+        "source_observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_record_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "outcome": {
+          "$ref": "domain.schema.json#/$defs/verificationOutcome"
+        },
+        "dimensions": {
+          "$ref": "#/$defs/dimensionResults"
+        },
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 20,
+          "items": {
+            "$ref": "domain.schema.json#/$defs/reasonCode"
+          }
+        },
+        "freshness_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 50,
+          "items": {
+            "$ref": "domain.schema.json#/$defs/evidenceRecordId"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "enum": [
+                  "MATCHED",
+                  "VERIFIED",
+                  "PARTIALLY_VERIFIED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "evidence_ids": {
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "required": [
+                  "source_record_reference"
+                ]
+              }
+            ],
+            "properties": {
+              "dimensions": {
+                "contains": {
+                  "type": "object",
+                  "properties": {
+                    "dimension": {
+                      "const": "CLAIM_MATCH"
+                    },
+                    "outcome": {
+                      "const": "PASSED"
+                    }
+                  },
+                  "required": [
+                    "dimension",
+                    "outcome"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "outcome": {
+              "not": {
+                "enum": [
+                  "NOT_RUN",
+                  "PENDING"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "VerificationResultRecordRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "outcome",
+        "check_ids",
+        "dimensions",
+        "freshness",
+        "reason_codes"
+      ],
+      "description": "Records a claim's result from checks already recorded in the case; the claim's status becomes the outcome, so only outcomes that are claim standings are accepted (an inconclusive check leaves the claim under verification, with no result). The Control Plane mints result_id, records the caller as decided_by, and refuses a result the checks do not support: VERIFIED needs a positive check from a source trusted for the claim type in the claim's jurisdiction.",
+      "properties": {
+        "claim_id": {
+          "$ref": "domain.schema.json#/$defs/evidenceClaimId"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "VERIFIED",
+            "PARTIALLY_VERIFIED",
+            "NOT_VERIFIED",
+            "CONFLICTED"
+          ]
+        },
+        "check_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "$ref": "domain.schema.json#/$defs/verificationCheckId"
+          }
+        },
+        "dimensions": {
+          "$ref": "#/$defs/dimensionResults"
+        },
+        "freshness": {
+          "$ref": "domain.schema.json#/$defs/freshnessState"
+        },
+        "freshness_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discrepancy_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 20,
+          "items": {
+            "$ref": "domain.schema.json#/$defs/evidenceDiscrepancyId"
+          }
+        },
+        "reason_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 20,
+          "items": {
+            "$ref": "domain.schema.json#/$defs/reasonCode"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "VERIFIED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "dimensions": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "type": "object",
+                      "properties": {
+                        "dimension": {
+                          "const": "CLAIM_MATCH"
+                        },
+                        "outcome": {
+                          "const": "PASSED"
+                        }
+                      },
+                      "required": [
+                        "dimension",
+                        "outcome"
+                      ]
+                    }
+                  },
+                  {
+                    "contains": {
+                      "type": "object",
+                      "properties": {
+                        "dimension": {
+                          "const": "ISSUER_AUTHORITY"
+                        },
+                        "outcome": {
+                          "const": "PASSED"
+                        }
+                      },
+                      "required": [
+                        "dimension",
+                        "outcome"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "CONFLICTED"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "discrepancy_ids"
+            ],
+            "properties": {
+              "discrepancy_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "EvidenceDiscrepancyRecordRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject",
+        "claim_type",
+        "conflicting_values",
+        "severity"
+      ],
+      "description": "Records a disagreement between sources, OPEN, in this case. The Control Plane mints discrepancy_id and detected_at.",
+      "properties": {
+        "subject": {
+          "$ref": "domain.schema.json#/$defs/subjectReference"
+        },
+        "claim_type": {
+          "$ref": "domain.schema.json#/$defs/claimType"
+        },
+        "conflicting_values": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/sourceValue"
+          }
+        },
+        "severity": {
+          "$ref": "domain.schema.json#/$defs/discrepancySeverity"
+        }
+      }
+    },
+    "EvidenceDiscrepancyTransitionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command"
+      ],
+      "description": "One lifecycle.yaml evidence_discrepancy command a reviewer may issue other than closing it (see EvidenceDiscrepancyResolutionRequest).",
+      "properties": {
+        "command": {
+          "type": "string",
+          "enum": [
+            "begin_review"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "VerificationCheckList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/VerificationCheck"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "maxLength": 512
+        }
+      }
+    },
+    "VerificationResultList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/VerificationResult"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "maxLength": 512
+        }
+      }
+    },
+    "EvidenceDiscrepancyList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceDiscrepancy"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "maxLength": 512
+        }
+      }
+    },
+    "VerificationCaseConclusionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "reason"
+      ],
+      "description": "Concludes a VERIFYING case: complete_verified requires every claim of the case to be VERIFIED; complete_not_verified closes a case whose evidence was insufficient (section 33). Served by a separate operation that requires verification:decide.",
+      "properties": {
+        "command": {
+          "type": "string",
+          "enum": [
+            "complete_verified",
+            "complete_not_verified"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    "EvidenceDiscrepancyResolutionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "resolution",
+        "reason"
+      ],
+      "description": "Closes a discrepancy under review; the caller is recorded as resolved_by. Served by a separate operation that requires verification:decide. Nothing resolves a discrepancy silently (section 76).",
+      "properties": {
+        "command": {
+          "type": "string",
+          "enum": [
+            "resolve",
+            "accept_exception",
+            "dismiss"
+          ]
+        },
+        "resolution": {
+          "$ref": "domain.schema.json#/$defs/discrepancyResolution"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "const": "resolve"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolution": {
+                "enum": [
+                  "SOURCE_VALUE_ADOPTED",
+                  "EXISTING_VALUE_CONFIRMED",
+                  "APPLICANT_CORRECTED"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "const": "accept_exception"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolution": {
+                "const": "EXCEPTION_ACCEPTED"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "command": {
+                "const": "dismiss"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resolution": {
+                "const": "NOT_MATERIAL"
+              }
+            }
+          }
         }
       ]
     }

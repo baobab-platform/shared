@@ -429,7 +429,8 @@
       ],
       "severity": "MEDIUM",
       "status": "OPEN",
-      "detected_at": "2026-10-02T10:00:00Z"
+      "detected_at": "2026-10-02T10:00:00Z",
+      "version": 1
     },
     {
       "discrepancy_id": "edis_addr",
@@ -457,7 +458,8 @@
       "resolution": "NOT_MATERIAL",
       "resolved_by": "prn_kato",
       "resolved_at": "2026-10-02T11:00:00Z",
-      "reason": "The same address, written differently; nothing material differs."
+      "reason": "The same address, written differently; nothing material differs.",
+      "version": 3
     }
   ],
   "references": [
@@ -467,5 +469,118 @@
       "status": "AVAILABLE",
       "classification": "CONFIDENTIAL"
     }
-  ]
+  ],
+  "requests": {
+    "case_create": {
+      "subject": {
+        "subject_type": "ORGANISATION",
+        "subject_id": "ce_01k9ug4acmefd"
+      },
+      "purpose": "ORGANISATION_ADMISSION",
+      "application_id": "capp_01k9ug4acme",
+      "organisation_id": "ce_01k9ug4acmefd",
+      "policy_profile": "ug-organisation-admission",
+      "policy_version": 1
+    },
+    "case_transition": {
+      "command": "begin_verification",
+      "reason": "All requested evidence has been submitted."
+    },
+    "evidence_registration": {
+      "evidence_type": "REGISTRY_EXTRACT",
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "purpose": "ORGANISATION_ADMISSION",
+      "source_id": "esrc_ursb",
+      "source_record_reference": "URSB-80020012345",
+      "observed_at": "2026-10-02T10:00:00Z",
+      "classification": "INTERNAL",
+      "retention_policy": "organisation-admission/v1"
+    },
+    "check_record": {
+      "claim_id": "ecl_regno",
+      "method": "MANUAL_REGISTRY_LOOKUP",
+      "source_id": "esrc_ursb",
+      "source_observed_at": "2026-10-02T10:00:00Z",
+      "source_record_reference": "URSB-80020012345",
+      "outcome": "VERIFIED",
+      "dimensions": [
+        {
+          "dimension": "SOURCE_AUTHENTICITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "ISSUER_AUTHORITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "CLAIM_MATCH",
+          "outcome": "PASSED"
+        }
+      ],
+      "reason_codes": [],
+      "freshness_until": "2027-04-02T10:00:00Z",
+      "evidence_ids": [
+        "evr_ursb01"
+      ]
+    },
+    "result_record": {
+      "claim_id": "ecl_regno",
+      "outcome": "VERIFIED",
+      "check_ids": [
+        "vchk_regnodoc",
+        "vchk_regnoreg"
+      ],
+      "dimensions": [
+        {
+          "dimension": "ISSUER_AUTHORITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "CLAIM_MATCH",
+          "outcome": "PASSED"
+        }
+      ],
+      "freshness": "CURRENT",
+      "freshness_until": "2027-04-02T10:00:00Z",
+      "reason_codes": []
+    },
+    "discrepancy_record": {
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "claim_type": "LEGAL_NAME",
+      "conflicting_values": [
+        {
+          "source_id": "esrc_applicant",
+          "value": "ACME Foods Limited",
+          "evidence_id": "evr_cert01"
+        },
+        {
+          "source_id": "esrc_ursb",
+          "value": "ACME Foods (U) Limited",
+          "observed_at": "2026-10-02T10:00:00Z",
+          "evidence_id": "evr_ursb01",
+          "check_id": "vchk_namereg"
+        }
+      ],
+      "severity": "MEDIUM"
+    },
+    "discrepancy_transition": {
+      "command": "begin_review",
+      "reason": "Comparing the registry extract with the certificate."
+    },
+    "case_conclusion": {
+      "command": "complete_not_verified",
+      "reason": "The registry records a different legal name; the applicant has not corrected it."
+    },
+    "discrepancy_resolution": {
+      "command": "resolve",
+      "resolution": "SOURCE_VALUE_ADOPTED",
+      "reason": "The registry name is authoritative; the applicant confirmed the abbreviated form was informal."
+    }
+  }
 }

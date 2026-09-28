@@ -429,6 +429,115 @@
           "description": "A verified, unverified or conflicted standing comes only from a recorded result."
         }
       ]
+    },
+    "EvidenceRegistrationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_type",
+        "subject",
+        "purpose",
+        "source_id",
+        "classification",
+        "retention_policy"
+      ],
+      "description": "Registers evidence obtained from a source: a registry record or a credential. The Control Plane mints evidence_id, records the caller as obtained_by and the record as AVAILABLE. Uploaded documents are not registered here: they arrive through the storage boundary (gate OEV-02) and are quarantined first.",
+      "properties": {
+        "evidence_type": {
+          "$ref": "domain.schema.json#/$defs/evidenceType"
+        },
+        "subject": {
+          "$ref": "domain.schema.json#/$defs/subjectReference"
+        },
+        "purpose": {
+          "$ref": "domain.schema.json#/$defs/verificationPurpose"
+        },
+        "source_id": {
+          "$ref": "domain.schema.json#/$defs/evidenceSourceId"
+        },
+        "source_record_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "The source's own identifier for the record observed."
+        },
+        "credential_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "issued_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "classification": {
+          "$ref": "domain.schema.json#/$defs/dataClassification"
+        },
+        "retention_policy": {
+          "$ref": "domain.schema.json#/$defs/retentionPolicyKey"
+        },
+        "supersedes": {
+          "$ref": "domain.schema.json#/$defs/evidenceRecordId"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "source_record_reference"
+          ]
+        },
+        {
+          "required": [
+            "credential_reference"
+          ]
+        }
+      ]
+    },
+    "EvidenceSourceList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceSource"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "maxLength": 512
+        }
+      }
+    },
+    "EvidenceClaimList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EvidenceClaim"
+          }
+        },
+        "next_page_token": {
+          "type": "string",
+          "maxLength": 512
+        }
+      }
     }
   }
 }
