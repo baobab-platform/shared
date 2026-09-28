@@ -85,6 +85,10 @@ RESPONSIBILITIES = {
         "changesetOperation", "changesetStepResources", "changesetStep", "ChangesetPlan", "affectedResource",
         "verificationResult", "ChangeOutcome",
     },
+    "market.schema.json": {
+        "marketId", "marketType", "market", "marketHierarchy", "marketValidationFinding",
+        "MarketCreateRequest", "MarketUpdateRequest", "MarketActivationRequest",
+    },
     "tenant-provisioning.schema.json": {
         "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningReplanRequest",
         "ProvisioningCommandRequest", "TenantProvisioningPage", "ProvisioningReadiness", "ProvisioningDrift",
@@ -738,6 +742,112 @@ def check_changeset() -> None:
         fail("a changeset's approval and operation name the CHANGESET subject and CHANGESET_APPLY")
 
 
+def market_findings(market: dict, known_markets: set[str]) -> list[str]:
+    """The market-lifecycle.yaml validation rules, evaluated as the Control Plane must."""
+    codes = []
+    countries = market.get("countries") or []
+    if not market.get("default_country") and not countries:
+        codes.append("MARKET_COUNTRY_REQUIRED")
+    if market.get("default_country") and countries and market["default_country"] not in countries:
+        codes.append("MARKET_COUNTRY_NOT_LISTED")
+    if not market.get("default_currency"):
+        codes.append("MARKET_CURRENCY_REQUIRED")
+    elif market.get("allowed_currencies") and market["default_currency"] not in market["allowed_currencies"]:
+        codes.append("MARKET_CURRENCY_NOT_ALLOWED")
+    if not market.get("default_locale"):
+        codes.append("MARKET_LOCALE_REQUIRED")
+    elif market.get("supported_locales") and market["default_locale"] not in market["supported_locales"]:
+        codes.append("MARKET_LOCALE_NOT_SUPPORTED")
+    if not market.get("timezone"):
+        codes.append("MARKET_TIMEZONE_REQUIRED")
+    if not market.get("effective_from"):
+        codes.append("MARKET_EFFECTIVE_FROM_REQUIRED")
+    elif market.get("effective_to") and market["effective_to"] <= market["effective_from"]:
+        codes.append("MARKET_EFFECTIVE_WINDOW_INVALID")
+    parent = market.get("parent_market_id")
+    if parent and (parent == market.get("market_id") or parent not in known_markets):
+        codes.append("MARKET_PARENT_UNKNOWN")
+    return codes
+
+
+def check_market() -> None:
+    schema = "market.schema.json"
+    example = json.loads((CP / "examples" / "market.json").read_text())
+    for key, definition in (("create_request", "MarketCreateRequest"), ("draft", "market"), ("update_request", "MarketUpdateRequest"),
+                            ("validated", "market"), ("activation_request", "MarketActivationRequest"), ("active", "market")):
+        accepts(schema, definition, example[key], f"market {key}")
+
+    # The lifecycle: DRAFT and VALIDATED follow validation; only activation is
+    # a decision, and it is made by someone other than the maker.
+    lifecycle = yaml.safe_load((CP / "market-lifecycle.yaml").read_text())
+    statuses = set(json.loads((CP / schema).read_text())["$defs"]["market"]["properties"]["status"]["enum"])
+    for t in lifecycle["transitions"]:
+        if t["from"] not in statuses or t["to"] not in statuses:
+            fail(f"market-lifecycle.yaml: {t['command']} {t['from']} -> {t['to']} uses an unknown status")
+        if t["from"] in lifecycle["terminal"]:
+            fail(f"market-lifecycle.yaml: terminal {t['from']} has an exit")
+    served = {(t["command"], t["from"], t["to"], t["actor"]) for t in lifecycle["transitions"] if t["served"]}
+    if served != {("validate", "DRAFT", "VALIDATED", "PLATFORM"), ("invalidate", "VALIDATED", "DRAFT", "PLATFORM"),
+                  ("activate", "VALIDATED", "ACTIVE", "APPROVER")}:
+        fail(f"market-lifecycle.yaml: the served transitions must be validate, invalidate and activate, not {sorted(served)}")
+    if set(lifecycle["editable"]) != {"DRAFT", "VALIDATED"} or lifecycle["initial"] != "DRAFT":
+        fail("market-lifecycle.yaml: a market starts DRAFT and only DRAFT and VALIDATED markets are editable")
+    rule_codes = [r["code"] for r in lifecycle["validation_rules"]]
+    registry = yaml.safe_load((CONTRACTS / "authorization" / "v1" / "reason-code-registry.yaml").read_text())
+    registered = {e["code"] for e in registry["reason_codes"] if e["category"] == "market_validation"}
+    if set(rule_codes) != registered:
+        fail(f"market_validation reason codes {sorted(registered)} differ from the lifecycle rules {sorted(rule_codes)}")
+
+    # Findings are exactly what the rules compute, and status follows them.
+    known = {example["draft"]["market_id"]}
+    for key in ("draft", "validated", "active"):
+        market = example[key]
+        computed = market_findings(market, known)
+        listed = [f["code"] for f in market.get("validation_findings", [])]
+        if key == "draft" and (market["status"] != "DRAFT" or sorted(computed) != sorted(listed) or not computed):
+            fail(f"market {key}: its findings {listed} are not the rules' findings {computed}")
+        if key != "draft" and (computed or listed):
+            fail(f"market {key} is {market['status']} but the rules find {computed}")
+    merged = {**example["draft"], **example["update_request"]}
+    if market_findings(merged, known):
+        fail("market update_request does not make the draft valid")
+    active = example["active"]
+    if active["activated_by"] in (example["validated"]["created_by"], example["validated"].get("updated_by")):
+        fail("market active: activated by its maker")
+
+    # The caller never states status, identity or audit fields, nor the approver.
+    create = example["create_request"]
+    for field, value in (("status", "ACTIVE"), ("market_id", "mkt_chosen"), ("created_by", "prn_x"), ("revision", 7),
+                         ("activated_by", "prn_x"), ("validation_findings", [])):
+        rejects(schema, "MarketCreateRequest", {**create, field: value}, f"market create request naming {field}")
+    for field, value in (("canonical_key", "za.retail"), ("owner_tenant_id", "tn_other1"), ("status", "VALIDATED")):
+        rejects(schema, "MarketUpdateRequest", {field: value}, f"market update request changing {field}")
+    rejects(schema, "MarketUpdateRequest", {}, "an empty market update")
+    rejects(schema, "MarketActivationRequest", {"approved_by": "prn_thandi"}, "market activation naming its approver")
+    rejects(schema, "market", {k: v for k, v in active.items() if k != "activated_by"}, "an ACTIVE market without its activator")
+    rejects(schema, "market", {**example["validated"], "validation_findings": example["draft"]["validation_findings"]},
+            "a VALIDATED market with validation findings")
+
+    # The four routes use the request schemas and require a revision to change or activate.
+    openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
+    ops = {op.get("operationId"): (path, method, op) for path, item in openapi["paths"].items()
+           for method, op in item.items() if isinstance(op, dict) and "operationId" in op}
+    for operation_id, body, if_match in (("createMarket", "MarketCreateRequest", False),
+                                         ("updateMarket", "MarketUpdateRequest", True),
+                                         ("activateMarket", "MarketActivationRequest", True)):
+        _, _, op = ops[operation_id]
+        ref = op["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+        if ref != f"./market.schema.json#/$defs/{body}":
+            fail(f"{operation_id} accepts {ref}, not {body}")
+        has_if_match = {"$ref": "#/components/parameters/MarketIfMatch"} in op.get("parameters", [])
+        if has_if_match != if_match:
+            fail(f"{operation_id}: If-Match must {'' if if_match else 'not '}be required")
+    if ops["activateMarket"][2]["security"] != [{"adminOidc": ["market:approve"]}]:
+        fail("activateMarket must require adminOidc market:approve")
+    if [lifecycle_t.get("operation_id") for lifecycle_t in lifecycle["transitions"] if lifecycle_t.get("operation_id")] != ["activateMarket"]:
+        fail("market-lifecycle.yaml: only activate names an operation")
+
+
 def check_openapi_references() -> None:
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
     pattern = re.compile(r"^\./(" + "|".join(re.escape(n) for n in RESPONSIBILITIES) + r")#/\$defs/(\w+)$")
@@ -891,6 +1001,7 @@ def main() -> int:
     check_tenant_provisioning()
     check_provider_migration()
     check_changeset()
+    check_market()
     check_openapi_references()
     check_topology_identifiers()
     check_external_systems()

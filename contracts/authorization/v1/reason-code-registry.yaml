@@ -49,6 +49,10 @@
 #                                     Changeset `blocking_reasons` and ChangesetPlan
 #                                     `blockers`: why a changeset is INVALID or
 #                                     BLOCKED (ADR-BCP-021 sections 17-19, 66).
+#   market_validation              -- contracts/control-plane/v1/market.schema.json's
+#                                     Market `validation_findings`: why a DRAFT
+#                                     market is not yet VALIDATED
+#                                     (market-lifecycle.yaml validation_rules).
 #
 # TENANT_SUSPENDED (authorization_denial) and TENANT_SUSPENSION
 # (lifecycle_revocation) are deliberately two distinct, near-identical-
@@ -340,3 +344,36 @@ reason_codes:
   - code: CHANGESET_TARGET_LOCKED
     category: changeset_blocker
     description: "Another changeset that has not ended already changes the same target; overlapping changes are serialised (section 66)."
+
+  # -- market_validation (market-lifecycle.yaml validation_rules) -------
+  # Why a DRAFT market is not yet VALIDATED.
+  - code: MARKET_COUNTRY_REQUIRED
+    category: market_validation
+    description: "The market names no country: neither default_country nor countries is set."
+  - code: MARKET_COUNTRY_NOT_LISTED
+    category: market_validation
+    description: "default_country is not one of the market's countries."
+  - code: MARKET_CURRENCY_REQUIRED
+    category: market_validation
+    description: "The market has no default currency."
+  - code: MARKET_CURRENCY_NOT_ALLOWED
+    category: market_validation
+    description: "default_currency is not one of the market's allowed currencies."
+  - code: MARKET_LOCALE_REQUIRED
+    category: market_validation
+    description: "The market has no default locale."
+  - code: MARKET_LOCALE_NOT_SUPPORTED
+    category: market_validation
+    description: "default_locale is not one of the market's supported locales."
+  - code: MARKET_TIMEZONE_REQUIRED
+    category: market_validation
+    description: "The market has no timezone."
+  - code: MARKET_EFFECTIVE_FROM_REQUIRED
+    category: market_validation
+    description: "The market has no effective_from."
+  - code: MARKET_EFFECTIVE_WINDOW_INVALID
+    category: market_validation
+    description: "effective_to is not after effective_from."
+  - code: MARKET_PARENT_UNKNOWN
+    category: market_validation
+    description: "parent_market_id does not name another existing market."

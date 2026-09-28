@@ -23,6 +23,24 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Market registry routes made implementable (control-plane/v1 `openapi.yaml` 1.13.0).**
+  - `market.schema.json` adds:
+    - `MarketCreateRequest` and `MarketUpdateRequest` (a JSON merge patch; `canonical_key` and `owner_tenant_id` are immutable). Neither accepts status, identity or audit fields.
+    - `MarketActivationRequest`, which carries no approver.
+    - `marketValidationFinding`.
+    - The Market's server-derived `activated_by`, `activated_at` and `validation_findings`.
+  - The new `market-lifecycle.yaml`:
+    - DRAFT and VALIDATED follow ten validation rules and are re-evaluated on every create and update;
+    - only activation is a decision, made by someone other than the market's maker;
+    - changes to an ACTIVE market are declared, but not served by these routes.
+  - `openapi.yaml`:
+    - `createMarket`, `updateMarket` and `activateMarket` use the request schemas;
+    - update and activation require `If-Match`;
+    - `activateMarket` no longer takes `approved_by` from the request;
+    - `getMarket` is also readable with `market:write`, so administrators can obtain the revision they must name.
+  - `authorization/v1` `reason-code-registry.yaml` adds the `market_validation` category (10 codes).
+  - `validate-control-plane-contracts.py` evaluates the rules against the example's findings and adds 13 negative fixtures.
+
 - **Evidence and verification contracts (ADR-BCP-023 gate OEV-01).**
   - New `evidence/v1` package:
     - `EvidenceRecord` and its metadata-only `EvidenceReference`. A record points at its material and never contains it.
