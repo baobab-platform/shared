@@ -172,7 +172,32 @@
           "provider_key": "baobab-erp.ledgerx",
           "binding_mode": "MIGRATION",
           "engine_instance_id": "ei_0199a1b2c3d47e8f",
-          "binding_count": 3
+          "binding_count": 3,
+          "binding_ids": [
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d01",
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d02",
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d03"
+          ]
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "bind-finance-invoice-read",
+        "operation": "CREATE_MIGRATION_BINDING",
+        "depends_on": [
+          "bind-target"
+        ],
+        "resources": {
+          "capability_key": "finance.invoice.read",
+          "provider_key": "baobab-erp.ledgerx",
+          "binding_mode": "MIGRATION",
+          "engine_instance_id": "ei_0199a1b2c3d47e8f",
+          "binding_count": 3,
+          "binding_ids": [
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d04",
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d05",
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d06"
+          ]
         },
         "irreversible": false
       },
@@ -180,7 +205,7 @@
         "step_id": "internal-canary-freeze-cohort-writes",
         "operation": "FREEZE_COHORT_WRITES",
         "depends_on": [
-          "bind-target"
+          "bind-finance-invoice-read"
         ],
         "resources": {
           "cohort_key": "internal-canary",
@@ -404,6 +429,19 @@
           "binding_count": 3
         },
         "irreversible": false
+      },
+      {
+        "step_id": "retire-finance-invoice-read",
+        "operation": "RETIRE_SOURCE_BINDING",
+        "depends_on": [
+          "retire-source"
+        ],
+        "resources": {
+          "capability_key": "finance.invoice.read",
+          "provider_key": "baobab-erp.idempiere",
+          "binding_count": 3
+        },
+        "irreversible": false
       }
     ],
     "security_checks": [
@@ -560,7 +598,32 @@
           "provider_key": "baobab-erp.ledgerx",
           "binding_mode": "MIGRATION",
           "engine_instance_id": "ei_0199a1b2c3d47e8f",
-          "binding_count": 3
+          "binding_count": 3,
+          "binding_ids": [
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d01",
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d02",
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d03"
+          ]
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "bind-finance-invoice-read",
+        "operation": "CREATE_MIGRATION_BINDING",
+        "depends_on": [
+          "bind-target"
+        ],
+        "resources": {
+          "capability_key": "finance.invoice.read",
+          "provider_key": "baobab-erp.ledgerx",
+          "binding_mode": "MIGRATION",
+          "engine_instance_id": "ei_0199a1b2c3d47e8f",
+          "binding_count": 3,
+          "binding_ids": [
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d04",
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d05",
+            "bind_0199a1b2c3d47e8f9a0b1c2d3e4f5d06"
+          ]
         },
         "irreversible": false
       },
@@ -568,7 +631,7 @@
         "step_id": "internal-canary-freeze-cohort-writes",
         "operation": "FREEZE_COHORT_WRITES",
         "depends_on": [
-          "bind-target"
+          "bind-finance-invoice-read"
         ],
         "resources": {
           "cohort_key": "internal-canary",
@@ -788,6 +851,19 @@
         ],
         "resources": {
           "capability_key": "finance.invoice.issue",
+          "provider_key": "baobab-erp.idempiere",
+          "binding_count": 3
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "retire-finance-invoice-read",
+        "operation": "RETIRE_SOURCE_BINDING",
+        "depends_on": [
+          "retire-source"
+        ],
+        "resources": {
+          "capability_key": "finance.invoice.read",
           "provider_key": "baobab-erp.idempiere",
           "binding_count": 3
         },

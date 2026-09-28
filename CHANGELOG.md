@@ -23,6 +23,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- `control-plane/v1` provider migration steps record binding assignments. A `CREATE_MIGRATION_BINDING` step names its source `binding_ids` together with the one target `engine_instance_id` they move to, so an approved plan fixes every binding's target instance (review of baobab-cp#199). The validator checks the counts, that no binding appears twice, and that an unblocked plan covers every discovered binding.
 - **Provider migration contracts (ADR-BCP-006 sections 44-58, 119-122, Gate 8).**
   - `control-plane/v1/provider-migration.schema.json`:
     - `ProviderMigrationRequest`, whose cohorts are deterministic selectors, never percentages;
