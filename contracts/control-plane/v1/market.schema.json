@@ -349,6 +349,28 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "DRAFT"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "validation_findings"
+            ],
+            "properties": {
+              "validation_findings": {
+                "minItems": 1
+              }
+            }
+          }
         }
       ]
     },

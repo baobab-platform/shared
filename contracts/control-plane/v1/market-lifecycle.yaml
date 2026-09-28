@@ -33,12 +33,12 @@ transitions:
 # reported in validation_findings while the rule does not hold.
 validation_rules:
   - {code: MARKET_COUNTRY_REQUIRED,        field: default_country,    rule: "default_country is set, or countries lists at least one country"}
-  - {code: MARKET_COUNTRY_NOT_LISTED,      field: default_country,    rule: "when both are set, countries includes default_country"}
+  - {code: MARKET_COUNTRY_NOT_LISTED,      field: default_country,    rule: "when default_country is set and countries is supplied (even empty), countries includes default_country"}
   - {code: MARKET_CURRENCY_REQUIRED,       field: default_currency,   rule: "default_currency is set"}
-  - {code: MARKET_CURRENCY_NOT_ALLOWED,    field: default_currency,   rule: "when allowed_currencies is set, it includes default_currency"}
+  - {code: MARKET_CURRENCY_NOT_ALLOWED,    field: default_currency,   rule: "when allowed_currencies is supplied (even empty), it includes default_currency"}
   - {code: MARKET_LOCALE_REQUIRED,         field: default_locale,     rule: "default_locale is set"}
-  - {code: MARKET_LOCALE_NOT_SUPPORTED,    field: default_locale,     rule: "when supported_locales is set, it includes default_locale"}
+  - {code: MARKET_LOCALE_NOT_SUPPORTED,    field: default_locale,     rule: "when supported_locales is supplied (even empty), it includes default_locale"}
   - {code: MARKET_TIMEZONE_REQUIRED,       field: timezone,           rule: "timezone is set"}
   - {code: MARKET_EFFECTIVE_FROM_REQUIRED, field: effective_from,     rule: "effective_from is set"}
-  - {code: MARKET_EFFECTIVE_WINDOW_INVALID, field: effective_to,      rule: "when effective_to is set, it is after effective_from"}
+  - {code: MARKET_EFFECTIVE_WINDOW_INVALID, field: effective_to,      rule: "when effective_to is set, it is a later instant than effective_from"}
   - {code: MARKET_PARENT_UNKNOWN,          field: parent_market_id,   rule: "when parent_market_id is set, it names another existing market"}

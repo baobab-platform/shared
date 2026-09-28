@@ -743,26 +743,35 @@ def check_changeset() -> None:
 
 
 def market_findings(market: dict, known_markets: set[str]) -> list[str]:
-    """The market-lifecycle.yaml validation rules, evaluated as the Control Plane must."""
+    """The market-lifecycle.yaml validation rules, evaluated as the Control Plane must.
+
+    A list that is supplied constrains even when empty; absent (or null)
+    does not. Times are compared as instants, never as strings."""
+    def supplied(field: str) -> bool:
+        return market.get(field) is not None
+
+    def instant(value: str) -> datetime:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+
     codes = []
     countries = market.get("countries") or []
     if not market.get("default_country") and not countries:
         codes.append("MARKET_COUNTRY_REQUIRED")
-    if market.get("default_country") and countries and market["default_country"] not in countries:
+    if market.get("default_country") and supplied("countries") and market["default_country"] not in countries:
         codes.append("MARKET_COUNTRY_NOT_LISTED")
     if not market.get("default_currency"):
         codes.append("MARKET_CURRENCY_REQUIRED")
-    elif market.get("allowed_currencies") and market["default_currency"] not in market["allowed_currencies"]:
+    elif supplied("allowed_currencies") and market["default_currency"] not in market["allowed_currencies"]:
         codes.append("MARKET_CURRENCY_NOT_ALLOWED")
     if not market.get("default_locale"):
         codes.append("MARKET_LOCALE_REQUIRED")
-    elif market.get("supported_locales") and market["default_locale"] not in market["supported_locales"]:
+    elif supplied("supported_locales") and market["default_locale"] not in market["supported_locales"]:
         codes.append("MARKET_LOCALE_NOT_SUPPORTED")
     if not market.get("timezone"):
         codes.append("MARKET_TIMEZONE_REQUIRED")
     if not market.get("effective_from"):
         codes.append("MARKET_EFFECTIVE_FROM_REQUIRED")
-    elif market.get("effective_to") and market["effective_to"] <= market["effective_from"]:
+    elif market.get("effective_to") and instant(market["effective_to"]) <= instant(market["effective_from"]):
         codes.append("MARKET_EFFECTIVE_WINDOW_INVALID")
     parent = market.get("parent_market_id")
     if parent and (parent == market.get("market_id") or parent not in known_markets):
@@ -827,6 +836,24 @@ def check_market() -> None:
     rejects(schema, "market", {k: v for k, v in active.items() if k != "activated_by"}, "an ACTIVE market without its activator")
     rejects(schema, "market", {**example["validated"], "validation_findings": example["draft"]["validation_findings"]},
             "a VALIDATED market with validation findings")
+    rejects(schema, "market", {**example["draft"], "validation_findings": []}, "a DRAFT market without findings")
+    rejects(schema, "market", {k: v for k, v in example["draft"].items() if k != "validation_findings"},
+            "a DRAFT market that omits its findings")
+
+    # The rules themselves: supplied lists constrain even when empty, and
+    # times are instants.
+    valid = {**example["draft"], **example["update_request"]}
+    for label, change, code in (
+            ("an empty currency allow-list", {"allowed_currencies": []}, "MARKET_CURRENCY_NOT_ALLOWED"),
+            ("an empty locale list", {"supported_locales": []}, "MARKET_LOCALE_NOT_SUPPORTED"),
+            ("an empty country list beside a default country", {"countries": []}, "MARKET_COUNTRY_NOT_LISTED"),
+            ("an end earlier as an instant but later as a string",
+             {"effective_from": "2026-01-01T10:00:00-03:00", "effective_to": "2026-01-01T11:00:00+03:00"}, "MARKET_EFFECTIVE_WINDOW_INVALID"),
+            ("an unknown parent", {"parent_market_id": "mkt_nosuchmarket"}, "MARKET_PARENT_UNKNOWN")):
+        if market_findings({**valid, **change}, known) != [code]:
+            fail(f"market rule check: {label} must yield only {code}, not {market_findings({**valid, **change}, known)}")
+    if market_findings({**valid, "allowed_currencies": None, "supported_locales": None}, known):
+        fail("market rule check: absent allow-lists do not constrain")
 
     # The four routes use the request schemas and require a revision to change or activate.
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
@@ -844,6 +871,14 @@ def check_market() -> None:
             fail(f"{operation_id}: If-Match must {'' if if_match else 'not '}be required")
     if ops["activateMarket"][2]["security"] != [{"adminOidc": ["market:approve"]}]:
         fail("activateMarket must require adminOidc market:approve")
+    # Whoever may update or activate a market can read the revision to name.
+    readers = ops["getMarket"][2]["security"]
+    for operation_id in ("updateMarket", "activateMarket"):
+        for requirement in ops[operation_id][2]["security"]:
+            if requirement not in readers:
+                fail(f"getMarket must admit {requirement}, which {operation_id} requires")
+    if "MARKET_PARENT_UNKNOWN (422)" in ops["createMarket"][2]["description"].replace("\n", " "):
+        fail("createMarket: an unknown parent is a validation finding, not a 422")
     if [lifecycle_t.get("operation_id") for lifecycle_t in lifecycle["transitions"] if lifecycle_t.get("operation_id")] != ["activateMarket"]:
         fail("market-lifecycle.yaml: only activate names an operation")
 

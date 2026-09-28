@@ -631,9 +631,11 @@ paths:
         VALIDATED when every market-lifecycle.yaml validation rule holds,
         otherwise DRAFT with validation_findings. A market is never created
         ACTIVE. Replaying the same Idempotency-Key returns the same market.
-        An unknown owner tenant or parent market is refused with
-        MARKET_OWNER_UNKNOWN or MARKET_PARENT_UNKNOWN (422); a canonical_key
-        already registered with MARKET_CANONICAL_KEY_TAKEN (409).
+        An unknown owner tenant is refused with MARKET_OWNER_UNKNOWN (422);
+        a canonical_key already registered with MARKET_CANONICAL_KEY_TAKEN
+        (409). An unknown parent market is not refused: like every other
+        validation rule, it is reported as a MARKET_PARENT_UNKNOWN finding
+        and the market stays DRAFT.
       security:
         - adminOidc: [market:write]
       parameters:
@@ -681,12 +683,13 @@ paths:
       operationId: getMarket
       summary: Read a market's configuration
       description: >-
-        Workloads read markets with market:read; administrators who manage
-        markets read them with market:write, to obtain the revision an update
-        or activation must name.
+        Workloads read markets with market:read. Administrators read them
+        with market:write or market:approve, to review a market and obtain
+        the revision an update or activation must name.
       security:
         - workloadOidc: [market:read]
         - adminOidc: [market:write]
+        - adminOidc: [market:approve]
       responses:
         "200":
           description: The market

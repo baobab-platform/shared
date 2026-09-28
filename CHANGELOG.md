@@ -37,9 +37,9 @@ Changes that have been merged but have not yet been included in a released versi
     - `createMarket`, `updateMarket` and `activateMarket` use the request schemas;
     - update and activation require `If-Match`;
     - `activateMarket` no longer takes `approved_by` from the request;
-    - `getMarket` is also readable with `market:write`, so administrators can obtain the revision they must name.
+    - `getMarket` is also readable with `market:write` or `market:approve`, so whoever updates or activates a market can read the revision they must name.
   - `authorization/v1` `reason-code-registry.yaml` adds the `market_validation` category (10 codes).
-  - `validate-control-plane-contracts.py` evaluates the rules against the example's findings and adds 13 negative fixtures.
+  - `validate-control-plane-contracts.py` evaluates the rules against the example's findings. It adds 15 negative fixtures and 6 rule checks (empty allow-lists constrain, and times are compared as instants).
 
 - **Evidence and verification contracts (ADR-BCP-023 gate OEV-01).**
   - New `evidence/v1` package:
