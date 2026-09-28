@@ -80,7 +80,7 @@ RESPONSIBILITIES = {
         "migrationStepResources", "migrationStep", "migrationDiscovery", "ProviderMigrationPlan", "ProviderMigration",
     },
     "changeset.schema.json": {
-        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "desiredChange",
+        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "desiredChange",
         "ChangesetCreateRequest", "ChangesetCancelRequest", "planReference", "Changeset", "ChangesetPage",
         "changesetOperation", "changesetStepResources", "changesetStep", "ChangesetPlan", "affectedResource",
         "verificationResult", "ChangeOutcome",
@@ -690,14 +690,27 @@ def check_changeset() -> None:
     branch_kinds = {defs[ref["$ref"].split("/")[-1]]["properties"]["kind"]["const"] for ref in defs["desiredChange"]["oneOf"]}
     if set(kinds) != branch_kinds:
         fail(f"changeset-lifecycle.yaml change_kinds differ from desiredChange: {sorted(set(kinds) ^ branch_kinds)}")
-    tenant_statuses = set(json.loads((CP / "tenant.schema.json").read_text())["$defs"]["lifecycleStatus"]["enum"])
+    # Each kind's statuses are in its own target's lifecycle vocabulary, and
+    # an approval_scope is a registered scope.
+    target_statuses = {
+        "TENANT": set(json.loads((CP / "tenant.schema.json").read_text())["$defs"]["lifecycleStatus"]["enum"]),
+        "MARKET": set(json.loads((CP / "market.schema.json").read_text())["$defs"]["market"]["properties"]["status"]["enum"]),
+        "MAPPING": set(json.loads((CP / "domain.schema.json").read_text())["$defs"]["mappingStatus"]["enum"]),
+    }
+    registered_scopes = {entry["name"] for entry in yaml.safe_load(
+        (CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
     for kind, spec in kinds.items():
         if spec["changeset_type"] not in defs["changesetType"]["enum"]:
             fail(f"change kind {kind} derives unknown type {spec['changeset_type']}")
         if not set(spec["operations"]) <= set(defs["changesetOperation"]["enum"]):
             fail(f"change kind {kind} names unknown operations")
-        if not set(spec["from_status"]) | {spec["to_status"]} <= tenant_statuses:
-            fail(f"change kind {kind} names unknown tenant statuses")
+        statuses = target_statuses.get(spec.get("target"))
+        if statuses is None:
+            fail(f"change kind {kind} names unknown target {spec.get('target')!r}")
+        elif not set(spec["from_status"]) | {spec["to_status"]} <= statuses:
+            fail(f"change kind {kind} names statuses its {spec['target']} lifecycle lacks")
+        if "approval_scope" in spec and spec["approval_scope"] not in registered_scopes:
+            fail(f"change kind {kind} names unregistered approval_scope {spec['approval_scope']}")
     # The schema itself binds every plan to its kind's type and exact
     # operations, not only the example: a branch per kind, matching the
     # lifecycle, and a crossed plan is rejected.
@@ -726,6 +739,55 @@ def check_changeset() -> None:
     if [step["operation"] for step in plan["steps"]] != kind["operations"] or plan["changeset_type"] != kind["changeset_type"] \
             or draft["changeset_type"] != kind["changeset_type"]:
         fail("the example changeset's plan does not run its change kind's operations and type")
+    # Market and mapping activation: optional governed paths beside the
+    # direct activate routes. Each plan runs its own kind and touches only
+    # its own kind of resource, in that resource's status vocabulary.
+    for key, target_key, foreign in (("market_activation_plan", "market_id", "mapping_id"),
+                                     ("mapping_activation_plan", "mapping_id", "market_id")):
+        activation = example[key]
+        accepts(schema, "ChangesetPlan", activation, f"changeset {key}")
+        spec = kinds[activation["desired_change"]["kind"]]
+        if [step["operation"] for step in activation["steps"]] != spec["operations"] \
+                or activation["changeset_type"] != spec["changeset_type"] or "approval_scope" not in spec:
+            fail(f"changeset {key} does not run its change kind's operations and type, or its kind has no approval_scope")
+        other = example["mapping_activation_plan" if key == "market_activation_plan" else "market_activation_plan"]
+        rejects(schema, "ChangesetPlan", {**activation, "steps": other["steps"]}, f"a {key} running the other kind's steps")
+        rejects(schema, "ChangesetPlan", {**activation, "changeset_type": "SUSPEND"}, f"a {key} typed SUSPEND")
+        wrong = copy.deepcopy(activation)
+        wrong["steps"][0]["resources"][foreign] = wrong["steps"][0]["resources"].pop(target_key)
+        wrong["steps"][0]["resources"]["tenant_id"] = plan["desired_change"]["tenant_id"]
+        rejects(schema, "ChangesetPlan", wrong, f"a {key} step naming two resources")
+        lowered = copy.deepcopy(activation)
+        lowered["steps"][0]["resources"]["to_status"] = "active"
+        rejects(schema, "ChangesetPlan", lowered, f"a {key} step in the tenant status vocabulary")
+        rejects(schema, "ChangesetCreateRequest",
+                {**create, "desired_change": {**activation["desired_change"], "verified": True}},
+                f"a {key} desired change with an extra property")
+        # Every step acts on the desired change's own resource: the schema
+        # requires the kind's resource, the example names the same id.
+        for index in range(len(activation["steps"])):
+            elsewhere = copy.deepcopy(activation)
+            resources = elsewhere["steps"][index]["resources"]
+            resources.pop(target_key)
+            resources[foreign] = other["desired_change"][foreign]
+            resources.pop("target_revision", None)
+            resources["from_status"] = resources.get("from_status") and "VALIDATED"
+            resources = {k: v for k, v in resources.items() if v is not None}
+            elsewhere["steps"][index]["resources"] = resources
+            rejects(schema, "ChangesetPlan", elsewhere, f"a {key} step {index} acting on another kind of resource")
+            untargeted = copy.deepcopy(activation)
+            untargeted["steps"][index]["resources"] = {"to_status": "ACTIVE"}
+            rejects(schema, "ChangesetPlan", untargeted, f"a {key} step {index} naming no resource")
+        for step in activation["steps"]:
+            if step["resources"][target_key] != activation["desired_change"][target_key]:
+                fail(f"changeset {key}: step {step['step_id']} acts on another {target_key} than its desired change")
+
+    # Tenant step resources keep their v1 shape: no resource at all, or
+    # statuses alone, stay valid tenant steps.
+    for resources in ({}, {"to_status": "suspended"}, {"from_status": "active", "to_status": "suspended"}):
+        compatible = copy.deepcopy(plan)
+        compatible["steps"][1]["resources"] = resources
+        accepts(schema, "ChangesetPlan", compatible, f"a v1 tenant step with resources {resources}")
     for step in plan["steps"][1:]:
         if not step["depends_on"]:
             fail(f"changeset plan step {step['step_id']} depends on nothing; a kind's operations run in order")

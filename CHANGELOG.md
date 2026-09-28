@@ -23,6 +23,25 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Market and mapping activation as Changesets (ADR-BCP-021; control-plane `openapi.yaml` 1.17.0).**
+  - Two new change kinds, both MODIFY changesets that move their target from VALIDATED to ACTIVE:
+    - `MARKET_ACTIVATION`, with the desired change `{kind, market_id}`. Its operations are `ACTIVATE_MARKET` then `VERIFY_MARKET_STATE`, and its approval scope is `market:approve`.
+    - `MAPPING_ACTIVATION`, with the desired change `{kind, mapping_id}`. Its operations are `ACTIVATE_MAPPING` then `VERIFY_MAPPING_STATE`, and its approval scope is `mapping:approve`.
+  - This path is optional and governed. `activateMarket` and `activateMapping` remain served, permanently.
+  - `changeset-lifecycle.yaml`:
+    - every change kind names its `target` (TENANT, MARKET or MAPPING);
+    - a kind may name an `approval_scope`.
+    - The validator checks each kind's statuses against its target's own status vocabulary, and checks the scope against the scope registry.
+  - `decideChangesetPlan`: the approver must also hold the kind's approval scope and meet the direct route's maker-checker rule:
+    - a market approver is neither the market's creator nor its last editor (`MARKET_SELF_ACTIVATION`);
+    - a mapping approver is not the mapping's creator (`MAPPING_SELF_APPROVAL`).
+  - `changesetStepResources`:
+    - a step naming `market_id` or `mapping_id` is a market or mapping step, with statuses in that resource's own vocabulary, and never names a second resource;
+    - any other step is a tenant step, exactly as in v1 before this change: tenant resources are neither narrowed nor made to require `tenant_id`;
+    - each activation kind's steps must name that kind's resource, and the Control Plane plans them on the desired change's own id;
+    - an optional `target_revision` binds a market or mapping plan to the revision that was reviewed. A moved revision is `PLAN_STALE`.
+  - `affectedResource.resource_type` gains `MARKET` and `MAPPING`.
+
 - **Applicant claims on client applications (ADR-BCP-023 §7, §9, §191-192; control-plane `openapi.yaml` 1.16.0).**
   - Applicant routes:
     - `createApplicantClaim` and `listApplicantClaims`: `POST`/`GET /client-applications/{application_id}/claims`;
