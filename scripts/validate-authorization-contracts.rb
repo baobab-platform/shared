@@ -29,7 +29,7 @@ registry = load_yaml("contracts/authorization/v1/reason-code-registry.yaml")
 entries = registry.fetch("reason_codes")
 fail_contract("reason-code-registry.yaml declares no codes") if entries.empty?
 
-known_categories = %w[authorization_denial lifecycle_revocation capability_resolution_denial provisioning_blocker health_observation administrative_denial provider_migration_blocker changeset_blocker]
+known_categories = %w[authorization_denial lifecycle_revocation capability_resolution_denial provisioning_blocker health_observation administrative_denial provider_migration_blocker changeset_blocker market_validation]
 seen_codes = {}
 entries.each do |entry|
   code = entry["code"]

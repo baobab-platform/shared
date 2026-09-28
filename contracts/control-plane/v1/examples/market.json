@@ -1,0 +1,129 @@
+{
+  "description": "A market's life through the four served routes: registered DRAFT (two validation findings), updated to VALIDATED, and activated by a second administrator (maker-checker).",
+  "create_request": {
+    "canonical_key": "za.b2b",
+    "name": "South Africa B2B",
+    "owner_tenant_id": "tn_01k9zb4x7q",
+    "legal_entity_id": "LE-ZB-ZA-001",
+    "market_type": "B2B",
+    "default_country": "ZA",
+    "countries": [
+      "ZA"
+    ],
+    "default_currency": "ZAR",
+    "allowed_currencies": [
+      "ZAR",
+      "USD"
+    ],
+    "supported_locales": [
+      "en-ZA"
+    ],
+    "timezone": "Africa/Johannesburg"
+  },
+  "draft": {
+    "canonical_key": "za.b2b",
+    "name": "South Africa B2B",
+    "owner_tenant_id": "tn_01k9zb4x7q",
+    "legal_entity_id": "LE-ZB-ZA-001",
+    "market_type": "B2B",
+    "default_country": "ZA",
+    "countries": [
+      "ZA"
+    ],
+    "default_currency": "ZAR",
+    "allowed_currencies": [
+      "ZAR",
+      "USD"
+    ],
+    "supported_locales": [
+      "en-ZA"
+    ],
+    "timezone": "Africa/Johannesburg",
+    "market_id": "mkt_01k9za7b2b",
+    "status": "DRAFT",
+    "revision": 1,
+    "created_at": "2026-10-01T09:00:00Z",
+    "created_by": "prn_amani",
+    "validation_findings": [
+      {
+        "code": "MARKET_LOCALE_REQUIRED",
+        "field": "default_locale",
+        "message": "The market has no default locale."
+      },
+      {
+        "code": "MARKET_EFFECTIVE_FROM_REQUIRED",
+        "field": "effective_from",
+        "message": "The market has no effective_from."
+      }
+    ]
+  },
+  "update_request": {
+    "default_locale": "en-ZA",
+    "effective_from": "2026-11-01T00:00:00Z"
+  },
+  "validated": {
+    "canonical_key": "za.b2b",
+    "name": "South Africa B2B",
+    "owner_tenant_id": "tn_01k9zb4x7q",
+    "legal_entity_id": "LE-ZB-ZA-001",
+    "market_type": "B2B",
+    "default_country": "ZA",
+    "countries": [
+      "ZA"
+    ],
+    "default_currency": "ZAR",
+    "allowed_currencies": [
+      "ZAR",
+      "USD"
+    ],
+    "supported_locales": [
+      "en-ZA"
+    ],
+    "timezone": "Africa/Johannesburg",
+    "market_id": "mkt_01k9za7b2b",
+    "status": "VALIDATED",
+    "revision": 2,
+    "created_at": "2026-10-01T09:00:00Z",
+    "created_by": "prn_amani",
+    "default_locale": "en-ZA",
+    "effective_from": "2026-11-01T00:00:00Z",
+    "updated_at": "2026-10-01T09:30:00Z",
+    "updated_by": "prn_amani",
+    "validation_findings": []
+  },
+  "activation_request": {
+    "reason": "Reviewed: currencies, locale and timezone match the ZA B2B launch plan."
+  },
+  "active": {
+    "canonical_key": "za.b2b",
+    "name": "South Africa B2B",
+    "owner_tenant_id": "tn_01k9zb4x7q",
+    "legal_entity_id": "LE-ZB-ZA-001",
+    "market_type": "B2B",
+    "default_country": "ZA",
+    "countries": [
+      "ZA"
+    ],
+    "default_currency": "ZAR",
+    "allowed_currencies": [
+      "ZAR",
+      "USD"
+    ],
+    "supported_locales": [
+      "en-ZA"
+    ],
+    "timezone": "Africa/Johannesburg",
+    "market_id": "mkt_01k9za7b2b",
+    "status": "ACTIVE",
+    "revision": 3,
+    "created_at": "2026-10-01T09:00:00Z",
+    "created_by": "prn_amani",
+    "default_locale": "en-ZA",
+    "effective_from": "2026-11-01T00:00:00Z",
+    "updated_at": "2026-10-02T08:00:00Z",
+    "updated_by": "prn_thandi",
+    "validation_findings": [],
+    "activated_by": "prn_thandi",
+    "activated_at": "2026-10-02T08:00:00Z"
+  }
+}
