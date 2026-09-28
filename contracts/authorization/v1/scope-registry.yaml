@@ -240,6 +240,34 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "verification:read"
+    description: >-
+      Read verification cases, their claims, checks, results and
+      discrepancies, evidence metadata and the evidence source registry
+      (ADR-BCP-023). Never artifact content.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "verification:write"
+    description: >-
+      Work verification cases: open them, record claims, register evidence
+      obtained from a source, record checks, raise discrepancies and move a
+      case through review (ADR-BCP-023). Necessary but not sufficient: the
+      Control Plane refuses anyone checking a claim they asserted.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "verification:decide"
+    description: >-
+      Record claims' verification results, resolve discrepancies and
+      conclude verification cases (ADR-BCP-023 sections 32, 74-76). Never
+      on a claim the caller asserted.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "changeset:read"
     description: >-
       Read changesets, their plans and outcomes (ADR-BCP-021, ADR-BCP-022

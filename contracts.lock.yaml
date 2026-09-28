@@ -108,3 +108,4 @@ contracts:
       - evidence.schema.json
       - verification.schema.json
       - lifecycle.yaml
+      - source-registry.yaml

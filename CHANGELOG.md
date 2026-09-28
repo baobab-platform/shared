@@ -23,6 +23,26 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Verification routes (ADR-BCP-023 gate OEV-03; control-plane `openapi.yaml` 1.14.0).**
+  - Sixteen `Verification` operations under `/admin`:
+    - verification cases: open, list, read and transition;
+    - a case's claims, checks, results and discrepancies;
+    - discrepancy transitions;
+    - evidence registration and metadata;
+    - the source registry.
+  - Evidence content is never served; uploads are gate OEV-02.
+  - `evidence/v1` adds:
+    - the routes' request and list schemas; none accepts an identity, status or artifact the Control Plane derives;
+    - `source-registry.yaml`: URSB, CIPC and applicant submissions, with their per-jurisdiction authority;
+    - an optional `version` on `EvidenceDiscrepancy`, for If-Match.
+  - The scopes `verification:read`, `verification:write` and `verification:decide`. Results and case or discrepancy conclusions need `decide`.
+  - The permissions `evidence.view`, `evidence.register`, `verification.view`, `verification.review` and `verification.decide`, in a new `EVIDENCE` domain.
+  - `validate-evidence-contracts.py` checks:
+    - the source registry, and that the example's sources match it;
+    - the request examples, and 25 negative request fixtures;
+    - that the transition commands are exactly the lifecycle's reviewer commands;
+    - every route's schema and scope.
+
 - **Market registry routes made implementable (control-plane/v1 `openapi.yaml` 1.13.0).**
   - `market.schema.json` adds:
     - `MarketCreateRequest` and `MarketUpdateRequest` (a JSON merge patch; `canonical_key` and `owner_tenant_id` are immutable). Neither accepts status, identity or audit fields.

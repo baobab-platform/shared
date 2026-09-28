@@ -23,7 +23,13 @@ resolved against the contracts in this repository:
          (section 238);
        - a CONFLICTED case has a conflicted claim;
   4. negative fixtures prove the load-bearing rules reject bad data;
-  5. contracts.lock.yaml registers exactly these files.
+  5. source-registry.yaml lists valid, uniquely identified sources and the
+     example's sources are exactly as registered;
+  6. the control-plane OpenAPI's Verification routes accept only the
+     request schemas, never an identity, status or artifact the Control
+     Plane derives, and a case or discrepancy transition only the commands a
+     reviewer may issue (gate OEV-03);
+  7. contracts.lock.yaml registers exactly these files.
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -47,7 +53,7 @@ CONTRACTS = ROOT / "contracts"
 PKG = CONTRACTS / "evidence" / "v1"
 BASE_URI = "https://contracts.baobab-platform.com/evidence/v1/"
 SCHEMAS = ["domain.schema.json", "evidence.schema.json", "verification.schema.json"]
-YAMLS = ["lifecycle.yaml"]
+YAMLS = ["lifecycle.yaml", "source-registry.yaml"]
 ACTORS = {"APPLICANT", "REVIEWER", "PLATFORM"}
 POSITIVE = {"MATCHED", "VERIFIED", "PARTIALLY_VERIFIED"}
 # A claim's status after verification is its current result's outcome.
@@ -301,6 +307,49 @@ for problem in cross_check(example):
     fail(f"{example_path.name}: {problem}")
 
 
+# 5. Source registry.
+registry_doc = load_yaml(PKG / "source-registry.yaml")
+registered_sources = {}
+for i, source in enumerate(registry_doc["sources"]):
+    for message in errors("evidence.schema.json#/$defs/EvidenceSource", source):
+        fail(f"source-registry.yaml sources[{i}]: {message}")
+    if source["source_id"] in registered_sources:
+        fail(f"source-registry.yaml: {source['source_id']} is registered twice")
+    registered_sources[source["source_id"]] = source
+for source in example["sources"]:
+    if registered_sources.get(source["source_id"]) != source:
+        fail(f"{example_path.name}: source {source['source_id']} differs from its source-registry.yaml entry")
+
+# 6. The Verification routes (gate OEV-03).
+REQUESTS = {
+    "case_create": "verification.schema.json#/$defs/VerificationCaseCreateRequest",
+    "case_transition": "verification.schema.json#/$defs/VerificationCaseTransitionRequest",
+    "evidence_registration": "evidence.schema.json#/$defs/EvidenceRegistrationRequest",
+    "check_record": "verification.schema.json#/$defs/VerificationCheckRecordRequest",
+    "result_record": "verification.schema.json#/$defs/VerificationResultRecordRequest",
+    "discrepancy_record": "verification.schema.json#/$defs/EvidenceDiscrepancyRecordRequest",
+    "discrepancy_transition": "verification.schema.json#/$defs/EvidenceDiscrepancyTransitionRequest",
+}
+requests = example.get("requests", {})
+for key, ref in REQUESTS.items():
+    if key not in requests:
+        fail(f"{example_path.name}: requests needs {key}")
+        continue
+    for message in errors(ref, requests[key]):
+        fail(f"{example_path.name} requests.{key}: {message}")
+
+
+def reviewer_commands(machine):
+    return {t["command"] for t in lifecycle["machines"][machine]["transitions"] if "REVIEWER" in t["actors"]}
+
+
+verification_defs = json.loads((PKG / "verification.schema.json").read_text())["$defs"]
+for definition, machine in (("VerificationCaseTransitionRequest", "verification_case"),
+                            ("EvidenceDiscrepancyTransitionRequest", "evidence_discrepancy")):
+    commands = set(verification_defs[definition]["properties"]["command"]["enum"])
+    if commands != reviewer_commands(machine):
+        fail(f"{definition} commands {sorted(commands)} differ from the reviewer commands of {machine} {sorted(reviewer_commands(machine))}")
+
 # 4. Negative fixtures.
 def must_reject(label: str, ref: str, instance) -> None:
     if not errors(ref, instance):
@@ -397,6 +446,65 @@ must_break("a result citing a discrepancy about another subject",
            with_items("discrepancies", "discrepancy_id", "edis_name",
                       subject={"subject_type": "LEGAL_ENTITY", "subject_id": "LE-01k9otherentity"}))
 must_break("an unknown evidence reference", with_items("claims", "claim_id", "ecl_rep", evidence_ids=["evr_missing"]))
+
+# The caller never states what the Control Plane derives.
+R = requests
+for key, field, value in (
+        ("case_create", "status", "VERIFIED"), ("case_create", "case_id", "vcase_mine"), ("case_create", "claim_ids", []),
+        ("check_record", "performed_by", "prn_kato"), ("check_record", "performed_at", "2026-10-02T10:00:00Z"),
+        ("check_record", "case_id", "vcase_adm01"), ("result_record", "decided_by", "prn_kato"),
+        ("result_record", "result_id", "vres_mine"), ("evidence_registration", "artifact_id", "eart_x"),
+        ("evidence_registration", "status", "AVAILABLE"), ("evidence_registration", "obtained_by", "principal:prn_kato"),
+        ("evidence_registration", "submitted_by", "prn_kato"), ("discrepancy_record", "status", "RESOLVED"),
+        ("discrepancy_transition", "resolved_by", "prn_kato")):
+    must_reject(f"{key} naming {field}", REQUESTS[key], mutate(R[key], **{field: value}))
+must_reject("a case transition only the platform performs", REQUESTS["case_transition"], {"command": "expire"})
+must_reject("a pending check recorded as performed", REQUESTS["check_record"], mutate(R["check_record"], outcome="PENDING"))
+must_reject("a recorded result that merely expired", REQUESTS["result_record"], mutate(R["result_record"], outcome="EXPIRED"))
+must_reject("a VERIFIED result without issuer authority", REQUESTS["result_record"],
+            mutate(R["result_record"], dimensions=[{"dimension": "CLAIM_MATCH", "outcome": "PASSED"}]))
+must_reject("a CONFLICTED result without its discrepancy", REQUESTS["result_record"], mutate(R["result_record"], outcome="CONFLICTED"))
+must_reject("a result from no checks", REQUESTS["result_record"], mutate(R["result_record"], check_ids=[]))
+must_reject("evidence registered with no source record or credential", REQUESTS["evidence_registration"],
+            mutate(R["evidence_registration"], source_record_reference=None))
+must_reject("a resolution without a reason", REQUESTS["discrepancy_transition"], mutate(R["discrepancy_transition"], reason=None))
+must_reject("an exception accepted as a source value", REQUESTS["discrepancy_transition"],
+            mutate(R["discrepancy_transition"], command="accept_exception"))
+must_reject("a review begun with a resolution", REQUESTS["discrepancy_transition"], mutate(R["discrepancy_transition"], command="begin_review"))
+
+# The routes use the request schemas and the right scopes, and none serves
+# artifact content.
+openapi = load_yaml(CONTRACTS / "control-plane" / "v1" / "openapi.yaml")
+operations = {op["operationId"]: (path, method, op) for path, item in openapi["paths"].items()
+              for method, op in item.items() if isinstance(op, dict) and "operationId" in op}
+E = "../../evidence/v1/"
+for operation_id, scope, body in (
+        ("createVerificationCase", "verification:write", "verification.schema.json#/$defs/VerificationCaseCreateRequest"),
+        ("listVerificationCases", "verification:read", None), ("getVerificationCase", "verification:read", None),
+        ("transitionVerificationCase", "verification:write", "verification.schema.json#/$defs/VerificationCaseTransitionRequest"),
+        ("addVerificationClaim", "verification:write", "evidence.schema.json#/$defs/EvidenceClaimSubmission"),
+        ("listVerificationClaims", "verification:read", None),
+        ("recordVerificationCheck", "verification:write", "verification.schema.json#/$defs/VerificationCheckRecordRequest"),
+        ("listVerificationChecks", "verification:read", None),
+        ("recordVerificationResult", "verification:decide", "verification.schema.json#/$defs/VerificationResultRecordRequest"),
+        ("listVerificationResults", "verification:read", None),
+        ("recordEvidenceDiscrepancy", "verification:write", "verification.schema.json#/$defs/EvidenceDiscrepancyRecordRequest"),
+        ("listEvidenceDiscrepancies", "verification:read", None),
+        ("transitionEvidenceDiscrepancy", "verification:write", "verification.schema.json#/$defs/EvidenceDiscrepancyTransitionRequest"),
+        ("registerEvidence", "verification:write", "evidence.schema.json#/$defs/EvidenceRegistrationRequest"),
+        ("getEvidenceReference", "verification:read", None), ("listEvidenceSources", "verification:read", None)):
+    if operation_id not in operations:
+        fail(f"control-plane openapi.yaml does not describe {operation_id}")
+        continue
+    path, method, op = operations[operation_id]
+    if op.get("security") != [{"adminOidc": [scope]}]:
+        fail(f"{operation_id} must require adminOidc {scope}, not {op.get('security')}")
+    ref = op.get("requestBody", {}).get("content", {}).get("application/json", {}).get("schema", {}).get("$ref")
+    if ref != (E + body if body else None):
+        fail(f"{operation_id} accepts {ref}, not {body}")
+for path in openapi["paths"]:
+    if path.startswith("/admin/evidence") and any(part in path for part in ("content", "download", "artifact")):
+        fail(f"{path}: evidence content is never served by the Verification routes")
 
 bad = copy.deepcopy(lifecycle)
 bad["machines"]["evidence_claim"]["transitions"].append(
