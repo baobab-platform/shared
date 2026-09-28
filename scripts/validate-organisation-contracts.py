@@ -71,7 +71,7 @@ RESPONSIBILITIES = {
     },
     "admission.schema.json": {
         "OrganisationAdmissionRequest", "OrganisationAdmissionOutcome", "admissionDecisionId",
-        "identityResolutionOutcome", "identityResolution", "applicantOrganisation", "legalVerification",
+        "identityResolutionOutcome", "identityResolution", "applicantOrganisation",
         "corporateRelationshipClaim", "platformAccountAssignment",
     },
     "counterparty.schema.json": {
@@ -678,6 +678,10 @@ if nabhold is not None and acme is not None and "legacy-buyer-supplier-migration
     negative("applicant organisation claiming to be verified", "admission.schema.json", "OrganisationAdmissionRequest", r)
     r = first(A, "organisation_admission_requests"); r["corporate_relationship_claims"][0]["verification_state"] = "VERIFIED"
     negative("corporate relationship claim asserting verification", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["legal_verification"] = {"evidence_references": ["evd_x"], "reason": "checked"}
+    negative("legal identity verified by one-call evidence instead of a verification case (ADR-BCP-023 s191)", "admission.schema.json", "OrganisationAdmissionRequest", r)
+    r = first(A, "organisation_admission_requests"); r["verification_case_id"] = "case-42"
+    negative("verification case named by a free string", "admission.schema.json", "OrganisationAdmissionRequest", r)
     r = first(A, "organisation_admission_requests"); r["applicant_organisation"]["registration_identifiers"] = []
     negative("applicant without governed identifiers", "admission.schema.json", "OrganisationAdmissionRequest", r)
     r = first(A, "organisation_admission_requests"); r["identity_resolution"] = {"decision": "USE_EXISTING_ORGANISATION", "reason": "same company"}
