@@ -23,6 +23,20 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Evidence and verification contracts (ADR-BCP-023 gate OEV-01).**
+  - New `evidence/v1` package:
+    - `EvidenceRecord` and its metadata-only `EvidenceReference`. A record points at its material and never contains it.
+    - `EvidenceSource`, trusted per claim type and jurisdiction. An applicant-supplied source is trusted for nothing.
+    - `EvidenceClaim`, and `EvidenceClaimSubmission`, which carries no status and no verification field.
+    - `VerificationCase`, `VerificationCheck` and `VerificationResult`, with each verification dimension answered separately. VERIFIED needs `CLAIM_MATCH` and `ISSUER_AUTHORITY`.
+    - `EvidenceDiscrepancy`.
+    - Four lifecycles, in none of which an applicant verifies, concludes or resolves anything.
+    - The `evidence:evr_…` canonical reference form. The existing `organisation/v1` `evidenceReference` strings stay valid.
+  - `validate-evidence-contracts.py` runs in CI. It checks:
+    - the lifecycles;
+    - the evidence chain in the example: every id resolves; standing comes from results; VERIFIED rests on a trusted source; nobody verifies their own claim; quarantined evidence never supports a positive check;
+    - 31 negative fixtures.
+
 - **Changeset contracts (ADR-BCP-021 gate CCM-01; ADR-BCP-022 section 44).**
   - `control-plane/v1/changeset.schema.json`:
     - `ChangesetCreateRequest`: typed intent only. The Control Plane derives type, scope, source, requester and risk.
