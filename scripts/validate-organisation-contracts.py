@@ -864,6 +864,12 @@ if event_examples:
         event_negatives.append(("free-string evidence in a verification event", free_string))
         bad_reason = copy.deepcopy(verified); bad_reason["data"]["reason_codes"] = ["legal name differs"]
         event_negatives.append(("prose reason in a verification event", bad_reason))
+        no_evidence = copy.deepcopy(verified); del no_evidence["data"]["evidence_ids"]
+        event_negatives.append(("case-decided verification without its evidence ids", no_evidence))
+        stray = copy.deepcopy(verified)
+        for key in ("verification_case_id", "verification_result_ids", "evidence_ids"):
+            del stray["data"][key]
+        event_negatives.append(("reason codes without the verification they came from", stray))
     for label, envelope in event_negatives:
         NEGATIVE.append((label, "", "", {}))
         if not event_errors(envelope):

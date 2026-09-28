@@ -92,8 +92,8 @@ The Control Plane publishes these events on the `baobab-platform.control-plane.o
 Rules the validator enforces:
 
 - **Payloads carry identifiers and state only (§125).** No names, evidence references, registration numbers, contacts or metadata. Verification events report `evidence_reference_count`, never the references themselves. Consumers dereference authorized details through the Control Plane.
-- **A case-decided verification names its provenance by opaque id (ADR-BCP-023 §143).** `organisation.verified` and `legal-entity.verified` (asyncapi 1.1.0) optionally carry:
-  - `verification_case_id` and `verification_result_ids`, always together;
+- **A case-decided verification names its provenance by opaque id (ADR-BCP-023 §143).** `organisation.verified` and `legal-entity.verified` (asyncapi 1.1.0) may carry the following fields. They are all-or-nothing: if one is present, all four must be.
+  - `verification_case_id` and `verification_result_ids`;
   - `evidence_ids`, as `evr_` identifiers only;
   - `reason_codes`, in the evidence/v1 `reasonCode` form.
 

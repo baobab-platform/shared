@@ -83,15 +83,29 @@
           "items": {
             "$ref": "../../evidence/v1/domain.schema.json#/$defs/reasonCode"
           },
-          "description": "The reason codes the cited VerificationResults recorded, in the evidence/v1 reasonCode form (sections 143 and 231). Empty or absent for a clean verification."
+          "description": "The reason codes the cited VerificationResults recorded, in the evidence/v1 reasonCode form (sections 143 and 231). Empty for a clean verification."
         }
       },
       "dependentRequired": {
         "verification_case_id": [
-          "verification_result_ids"
+          "verification_result_ids",
+          "evidence_ids",
+          "reason_codes"
         ],
         "verification_result_ids": [
-          "verification_case_id"
+          "verification_case_id",
+          "evidence_ids",
+          "reason_codes"
+        ],
+        "evidence_ids": [
+          "verification_case_id",
+          "verification_result_ids",
+          "reason_codes"
+        ],
+        "reason_codes": [
+          "verification_case_id",
+          "verification_result_ids",
+          "evidence_ids"
         ]
       }
     },
@@ -166,15 +180,29 @@
           "items": {
             "$ref": "../../evidence/v1/domain.schema.json#/$defs/reasonCode"
           },
-          "description": "The reason codes the cited VerificationResults recorded, in the evidence/v1 reasonCode form (sections 143 and 231). Empty or absent for a clean verification."
+          "description": "The reason codes the cited VerificationResults recorded, in the evidence/v1 reasonCode form (sections 143 and 231). Empty for a clean verification."
         }
       },
       "dependentRequired": {
         "verification_case_id": [
-          "verification_result_ids"
+          "verification_result_ids",
+          "evidence_ids",
+          "reason_codes"
         ],
         "verification_result_ids": [
-          "verification_case_id"
+          "verification_case_id",
+          "evidence_ids",
+          "reason_codes"
+        ],
+        "evidence_ids": [
+          "verification_case_id",
+          "verification_result_ids",
+          "reason_codes"
+        ],
+        "reason_codes": [
+          "verification_case_id",
+          "verification_result_ids",
+          "evidence_ids"
         ]
       }
     },
