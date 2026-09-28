@@ -248,5 +248,112 @@
     "residual_risks": [],
     "correlation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
     "recorded_at": "2026-09-28T08:31:03Z"
+  },
+  "market_activation_plan": {
+    "plan_id": "plan_0199a1b2c3d47ea1",
+    "plan_version": 1,
+    "plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "base_revision": 4,
+    "generated_at": "2026-09-28T08:01:00Z",
+    "expires_at": "2026-09-29T08:01:00Z",
+    "risk_class": "MEDIUM",
+    "changeset_id": "cs_0199a1b2c3d47ea1",
+    "changeset_type": "MODIFY",
+    "desired_change": {
+      "kind": "MARKET_ACTIVATION",
+      "market_id": "mkt_01k9za7b2b"
+    },
+    "steps": [
+      {
+        "step_id": "activate-market",
+        "operation": "ACTIVATE_MARKET",
+        "depends_on": [],
+        "resources": {
+          "market_id": "mkt_01k9za7b2b",
+          "from_status": "VALIDATED",
+          "to_status": "ACTIVE",
+          "target_revision": 3
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "verify-market-state",
+        "operation": "VERIFY_MARKET_STATE",
+        "depends_on": [
+          "activate-market"
+        ],
+        "resources": {
+          "market_id": "mkt_01k9za7b2b",
+          "to_status": "ACTIVE"
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [],
+    "readiness_requirements": [],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Activates the validated Kenya market at the revision the approver reviewed.",
+      "resources_created": 0,
+      "resources_changed": 1,
+      "resources_removed": 0,
+      "availability_impact": "None until activation; the target then serves as ACTIVE."
+    },
+    "verification_strategy": "Read the market back and require status ACTIVE at the next revision.",
+    "compensation_strategy": "Nothing irreversible is planned; a market is withdrawn through its own lifecycle."
+  },
+  "mapping_activation_plan": {
+    "plan_id": "plan_0199a1b2c3d47ea2",
+    "plan_version": 1,
+    "plan_digest": "sha256:c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+    "base_revision": 4,
+    "generated_at": "2026-09-28T08:01:00Z",
+    "expires_at": "2026-09-29T08:01:00Z",
+    "risk_class": "MEDIUM",
+    "changeset_id": "cs_0199a1b2c3d47ea2",
+    "changeset_type": "MODIFY",
+    "desired_change": {
+      "kind": "MAPPING_ACTIVATION",
+      "mapping_id": "map_01k9za7b2c"
+    },
+    "steps": [
+      {
+        "step_id": "activate-mapping",
+        "operation": "ACTIVATE_MAPPING",
+        "depends_on": [],
+        "resources": {
+          "mapping_id": "map_01k9za7b2c",
+          "from_status": "VALIDATED",
+          "to_status": "ACTIVE"
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "verify-mapping-state",
+        "operation": "VERIFY_MAPPING_STATE",
+        "depends_on": [
+          "activate-mapping"
+        ],
+        "resources": {
+          "mapping_id": "map_01k9za7b2c",
+          "to_status": "ACTIVE"
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [],
+    "readiness_requirements": [],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Activates the validated mapping for its subject and scope.",
+      "resources_created": 0,
+      "resources_changed": 1,
+      "resources_removed": 0,
+      "availability_impact": "None until activation; the target then serves as ACTIVE."
+    },
+    "verification_strategy": "Read the mapping back and require status ACTIVE.",
+    "compensation_strategy": "Retire the mapping through its own lifecycle; nothing irreversible is planned."
   }
 }
