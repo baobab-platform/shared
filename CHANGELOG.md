@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Canonical mapping administrative permissions (ADR-BCP-020; ADR-SHARED-013).**
+  - `administration/v1` adds three permissions in the ORGANISATION domain, at PLATFORM scope only:
+    - `mapping.view` (LOW, read-only): external references, canonical mappings and reference resolution;
+    - `mapping.manage` (MODERATE): register references; draft, change, validate and retire mappings;
+    - `mapping.approve` (HIGH, never delegated): activate a validated mapping, four-eyes.
+  - The `platform-administrator` profile includes all three, matching what the platform-administrator role may do today, so shadow evaluation stays equivalent.
+  - This closes the last unmapped Control Plane administrative routes before the grant cutover.
 - **Verification provenance on organisation events (ADR-BCP-023 §143 and §231; organisation `asyncapi.yaml` 1.1.0).**
   - `OrganisationVerified` and `LegalEntityVerified` gain four optional fields: `verification_case_id`, `verification_result_ids`, `evidence_ids` (opaque `evr_` ids) and `reason_codes`.
   - The four fields are all-or-nothing: if one is present, all four must be.
