@@ -177,7 +177,12 @@ A Keycloak Organization is an IAM projection of a canonical Organisation, never 
 
 - **The applicant never sends it.** The request is issued after an approved AdmissionDecision, and replaying the same `admission_decision_id` changes nothing.
 - **Identity is resolved on governed identifiers only (§99-100).** Names never match. If another Organisation carries one of the applicant's identifiers, the admission is `QUARANTINED` and nothing is written; a reviewer resolves it explicitly with `identity_resolution` (use that existing Organisation, or confirm a new one). Organisations are never merged automatically.
-- **Applicant data is evidence (§69).** Identifiers are recorded as unverified claims, and legal identity becomes VERIFIED only with the reviewer's `legal_verification` evidence. Declared corporate relationships are recorded PENDING_REVIEW with source authority `applicant-submission` and are never verified by admission.
+- **Applicant data is evidence (§69).** Identifiers are recorded as unverified claims. Legal identity becomes VERIFIED only through `verification_case_id`, which must name an ADR-BCP-023 VerificationCase meeting all of these conditions (§191-193):
+  - its status is VERIFIED and its purpose is `ORGANISATION_ADMISSION`;
+  - it is about the admitted organisation or one of its legal entities;
+  - its REGISTRATION_IDENTIFIER and LEGAL_NAME claims are VERIFIED.
+
+  The former one-call `legal_verification` evidence is removed (control-plane OpenAPI 1.15.0). Declared corporate relationships are recorded PENDING_REVIEW with source authority `applicant-submission` and are never verified by admission.
 - **The platform relationship is server-authoritative (§70).** The request has no field for it; the Control Plane records EXTERNAL_CLIENT.
 - **A PlatformAccount is commercial only.** Joining one grants no tenant access.
 

@@ -405,12 +405,7 @@
           }
         ]
       },
-      "legal_verification": {
-        "evidence_references": [
-          "evd_01k8z3w2cert"
-        ],
-        "reason": "certificate of incorporation checked against the registry"
-      },
+      "verification_case_id": "vcase_01k8z3w2acme",
       "corporate_relationship_claims": [
         {
           "relationship_type": "OWNS",

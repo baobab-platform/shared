@@ -169,6 +169,12 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Breaking: admission verifies legal identity only through a VerificationCase (ADR-BCP-023 §191-193; control-plane `openapi.yaml` 1.15.0).**
+  - `OrganisationAdmissionRequest` drops `legal_verification`, the reviewer's one-call evidence and reason, and its `legalVerification` definition.
+  - It gains `verification_case_id`. The case must be VERIFIED, for `ORGANISATION_ADMISSION`, about the admitted organisation or one of its legal entities, with VERIFIED REGISTRATION_IDENTIFIER and LEGAL_NAME claims.
+  - `onboardAdmittedOrganisation` documents the refusals: `VERIFICATION_CASE_STATE_CONFLICT` (409) and `VERIFICATION_NOT_FOUND` (404).
+  - `validate-organisation-contracts.py` rejects a request carrying `legal_verification`, and a case named by a free string.
+  - The route is admin-only (`tenant:write`), and its only caller is the Control Plane's admission reviewer flow.
 - **Breaking: onboarding requests declare market participation (ADR-BCP-011 §6, ADR-SHARED-015).**
   Provisioning plans market participation from the onboarding request, which recorded markets but not what the tenant does in them.
   - `admission/v1` `TenantOnboardingRequestCommand` and `OnboardingDesiredState` require `market_participation`: each market of the decision's scope exactly once, with one or more participation capabilities. The validator checks the coverage.
