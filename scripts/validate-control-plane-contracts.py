@@ -542,6 +542,32 @@ def check_provider_migration() -> None:
     if not stateful_order_problems(broken, sequence):
         fail("the stateful order check accepts a shift that depends only on the freeze")
 
+    # The approved plan fixes every binding's target instance: each
+    # CREATE_MIGRATION_BINDING step names its bindings and their one
+    # instance, no binding is named twice, and an unblocked plan moves
+    # every binding discovery found.
+    for key in ("preview", "plan"):
+        document = example[key]
+        named: list[str] = []
+        for step in document["steps"]:
+            if step["operation"] != "CREATE_MIGRATION_BINDING":
+                continue
+            ids = step["resources"]["binding_ids"]
+            if len(ids) != step["resources"]["binding_count"]:
+                fail(f"provider-migration {key}: {step['step_id']} names {len(ids)} bindings but counts {step['resources']['binding_count']}")
+            named.extend(ids)
+        if len(named) != len(set(named)):
+            fail(f"provider-migration {key}: a binding moves to more than one target instance")
+        if not document["blockers"] and len(named) != document["discovery"]["binding_count"]:
+            fail(f"provider-migration {key}: its steps move {len(named)} of {document['discovery']['binding_count']} discovered bindings")
+    # Each fixture removes exactly one field from a fresh copy, so each
+    # requirement is tested on its own.
+    for field in ("binding_ids", "engine_instance_id", "binding_count", "capability_key"):
+        missing = copy.deepcopy(plan)
+        bind = next(s for s in missing["steps"] if s["operation"] == "CREATE_MIGRATION_BINDING")
+        del bind["resources"][field]
+        rejects(schema, "ProviderMigrationPlan", missing, f"a migration binding step without {field}")
+
     # A plan embeds the request it executes; the fields it repeats agree.
     for key in ("preview", "plan"):
         document = example[key]
