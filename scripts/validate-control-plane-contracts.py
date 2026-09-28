@@ -560,12 +560,13 @@ def check_provider_migration() -> None:
             fail(f"provider-migration {key}: a binding moves to more than one target instance")
         if not document["blockers"] and len(named) != document["discovery"]["binding_count"]:
             fail(f"provider-migration {key}: its steps move {len(named)} of {document['discovery']['binding_count']} discovered bindings")
-    unassigned = copy.deepcopy(plan)
-    bind = next(s for s in unassigned["steps"] if s["operation"] == "CREATE_MIGRATION_BINDING")
-    del bind["resources"]["binding_ids"]
-    rejects(schema, "ProviderMigrationPlan", unassigned, "a migration binding step without its bindings")
-    del bind["resources"]["engine_instance_id"]
-    rejects(schema, "ProviderMigrationPlan", unassigned, "a migration binding step without its target instance")
+    # Each fixture removes exactly one field from a fresh copy, so each
+    # requirement is tested on its own.
+    for field in ("binding_ids", "engine_instance_id", "binding_count", "capability_key"):
+        missing = copy.deepcopy(plan)
+        bind = next(s for s in missing["steps"] if s["operation"] == "CREATE_MIGRATION_BINDING")
+        del bind["resources"][field]
+        rejects(schema, "ProviderMigrationPlan", missing, f"a migration binding step without {field}")
 
     # A plan embeds the request it executes; the fields it repeats agree.
     for key in ("preview", "plan"):
