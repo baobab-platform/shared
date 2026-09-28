@@ -1,0 +1,471 @@
+{
+  "description": "ADR-BCP-023 gate OEV-01 worked example. An applicant (prn_amina) applies to admit ACME Foods, a Ugandan company. The registration number is verified against a manual URSB registry lookup by a reviewer (prn_kato). The legal name conflicts with the registry and is held as an open discrepancy. The representative-authority claim is still self-asserted, and its power of attorney is still in quarantine. Nothing here is a real organisation or person.",
+  "sources": [
+    {
+      "source_id": "esrc_ursb",
+      "source_class": "AUTHORITATIVE_GOVERNMENT_REGISTRY",
+      "name": "Uganda Registration Services Bureau company register",
+      "jurisdiction": "UG",
+      "authority_reference": "Companies Act 2012 (Uganda)",
+      "trusted_for": [
+        {
+          "claim_type": "LEGAL_EXISTENCE",
+          "jurisdiction": "UG"
+        },
+        {
+          "claim_type": "REGISTRATION_IDENTIFIER",
+          "jurisdiction": "UG"
+        },
+        {
+          "claim_type": "LEGAL_NAME",
+          "jurisdiction": "UG"
+        },
+        {
+          "claim_type": "ENTITY_STATUS",
+          "jurisdiction": "UG"
+        }
+      ],
+      "access_classification": "INTERNAL",
+      "effective_from": "2026-01-01T00:00:00Z",
+      "status": "ACTIVE"
+    },
+    {
+      "source_id": "esrc_cipc",
+      "source_class": "AUTHORITATIVE_GOVERNMENT_REGISTRY",
+      "name": "Companies and Intellectual Property Commission company register",
+      "jurisdiction": "ZA",
+      "authority_reference": "Companies Act 71 of 2008 (South Africa)",
+      "trusted_for": [
+        {
+          "claim_type": "LEGAL_EXISTENCE",
+          "jurisdiction": "ZA"
+        },
+        {
+          "claim_type": "REGISTRATION_IDENTIFIER",
+          "jurisdiction": "ZA"
+        },
+        {
+          "claim_type": "LEGAL_NAME",
+          "jurisdiction": "ZA"
+        },
+        {
+          "claim_type": "ENTITY_STATUS",
+          "jurisdiction": "ZA"
+        }
+      ],
+      "access_classification": "INTERNAL",
+      "effective_from": "2026-01-01T00:00:00Z",
+      "status": "ACTIVE"
+    },
+    {
+      "source_id": "esrc_applicant",
+      "source_class": "APPLICANT_SUPPLIED",
+      "name": "Applicant submission",
+      "trusted_for": [],
+      "access_classification": "CONFIDENTIAL",
+      "effective_from": "2026-01-01T00:00:00Z",
+      "status": "ACTIVE"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "evr_cert01",
+      "evidence_type": "REGISTRATION_CERTIFICATE",
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "purpose": "ORGANISATION_ADMISSION",
+      "source_id": "esrc_applicant",
+      "artifact_id": "eart_cert01",
+      "submitted_by": "prn_amina",
+      "issued_at": "2019-03-14T00:00:00Z",
+      "classification": "CONFIDENTIAL",
+      "retention_policy": "organisation-admission/v1",
+      "status": "AVAILABLE",
+      "created_at": "2026-10-01T09:00:00Z",
+      "version": 2
+    },
+    {
+      "evidence_id": "evr_ursb01",
+      "evidence_type": "REGISTRY_EXTRACT",
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "purpose": "ORGANISATION_ADMISSION",
+      "source_id": "esrc_ursb",
+      "source_record_reference": "URSB-80020012345",
+      "obtained_by": "principal:prn_kato",
+      "observed_at": "2026-10-02T10:00:00Z",
+      "classification": "INTERNAL",
+      "retention_policy": "organisation-admission/v1",
+      "status": "AVAILABLE",
+      "created_at": "2026-10-02T10:00:00Z",
+      "version": 1
+    },
+    {
+      "evidence_id": "evr_poa01",
+      "evidence_type": "POWER_OF_ATTORNEY",
+      "subject": {
+        "subject_type": "REPRESENTATIVE",
+        "subject_id": "prn_amina"
+      },
+      "purpose": "REPRESENTATIVE_AUTHORITY",
+      "source_id": "esrc_applicant",
+      "artifact_id": "eart_poa01",
+      "submitted_by": "prn_amina",
+      "classification": "RESTRICTED",
+      "retention_policy": "organisation-admission/v1",
+      "status": "QUARANTINED",
+      "created_at": "2026-10-02T11:00:00Z",
+      "version": 1
+    }
+  ],
+  "claim_submissions": [
+    {
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "claim_type": "REGISTRATION_IDENTIFIER",
+      "jurisdiction": "UG",
+      "claimed_value": {
+        "value": "8002 0012 345"
+      },
+      "purpose": "ORGANISATION_ADMISSION",
+      "evidence_ids": [
+        "evr_cert01"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "ecl_regno",
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "claim_type": "REGISTRATION_IDENTIFIER",
+      "jurisdiction": "UG",
+      "claimed_value": {
+        "value": "8002 0012 345",
+        "normalised_value": "80020012345"
+      },
+      "asserted_by": "prn_amina",
+      "asserted_via": "APPLICANT",
+      "asserted_at": "2026-10-01T09:00:00Z",
+      "source_application_id": "capp_01k9ug4acme",
+      "purpose": "ORGANISATION_ADMISSION",
+      "status": "VERIFIED",
+      "freshness": "CURRENT",
+      "evidence_ids": [
+        "evr_cert01",
+        "evr_ursb01"
+      ],
+      "current_result_id": "vres_regno",
+      "version": 3
+    },
+    {
+      "claim_id": "ecl_name",
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "claim_type": "LEGAL_NAME",
+      "jurisdiction": "UG",
+      "claimed_value": {
+        "value": "ACME Foods Limited"
+      },
+      "asserted_by": "prn_amina",
+      "asserted_via": "APPLICANT",
+      "asserted_at": "2026-10-01T09:00:00Z",
+      "source_application_id": "capp_01k9ug4acme",
+      "purpose": "ORGANISATION_ADMISSION",
+      "status": "CONFLICTED",
+      "freshness": "CURRENT",
+      "evidence_ids": [
+        "evr_cert01",
+        "evr_ursb01"
+      ],
+      "current_result_id": "vres_name",
+      "version": 3
+    },
+    {
+      "claim_id": "ecl_rep",
+      "subject": {
+        "subject_type": "REPRESENTATIVE",
+        "subject_id": "prn_amina"
+      },
+      "claim_type": "REPRESENTATIVE_AUTHORITY",
+      "jurisdiction": "UG",
+      "claimed_value": {
+        "value": "Authorised to represent ACME Foods in its admission"
+      },
+      "asserted_by": "prn_amina",
+      "asserted_via": "APPLICANT",
+      "asserted_at": "2026-10-02T11:00:00Z",
+      "source_application_id": "capp_01k9ug4acme",
+      "purpose": "REPRESENTATIVE_AUTHORITY",
+      "status": "SELF_ASSERTED",
+      "evidence_ids": [
+        "evr_poa01"
+      ],
+      "version": 1
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "vcase_adm01",
+      "subject": {
+        "subject_type": "ORGANISATION",
+        "subject_id": "ce_01k9ug4acmefd"
+      },
+      "application_id": "capp_01k9ug4acme",
+      "organisation_id": "ce_01k9ug4acmefd",
+      "purpose": "ORGANISATION_ADMISSION",
+      "policy_profile": "ug-organisation-admission",
+      "policy_version": 1,
+      "status": "CONFLICTED",
+      "claim_ids": [
+        "ecl_regno",
+        "ecl_name",
+        "ecl_rep"
+      ],
+      "assigned_reviewer": "prn_kato",
+      "opened_at": "2026-10-01T09:00:00Z",
+      "submitted_at": "2026-10-01T12:00:00Z",
+      "correlation_id": "6f1c2a4e-8b3d-4e5f-9a7b-1c2d3e4f5a6b",
+      "version": 5
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "vchk_regnodoc",
+      "case_id": "vcase_adm01",
+      "claim_id": "ecl_regno",
+      "method": "OFFICIAL_DOCUMENT_REVIEW",
+      "source_id": "esrc_applicant",
+      "requested_at": "2026-10-02T09:00:00Z",
+      "performed_at": "2026-10-02T09:00:00Z",
+      "performed_by": "prn_kato",
+      "outcome": "MATCHED",
+      "dimensions": [
+        {
+          "dimension": "DOCUMENT_INTEGRITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "CLAIM_MATCH",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "ISSUER_AUTHORITY",
+          "outcome": "NOT_ASSESSED",
+          "detail": "An applicant-supplied certificate is corroboration, not authority."
+        }
+      ],
+      "reason_codes": [],
+      "evidence_ids": [
+        "evr_cert01"
+      ]
+    },
+    {
+      "check_id": "vchk_regnoreg",
+      "case_id": "vcase_adm01",
+      "claim_id": "ecl_regno",
+      "method": "MANUAL_REGISTRY_LOOKUP",
+      "source_id": "esrc_ursb",
+      "requested_at": "2026-10-02T10:00:00Z",
+      "performed_at": "2026-10-02T10:00:00Z",
+      "performed_by": "prn_kato",
+      "source_observed_at": "2026-10-02T10:00:00Z",
+      "source_record_reference": "URSB-80020012345",
+      "outcome": "VERIFIED",
+      "dimensions": [
+        {
+          "dimension": "SOURCE_AUTHENTICITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "ISSUER_AUTHORITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "CLAIM_MATCH",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "FRESHNESS",
+          "outcome": "PASSED"
+        }
+      ],
+      "reason_codes": [],
+      "freshness_until": "2027-04-02T10:00:00Z",
+      "evidence_ids": [
+        "evr_ursb01"
+      ]
+    },
+    {
+      "check_id": "vchk_namereg",
+      "case_id": "vcase_adm01",
+      "claim_id": "ecl_name",
+      "method": "MANUAL_REGISTRY_LOOKUP",
+      "source_id": "esrc_ursb",
+      "requested_at": "2026-10-02T10:00:00Z",
+      "performed_at": "2026-10-02T10:00:00Z",
+      "performed_by": "prn_kato",
+      "source_observed_at": "2026-10-02T10:00:00Z",
+      "source_record_reference": "URSB-80020012345",
+      "outcome": "CONFLICTED",
+      "dimensions": [
+        {
+          "dimension": "SOURCE_AUTHENTICITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "ISSUER_AUTHORITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "CLAIM_MATCH",
+          "outcome": "FAILED",
+          "detail": "The registry records a different legal name."
+        }
+      ],
+      "reason_codes": [
+        "LEGAL_NAME_MISMATCH"
+      ],
+      "evidence_ids": [
+        "evr_ursb01"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "result_id": "vres_regno",
+      "claim_id": "ecl_regno",
+      "case_id": "vcase_adm01",
+      "outcome": "VERIFIED",
+      "check_ids": [
+        "vchk_regnodoc",
+        "vchk_regnoreg"
+      ],
+      "dimensions": [
+        {
+          "dimension": "SOURCE_AUTHENTICITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "ISSUER_AUTHORITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "CLAIM_MATCH",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "FRESHNESS",
+          "outcome": "PASSED"
+        }
+      ],
+      "freshness": "CURRENT",
+      "freshness_until": "2027-04-02T10:00:00Z",
+      "decided_by": "prn_kato",
+      "decided_at": "2026-10-02T10:00:00Z",
+      "reason_codes": []
+    },
+    {
+      "result_id": "vres_name",
+      "claim_id": "ecl_name",
+      "case_id": "vcase_adm01",
+      "outcome": "CONFLICTED",
+      "check_ids": [
+        "vchk_namereg"
+      ],
+      "dimensions": [
+        {
+          "dimension": "ISSUER_AUTHORITY",
+          "outcome": "PASSED"
+        },
+        {
+          "dimension": "CLAIM_MATCH",
+          "outcome": "FAILED"
+        }
+      ],
+      "freshness": "CURRENT",
+      "decided_by": "prn_kato",
+      "decided_at": "2026-10-02T10:00:00Z",
+      "discrepancy_ids": [
+        "edis_name"
+      ],
+      "reason_codes": [
+        "LEGAL_NAME_MISMATCH"
+      ]
+    }
+  ],
+  "discrepancies": [
+    {
+      "discrepancy_id": "edis_name",
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "claim_type": "LEGAL_NAME",
+      "case_id": "vcase_adm01",
+      "conflicting_values": [
+        {
+          "source_id": "esrc_applicant",
+          "value": "ACME Foods Limited",
+          "evidence_id": "evr_cert01"
+        },
+        {
+          "source_id": "esrc_ursb",
+          "value": "ACME Foods (U) Limited",
+          "observed_at": "2026-10-02T10:00:00Z",
+          "evidence_id": "evr_ursb01",
+          "check_id": "vchk_namereg"
+        }
+      ],
+      "severity": "MEDIUM",
+      "status": "OPEN",
+      "detected_at": "2026-10-02T10:00:00Z"
+    },
+    {
+      "discrepancy_id": "edis_addr",
+      "subject": {
+        "subject_type": "LEGAL_ENTITY",
+        "subject_id": "LE-01k9ug4acme"
+      },
+      "claim_type": "REGISTERED_ADDRESS",
+      "case_id": "vcase_adm01",
+      "conflicting_values": [
+        {
+          "source_id": "esrc_applicant",
+          "value": "Plot 4, Kampala Road, Kampala"
+        },
+        {
+          "source_id": "esrc_ursb",
+          "value": "Plot 4 Kampala Rd, Kampala Central",
+          "observed_at": "2026-10-02T10:00:00Z",
+          "evidence_id": "evr_ursb01"
+        }
+      ],
+      "severity": "LOW",
+      "status": "FALSE_POSITIVE",
+      "detected_at": "2026-10-02T10:00:00Z",
+      "resolution": "NOT_MATERIAL",
+      "resolved_by": "prn_kato",
+      "resolved_at": "2026-10-02T11:00:00Z",
+      "reason": "The same address, written differently; nothing material differs."
+    }
+  ],
+  "references": [
+    {
+      "evidence_id": "evr_cert01",
+      "evidence_type": "REGISTRATION_CERTIFICATE",
+      "status": "AVAILABLE",
+      "classification": "CONFIDENTIAL"
+    }
+  ]
+}

@@ -101,3 +101,10 @@ contracts:
       - permission-registry.yaml
       - profile-registry.yaml
       - lifecycle.yaml
+  - domain: evidence
+    version: v1
+    schemas:
+      - domain.schema.json
+      - evidence.schema.json
+      - verification.schema.json
+      - lifecycle.yaml
