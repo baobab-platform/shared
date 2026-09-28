@@ -90,7 +90,7 @@ workloads:
     runtime: "baobab-cms service"
     environment: production
     allowed_audiences: ["baobab-control-plane"]
-    allowed_scopes: ["context:resolve"]
+    allowed_scopes: ["context:resolve", "provider-migration:task"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-cms
     status: ACTIVE
@@ -105,7 +105,7 @@ workloads:
     # mapping) can authenticate to baobab-app's HTTP boundary, which
     # previously trusted network location alone.
     allowed_audiences: ["baobab-control-plane", "baobab-erp"]
-    allowed_scopes: ["context:resolve", "erp:integrate"]
+    allowed_scopes: ["context:resolve", "erp:integrate", "provider-migration:task"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-erp
     status: ACTIVE
@@ -116,7 +116,7 @@ workloads:
     runtime: "baobab-pulse service"
     environment: production
     allowed_audiences: ["baobab-control-plane"]
-    allowed_scopes: ["context:resolve"]
+    allowed_scopes: ["context:resolve", "provider-migration:task"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-pulse
     status: ACTIVE
@@ -127,7 +127,7 @@ workloads:
     runtime: "baobab-trade service"
     environment: production
     allowed_audiences: ["baobab-control-plane"]
-    allowed_scopes: ["context:resolve"]
+    allowed_scopes: ["context:resolve", "provider-migration:task"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-trade
     status: ACTIVE
