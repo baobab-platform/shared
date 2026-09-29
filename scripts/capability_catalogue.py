@@ -441,6 +441,18 @@ def walk_keys(node: object, path: str = ""):
             yield from walk_keys(value, f"{path}/{index}")
 
 
+def walk_strings(node: object):
+    if isinstance(node, str):
+        yield node
+    elif isinstance(node, dict):
+        for key, value in node.items():
+            yield from walk_strings(key)
+            yield from walk_strings(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from walk_strings(value)
+
+
 def validate_declaration(contracts: Contracts, declaration: object, repository_root: Path | None = None,
                          engine_id: str | None = None) -> list[str]:
     failures = [f"{path} is not a provider declaration's to state (owned by the Control Plane, EA-09 or runtime observation)"
@@ -614,10 +626,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "validate-declaration":
         if args.template:
             text = substitute_template(text, contracts)
-            left = sorted(set(PLACEHOLDER.findall(text)))
+        document = yaml.safe_load(text)
+        if args.template:
+            left = sorted({p for value in walk_strings(document) for p in PLACEHOLDER.findall(value)})
             if left:
                 return report([f"{args.path}: unknown template placeholders {left}"], "")
-        document = yaml.safe_load(text)
         return report([f"{args.path}: {m}" for m in validate_declaration(contracts, document, args.repository_root, args.engine_id)],
                       f"{args.path}: capability provider declaration passed")
     try:

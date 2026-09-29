@@ -28,6 +28,7 @@ SHARED = cc.Contracts()
 
 # Mirrors the placeholder shape of engine-template/.baobab/capability-provider.yaml.example.
 TEMPLATE = """
+# Comments may mention <anything>; only values are substituted and checked.
 schema:
   name: baobab-capability-provider-declaration
   version: "1.0"
@@ -460,7 +461,7 @@ class DeclarationTest(unittest.TestCase):
 
     def test_engine_template_placeholders_substitute_to_a_valid_declaration(self):
         text = cc.substitute_template(TEMPLATE, SHARED)
-        self.assertEqual(cc.PLACEHOLDER.findall(text), [])
+        self.assertEqual([p for v in cc.walk_strings(yaml.safe_load(text)) for p in cc.PLACEHOLDER.findall(v)], [])
         self.assertEqual(cc.validate_declaration(SHARED, yaml.safe_load(text), engine_id="baobab-example"), [])
 
     def test_cli_reports_unknown_template_placeholders(self):
