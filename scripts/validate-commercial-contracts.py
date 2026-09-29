@@ -383,6 +383,15 @@ negative("simulated provider permitted in production", REG,
          {**subscription_registration, "provider": {**subscription_registration["provider"], "production_permitted": True}})
 negative("capability in an unregistered domain", REG,
          {**subscription_registration, "capabilities": [{**subscription_registration["capabilities"][0], "domain": "subscription"}]})
+negative("invocation naming a deployment host", REG,
+         {**subscription_registration, "provider": {**subscription_registration["provider"],
+          "invocation": {"service_reference": "https://billing.internal:8443/", "protocol": "http"}}})
+negative("invocation without a protocol", REG,
+         {**subscription_registration, "provider": {**subscription_registration["provider"],
+          "invocation": {"service_reference": "service://baobab-subscriptions/billing"}}})
+if errors_for(REG, {**subscription_registration, "provider": {**subscription_registration["provider"],
+              "invocation": {"service_reference": "service://baobab-subscriptions/billing", "protocol": "http"}}}):
+    fail("a provider's logical invocation reference must be accepted")
 
 for label, ref, record in NEGATIVE:
     if not errors_for(ref, record):
