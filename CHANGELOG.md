@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Capability resolution routes are described and conform to capability/v1 (EA-01, phase 3).** control-plane/v1 OpenAPI 1.21.0. **Breaking** for callers of the Control Plane's `/v1/capabilities/resolve` and `/resolve-batch`.
+  - `resolveCapability` and `resolveCapabilityBatch` take `capability/v1` `resolutionRequest` and `batchResolutionRequest`: `correlation_id` is required, and no canonical entity is accepted.
+  - They answer `resolution` and `batchResolution`. A non-RESOLVED decision is a 200 carrying a registered `capability_resolution_denial` code. The description maps each code to exactly one decision, and the validator enforces that mapping.
+  - Both routes require `context:resolve`.
+  - New code `PROVIDER_INVOCATION_UNDECLARED`: the bound provider has registered no logical invocation reference.
+  - Every decision is recorded under its `resolution_id`.
+
 - **A PlatformContext carries the tenant's market participation (EA-01, phase 2.5).** control-plane/v1 OpenAPI 1.20.0.
   - `PlatformContextResolveRequest` gains an optional `country_code`. It selects among the tenant's ACTIVE market participations.
   - `PlatformContext` gains `country_code`, `market_id` (the country's primary registry market) and `currency_code`. The three are present together, and all are absent when the tenant participates nowhere.
