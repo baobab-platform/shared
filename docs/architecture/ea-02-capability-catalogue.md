@@ -1,0 +1,228 @@
+# EA-02 — Canonical Capability Catalogue: implementation record
+
+**Governing decision:** ADR-SHARED-017 — Canonical Capability Catalogue, Provider Declaration, Engine Registry and Runtime Capability Convergence (**Proposed — Normative Target Architecture**)
+**Supporting decisions:** ADR-SHARED-007, -008, -011, -012, -016; ADR-0020; ADR-BCP-002, -003, -006, -007, -009, -021
+**Related, not normative:** ADR-BCP-025, Engine Release, Artifact Identity and Deployment Observation (**Proposed**; not implemented or relied on here)
+**Date:** 2026-09-29
+
+This record covers what the first EA-02 implementation cycle delivered, how
+it settled the ambiguities it met, and the exact follow-up gates that remain.
+The contract details live in `contracts/capability/v1/README.md`.
+
+## 1. Baseline audited (2026-09-29)
+
+| Repository | `main` audited |
+|---|---|
+| `shared` | `6de807b` |
+| `baobab-cp` | `1ae59be` |
+| `engine-template` | `f7116d4` |
+| `baobab-regulations` | `a625bc0` |
+| `baobab-trade` / `-erp` / `-cms` / `-pulse` / `-iam` / `-payments` / `-subscriptions` | `170c54e` / `de39818` / `1d74258` / `004b748` / `6891527` / `03ff405` / `a7a3bf4` |
+
+The audit confirmed the baseline ADR-SHARED-017 described:
+
+- Shared held three capability manifests in three shapes:
+  `payments/v1/capabilities.json` and `subscriptions/v1/capabilities.json`
+  (combined `EngineRegistration`: definitions plus provider plus support),
+  and `trade/v1/capabilities.yaml` (`version`/`capabilities`, with no name,
+  domain, lifecycle, maturity or contract majors).
+- The Control Plane (`internal/billing/registration.go`) registers every
+  embedded path that ends in `/capabilities.json`, so Trade was never
+  registered. `RegisterEngine` inserts unknown capabilities
+  (`ON CONFLICT (code) DO NOTHING`); provider registration therefore still
+  originates canonical vocabulary.
+- No engine repository has `.baobab/capability-provider.yaml`.
+  `engine-template` had a provisional, schema-less
+  `capability-provider.yaml.example` pre-filled with Payments values.
+  `baobab-regulations/.baobab/capabilities.yaml.example` was a copy of the
+  development-environment template.
+- `baobab-payments` (`src/contracts.rs`) and `baobab-subscriptions` read
+  vendored copies of their `capabilities.json` bundles, so the bundle shape
+  cannot change without coordinated engine changes.
+- The only open PR touching these paths is `engine-template#3` (stale
+  Foundation CI v2 adoption; it edits `TEMPLATE-USAGE.md`). This cycle adds
+  to that file rather than rewriting lines #3 changes.
+
+## 2. What this cycle delivered
+
+| Gate | Delivered |
+|---|---|
+| 1 Provider declaration schema | `capability/v1/provider-declaration.schema.json`: several providers per engine, several capabilities per provider, contract majors, `PARTIAL`/`IMPLEMENTED`, `simulated ⇒ ¬production_permitted`, logical invocation, provenance, evidence, and planned capabilities kept separate. Closed objects, so it cannot express certification or runtime state |
+| 2 Catalogue | `catalogue.schema.json` and `catalogue.yaml` index all 9 existing canonical capabilities; `CapabilityDefinitionDocument` in `capability.schema.json` is the one definition shape |
+| 2 Normalization | `payments/v1/capabilities.yaml` and `subscriptions/v1/capabilities.yaml` extracted (WHAT); `trade/v1/capabilities.yaml` normalized in place; the `.json` bundles are unchanged and now transitional (WHAT + WHO) |
+| 3–4 Validation | `scripts/capability_catalogue.py` (`validate-catalogue`, `validate-declaration`, `generate-registration`) plus 59 tests in `scripts/tests/test_capability_catalogue.py`, both run by Shared CI |
+| 5 Template | `engine-template/.baobab/capability-provider.yaml.example` rewritten against the schema with generic placeholders; `--template` validation |
+| 6 Regulations | `baobab-regulations/.baobab/capabilities.yaml.example` removed; engine-template is the scaffold source |
+| 8 Discovery | `registration-bundles.yaml` explicitly lists the transitional bundles; CI fails on any unlisted bundle |
+| Vocabulary | `implementationKey`, `providerImplementationStatus`, `capabilityProposalStatus`, `implementationEvidenceType`, `architectureDecisionId` and `platformRepository` added; `engineKey` marked deprecated/transitional; `capabilityProviderKey` redefined as `<engine-id>.<provider-name>` |
+
+The existing mapping is:
+
+| Artefact | Canonical WHAT | Provider WHO | Treatment |
+|---|---|---|---|
+| `payments/v1/capabilities.json` | 4 definitions | `baobab-payments.sandbox` | Definitions moved to `capabilities.yaml`; bundle kept and must equal them |
+| `subscriptions/v1/capabilities.json` | 2 definitions | `baobab-subscriptions.temporary-billing` | Same |
+| `trade/v1/capabilities.yaml` | 3 definitions | none | Normalized; now registrable once a provider is declared |
+
+## 3. Decisions and contradictions settled
+
+1. **Status.** ADR-SHARED-017 is *Proposed*. This cycle implements only its
+   additive Phase 1. It changes no runtime behaviour, and only a later,
+   accepted decision can make its "SHALL"s binding on the Control Plane.
+   ADR-BCP-025 is *Proposed* and nothing here depends on it.
+2. **What an Engine is.** ADR-BCP-006 still describes Engine as a
+   technology family (`medusa`, `idempiere`). ADR-SHARED-012 and CP
+   persistence use the Baobab engine/service (`baobab-trade`). This cycle
+   follows ADR-SHARED-012/017: `engine_id` is the engine, `provider_key` is
+   the provider, and `implementation_key` is the technology. **ADR-BCP-006
+   needs a matching amendment in `baobab-cp`**; it is not edited here.
+3. **`engine_key`.** Unchanged in v1 and deprecated. The committed bundles
+   keep `sandbox-payments` and `temporary-billing`. The generator maps
+   `implementation_key` to `engine_key`, and the round-trip check ignores
+   that one deprecated field. A v2 contract removes it.
+4. **Envelope.** ADR-SHARED-017 SS19 sketches `schema_version: 1` and SS46
+   sketches `schema: {name, version}`. All three new documents use
+   `schema: {name, version}`, the envelope the development-environment
+   contract already uses.
+5. **Provenance.** SS46 writes `provenance.repository`; the task brief and
+   SS48 imply an authority object. The schema uses
+   `provenance.authority.{repository, decision}`, with `decision` optional
+   and an optional `source_revision`.
+6. **Trade lifecycle and maturity.** The old Trade manifest declared none.
+   Normalization sets `ACTIVE`/`EXPERIMENTAL`, following the only
+   precedent (Payments and Subscriptions), and adds names and descriptions
+   taken from the Trade README. **Trade owners should confirm these
+   values.** They have no runtime effect until a Trade provider registers.
+7. **"PARTIAL cannot be promoted" (SS56).** Enforced where promotion
+   happens: `generate-registration` registers only `IMPLEMENTED` support.
+8. **Owner validity.** Shared has no registry of engines alone. An owner
+   must be a `baobab-*` repository name, and the catalogue owner must equal
+   the definition owner.
+9. **Key identity.** Vendor, tenant and geographic tokens are denied per
+   `.`/`-` token. A geographic key that is inherently semantic needs an
+   architecture decision and an explicit `GEOGRAPHIC_EXCEPTIONS` entry.
+10. **"Every engine should publish `capabilities.json`".** The
+    Production-Readiness Assessment (SS56, *EA-02 — Canonical Engine
+    Registry*) framed EA-02 this way. ADR-SHARED-017 deliberately refines
+    it: engines publish `.baobab/capability-provider.yaml` (WHO), Shared
+    publishes definitions indexed by `catalogue.yaml` (WHAT), and neither
+    membership nor format is decided by a file name. The assessment's
+    `capabilities.json` wording is kept for history and is not a target.
+11. **Regulations namespace.** Not registered. ADR-SHARED-017 SS43 calls
+    `regulations` a candidate that "SHALL undergo the architecture review
+    required by ADR-SHARED-007". The ADR-REG family is also *Proposed*.
+    Until that review, Regulations can declare `planned_capabilities` with
+    `proposed_key: regulations.*` (the schema allows an unregistered domain
+    in a proposal) but no support.
+
+## 4. Follow-up gates
+
+Each gate is independently shippable. Where one depends on another, it
+names the dependency.
+
+### G-CP-1 — Index-driven bootstrap (replaces the `/capabilities.json` suffix)
+
+*Repository:* `baobab-cp`. *Depends on:* this Shared change merged, and CP
+pinning a Shared commit that contains it.
+
+1. Add `contracts/capability/v1/registration-bundles.yaml` (and
+   `catalogue.yaml`) to CP's `contracts.lock.yaml` file list, then run
+   `make sync-shared-contracts`.
+2. In `internal/billing/registration.go`, make `RegisterEmbeddedEngines`
+   read `capability/v1/registration-bundles.yaml` and register exactly the
+   listed `path`s, checking each bundle's `repository` and `provider_key`
+   against the index. Delete the `strings.HasSuffix(path, "/capabilities.json")`
+   loop. A listed bundle that is not embedded is a startup error, not a
+   silent skip.
+3. Tests: the registered set equals the index; an embedded but unlisted
+   `capabilities.json` is **not** registered; a listed but missing path
+   fails.
+
+### G-CP-2 — CapabilityCatalogueSync
+
+*Repository:* `baobab-cp`. *Depends on:* G-CP-1.
+
+Project `catalogue.yaml` plus its definitions into `capability.capability`
+independently of provider registration. Compare canonical revision, update
+allowed mutable projection fields (name, description, lifecycle, maturity,
+contract majors), refuse incompatible mutation under an unchanged key, and
+record `source_digest` and Shared revision (ADR-SHARED-017 SS29). Replace
+`ON CONFLICT (code) DO NOTHING`. This covers Trade's three capabilities,
+which then exist in CP without a provider.
+
+### G-CP-3 — Provider registration stops originating capabilities
+
+*Repository:* `baobab-cp`. *Depends on:* G-CP-2 in every environment.
+
+`RegisterEngine` rejects a registration whose capabilities are not already
+in the catalogue projection instead of inserting them (SS28, SS59). New
+providers register in `DRAFT` or an equivalent non-routing state; promotion
+to `ACTIVE` goes through the ADR-BCP-021 Changeset path (SS33, SS65). The
+existing sandbox and temporary-billing providers keep today's state.
+
+### G-CP-4 — Binding integrity
+
+*Repository:* `baobab-cp`.
+
+- `capability_binding_active_provider_check` remains `NOT VALID`. Do **not**
+  validate it until `capability.binding_without_provider` is empty in every
+  environment, which requires an operator remediation run; then add a
+  migration `ALTER TABLE ... VALIDATE CONSTRAINT`.
+- `CreateBinding` checks that the provider ACTIVELY supports the capability
+  but **not** that `binding.contract_version` is one of
+  `provider_capability_support.contract_versions`. Add that check (and the
+  same to `SaveBinding`) so that ACTIVE binding ⇒ provider supports the
+  bound capability ⇒ supports its contract major (SS36, SS60).
+
+### G-FCI-1 — Foundation CI enforcement
+
+*Repository:* `shared` (reusable workflow) and engines. *Depends on:* this
+change, at least one engine declaration in real use, and lifecycle
+semantics reconciled.
+
+Add a reusable Foundation step that runs `validate-declaration` against the
+pinned Shared ref with `--engine-id ${repository name}
+--repository-root .`, whenever `.baobab/capability-provider.yaml` exists.
+Make the file *required* only for `repository.lifecycle: active` engines
+with the `engine` trait. Experimental scaffolds may carry a planned-only
+declaration. Passing it proves structure, references and evidence
+existence; it does **not** mean certified.
+
+### G-02A — Capability census and declarations
+
+Per ADR-SHARED-017 SS12 and Phase 2, every engine gets a census. Accepted
+candidates become catalogue entries through Shared PRs, and each engine then
+adds `.baobab/capability-provider.yaml`. Do not bulk-populate declarations
+or catalogue entries before the census accepts them. The first natural
+adopters are `baobab-payments` and `baobab-subscriptions`, whose
+declarations can then generate their bundles.
+
+### G-REG-NS — `regulations` namespace review
+
+An ADR-SHARED-007 architecture review of the `regulations` namespace.
+Acceptance then updates `namespace-registry.yaml`, the `capabilityDomain`
+enum and the catalogue together. The validator enforces all three.
+
+### G-06 / G-09 — Events and certification
+
+- **EA-06.** `capability/v1/asyncapi.yaml` already has
+  `com.baobab-platform.capability.registered.v1`, `.deprecated.v1`,
+  `.retired.v1` and `capability.provider.registered/suspended/retired.v1`.
+  The gap is provider-capability **support** events (added, changed,
+  retired). They go in the same file under the same convention, e.g.
+  `com.baobab-platform.capability.provider-support.added.v1`, never under the
+  bare `provider-capability.*` names sketched in ADR-SHARED-017 SS66.
+- **EA-09.** `ProviderCapabilityCertification(provider_id, capability_id,
+  contract_major, engine_release_id, evidence_digest, status, certified_at,
+  revoked_at)`. Every key except the release is explicit in declarations
+  today, and the release waits on the accepted successor of ADR-BCP-025.
+
+## 5. Architecture tests
+
+| Scenario | How the model represents it without renaming a capability |
+|---|---|
+| Procurement extraction | `procurement.sourcing.manage` is supported by `baobab-erp.idempiere`, and later by `baobab-procurement.<provider>` in that engine's own declaration. The key, compositions, grants and consumer contract are unchanged; only provider support and bindings move |
+| WMS | `inventory.*`, `logistics.*` and `fulfilment.*` move from the current provider to a WMS provider in the same way |
+| Ledger | A future ledger engine declares support for `finance.*` or `settlement.*` keys. The engine id never creates a namespace |
+| IAM Keycloak→Ory | One `identity.*` key has two providers, `baobab-iam.keycloak` and `baobab-iam.ory`, in one declaration; ADR-SHARED-016 migrates between them. `keycloak` and `ory` are denied as key tokens |
+| Ory Kratos/Hydra | Implementation components beneath `baobab-iam.ory`. Deployment topology is EA-03; neither is an engine or provider by default |

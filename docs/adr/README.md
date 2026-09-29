@@ -22,5 +22,6 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 | [ADR-SHARED-014 — Mapping Resolution in a Trusted Context](ADR-SHARED-014%20%E2%80%94%20Mapping%20Resolution%20in%20a%20Trusted%20Context.md) | Accepted |
 | [ADR-SHARED-015 — Provisioning as Desired-State Convergence](ADR-SHARED-015%20%E2%80%94%20Provisioning%20as%20Desired-State%20Convergence.md) | Accepted |
 | [ADR-SHARED-016 — Provider Migration Execution and Engine Migration Tasks](ADR-SHARED-016%20%E2%80%94%20Provider%20Migration%20Execution%20and%20Engine%20Migration%20Tasks.md) | Accepted |
+| [ADR-SHARED-017 — Canonical Capability Catalogue, Provider Declaration, Engine Registry and Runtime Capability Convergence](ADR-SHARED-017%20%E2%80%94%20Canonical%20Capability%20Catalogue%2C%20Provider%20Declaration%2C%20Engine%20Registry%20and%20Runtime%20Capability%20Convergence.md) | Proposed — Normative Target Architecture (governing EA-02 decision; Phase 1 implemented, see [EA-02 implementation record](../architecture/ea-02-capability-catalogue.md)) |
 | [Baobab Canonical Mapping Model](Baobab%20Canonical%20Mapping%20Model.md) | Accepted — Canonical Architecture, refined |
 | [ADR-0020: Capability-driven Foundation CI](../architecture/decisions/ADR-0020-capability-driven-foundation-ci.md) | Accepted |
