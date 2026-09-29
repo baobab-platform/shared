@@ -37,6 +37,10 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/capability_catalogue.py and its tests to the
+#   governance-contracts job: the Canonical Capability Catalogue, capability
+#   provider declarations and transitional EngineRegistration bundles
+#   (ADR-SHARED-017, EA-02).
 # * Added scripts/validate-control-plane-contracts.py to the
 #   governance-contracts job: control-plane/v1 administrative read models
 #   (canonical registry, capability explanation; ADR-BCP-022).
@@ -94,6 +98,8 @@ on:
       - "scripts/validate-evidence-contracts.py"
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
+      - "scripts/capability_catalogue.py"
+      - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
     paths:
@@ -117,6 +123,8 @@ on:
       - "scripts/validate-evidence-contracts.py"
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
+      - "scripts/capability_catalogue.py"
+      - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
 
@@ -165,6 +173,10 @@ jobs:
         run: python scripts/validate-commercial-contracts.py
       - name: Validate Control Plane administrative read models (Draft 2020-12)
         run: python scripts/validate-control-plane-contracts.py
+      - name: Validate the canonical capability catalogue and provider declarations (ADR-SHARED-017)
+        run: python scripts/capability_catalogue.py validate-catalogue
+      - name: Test capability catalogue and provider declaration validation (ADR-SHARED-017)
+        run: python scripts/tests/test_capability_catalogue.py
 
   action-pinning:
     name: Enforce action pinning (self-check)

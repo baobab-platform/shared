@@ -17,7 +17,8 @@ CP ProductSubscription + classification ──► BillingProjection ──► ba
 | `domain.schema.json` | Identifiers (`bsub_`, `usage_`), the billing lifecycle, operational condition, readiness status and blocker codes, provider kinds, usage metric keys |
 | `billing.schema.json` | `EnsureBillingProjectionRequest`, `BillingProjection`, `BillingProjectionCommand`, `RecordUsageRequest`, `UsageRecord` |
 | `events.schema.json` and `asyncapi.yaml` | `billing-subscription.created`, `.suspended`, `.resumed` and `.terminated`; `usage.recorded` |
-| `capabilities.json` | The engine's capability registration: `billing.subscription.manage` and `billing.usage.record`, provided by the simulated `baobab-subscriptions.temporary-billing` |
+| `capabilities.yaml` | The canonical capability definitions `billing.subscription.manage` and `billing.usage.record`: what each capability means. Indexed by `capability/v1/catalogue.yaml`; names no provider (ADR-SHARED-017) |
+| `capabilities.json` | TRANSITIONAL EngineRegistration bundle the Control Plane still bootstraps from: the same definitions plus the simulated `baobab-subscriptions.temporary-billing` provider. Listed in `capability/v1/registration-bundles.yaml`; CI requires its capabilities to equal `capabilities.yaml` |
 
 ## Rules the schemas enforce
 

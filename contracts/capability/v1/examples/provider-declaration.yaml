@@ -1,0 +1,83 @@
+# ILLUSTRATIVE EXAMPLE ONLY -- not a live provider declaration.
+#
+# Shows a .baobab/capability-provider.yaml (provider-declaration.schema.json)
+# for an engine with two providers during a provider migration: a simulated
+# sandbox provider that is implemented, and a production-capable provider
+# that is only partly implemented. Shared is contract authority, not a
+# provider, and carries no declaration of its own; an engine's authoritative
+# declaration lives in that engine's repository. Evidence paths here are
+# not checked because this file is not in the engine's repository.
+#
+# scripts/capability_catalogue.py generate-registration turns the sandbox
+# provider below into the transitional EngineRegistration shape of
+# contracts/payments/v1/capabilities.json (CI checks the round trip).
+
+schema:
+  name: baobab-capability-provider-declaration
+  version: "1.0"
+
+engine:
+  engine_id: baobab-payments
+
+providers:
+  - provider_key: baobab-payments.sandbox
+    name: Sandbox payment provider (non-production only)
+    provider_type: BAOBAB_ENGINE
+    implementation_key: sandbox
+    simulated: true
+    production_permitted: false
+    support:
+      - capability_key: payment.intent.create
+        contract_versions: [1]
+        implementation_status: IMPLEMENTED
+        provenance:
+          authority:
+            repository: baobab-platform/baobab-payments
+            decision: ADR-PAY-0002
+        implementation_evidence:
+          - type: source
+            path: src/service.rs
+      - capability_key: payment.payment.authorize
+        contract_versions: [1]
+        implementation_status: IMPLEMENTED
+        implementation_evidence:
+          - type: source
+            path: src/service.rs
+      - capability_key: payment.payment.capture
+        contract_versions: [1]
+        implementation_status: IMPLEMENTED
+        implementation_evidence:
+          - type: source
+            path: src/service.rs
+      - capability_key: payment.refund.create
+        contract_versions: [1]
+        implementation_status: IMPLEMENTED
+        implementation_evidence:
+          - type: source
+            path: src/service.rs
+
+  - provider_key: baobab-payments.hyperswitch
+    name: HyperSwitch payment provider
+    provider_type: BAOBAB_ENGINE
+    implementation_key: hyperswitch
+    simulated: false
+    production_permitted: true
+    invocation:
+      service_reference: service://baobab-payments/payments
+      protocol: http
+    provenance:
+      authority:
+        repository: baobab-platform/baobab-payments
+        decision: ADR-PAY-0001
+    support:
+      - capability_key: payment.intent.create
+        contract_versions: [1]
+        implementation_status: PARTIAL
+
+planned_capabilities:
+  - proposed_key: payment.payout.execute
+    proposal_status: CANDIDATE
+    target_provider_key: baobab-payments.hyperswitch
+    provenance:
+      authority:
+        repository: baobab-platform/baobab-payments

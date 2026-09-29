@@ -66,7 +66,7 @@ REQUIRED_DEFS = {
                                         "CancelPaymentRequest", "CreateRefundRequest", "Refund"},
     "payments/v1/events.schema.json": {"PaymentCreated", "PaymentAuthorized", "PaymentCaptured", "PaymentFailed",
                                        "PaymentCancelled", "PaymentRefunded"},
-    "capability/v1/registration.schema.json": {"EngineRegistration"},
+    "capability/v1/registration.schema.json": {"EngineRegistration", "RegistrationBundleIndex"},
 }
 EXACT_DEFS = {path for path in REQUIRED_DEFS if path.split("/")[0] in {"subscriptions", "payments"}} | {
     "capability/v1/registration.schema.json"}
@@ -101,8 +101,9 @@ FORBIDDEN_EVENT_FIELDS = {"reason", "description", "payment_method_reference", "
 LOCK = {
     "product": ["domain.schema.json", "product.schema.json", "subscription.schema.json", "events.schema.json",
                 "billing-policy.yaml"],
-    "subscriptions": ["domain.schema.json", "billing.schema.json", "events.schema.json", "capabilities.json"],
-    "payments": ["domain.schema.json", "payment.schema.json", "events.schema.json", "capabilities.json"],
+    "subscriptions": ["domain.schema.json", "billing.schema.json", "events.schema.json", "capabilities.yaml",
+                      "capabilities.json"],
+    "payments": ["domain.schema.json", "payment.schema.json", "events.schema.json", "capabilities.yaml", "capabilities.json"],
 }
 RFC3339 = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$")
 
