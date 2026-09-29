@@ -987,6 +987,18 @@ def check_market() -> None:
     # a decision, and it is made by someone other than the maker.
     lifecycle = yaml.safe_load((CP / "market-lifecycle.yaml").read_text())
     statuses = set(json.loads((CP / schema).read_text())["$defs"]["market"]["properties"]["status"]["enum"])
+    # Participation is by country, derived from the registry.
+    participation = lifecycle["participation"]
+    market_properties = json.loads((CP / schema).read_text())["$defs"]["market"]["properties"]
+    if participation["key"] != "country" or participation["covered_by"] != ["default_country", "countries"] \
+            or not set(participation["covered_by"]) <= set(market_properties) or participation["primary"] != participation["covered_by"]:
+        fail("market-lifecycle.yaml participation must cover a country through default_country, then countries")
+    if not participation["available_statuses"] or not set(participation["available_statuses"]) <= statuses \
+            or "DRAFT" in participation["available_statuses"] or "VALIDATED" in participation["available_statuses"]:
+        fail("market-lifecycle.yaml participation is available only from activated statuses")
+    onboarding = json.loads((CONTRACTS / "admission" / "v1" / "onboarding.schema.json").read_text())["$defs"]
+    if not onboarding["marketParticipation"]["properties"]["market"]["$ref"].endswith("#/$defs/countryCode"):
+        fail("participation is keyed by country: marketParticipation.market must be a countryCode")
     for t in lifecycle["transitions"]:
         if t["from"] not in statuses or t["to"] not in statuses:
             fail(f"market-lifecycle.yaml: {t['command']} {t['from']} -> {t['to']} uses an unknown status")
