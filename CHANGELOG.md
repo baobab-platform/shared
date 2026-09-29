@@ -23,6 +23,14 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **A PlatformContext carries the tenant's market participation (EA-01, phase 2.5).** control-plane/v1 OpenAPI 1.20.0.
+  - `PlatformContextResolveRequest` gains an optional `country_code`. It selects among the tenant's ACTIVE market participations.
+  - `PlatformContext` gains `country_code`, `market_id` (the country's primary registry market) and `currency_code`. The three are present together, and all are absent when the tenant participates nowhere.
+  - `resolvePlatformContext` answers two new 403 codes:
+    - `MARKET_CONTEXT_AMBIGUOUS`: the tenant has several participations and none was selected;
+    - `MARKET_CONTEXT_NOT_PARTICIPATING`: the selected country is not an ACTIVE participation.
+  - Resolution policy requires a market or country in the context. Until now no resolved context carried one, so every resolution was denied.
+
 - **Context resolution routes are described (EA-01, phase 1).** control-plane/v1 OpenAPI 1.19.0.
   - `POST /v1/platform-context/resolve` (`resolvePlatformContext`) is described as served. It resolves and persists the PlatformContext that capability resolution redeems by `context_id`, and it may attest an organisation named by `organisation_id` or by IAM organisation evidence, including its exact kind.
   - `POST /v1/resolve` (`resolveComposed`) is described and marked **deprecated**. It takes `tenant_id` in the body and returns the composed pipeline's internals; callers move to platform-context resolution followed by capability resolution. It keeps serving until they have moved.

@@ -1,7 +1,8 @@
 {
   "resolve_request": {
     "organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c",
-    "expected_organisation_type": "BUYER_ORGANISATION"
+    "expected_organisation_type": "BUYER_ORGANISATION",
+    "country_code": "UG"
   },
   "resolve_by_iam_request": {
     "iam_organization": {
@@ -15,6 +16,9 @@
     "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
     "resolved_at": "2026-09-29T09:00:00Z",
     "expires_at": "2026-09-29T09:15:00Z",
+    "country_code": "UG",
+    "market_id": "mkt_0199a1b2c3d47e8f",
+    "currency_code": "UGX",
     "organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c",
     "organisation_type": "BUYER_ORGANISATION"
   },
@@ -25,9 +29,21 @@
   "composed": {
     "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
     "capability_key": "commerce.order.create",
-    "mapping": { "id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a71", "status": "ACTIVE" },
-    "capability": { "binding_mode": "PRIMARY", "engine_instance_id": "ei_0199a1b2c3d47e8f9a0b1c2d3e4f5a74" },
-    "policy": { "allowed": true, "reason": "" },
-    "topology": { "id": "ei_0199a1b2c3d47e8f9a0b1c2d3e4f5a74", "environment": "production" }
+    "mapping": {
+      "id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a71",
+      "status": "ACTIVE"
+    },
+    "capability": {
+      "binding_mode": "PRIMARY",
+      "engine_instance_id": "ei_0199a1b2c3d47e8f9a0b1c2d3e4f5a74"
+    },
+    "policy": {
+      "allowed": true,
+      "reason": ""
+    },
+    "topology": {
+      "id": "ei_0199a1b2c3d47e8f9a0b1c2d3e4f5a74",
+      "environment": "production"
+    }
   }
 }
