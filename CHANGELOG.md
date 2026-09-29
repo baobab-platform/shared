@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+- **Context resolution routes are described (EA-01, phase 1).** control-plane/v1 OpenAPI 1.19.0.
+  - `POST /v1/platform-context/resolve` (`resolvePlatformContext`) is described as served. It resolves and persists the PlatformContext that capability resolution redeems by `context_id`, and it may attest an organisation named by `organisation_id` or by IAM organisation evidence, including its exact kind.
+  - `POST /v1/resolve` (`resolveComposed`) is described and marked **deprecated**. It takes `tenant_id` in the body and returns the composed pipeline's internals; callers move to platform-context resolution followed by capability resolution. It keeps serving until they have moved.
+  - A new `platform-context.schema.json` holds `PlatformContextResolveRequest`, `PlatformContext`, `ComposedResolutionRequest` and `ComposedResolution`, with examples and negative checks.
+  - `capability/v1` `registration.schema.json`: a provider may declare `invocation` (`service_reference` as a `service://` logical reference, plus `protocol`). A RESOLVED CapabilityResolution's invocation descriptor takes these values. Deployment hostnames are refused.
+  - `/v1/capabilities/resolve` and `/resolve-batch` stay undescribed in control-plane/v1 until the Control Plane conforms to `capability/v1` `resolution.schema.json` (phases 2 and 3).
+
 - **Market participation is derived from the market registry (ADR-BCP-004 section 18, ADR-BCP-011 section 6).**
   - `market-lifecycle.yaml` gains a `participation` section:
     - participation is keyed by country, as `marketParticipation.market` is a `countryCode`;
@@ -234,6 +241,10 @@ Changes that have been merged but have not yet been included in a released versi
   - `readiness.schema.json` and `tenant-provisioning.schema.json` name both categories.
   - `validate-control-plane-contracts.py` requires every blocking reason in the control-plane examples to be a registered code of one of them.
 - `control-plane/v1` `driftObjectType` adds `TRADE_LANE`. A provisioning's trade lanes carry desired and observed state, and the Control Plane's reconciliation already compares them.
+
+## Fixed
+
+- `capability/v1` OpenAPI required the unregistered scope `capability:resolve` on capability resolution. It now requires `context:resolve`, which is registered and held by every engine workload.
 
 ## Changed
 

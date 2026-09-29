@@ -59,6 +59,10 @@ RESPONSIBILITIES = {
     "capability-explanation.schema.json": {
         "opaqueId", "CapabilityExplanationRequest", "CapabilityExplanation",
     },
+    "platform-context.schema.json": {
+        "organisationKind", "PlatformContextResolveRequest", "PlatformContext",
+        "ComposedResolutionRequest", "ComposedResolution",
+    },
     "provisioning-desired-state.schema.json": {
         "desiredStateProvenance", "ProvisioningDesiredState", "TenantProvisioningCreateRequest",
     },
@@ -216,6 +220,41 @@ def check_capability_explanation() -> None:
     rejects(schema, "CapabilityExplanation", {**failed, "policy": routed["policy"]}, "FAILED explanation with policy")
     rejects(schema, "CapabilityExplanation", {**failed, "outcome": "DENIED"}, "unknown outcome")
     rejects(schema, "CapabilityExplanation", {**failed, "grant_id": ""}, "empty stage identifier")
+
+
+def check_platform_context() -> None:
+    schema = "platform-context.schema.json"
+    example = json.loads((CP / "examples" / "platform-context.json").read_text())
+    for key, definition in (("resolve_request", "PlatformContextResolveRequest"),
+                            ("resolve_by_iam_request", "PlatformContextResolveRequest"),
+                            ("context", "PlatformContext"),
+                            ("composed_request", "ComposedResolutionRequest"),
+                            ("composed", "ComposedResolution")):
+        accepts(schema, definition, example[key], f"platform-context {key}")
+    # An empty body is a valid request: the verified token supplies the rest.
+    accepts(schema, "PlatformContextResolveRequest", {}, "empty platform-context request")
+
+    request, by_iam = example["resolve_request"], example["resolve_by_iam_request"]
+    rejects(schema, "PlatformContextResolveRequest", {**request, **by_iam}, "organisation_id and iam_organization together")
+    rejects(schema, "PlatformContextResolveRequest", {**request, "expected_organisation_type": "PRODUCT"}, "non-organisation kind")
+    rejects(schema, "PlatformContextResolveRequest", {**request, "tenant_id": "tenant-123"}, "non-canonical tenant id")
+    rejects(schema, "PlatformContextResolveRequest", {**request, "principal_id": "prn_x"}, "caller-stated principal")
+
+    context = example["context"]
+    for field in ("context_id", "tenant_id", "resolved_at"):
+        bad = copy.deepcopy(context)
+        del bad[field]
+        rejects(schema, "PlatformContext", bad, f"context without {field}")
+    rejects(schema, "PlatformContext", {**context, "context_id": "ctx-1"}, "non-uuid context id")
+
+    composed_request, composed = example["composed_request"], example["composed"]
+    bad = copy.deepcopy(composed_request)
+    del bad["canonical_entity_id"]
+    rejects(schema, "ComposedResolutionRequest", bad, "composed request without canonical_entity_id")
+    rejects(schema, "ComposedResolution", {**composed, "capability": {**composed["capability"], "binding_mode": "SECONDARY"}},
+            "retired binding mode")
+    rejects(schema, "ComposedResolution", {**composed, "topology": {**composed["topology"], "id": "instance-1"}},
+            "non-canonical engine instance id")
 
 
 def check_mapping_administration() -> None:
@@ -1116,7 +1155,11 @@ def check_openapi_references() -> None:
     for required in (("canonical-entity.schema.json", "CanonicalEntity"),
                      ("canonical-entity.schema.json", "CanonicalEntityCreateRequest"),
                      ("capability-explanation.schema.json", "CapabilityExplanation"),
-                     ("capability-explanation.schema.json", "CapabilityExplanationRequest")):
+                     ("capability-explanation.schema.json", "CapabilityExplanationRequest"),
+                     ("platform-context.schema.json", "PlatformContextResolveRequest"),
+                     ("platform-context.schema.json", "PlatformContext"),
+                     ("platform-context.schema.json", "ComposedResolutionRequest"),
+                     ("platform-context.schema.json", "ComposedResolution")):
         if required not in seen:
             fail(f"openapi.yaml does not use {required[0]}#/$defs/{required[1]}")
 
@@ -1240,6 +1283,7 @@ def main() -> int:
     check_schemas()
     check_canonical_entity()
     check_capability_explanation()
+    check_platform_context()
     check_mapping_administration()
     check_mapping_resolution()
     check_tenant_provisioning()
