@@ -13,7 +13,8 @@ The Baobab Payment API. HyperSwitch is an implementation detail behind it: a Bao
 | `domain.schema.json` | Identifiers (`payint_`, `pay_`, `refund_`), currency, the intent, payment and refund status vocabularies, capture method, provider kinds |
 | `payment.schema.json` | `PaymentContext`, `Money`, `CreatePaymentIntentRequest`, `PaymentIntent`, `ConfirmPaymentIntentRequest`, `Payment`, `CapturePaymentRequest`, `CancelPaymentRequest`, `CreateRefundRequest`, `Refund`, `ProviderResult` |
 | `events.schema.json` and `asyncapi.yaml` | `payment.created`, `.authorized`, `.captured`, `.failed`, `.cancelled` and `.refunded` |
-| `capabilities.json` | The engine's capability registration: `payment.intent.create`, `payment.payment.authorize`, `payment.payment.capture` and `payment.refund.create`, provided by the simulated `baobab-payments.sandbox` |
+| `capabilities.yaml` | The canonical capability definitions `payment.intent.create`, `payment.payment.authorize`, `payment.payment.capture` and `payment.refund.create`: what each capability means. Indexed by `capability/v1/catalogue.yaml`; names no provider (ADR-SHARED-017) |
+| `capabilities.json` | TRANSITIONAL EngineRegistration bundle the Control Plane still bootstraps from: the same definitions plus the simulated `baobab-payments.sandbox` provider. Listed in `capability/v1/registration-bundles.yaml`; CI requires its capabilities to equal `capabilities.yaml` |
 
 ## Rules the schemas enforce
 

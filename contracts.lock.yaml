@@ -49,6 +49,10 @@ contracts:
       - namespace-registry.yaml
       - scope-specificity.yaml
       - registration.schema.json
+      - registration-bundles.yaml
+      - catalogue.schema.json
+      - catalogue.yaml
+      - provider-declaration.schema.json
   - domain: product
     version: v1
     schemas:
@@ -63,6 +67,7 @@ contracts:
       - domain.schema.json
       - billing.schema.json
       - events.schema.json
+      - capabilities.yaml
       - capabilities.json
   - domain: payments
     version: v1
@@ -70,6 +75,7 @@ contracts:
       - domain.schema.json
       - payment.schema.json
       - events.schema.json
+      - capabilities.yaml
       - capabilities.json
   - domain: organisation
     version: v1
