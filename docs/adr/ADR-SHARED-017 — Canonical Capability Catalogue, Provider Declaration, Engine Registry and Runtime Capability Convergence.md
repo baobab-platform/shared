@@ -1,6 +1,6 @@
 # ADR-SHARED-017 — Canonical Capability Catalogue, Provider Declaration, Engine Registry and Runtime Capability Convergence
 
-**Status:** Proposed — Normative Target Architecture  
+**Status:** Accepted — Normative Target Architecture  
 **Date:** 2026-09-29  
 **Repository:** `baobab-platform/shared`  
 **Decision Type:** Foundational Cross-Platform Capability Architecture / Enterprise Architecture Workstream Refinement  
