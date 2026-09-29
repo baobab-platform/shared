@@ -60,7 +60,7 @@ RESPONSIBILITIES = {
         "opaqueId", "CapabilityExplanationRequest", "CapabilityExplanation",
     },
     "platform-context.schema.json": {
-        "organisationKind", "PlatformContextResolveRequest", "PlatformContext",
+        "organisationKind", "countryCode", "PlatformContextResolveRequest", "PlatformContext",
         "ComposedResolutionRequest", "ComposedResolution",
     },
     "provisioning-desired-state.schema.json": {
@@ -246,6 +246,14 @@ def check_platform_context() -> None:
         del bad[field]
         rejects(schema, "PlatformContext", bad, f"context without {field}")
     rejects(schema, "PlatformContext", {**context, "context_id": "ctx-1"}, "non-uuid context id")
+    rejects(schema, "PlatformContextResolveRequest", {**request, "country_code": "ug"}, "lower-case country selection")
+    bad = copy.deepcopy(context)
+    del bad["market_id"]
+    rejects(schema, "PlatformContext", bad, "country without its primary market")
+    bad = {k: v for k, v in context.items() if k not in ("country_code", "currency_code")}
+    rejects(schema, "PlatformContext", bad, "market without its country")
+    accepts(schema, "PlatformContext", {k: v for k, v in context.items() if k not in ("country_code", "market_id", "currency_code")},
+            "context of a tenant that participates nowhere")
 
     composed_request, composed = example["composed_request"], example["composed"]
     bad = copy.deepcopy(composed_request)
