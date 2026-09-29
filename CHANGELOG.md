@@ -31,7 +31,7 @@ Changes that have been merged but have not yet been included in a released versi
   - `MARKET_NOT_AVAILABLE` now means that no ACTIVE registry market covers the country.
   - The validator checks the section against the market schema and the admission contract.
 
-- **Provider migration execution and engine migration tasks (ADR-SHARED-016, Proposed; control-plane `openapi.yaml` 1.18.0).**
+- **Provider migration execution and engine migration tasks (ADR-SHARED-016, Accepted; control-plane `openapi.yaml` 1.18.0).**
   - **Approval.** `decideProviderMigrationPlan` (`POST /provider-migrations/{id}/approve`, needs `provider-migration:approve`) records one `ApprovalDecision` with subject `PROVIDER_MIGRATION` on the current plan's digest. That one decision authorises the plan's whole sequence. The creator never approves, and a replan needs a new decision.
   - **Stage commands.** `advanceProviderMigration` (`POST /provider-migrations/{id}/advance`, needs `provider-migration:execute`, If-Match and Idempotency-Key) runs one lifecycle transition as a `PROVIDER_MIGRATION_ADVANCE` operation.
     - Forward transitions need the approval and a current plan; `canary` and `shift` also need an open cutover window.

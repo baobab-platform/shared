@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Proposed |
+| **Status** | Accepted |
 | **Date** | 2026-09-28 |
 | **Repository** | `baobab-platform/shared` |
 | **Depends on** | baobab-cp ADR-BCP-006 §§44-58, 84, 94-95, 119-132; ADR-BCP-021 §§14-29, 47-61; ADR-BCP-022 §§44-67; ADR-SHARED-012; ADR-SHARED-015 |
