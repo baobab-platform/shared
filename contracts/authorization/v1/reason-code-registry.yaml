@@ -183,7 +183,7 @@ reason_codes:
     description: "The desired state declares no participation activities for a market it requires, so market participation cannot be planned."
   - code: MARKET_NOT_AVAILABLE
     category: provisioning_blocker
-    description: "A market the desired state requires is not registered or not active."
+    description: "No ACTIVE registry market covers a country the desired state requires (market-lifecycle.yaml participation)."
   - code: PRODUCT_NOT_AVAILABLE
     category: provisioning_blocker
     description: "A product the desired state requires is not registered or not available."
