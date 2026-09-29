@@ -122,6 +122,10 @@ names the dependency.
 
 ### G-CP-1 — Index-driven bootstrap (replaces the `/capabilities.json` suffix)
 
+**Status: done** in baobab-cp#218 (merged 2026-09-29), which pins Shared
+`66b0178`. CP embeds `registration-bundles.yaml` (`catalogue.yaml` waits
+for G-CP-2) and registers exactly the bundles it lists.
+
 *Repository:* `baobab-cp`. *Depends on:* this Shared change merged, and CP
 pinning a Shared commit that contains it.
 
@@ -168,11 +172,13 @@ existing sandbox and temporary-billing providers keep today's state.
   validate it until `capability.binding_without_provider` is empty in every
   environment, which requires an operator remediation run; then add a
   migration `ALTER TABLE ... VALIDATE CONSTRAINT`.
-- `CreateBinding` checks that the provider ACTIVELY supports the capability
-  but **not** that `binding.contract_version` is one of
-  `provider_capability_support.contract_versions`. Add that check (and the
-  same to `SaveBinding`) so that ACTIVE binding ⇒ provider supports the
-  bound capability ⇒ supports its contract major (SS36, SS60).
+- **Done** in baobab-cp#219 (merged 2026-09-29): `CreateBinding` and
+  `SaveBinding` now refuse an ACTIVE binding whose contract major is not
+  one of its provider's `provider_capability_support.contract_versions`
+  for the capability (`ErrBindingContractUnsupported`). So ACTIVE binding
+  ⇒ provider supports the bound capability ⇒ supports its contract major
+  (SS36, SS60). Existing ACTIVE bindings are re-checked when next saved as
+  ACTIVE. The constraint validation above remains open.
 
 ### G-FCI-1 — Foundation CI enforcement
 
