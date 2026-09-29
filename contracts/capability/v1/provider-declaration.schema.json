@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/capability/v1/provider-declaration.schema.json",
+  "title": "Capability Provider Declaration (ADR-SHARED-017)",
+  "description": "Governs <engine>/.baobab/capability-provider.yaml: an engine repository's declaration of which CapabilityProviders it owns, which canonical Shared capabilities and contract majors each provider implements, how completely, with what evidence, and which capabilities it only plans. It references canonical capabilities (catalogue.yaml) and never defines them. It deliberately cannot express certification (EA-09), provider or support lifecycle, activation, engine instances, releases, health, bindings, grants, tenant entitlement or routing: those belong to other authorities, so every object here is closed (ADR-SHARED-017 SS21, SS25-27, SS50-52). Shared itself is contract authority, not a provider, and carries no such declaration. The root validates a whole capability-provider.yaml; the cross-document rules (support references a catalogued capability and one of its contract majors, provider keys belong to the engine, evidence paths exist, no duplicate support) are enforced by scripts/capability_catalogue.py.",
+  "$ref": "#/$defs/CapabilityProviderDeclaration",
+  "$defs": {
+    "CapabilityProviderDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "engine"],
+      "properties": {
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version"],
+          "properties": {
+            "name": { "const": "baobab-capability-provider-declaration" },
+            "version": { "const": "1.0" }
+          }
+        },
+        "engine": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["engine_id"],
+          "properties": {
+            "engine_id": {
+              "$ref": "../../control-plane/v1/domain.schema.json#/$defs/engineId",
+              "description": "The Baobab engine/service this repository is, named as its repository (ADR-SHARED-012), e.g. baobab-payments. Never a technology family."
+            }
+          }
+        },
+        "providers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/declaredProvider" },
+          "description": "Every CapabilityProvider this engine owns. An engine may own several providers at once, e.g. during a provider migration (baobab-iam.keycloak and baobab-iam.ory)."
+        },
+        "planned_capabilities": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/plannedCapability" },
+          "description": "Architecture-visible capability intent. Planned capabilities never become Capability, ProviderCapabilitySupport or CapabilityBinding records, never satisfy a composition and never take part in CapabilityResolution (ADR-SHARED-017 SS17)."
+        }
+      },
+      "anyOf": [
+        { "required": ["providers"], "properties": { "providers": { "minItems": 1 } } },
+        { "required": ["planned_capabilities"], "properties": { "planned_capabilities": { "minItems": 1 } } }
+      ]
+    },
+    "declaredProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_key", "provider_type", "simulated", "production_permitted", "support"],
+      "properties": {
+        "provider_key": {
+          "$ref": "domain.schema.json#/$defs/capabilityProviderKey",
+          "description": "<engine-id>.<provider-name>; the first segment must equal engine.engine_id."
+        },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "provider_type": { "$ref": "domain.schema.json#/$defs/capabilityProviderType" },
+        "implementation_key": { "$ref": "domain.schema.json#/$defs/implementationKey" },
+        "simulated": {
+          "type": "boolean",
+          "description": "True when the provider only simulates its capabilities (development and integration only)."
+        },
+        "production_permitted": {
+          "type": "boolean",
+          "description": "Whether this implementation may ever be promoted for production use. Declared explicitly; a simulated provider can never be production permitted. Permission is not activation: the Control Plane still governs whether support is ACTIVE (ADR-SHARED-017 SS34)."
+        },
+        "invocation": { "$ref": "#/$defs/providerInvocation" },
+        "provenance": { "$ref": "#/$defs/provenance" },
+        "support": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/declaredSupport" },
+          "description": "Canonical capabilities this provider implements. One provider may implement many capabilities."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "simulated": { "const": true } }, "required": ["simulated"] },
+          "then": { "properties": { "production_permitted": { "const": false } } }
+        }
+      ]
+    },
+    "providerInvocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service_reference", "protocol"],
+      "description": "How callers invoke the provider: a logical reference only, the same shape as registration.schema.json provider.invocation. Never a deployment hostname, address, port or credential; physical topology belongs to the Control Plane (EA-03).",
+      "properties": {
+        "service_reference": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^service://[a-z][a-z0-9-]*(?:/[a-z0-9-]+)*$",
+          "maxLength": 255,
+          "description": "service://<engine-id>/<service>, e.g. service://baobab-payments/payments. Its authority must equal engine.engine_id."
+        },
+        "protocol": { "type": "string", "enum": ["http", "grpc"] }
+      }
+    },
+    "declaredSupport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_key", "contract_versions", "implementation_status"],
+      "properties": {
+        "capability_key": {
+          "$ref": "domain.schema.json#/$defs/capabilityKey",
+          "description": "Must be a capability in Shared's catalogue.yaml. An engine never originates canonical vocabulary (ADR-SHARED-017 SS24, SS59)."
+        },
+        "contract_versions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 1 },
+          "description": "Contract majors of the capability this provider implements; each must be a major the canonical definition declares."
+        },
+        "implementation_status": { "$ref": "domain.schema.json#/$defs/providerImplementationStatus" },
+        "provenance": { "$ref": "#/$defs/provenance" },
+        "implementation_evidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/implementationEvidence" },
+          "description": "Why the repository claims the implementation exists. Evidence is traceability, not certification."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "implementation_status": { "const": "IMPLEMENTED" } }, "required": ["implementation_status"] },
+          "then": { "required": ["implementation_evidence"], "properties": { "implementation_evidence": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "implementationEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "path"],
+      "properties": {
+        "type": { "$ref": "domain.schema.json#/$defs/implementationEvidenceType" },
+        "path": {
+          "type": "string",
+          "maxLength": 255,
+          "pattern": "^\\.?[A-Za-z0-9_@+-][A-Za-z0-9_@+.-]*(?:/\\.?[A-Za-z0-9_@+-][A-Za-z0-9_@+.-]*)*$",
+          "description": "Repository-relative path of the evidence, e.g. src/service.rs or .github/workflows/contract.yml. No absolute path, . or .. segment, or URL. RE2-compatible, like every pattern in this package."
+        },
+        "description": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "plannedCapability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposal_status"],
+      "description": "A capability this engine intends to provide. Until the capability is canonical it is named by proposed_key, which claims no canonical vocabulary; once CONTRACTED it references the canonical capability_key that now exists but is not yet implemented here.",
+      "properties": {
+        "proposed_key": {
+          "$ref": "domain.schema.json#/$defs/capabilityKey",
+          "description": "Proposed <domain>.<resource>.<action>; its domain need not be registered yet (a new namespace is part of the architecture review) and it must not already be canonical."
+        },
+        "capability_key": {
+          "$ref": "domain.schema.json#/$defs/capabilityKey",
+          "description": "For CONTRACTED only: the canonical capability, which must be in the catalogue and not also in this engine's support."
+        },
+        "proposal_status": { "$ref": "domain.schema.json#/$defs/capabilityProposalStatus" },
+        "description": { "type": "string", "maxLength": 2000 },
+        "target_provider_key": {
+          "$ref": "domain.schema.json#/$defs/capabilityProviderKey",
+          "description": "The provider of this engine expected to implement it, when known."
+        },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      },
+      "if": { "properties": { "proposal_status": { "const": "CONTRACTED" } }, "required": ["proposal_status"] },
+      "then": { "required": ["capability_key"], "not": { "required": ["proposed_key"] } },
+      "else": { "required": ["proposed_key"], "not": { "required": ["capability_key"] } }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority"],
+      "description": "Where a claim comes from. A governing decision is optional: the canonical contract can itself be sufficient authority.",
+      "properties": {
+        "authority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["repository"],
+          "properties": {
+            "repository": { "$ref": "domain.schema.json#/$defs/platformRepository" },
+            "decision": { "$ref": "domain.schema.json#/$defs/architectureDecisionId" }
+          }
+        },
+        "source_revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$",
+          "description": "Optional commit of the authority repository the claim was made against."
+        }
+      }
+    }
+  }
+}
