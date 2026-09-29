@@ -265,6 +265,40 @@ def check_platform_context() -> None:
             "non-canonical engine instance id")
 
 
+def check_capability_resolution() -> None:
+    """resolveCapability names a registered capability_resolution_denial code
+    for every non-RESOLVED decision it answers, and each code under exactly
+    one decision (capability/v1 resolution.schema.json)."""
+    openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
+    registry = yaml.safe_load((ROOT / "contracts/authorization/v1/reason-code-registry.yaml").read_text())["reason_codes"]
+    registered = {r["code"] for r in registry if r["category"] == "capability_resolution_denial"}
+    domain = json.loads((ROOT / "contracts/capability/v1/domain.schema.json").read_text())["$defs"]
+    decisions = set(domain["capabilityResolutionDecision"]["enum"])
+    resolve = openapi["paths"]["/capabilities/resolve"]["post"]
+    text = " ".join(resolve["description"].split())
+    named: dict[str, str] = {}
+    for decision, codes in re.findall(r"\b(DENIED|UNAVAILABLE|AMBIGUOUS|INCOMPATIBLE) for ([A-Z_, ]+?(?: and [A-Z_]+)?)[;.]", text):
+        for code in re.split(r",\s*|\s+and\s+", codes.strip()):
+            if code in named:
+                fail(f"resolveCapability names {code} under both {named[code]} and {decision}")
+            named[code] = decision
+    if set(named.values()) != decisions - {"RESOLVED"}:
+        fail(f"resolveCapability maps codes for {sorted(set(named.values()))}, not every non-RESOLVED decision")
+    for code in named:
+        if code not in registered:
+            fail(f"resolveCapability names {code}, which is not a registered capability_resolution_denial code")
+    for path, request, response in (("/capabilities/resolve", "resolutionRequest", "resolution"),
+                                    ("/capabilities/resolve-batch", "batchResolutionRequest", "batchResolution")):
+        operation = openapi["paths"][path]["post"]
+        refs = (operation["requestBody"]["content"]["application/json"]["schema"]["$ref"],
+                operation["responses"]["200"]["content"]["application/json"]["schema"]["$ref"])
+        want = (f"../../capability/v1/resolution.schema.json#/$defs/{request}", f"../../capability/v1/resolution.schema.json#/$defs/{response}")
+        if refs != want:
+            fail(f"{path} must use capability/v1 {request} and {response}")
+        if operation["security"] != [{"workloadOidc": ["context:resolve"]}]:
+            fail(f"{path} must require the registered context:resolve scope")
+
+
 def check_mapping_administration() -> None:
     schema = "canonical-mapping.schema.json"
     example = json.loads((CP / "examples" / "mapping-administration.json").read_text())
@@ -1292,6 +1326,7 @@ def main() -> int:
     check_canonical_entity()
     check_capability_explanation()
     check_platform_context()
+    check_capability_resolution()
     check_mapping_administration()
     check_mapping_resolution()
     check_tenant_provisioning()

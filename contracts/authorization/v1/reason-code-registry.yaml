@@ -153,6 +153,9 @@ reason_codes:
   - code: PROVIDER_UNAVAILABLE
     category: capability_resolution_denial
     description: "The bound CapabilityProvider or engine instance is not currently healthy enough to serve the request."
+  - code: PROVIDER_INVOCATION_UNDECLARED
+    category: capability_resolution_denial
+    description: "The bound CapabilityProvider has registered no logical invocation reference (capability/v1 registration.schema.json provider.invocation), so the Control Plane cannot tell the caller how to invoke it."
   - code: PROVIDER_HEALTH_UNKNOWN
     category: capability_resolution_denial
     description: "The requested capability's health_criticality is CRITICAL, and the bound provider or engine instance has no current health observation (none, or only an expired one)."
