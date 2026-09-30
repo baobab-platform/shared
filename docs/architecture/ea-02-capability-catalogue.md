@@ -166,7 +166,7 @@ which then exist in CP without a provider.
 
 ### G-CP-3 — Provider registration stops originating capabilities
 
-**Status: in review** in baobab-cp#222 (rejection half). `RegisterEngine`
+**Status: rejection half done** in baobab-cp#222 (merged 2026-09-30). `RegisterEngine`
 no longer inserts capabilities: every capability, domain and contract
 major a registration names must already be in the catalogue projection,
 or it fails with `ErrRegistrationOutsideCatalogue` and writes nothing.
