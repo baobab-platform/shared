@@ -69,14 +69,13 @@ jobs:
         shell: bash
         run: docker manifest inspect "$IMAGE" >/dev/null
       # G-FCI-1 (ADR-SHARED-017, EA-02; G-FCI-1 decision 2026-09-30).
-      # Policy: an active repository with the engine trait must ship
-      # .baobab/capability-provider.yaml; an experimental engine may omit it
-      # or declare planned capabilities only. Migration Gate 1 reports policy
-      # findings as warnings; Gate 4 switches --mode to enforce. A declaration
-      # that exists is always validated against the pinned Shared commit and
-      # fails Foundation when invalid. Passing proves structure, catalogue
-      # references and evidence paths; it never certifies (EA-09) or
-      # activates (Control Plane) anything.
+      # Policy, enforced: an active repository with the engine trait must
+      # ship .baobab/capability-provider.yaml; an experimental engine may
+      # omit it or declare planned capabilities only. A declaration that
+      # exists is always validated against the pinned Shared commit.
+      # Passing proves structure, catalogue references and evidence paths;
+      # it never certifies (EA-09) or activates (Control Plane) anything,
+      # and repository lifecycle never implies provider activation.
       - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
         with:
           python-version: "3.13"
@@ -86,7 +85,7 @@ jobs:
       - name: Check capability declaration lifecycle policy
         if: hashFiles('.baobab/repository.yaml') != ''
         shell: bash
-        run: python .foundation/scripts/capability_catalogue.py check-declaration-policy --repository-root . --mode warn
+        run: python .foundation/scripts/capability_catalogue.py check-declaration-policy --repository-root . --mode enforce
       - name: Validate capability provider declaration
         if: hashFiles('.baobab/capability-provider.yaml') != ''
         env:
