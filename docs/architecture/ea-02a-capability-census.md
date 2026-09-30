@@ -28,12 +28,12 @@ Each finding is classified as one of:
 |---|---|---|---:|---:|---|
 | Payments | Surveyed | Merged (baobab-payments#12) | 5 | 5 (sandbox), once the declaration adds `payment.intent.cancel` | none; `payment.intent.cancel` accepted |
 | Subscriptions | Surveyed | Merged (baobab-subscriptions#18) | 2 | 2 (temporary-billing) | none |
-| Trade | Surveyed | Merged, planned-only (baobab-trade#109) | 3 | 0 | B2B families (review, below) |
-| IAM | Surveyed | Waits for accepted candidates | 0 | — | Authentication families (review, below) |
-| CMS | Surveyed | Waits for accepted candidates | 0 | — | Content families (review, below) |
-| ERP | Surveyed | Can declare `finance.order-consequence.process` (CONTRACTED) | 1 | 0 | Finance and order-to-cash families (review, below) |
-| Pulse | Surveyed | Waits for accepted candidates | 0 | — | Intelligence families (review, below) |
-| Regulations | Not yet (namespace review first, §43) | — | 0 | — | — |
+| Trade | Surveyed | Merged, planned-only (baobab-trade#109); buyer keys not yet listed | 5 | 0 | B2B families (review, below); buyer application and membership catalogued (shared#150) |
+| IAM | Surveyed | Can declare | 2 | — | `identity.authentication.perform`, `identity.workload-token.issue` catalogued (shared#150, corrected for provider neutrality) |
+| CMS | Surveyed | Can declare | 1 | — | `content.entry.resolve` catalogued (shared#150) |
+| ERP | Surveyed | Merged, planned-only (baobab-erp#40) | 1 | 0 | `inventory.availability.query` contract ready, not catalogued |
+| Pulse | Surveyed | Waits for its intelligence/v1 contract | 0 | — | Two keys reserved (EA-02B) |
+| Regulations | Paused: G-REG-NS is an open decision (`g-reg-ns-resolution.md`) | — | 0 | — | — |
 
 The survey order follows the EA-02 audit: engines with canonical
 definitions first, then IAM, CMS, ERP and Pulse, and Regulations last.
@@ -91,10 +91,13 @@ decide granularity (§13: consumable, contractable, grantable, replaceable,
 testable, auditable, provider-neutral) before any key is proposed.
 Declarations do not invent keys for them.
 
-## Engines without canonical capabilities
+## Engines without canonical capabilities (as surveyed)
 
-IAM, CMS, ERP and Pulse have no canonical capability in the catalogue
-today. A declaration must name at least one supported or planned
+*Historical: this section records the survey baseline. IAM, CMS and ERP have
+since gained catalogued capabilities (see Progress above).*
+
+IAM, CMS, ERP and Pulse had no canonical capability in the catalogue
+when surveyed. A declaration must name at least one supported or planned
 capability, so a declaration for any of them would have to propose new
 keys. They therefore get **no declaration yet**: their findings below are
 candidate families for architecture review, the same treatment as Trade's
@@ -171,6 +174,6 @@ pipeline; that choice is part of the review.
    accepted `payment.intent.cancel` and `finance.order-consequence.process`
    into the catalogue, and reserved eight keys pending their Shared
    contracts.
-2. Survey Regulations after the `regulations` namespace review.
+2. Survey Regulations once the G-REG-NS decision is taken (open; `g-reg-ns-resolution.md`).
 3. Until the active engines (Trade, ERP, CMS, Pulse, IAM) have
    declarations, Foundation enforcement (G-FCI-1) stays off.

@@ -18,7 +18,7 @@ schema:
 capabilities:
 - capability_key: identity.authentication.perform
   name: Perform human authentication
-  description: Interactive authentication for human users (browser or native app) using Authorization Code + PKCE, producing access token and ID token following ADR-0006 profile.
+  description: Interactive authentication of a human user (browser or native app) through Authorization Code with PKCE, producing an access token and ID token per the ADR-0006 profile. Names no realm or provider construct; assurance is requested as OIDC acr values.
   domain: identity
   owner: baobab-iam
   lifecycle: ACTIVE
@@ -31,11 +31,10 @@ capabilities:
   data_classification: RESTRICTED
   metadata:
     profile: "ADR-0006 Authorization Code + PKCE"
-    related_events: com.baobab-platform.identity.authentication.completed.v1, com.baobab-platform.identity.authentication.failed.v1
-    assurance_levels: "LOW, MEDIUM, HIGH (per ADR-IAM-0024)"
+    assurance: "OIDC acr values; AssuranceRequirement and AuthenticationAssurance (identity/v1)"
 - capability_key: identity.workload-token.issue
   name: Issue workload access token
-  description: Obtain short-lived access token for workload (service-to-service) authentication using client credentials grant, producing token with workload claims per ADR-0006 and ADR-0007 profiles.
+  description: Obtain a short-lived Baobab workload access token for a registered workload, audience and scopes, carrying workload claims per the ADR-0006 and ADR-0007 profiles. The credential mechanism (federated platform token via RFC 7523 JWT bearer, private_key_jwt, or IdP client credential) follows the workload's registered credential_type and stays behind the provider boundary.
   domain: identity
   owner: baobab-iam
   lifecycle: ACTIVE
@@ -47,6 +46,6 @@ capabilities:
     error_schema: ../../errors/v1/problem-details.schema.json
   data_classification: RESTRICTED
   metadata:
-    profile: "ADR-0006 OAuth Client Credentials + ADR-0007 Workload Scope"
-    related_events: com.baobab-platform.identity.workload-token.issued.v1, com.baobab-platform.identity.workload-token.failed.v1
-    client_auth_methods: "client_secret_basic, client_secret_post, private_key_jwt"
+    profile: "ADR-0006 token profile + ADR-0007 workload identity"
+    workload_registry: workload-registry.yaml
+    credential_types: "client_credentials, federated_workload_token (never a static secret)"
