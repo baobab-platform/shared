@@ -12,7 +12,8 @@ com.baobab-platform.* namespace. This gate checks, across all packages:
   3. every example envelope under contracts/**/examples validates against
      the envelope plus the data schema registered for its type, and no
      example uses an unregistered type;
-  4. no contract file mentions a legacy com.nabhold.* event type.
+  4. no contract file mentions a legacy com.nabhold.* event type, except the
+     `supersedes` lists of contracts/events/v1/event-registry.yaml.
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -37,6 +38,10 @@ ENVELOPE_ID = BASE_URI + "events/v1/envelope.schema.json"
 ENVELOPE_REFS = {"../../events/v1/envelope.schema.json", "./event-envelope.schema.json"}
 # Fixtures that exist to prove the envelope rejects legacy shapes.
 EXCLUDED_EXAMPLE_DIRS = {CONTRACTS / "events" / "v1" / "compatibility"}
+# The event registry's `supersedes` lists are the one governed place where a
+# legacy type may appear (ADR-SHARED-018 SS3.3); scripts/event_contexts.py
+# checks that they hold legacy types only and that each is superseded once.
+LEGACY_TYPE_ALLOWED_FILES = {CONTRACTS / "events" / "v1" / "event-registry.yaml"}
 LEGACY_TYPE = re.compile(r"com\.nabhold\.[a-z0-9]")
 
 failures: list[str] = []
@@ -128,7 +133,7 @@ for path in sorted(CONTRACTS.rglob("examples/**/*.json")):
 for path in sorted(CONTRACTS.rglob("*")):
     if path.is_file() and path.suffix in {".json", ".yaml", ".yml", ".md"} \
             and not any(excluded in path.parents for excluded in EXCLUDED_EXAMPLE_DIRS):
-        if LEGACY_TYPE.search(path.read_text(errors="ignore")):
+        if path not in LEGACY_TYPE_ALLOWED_FILES and LEGACY_TYPE.search(path.read_text(errors="ignore")):
             fail(f"{rel(path)}: mentions a legacy com.nabhold.* event type; use com.baobab-platform.*")
 
 if failures:

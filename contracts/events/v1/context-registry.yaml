@@ -1,0 +1,311 @@
+# contracts/events/v1/context-registry.yaml
+#
+# The Canonical Event Context Registry (ADR-SHARED-018 SS3.2). Governs the
+# <context> segment of
+#
+#   com.baobab-platform.<context>.<aggregate>.<fact>.v<major>
+#
+# Conforms to context-registry.schema.json. Related to, but not identical
+# with, contracts/capability/v1/namespace-registry.yaml: a capability is
+# something that may be granted and resolved; an event is a fact that
+# occurred. `capability_domains` records the relationship.
+#
+# Rules (scripts/event_contexts.py, run in Shared CI):
+#   - keys are unique and sorted; a key names no vendor, engine, tenant,
+#     Digital Estate, country or region (the one exception is `erp`,
+#     DEPRECATED under SS8.1);
+#   - every capability domain named here is registered;
+#   - RESERVED contexts carry no event types;
+#   - a DEPRECATED context carries only its frozen_types, and no new type
+#     may be added to it;
+#   - every producer in event-registry.yaml is a steward of its context.
+#
+# ADR references without a repository prefix are Shared's own; others are
+# written <repository>:<ADR>.
+#
+# Adding a context is an architecture review (ADR-SHARED-018 SS3.2 rule 2),
+# like adding a capability domain.
+#
+# Stewards are recorded only where Shared already carries the evidence: a
+# package's stated runtime authority, a capability owner in
+# contracts/capability/v1/catalogue.yaml, or an accepted ADR. Contexts whose
+# producer authority is not yet assigned have no stewards, and their event
+# types stay PROPOSED in event-registry.yaml until an assignment is made.
+
+schema:
+  name: baobab-event-context-registry
+  version: "1.0"
+
+contexts:
+  - key: capability
+    status: ACTIVE
+    stewards: [baobab-cp]
+    authority: [ADR-BCP-003, ADR-SHARED-017]
+    capability_domains: []
+    description: >
+      Capability registry facts: capability, grant, provider, binding and
+      composition lifecycle in the Control Plane.
+
+  - key: commerce
+    status: ACTIVE
+    stewards: [baobab-trade]
+    authority: [ADR-SHARED-018, baobab-trade:ADR-0013, baobab-trade:ADR-0014, baobab-trade:ADR-0015, baobab-trade:ADR-0017]
+    capability_domains: [commerce]
+    description: >
+      Cart, checkout, order commitment, commerce stock reservation,
+      order-side payment and purchase-approval facts.
+
+  - key: commercial
+    status: ACTIVE
+    stewards: [baobab-trade]
+    authority: [ADR-SHARED-007]
+    capability_domains: [commercial]
+    description: >
+      RFQ and quotation facts (catalogue owner of commercial.rfq.manage and
+      commercial.quotation.manage).
+
+  - key: control-plane
+    status: ACTIVE
+    stewards: [baobab-cp]
+    authority: [ADR-BCP-001, ADR-BCP-017, ADR-BCP-018]
+    capability_domains: [tenant, organisation]
+    description: >
+      Tenant provisioning, admission, organisation and platform-account
+      facts owned by the Control Plane.
+
+  - key: credential
+    status: ACTIVE
+    stewards: [baobab-iam]
+    authority: [baobab-iam:ADR-0016]
+    capability_domains: [identity]
+    description: >
+      Credential lifecycle facts, such as a compromised credential.
+
+  - key: customer
+    status: ACTIVE
+    stewards: [baobab-cp, baobab-trade]
+    authority: [ADR-BCP-016, ADR-BCP-018, baobab-trade:ADR-0017]
+    capability_domains: [customer]
+    description: >
+      Buyer organisation facts. The Control Plane owns buyer-organisation
+      registration and status; Trade owns buyer applications, membership and
+      purchasing authority (buyer-organisation/v1 authority table).
+
+  - key: customs
+    status: ACTIVE
+    stewards: [baobab-trade]
+    authority: [ADR-SHARED-018, baobab-trade:ADR-0021, G-REG-NS]
+    capability_domains: [customs]
+    description: >
+      Customs execution facts, such as declarations, duty assessments and
+      clearance. Regulatory classification and compliance decisions are
+      Regulations facts, not customs facts (ADR-SHARED-018 SS8.4).
+
+  - key: documents
+    status: ACTIVE
+    stewards: []
+    capability_domains: [documents]
+    description: >
+      Trade-document lifecycle facts. Producer authority is not yet
+      assigned.
+
+  - key: entitlement
+    status: ACTIVE
+    stewards: [baobab-iam]
+    authority: [baobab-iam:ADR-0016]
+    capability_domains: [identity]
+    description: >
+      Entitlement revocation facts from the identity lifecycle.
+
+  - key: erp
+    status: DEPRECATED
+    stewards: [baobab-erp]
+    authority: [ADR-SHARED-018]
+    capability_domains: [finance, inventory]
+    frozen_types:
+      - com.baobab-platform.erp.business-partner.changed.v1
+      - com.baobab-platform.erp.inventory.availability-changed.v1
+      - com.baobab-platform.erp.invoice.changed.v1
+      - com.baobab-platform.erp.order.consequence-changed.v1
+      - com.baobab-platform.erp.payment.accounting-changed.v1
+      - com.baobab-platform.erp.provisioning.changed.v1
+      - com.baobab-platform.erp.warehouse.changed.v1
+    description: >
+      Names an engine role, not a business context. It exists only to keep
+      already-published canonical events compatible, and no new type may be
+      registered under it. Each type is re-homed by business authority
+      (finance, inventory, fulfilment or logistics, or the owning context),
+      and the context is retired once consumers, replay windows and
+      retained outbox data no longer need it (ADR-SHARED-018 SS8.1).
+
+  - key: finance
+    status: ACTIVE
+    stewards: [baobab-erp]
+    authority: [ADR-0005, ADR-SHARED-018]
+    capability_domains: [finance]
+    description: >
+      Financial and accounting facts. The re-homing target for erp.*
+      financial facts.
+
+  - key: fulfilment
+    status: ACTIVE
+    stewards: [baobab-trade]
+    authority: [baobab-trade:ADR-0016, ADR-SHARED-018]
+    capability_domains: [fulfilment]
+    description: >
+      The customer and commerce fulfilment lifecycle and promise. It is not
+      physical execution (logistics) and not the cross-border trade shipment
+      (trade.shipment) (ADR-SHARED-018 SS8.3).
+
+  - key: identity
+    status: ACTIVE
+    stewards: [baobab-iam]
+    authority: [baobab-iam:ADR-0016]
+    capability_domains: [identity]
+    description: >
+      Principal identity lifecycle facts: created, suspended, disabled and
+      reactivated.
+
+  - key: integration
+    status: ACTIVE
+    stewards: [baobab-trade]
+    authority: [ADR-SHARED-018]
+    capability_domains: [integration]
+    description: >
+      Cross-engine integration facts that no single business context owns,
+      such as a detected synchronisation discrepancy.
+
+  - key: internal-trade
+    status: ACTIVE
+    stewards: []
+    authority: [ADR-BCP-012]
+    capability_domains: [internal-trade]
+    description: >
+      Intercompany and inter-branch transaction facts. Producer authority is
+      not yet assigned.
+
+  - key: inventory
+    status: ACTIVE
+    stewards: []
+    authority: [ADR-BCP-013]
+    capability_domains: [inventory]
+    description: >
+      Canonical inventory facts, including inventory ownership. Commerce
+      stock reservations are commerce facts (ADR-0013). Producer authority is
+      not yet assigned.
+
+  - key: logistics
+    status: ACTIVE
+    stewards: [baobab-erp]
+    authority: [baobab-trade:ADR-0016, ADR-SHARED-018]
+    capability_domains: [logistics]
+    description: >
+      Physical execution facts, such as dispatch and delivery completion,
+      from ERP, WMS, 3PL or the bound logistics provider.
+
+  - key: market
+    status: ACTIVE
+    stewards: [baobab-cp]
+    authority: [ADR-BCP-011]
+    capability_domains: [market]
+    description: >
+      Market participation and trade-lane facts emitted by the Control Plane.
+
+  - key: membership
+    status: ACTIVE
+    stewards: [baobab-iam]
+    authority: [baobab-iam:ADR-0016]
+    capability_domains: [identity]
+    description: >
+      Membership revocation facts from the identity lifecycle.
+
+  - key: payments
+    status: ACTIVE
+    stewards: [baobab-payments]
+    authority: [ADR-SHARED-011, ADR-SHARED-018]
+    capability_domains: [payment]
+    description: >
+      Payment-provider execution facts. Only baobab-payments produces them.
+      Trade's order-side payment facts are commerce.order-payment.*
+      (ADR-SHARED-018 SS8.2).
+
+  - key: procurement
+    status: ACTIVE
+    stewards: []
+    capability_domains: [procurement]
+    description: >
+      Procurement request facts. Producer authority is not yet assigned.
+
+  - key: product
+    status: ACTIVE
+    stewards: [baobab-cp]
+    authority: [ADR-BCP-005, ADR-SHARED-011]
+    capability_domains: []
+    description: >
+      Product, product version, product subscription, classification and
+      entitlement-projection facts (Control Plane data, product/v1).
+
+  - key: regulations
+    status: RESERVED
+    stewards: [baobab-regulations]
+    authority: [G-REG-NS, ADR-SHARED-018]
+    capability_domains: []
+    description: >
+      Regulatory meaning and evaluation: product classification and
+      compliance-assessment decisions. Reserved until G-REG-NS step 3
+      registers the regulations domain. Until then no event type uses it,
+      and Trade publishes no substitute (ADR-SHARED-018 SS8.4).
+
+  - key: session
+    status: ACTIVE
+    stewards: [baobab-iam]
+    authority: [baobab-iam:ADR-0016]
+    capability_domains: [identity]
+    description: >
+      Session revocation facts from the identity lifecycle.
+
+  - key: subscriptions
+    status: ACTIVE
+    stewards: [baobab-subscriptions]
+    authority: [ADR-SHARED-011]
+    capability_domains: [billing]
+    description: >
+      Billing subscription and usage facts (runtime authority:
+      baobab-subscriptions).
+
+  - key: supplier-onboarding
+    status: ACTIVE
+    stewards: []
+    authority: [ADR-SHARED-010]
+    capability_domains: [supplier]
+    description: >
+      Supplier application, qualification and KYB facts. Producer authority
+      is not yet assigned.
+
+  - key: tax
+    status: ACTIVE
+    stewards: [baobab-trade]
+    authority: [baobab-trade:ADR-0018, ADR-SHARED-018]
+    capability_domains: [tax]
+    description: >
+      Transaction-tax determination and reconciliation, and tax-registration
+      facts. Trade owns the transaction tax commitment (ADR-0018).
+
+  - key: trade
+    status: ACTIVE
+    stewards: [baobab-trade]
+    authority: [ADR-SHARED-018, baobab-trade:ADR-0016]
+    capability_domains: [trade]
+    description: >
+      Cross-border trade execution facts, including the trade order and the
+      trade shipment where the shipment is a trade-execution aggregate
+      (ADR-SHARED-018 SS8.3), and the operational enforcement of compliance
+      decisions.
+
+  - key: workload
+    status: ACTIVE
+    stewards: [baobab-iam]
+    authority: [baobab-iam:ADR-0016, baobab-iam:ADR-0007]
+    capability_domains: [identity]
+    description: >
+      Workload identity lifecycle facts, such as a revoked workload.
