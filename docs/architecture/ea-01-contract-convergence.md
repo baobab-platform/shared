@@ -1,7 +1,7 @@
 # EA-01 — Canonical Contract Convergence: Implementation Record
 
 **Governing plan:** EA Implementation Plan v2.0 §6 (EA-01) and §29 (Phase 1)
-**Status:** EA-01A, EA-01C and EA-01D implemented in Foundation (warn mode). Engine lock migration in progress. EA-01B and EA-01E open.
+**Status:** EA-01A, EA-01C and EA-01D implemented. Every engine lock is canonical (Gate 2). The check is enforced for engine repositories (Gate 3). Engine re-pins, the rest of EA-01B, and EA-01E are open.
 
 ## EA-01A — The lock standard
 
@@ -76,7 +76,7 @@ re-pin PR, not from Foundation.
 |---|---|---|
 | 1 | Schema, check and drift report in Foundation, `warn` mode | This change |
 | 2 | Migrate every engine lock to the canonical shape (see below) | CP, IAM, CMS, Pulse done; Trade, ERP open |
-| 3 | Switch the check to `enforce` | After Gate 2 |
+| 3 | Enforce: `--mode auto` fails engine repositories on any finding and warns for others, so frozen Digital Estates such as zuribeans (legacy lock) are not failed before the EA Unfreeze Gate | This change |
 
 ## Engine status at Shared `7b9212f` (2026-09-30, before migration)
 

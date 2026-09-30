@@ -97,8 +97,10 @@ jobs:
       # EA-01C/D (EA Plan v2.0). contracts.lock.yaml must match
       # .baobab/contract-consumer-lock.schema.json, pin a commit on Shared
       # main, and list contracts that exist and parse at that commit; an
-      # active engine must carry one. Warn mode until engine locks converge,
-      # then enforce, as G-FCI-1 did. The drift report never fails: being
+      # active engine must carry one. Gate 3 (enforced): --mode auto fails
+      # an engine repository on any finding and reports findings for other
+      # repositories as warnings, so frozen Digital Estates are not failed
+      # before the EA Unfreeze Gate. The drift report never fails: being
       # behind is not a release failure; a removed consumed contract is
       # incompatible and is a check finding.
       - name: Checkout Shared main history for contract lock checks
@@ -113,7 +115,7 @@ jobs:
       - name: Check contract consumer lock (EA-01C)
         if: hashFiles('.baobab/repository.yaml', 'contracts.lock.yaml') != ''
         shell: bash
-        run: python .foundation/scripts/contract_lock.py check --repository-root . --shared-repo .shared-history --mode warn
+        run: python .foundation/scripts/contract_lock.py check --repository-root . --shared-repo .shared-history --mode auto
       - name: Report Shared contract drift (EA-01D)
         if: hashFiles('contracts.lock.yaml') != ''
         shell: bash

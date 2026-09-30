@@ -13,7 +13,10 @@ Foundation against a full-history checkout of Shared:
       unmerged commit is not a pin; every listed contract must exist and
       parse at the pin; and no consumed contract may have been removed by
       the baseline, which is incompatible drift by definition. --mode warn
-      reports findings as annotations and passes; enforce fails.
+      reports findings as annotations and passes; enforce fails; auto
+      enforces for a repository with the `engine` trait and warns for any
+      other (EA-01 Gate 3: Digital Estates stay frozen until the EA
+      Unfreeze Gate, so their legacy locks are reported, not failed).
 
   drift --repository-root DIR --shared-repo DIR [--baseline REF] [--format F]
       EA-01D. Reports the pin, the approved baseline, how many Shared
@@ -46,7 +49,7 @@ SCHEMA = json.loads((ROOT / ".baobab/contract-consumer-lock.schema.json").read_t
 VALIDATOR = Draft202012Validator(SCHEMA)
 LOCK_PATH = "contracts.lock.yaml"
 REPOSITORY_CONTRACT_PATH = ".baobab/repository.yaml"
-MODES = ("warn", "enforce")
+MODES = ("warn", "enforce", "auto")
 CLASSIFICATIONS = ("CURRENT", "BEHIND_UNCHANGED", "BEHIND_CHANGED", "INCOMPATIBLE", "UNKNOWN")
 
 
@@ -79,6 +82,16 @@ class Shared:
 
 def load_yaml(path: Path) -> object | None:
     return yaml.safe_load(path.read_text()) if path.is_file() else None
+
+
+def is_engine(repository_contract: object) -> bool:
+    return isinstance(repository_contract, dict) and "engine" in (repository_contract.get("capabilities") or [])
+
+
+def effective_mode(mode: str, repository_root: Path) -> str:
+    if mode != "auto":
+        return mode
+    return "enforce" if is_engine(load_yaml(repository_root / REPOSITORY_CONTRACT_PATH)) else "warn"
 
 
 def lock_required(repository_contract: object) -> bool:
@@ -197,7 +210,8 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("--shared-repo", type=Path, required=True, help="a Shared git checkout with main's history")
         command.add_argument("--baseline", default="HEAD", help="approved Shared baseline ref (default: HEAD)")
     commands.choices["check"].add_argument("--mode", choices=MODES, default="enforce",
-                                           help="warn reports findings and passes; enforce fails on any finding")
+                                           help="warn reports findings and passes; enforce fails on any finding; "
+                                                "auto enforces for engines and warns otherwise")
     commands.choices["drift"].add_argument("--format", choices=("markdown", "json"), default="markdown")
     args = parser.parse_args(argv)
     shared = Shared(args.shared_repo)
@@ -207,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report, indent=2) if args.format == "json" else render_markdown(report), end="")
         return 0
     findings = check(args.repository_root, shared, args.baseline)
-    if args.mode == "warn":
+    if effective_mode(args.mode, args.repository_root) == "warn":
         for finding in findings:
             print(f"::warning title=Contract consumer lock (EA-01)::{finding}")
         print(f"contract consumer lock: {len(findings)} finding(s), reported as warnings")

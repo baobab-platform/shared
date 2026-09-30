@@ -153,6 +153,27 @@ class CheckTest(LockTest):
                                   "--shared-repo", str(self.shared_path), "--mode", "enforce"]), 1)
 
 
+class AutoModeTest(LockTest):
+    def run_auto(self) -> int:
+        return cl.main(["check", "--repository-root", str(self.consumer),
+                        "--shared-repo", str(self.shared_path), "--mode", "auto"])
+
+    def test_auto_enforces_for_engines(self):
+        self.lock(schema="nabhold-contract-consumer-lock")
+        self.assertEqual(self.run_auto(), 1)
+        self.repository(lifecycle="experimental", capabilities=["engine"])
+        self.assertEqual(self.run_auto(), 1)
+
+    def test_auto_warns_for_non_engines(self):
+        self.repository(lifecycle="active", capabilities=["node", "digital-estate"])
+        self.lock(schema="nabhold-contract-consumer-lock")
+        self.assertEqual(self.run_auto(), 0)
+
+    def test_auto_passes_a_canonical_engine_lock(self):
+        self.lock()
+        self.assertEqual(self.run_auto(), 0)
+
+
 class DriftTest(LockTest):
     def test_current(self):
         self.lock()
