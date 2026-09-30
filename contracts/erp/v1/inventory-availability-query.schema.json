@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/inventory-availability-query.schema.json",
+  "title": "InventoryAvailabilityQuery",
+  "description": "Query parameters for ERP physical inventory availability projection.",
+  "$defs": {
+    "InventoryAvailabilityQuery": {
+      "type": "object",
+      "required": ["sku_id", "warehouse_id"],
+      "properties": {
+        "sku_id": {
+          "$ref": "./domain.schema.json#/$defs/canonicalResourceId",
+          "description": "The canonical Stock Keeping Unit identifier. Always a Trade or shared registry URI, never a vendor or iDempiere reference."
+        },
+        "warehouse_id": {
+          "$ref": "./domain.schema.json#/$defs/erpResourceId",
+          "description": "The ERP warehouse identifier. Minted by the Baobab ERP boundary, binding to an iDempiere or ERPNext warehouse."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$ref": "#/$defs/InventoryAvailabilityQuery"
+}

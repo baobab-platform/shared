@@ -145,14 +145,17 @@ pinning a Shared commit that contains it.
 
 ### G-CP-2 — CapabilityCatalogueSync
 
-**Status: done** in baobab-cp#220 (merged 2026-09-30). CP embeds
-`catalogue.yaml` and its definition documents and syncs them at startup,
+**Status: deployed** in baobab-cp#220 (merged 2026-09-30, sync mechanism)
+and baobab-cp#223 (merged 2026-09-30, pinned Shared `a7ca1ed` with 11 capabilities).
+CP embeds `catalogue.yaml` and its definition documents and syncs them at startup,
 before any provider registers. The sync creates missing capabilities,
 updates changed ones by definition digest, refuses domain changes and
 removal of a contract major that is still supported, and records
 provenance (`canonical_owner`, `canonical_source`, `canonical_digest`,
 `canonical_synced_at`). The view `capability.capability_outside_catalogue`
-lists rows no sync has projected, for operator remediation.
+lists rows no sync has projected, for operator remediation. The catalogue now
+includes two new capabilities from the EA-02B review (`payment.intent.cancel`,
+`finance.order-consequence.process`).
 
 *Repository:* `baobab-cp`. *Depends on:* G-CP-1.
 
@@ -161,20 +164,24 @@ independently of provider registration. Compare canonical revision, update
 allowed mutable projection fields (name, description, lifecycle, maturity,
 contract majors), refuse incompatible mutation under an unchanged key, and
 record `source_digest` and Shared revision (ADR-SHARED-017 SS29). Replace
-`ON CONFLICT (code) DO NOTHING`. This covers Trade's three capabilities,
-which then exist in CP without a provider.
+`ON CONFLICT (code) DO NOTHING`. This covers Trade's three capabilities
+and the two new EA-02B keys, which exist in CP independently of provider registration.
 
 ### G-CP-3 — Provider registration stops originating capabilities
 
-**Status: rejection half done** in baobab-cp#222 (merged 2026-09-30). `RegisterEngine`
-no longer inserts capabilities: every capability, domain and contract
+**Status: rejection deployed** in baobab-cp#222 (merged 2026-09-30, reject
+unregistered capabilities) and baobab-cp#223 (merged 2026-09-30, tested
+with Payments and ERP registrations against expanded catalogue).
+`RegisterEngine` no longer inserts capabilities: every capability, domain and contract
 major a registration names must already be in the catalogue projection,
 or it fails with `ErrRegistrationOutsideCatalogue` and writes nothing.
 The G-CP-2 dependency holds by construction, because CP syncs the
-catalogue at startup before any registration. **Open:** registering new
-providers as `DRAFT`. It waits for a Changeset path to promote a provider;
-without one, a fresh environment's bootstrap providers would be
-unroutable.
+catalogue at startup before any registration. Payments sandbox support for
+`payment.intent.cancel` (contract 1) and ERP contracted support for
+`finance.order-consequence.process` (contract 1) both register against the
+expanded catalogue successfully. **Open:** registering new providers as `DRAFT`. 
+It waits for a Changeset path to promote a provider; without one, a fresh 
+environment's bootstrap providers would be unroutable.
 
 *Repository:* `baobab-cp`. *Depends on:* G-CP-2 in every environment.
 
@@ -216,18 +223,20 @@ existence; it does **not** mean certified.
 
 ### G-02A — Capability census and declarations
 
-**Status: in progress.** `docs/architecture/ea-02a-capability-census.md`
-records the survey. Payments, Subscriptions, Trade, IAM, CMS, ERP and Pulse
-are surveyed. The declarations for Payments (baobab-payments#12),
-Subscriptions (baobab-subscriptions#18) and Trade (baobab-trade#109,
-planned-only) are merged. IAM, CMS, ERP and Pulse have no canonical
-capability, so their declarations wait for the candidate review.
+**Status: declarations merged, contract work pending.** 
+`docs/architecture/ea-02a-capability-census.md` records the survey. Payments,
+Subscriptions, Trade, IAM, CMS, ERP and Pulse are surveyed. The declarations
+for Payments (baobab-payments#12), Subscriptions (baobab-subscriptions#18),
+Trade (baobab-trade#109, planned-only), and ERP (baobab-erp#40, contracted)
+are merged. IAM, CMS and Pulse can declare once their first contract lands;
+until then they may list the reserved keys as `proposed_key` candidates.
 Regulations remains, after G-REG-NS.
 
 The EA-02B candidate review (`docs/architecture/ea-02b-candidate-review.md`)
 accepted `payment.intent.cancel` and `finance.order-consequence.process`
-into the catalogue, which now holds 11 capabilities. It also reserved eight
-keys that each wait for a Shared request/response contract.
+into the catalogue, which now holds 11 capabilities (baobab-cp#223, merged
+2026-09-30). It also reserved eight keys that each wait for a Shared
+request/response contract before they can be declared as support.
 
 Per ADR-SHARED-017 SS12 and Phase 2, every engine gets a census. Accepted
 candidates become catalogue entries through Shared PRs, and each engine then
@@ -235,6 +244,31 @@ adds `.baobab/capability-provider.yaml`. Do not bulk-populate declarations
 or catalogue entries before the census accepts them. The first natural
 adopters are `baobab-payments` and `baobab-subscriptions`, whose
 declarations can then generate their bundles.
+
+### Contract work (smallest gaps first)
+
+Reserved keys from EA-02B require Shared request/response contract schemas
+before engines can declare support. Work in progress (commit `f1ee987`):
+
+1. **erp/v1 InventoryAvailabilityQuery** — DONE. Created
+   `inventory-availability-query.schema.json` schema document formalizing
+   the `sku_id` and `warehouse_id` query parameters. OpenAPI endpoint
+   updated to reference the schema. ERP can now declare
+   `inventory.availability.query` as RESERVED.
+2. **buyer-organisation/v1 commands** — PENDING. Requires extracting
+   Trade-local route shapes (apply, evidence, review, decision; invite,
+   accept, revoke, resend) into Shared command schemas for Trade's two
+   customer capabilities.
+3. **identity/v1 authentication profile** — PENDING. Requires formalizing
+   the ADR-0006 token profile as request/response schemas (what relying
+   parties send for authentication, what they receive). M1-B (provider-
+   neutrality) and M1-C (Ory resolve fixtures) are merged; authentication
+   profile schemas would complete IAM's capability foundation.
+4. **content/v1 resolution** — PENDING. Requires CMS contract for
+   content resolution requests (context, market, locale, entry reference)
+   and responses (resolved entry with provenance).
+5. **intelligence/v1** — PENDING. Requires Pulse contract for research-
+   mission and evidence-search (request/response pairs).
 
 ### G-REG-NS — `regulations` namespace review
 
