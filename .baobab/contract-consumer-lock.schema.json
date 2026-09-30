@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baobab-platform.github.io/shared/schemas/contract-consumer-lock-v1.json",
+  "title": "Baobab Contract Consumer Lock",
+  "description": "A consumer's contracts.lock.yaml (EA Plan v2.0 EA-01A). It pins the immutable baobab-platform/shared commit the repository is built against and lists every Shared contract whose shape the repository implements or consumes. Repository-specific metadata MAY add top-level keys; it SHALL NOT replace the keys below.",
+  "type": "object",
+  "required": ["schema", "version", "source", "contracts", "policy"],
+  "properties": {
+    "schema": { "const": "baobab-contract-consumer-lock" },
+    "version": { "const": "1.0" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit"],
+      "properties": {
+        "repository": {
+          "const": "baobab-platform/shared",
+          "description": "The canonical contract authority. Legacy nabhold/* sources are not accepted (EA-01B)."
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$",
+          "description": "Full immutable commit SHA on Shared main. Branches, tags and abbreviated SHAs are not pins."
+        }
+      }
+    },
+    "contracts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^contracts/[a-z0-9][a-z0-9_-]*(/[A-Za-z0-9][A-Za-z0-9._-]*)+$",
+        "description": "Path of a consumed contract file relative to the Shared repository root. Every segment starts with a letter or digit, so '.' and '..' segments cannot occur."
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["updates", "compatibility"],
+      "properties": {
+        "updates": { "const": "explicit_pull_request" },
+        "compatibility": { "const": "validate_before_merge" }
+      }
+    }
+  }
+}

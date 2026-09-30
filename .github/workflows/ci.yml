@@ -37,6 +37,9 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/tests/test_contract_lock.py to the governance-contracts job:
+#   contract consumer lock validation and Shared drift reporting (EA Plan
+#   v2.0 EA-01A/C/D).
 # * Added scripts/capability_catalogue.py and its tests to the
 #   governance-contracts job: the Canonical Capability Catalogue, capability
 #   provider declarations and transitional EngineRegistration bundles
@@ -99,6 +102,8 @@ on:
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
       - "scripts/capability_catalogue.py"
+      - "scripts/contract_lock.py"
+      - ".baobab/contract-consumer-lock.schema.json"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
@@ -124,6 +129,8 @@ on:
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
       - "scripts/capability_catalogue.py"
+      - "scripts/contract_lock.py"
+      - ".baobab/contract-consumer-lock.schema.json"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
@@ -177,6 +184,8 @@ jobs:
         run: python scripts/capability_catalogue.py validate-catalogue
       - name: Test capability catalogue and provider declaration validation (ADR-SHARED-017)
         run: python scripts/tests/test_capability_catalogue.py
+      - name: Test contract consumer lock validation and drift reporting (EA-01)
+        run: python scripts/tests/test_contract_lock.py
 
   action-pinning:
     name: Enforce action pinning (self-check)
