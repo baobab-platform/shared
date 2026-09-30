@@ -262,11 +262,15 @@ before engines can declare support. Work in progress (commit `f1ee987`):
    workflows. Added to catalogue: `customer.buyer-application.manage` and
    `customer.buyer-membership.manage` (now 13 capabilities total).
 >>>>>>> origin/main
-3. **identity/v1 authentication profile** — PENDING. Requires formalizing
-   the ADR-0006 token profile as request/response schemas (what relying
-   parties send for authentication, what they receive). M1-B (provider-
-   neutrality) and M1-C (Ory resolve fixtures) are merged; authentication
-   profile schemas would complete IAM's capability foundation.
+3. **identity/v1 authentication profile** — DONE. Formalized ADR-0006 token
+   profile as four schemas:
+   `human-authentication-request.schema.json` (Authorization Code + PKCE),
+   `human-authentication-response.schema.json` (access token, ID token),
+   `workload-token-request.schema.json` (client credentials),
+   `workload-token-response.schema.json` (workload access token).
+   Added to catalogue: `identity.authentication.perform` and
+   `identity.workload-token.issue` (now 15 capabilities total).
+   M1-B (provider-neutrality) and M1-C (Ory fixtures) provide foundation.
 4. **content/v1 resolution** — PENDING. Requires CMS contract for
    content resolution requests (context, market, locale, entry reference)
    and responses (resolved entry with provenance).

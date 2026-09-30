@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/human-authentication-response.schema.json",
+  "title": "Human Authentication Response",
+  "description": "Successful human authentication response with access token and optional ID token following ADR-0006 profile.",
+  "$defs": {
+    "HumanAuthenticationResponse": {
+      "type": "object",
+      "required": ["access_token", "token_type", "expires_in"],
+      "additionalProperties": false,
+      "properties": {
+        "access_token": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Bearer token for API access (JWT per ADR-0006); contains claims: iss, sub, aud, azp, actor_type=human, scope, iat, exp"
+        },
+        "token_type": {
+          "const": "Bearer",
+          "description": "Token type (always 'Bearer' for OAuth)"
+        },
+        "expires_in": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400,
+          "description": "Token lifetime in seconds"
+        },
+        "id_token": {
+          "type": "string",
+          "minLength": 20,
+          "description": "OIDC ID token (JWT); contains authentication assertion for relying party (iss, sub, aud, iat, exp, nonce if provided)"
+        },
+        "refresh_token": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Refresh token if applicable; confined to client/IAM interaction per ADR-0006 §7; server-side storage preferred for BFF"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Granted scope (may differ from requested)"
+        },
+        "session_state": {
+          "type": "string",
+          "description": "Session state for SSO / logout detection (OIDC standard)"
+        }
+      }
+    },
+    "TokenClaims": {
+      "type": "object",
+      "description": "Standard claims in the access token JWT per ADR-0006 §20",
+      "properties": {
+        "iss": {
+          "type": "string",
+          "format": "uri",
+          "description": "Issuer URI (Baobab IAM)"
+        },
+        "sub": {
+          "type": "string",
+          "description": "Subject (issuer-local principal ID)"
+        },
+        "aud": {
+          "type": ["string", "array"],
+          "description": "Intended audience(s) for the token"
+        },
+        "azp": {
+          "type": "string",
+          "description": "Authorized party (OAuth client that initiated the request)"
+        },
+        "actor_type": {
+          "const": "human",
+          "description": "Actor classification (always 'human' for this response)"
+        },
+        "scope": {
+          "type": "string",
+          "description": "Granted scopes (space-separated)"
+        },
+        "iat": {
+          "type": "integer",
+          "description": "Issued-at timestamp (seconds since epoch)"
+        },
+        "exp": {
+          "type": "integer",
+          "description": "Expiration timestamp (seconds since epoch)"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/HumanAuthenticationResponse"
+}
