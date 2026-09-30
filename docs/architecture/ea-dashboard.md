@@ -27,14 +27,14 @@ BAOBAB EA READINESS                                   2026-09-30
 ─────────────────────────────────────────────────────────────────
 
 EA-01 Contract Convergence             IN PROGRESS
-  CP Shared pin                        BEHIND_UNCHANGED (1bb1c94); schema rename cp#229
-  IAM Shared pin                       BEHIND_UNCHANGED (1bb1c94); canonical lock iam#47
+  CP Shared pin                        BEHIND_UNCHANGED (1bb1c94), canonical lock (cp#229)
+  IAM Shared pin                       BEHIND_UNCHANGED (1bb1c94), canonical lock (iam#47)
   Subscriptions Shared pin             STALE (canonical lock shape)
   Payments Shared pin                  STALE (canonical lock shape)
   Trade Shared pin                     STALE (legacy nabhold/* lock)
   ERP Shared pin                       STALE (legacy nabhold/* lock)
-  Pulse Shared pin                     STALE (legacy nabhold/* lock)
-  CMS contract lock                    MISSING
+  Pulse Shared pin                     CURRENT at merge, canonical lock (pulse#28)
+  CMS contract lock                    CURRENT at merge, canonical lock (cms#19)
   Lock schema in Shared (EA-01A)       READY (shared#157)
   Foundation lock validation (EA-01C)  WARN MODE (shared#157)
   Drift report (EA-01D)                READY (Foundation job summary)
@@ -101,12 +101,12 @@ validates a declaration. It never certifies or activates a provider.
 | # | Gate | State | Evidence |
 |---:|---|---|---|
 | 1 | EA plan v2 committed; prior sequence superseded | Dashboard done; supersession awaiting approval | Plan in `docs/adr`; this dashboard; the supersession marker and register classification are an ADR-status PR that needs owner approval |
-| 2 | Contract convergence audit and lock remediation | In progress | CP #227, IAM #46 re-pinned; lock schema, check and drift report shared#157; CP #229 and IAM #47 canonical locks; other engines open ([EA-01 record](ea-01-contract-convergence.md)) |
+| 2 | Contract convergence audit and lock remediation | In progress | CP #227, IAM #46 re-pinned; lock schema, check and drift report shared#157; CP, IAM, CMS and Pulse canonical locks merged (cp#229, iam#47, cms#19, pulse#28); Trade, ERP re-lock and Subscriptions, Payments re-pin open ([EA-01 record](ea-01-contract-convergence.md)) |
 | 3 | `identity.workload-token.issue` provider neutrality | Done | shared#151 |
 | 4 | Complete IAM #42 | Done | iam#42 |
 | 5 | Shared #148 lifecycle semantics | Done | shared#148 |
 | 6 | IAM provider declaration | Planned-only | iam#45; support waits on M2–M4 evidence |
-| 7 | CMS provider declaration and contract lock | Declaration done; lock open | cms#17 |
+| 7 | CMS provider declaration and contract lock | Done | cms#17, cms#19 |
 | 8 | Foundation provider-declaration validation | Done (enforcing) | shared#152, #153, #154 |
 | 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
 | 10 | Implement EngineRelease | Open | ER-01…ER-05 authorised; ER-06 a separate gate |

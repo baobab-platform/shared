@@ -75,10 +75,10 @@ re-pin PR, not from Foundation.
 | Gate | Action | State |
 |---|---|---|
 | 1 | Schema, check and drift report in Foundation, `warn` mode | This change |
-| 2 | Migrate every engine lock to the canonical shape (see below) | Open |
+| 2 | Migrate every engine lock to the canonical shape (see below) | CP, IAM, CMS, Pulse done; Trade, ERP open |
 | 3 | Switch the check to `enforce` | After Gate 2 |
 
-## Engine status at Shared `7b9212f` (2026-09-30)
+## Engine status at Shared `7b9212f` (2026-09-30, before migration)
 
 | Engine | Lock | Check | Drift |
 |---|---|---|---|
@@ -92,6 +92,11 @@ re-pin PR, not from Foundation.
 | baobab-payments | Canonical, `f20069d` | Passes | `BEHIND_CHANGED` (166 behind) |
 
 Each engine's migration PR carries only that engine's compatibility fixes.
+
+Migrated since: CP (cp#229, schema name), IAM (iam#47, canonical shape and
+five consumed contracts), CMS (cms#19, new lock on `content/v1`) and Pulse
+(pulse#28, legacy lock replaced; events moved to `com.baobab-platform.pulse.*`
+and fixtures refreshed). All four pass the check.
 
 ## Open
 
