@@ -145,6 +145,15 @@ pinning a Shared commit that contains it.
 
 ### G-CP-2 — CapabilityCatalogueSync
 
+**Status: done** in baobab-cp#220 (merged 2026-09-30). CP embeds
+`catalogue.yaml` and its definition documents and syncs them at startup,
+before any provider registers. The sync creates missing capabilities,
+updates changed ones by definition digest, refuses domain changes and
+removal of a contract major that is still supported, and records
+provenance (`canonical_owner`, `canonical_source`, `canonical_digest`,
+`canonical_synced_at`). The view `capability.capability_outside_catalogue`
+lists rows no sync has projected; G-CP-3 waits for it to be empty.
+
 *Repository:* `baobab-cp`. *Depends on:* G-CP-1.
 
 Project `catalogue.yaml` plus its definitions into `capability.capability`
@@ -196,6 +205,12 @@ declaration. Passing it proves structure, references and evidence
 existence; it does **not** mean certified.
 
 ### G-02A — Capability census and declarations
+
+**Status: in progress.** `docs/architecture/ea-02a-capability-census.md`
+records the survey. Payments, Subscriptions and Trade are surveyed, and
+their declarations are baobab-payments#12, baobab-subscriptions#18 and
+baobab-trade#109 (planned-only). IAM, CMS, ERP, Pulse and Regulations
+remain.
 
 Per ADR-SHARED-017 SS12 and Phase 2, every engine gets a census. Accepted
 candidates become catalogue entries through Shared PRs, and each engine then
