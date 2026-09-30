@@ -6,6 +6,16 @@
 **Primary organisation:** `baobab-platform`  
 **Assessment basis:** Current repository state on `main`, current accepted ADRs, current Shared contracts, CI state, open PRs, runtime implementation, cross-engine boundaries and prior Baobab architecture decisions.
 
+> **Status: Historical (2026-09-30).** The execution ordering in this assessment
+> (§55 *Enterprise Remediation Program*, §68 *Recommended Execution Order*,
+> §69 *Recommended Release Stages* and §70 *Production Readiness Dashboard*)
+> is superseded by the
+> [EA Implementation Plan v2.0](Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md).
+> Its findings stand as the historical record and are not superseded. The
+> live status is the [EA dashboard](../architecture/ea-dashboard.md). The
+> Regulations question in §44–45 and §67 was decided on 2026-09-30 as
+> [G-REG-NS Option B](../architecture/g-reg-ns-resolution.md).
+
 ---
 
 # 1. Executive Summary
@@ -2875,6 +2885,11 @@ This must be tested across every engine.
 
 # 55. Enterprise Remediation Program
 
+> **Superseded ordering.** This section's sequencing is superseded by the
+> EA Implementation Plan v2.0 (Phase 0). The findings it rests on remain the
+> historical record.
+
+
 The remediation programme should be treated as a coordinated architecture initiative, not unrelated repo tickets.
 
 ## EA-01 — Canonical Contract Convergence
@@ -3139,6 +3154,11 @@ No special architecture.
 
 # 68. Recommended Execution Order
 
+> **Superseded ordering.** This section's sequencing is superseded by the
+> EA Implementation Plan v2.0 (Phase 0). The findings it rests on remain the
+> historical record.
+
+
 ```text
                    ┌──────────────────┐
                    │ EA-01 Contracts  │
@@ -3176,6 +3196,11 @@ No special architecture.
 ---
 
 # 69. Recommended Release Stages
+
+> **Superseded ordering.** This section's sequencing is superseded by the
+> EA Implementation Plan v2.0 (Phase 0). The findings it rests on remain the
+> historical record.
+
 
 ## Stage A — Foundation Convergence
 
@@ -3276,6 +3301,11 @@ Thamani E2E
 ---
 
 # 70. Production Readiness Dashboard — Target
+
+> **Superseded ordering.** This section's sequencing is superseded by the
+> EA Implementation Plan v2.0 (Phase 0). The findings it rests on remain the
+> historical record.
+
 
 The eventual CP Console should be able to present a platform dashboard such as:
 

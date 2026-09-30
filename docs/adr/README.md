@@ -2,6 +2,8 @@
 
 The register of `baobab-platform/shared`'s architecture decisions and platform specifications, with the status each one declares. It covers `docs/adr` and `docs/architecture/decisions`. `baobab-platform/baobab-cp` keeps its own register in `docs/adr/index.md`.
 
+Each document is classed *Accepted*, *Proposed*, *Superseded* (in whole or in part), *Rejected* or *Historical* (EA Plan v2.0 §28). Accepted documents govern implementation. Proposed ones inform design but do not override an accepted decision. A historical document is the record of its time and governs nothing.
+
 An ADR marked *amended* or *refined* stays authoritative except where the document named in its `Amended By` or `Refined By` header, or its status, decides otherwise.
 
 | Document | Status |
@@ -25,3 +27,5 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 | [ADR-SHARED-017 — Canonical Capability Catalogue, Provider Declaration, Engine Registry and Runtime Capability Convergence](ADR-SHARED-017%20%E2%80%94%20Canonical%20Capability%20Catalogue%2C%20Provider%20Declaration%2C%20Engine%20Registry%20and%20Runtime%20Capability%20Convergence.md) | Accepted — Normative Target Architecture (governing EA-02 decision; Phase 1 implemented, see [EA-02 implementation record](../architecture/ea-02-capability-catalogue.md)) |
 | [Baobab Canonical Mapping Model](Baobab%20Canonical%20Mapping%20Model.md) | Accepted — Canonical Architecture, refined |
 | [ADR-0020: Capability-driven Foundation CI](../architecture/decisions/ADR-0020-capability-driven-foundation-ci.md) | Accepted |
+| [Baobab Platform Enterprise Architecture Implementation Plan — Revision v2.0](Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) | Accepted — governing EA programme plan (2026-09-30); live status in the [EA dashboard](../architecture/ea-dashboard.md) |
+| [Baobab Platform — Enterprise Architecture Production-Readiness Assessment v1](Baobab%20Platform%20%E2%80%94%20Version%201-Enterprise%20Architecture%20Production-Readiness%20Assessment.md) | Historical — findings retained; execution ordering superseded by EA Plan v2.0 |
