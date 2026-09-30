@@ -124,7 +124,7 @@ class CatalogueTest(unittest.TestCase):
 
     def test_catalogue_indexes_its_owning_engines(self):
         owners = {d["owner"] for d, _ in cc.Contracts(self.root).definitions().values()}
-        self.assertEqual(owners, {"baobab-erp", "baobab-payments", "baobab-subscriptions", "baobab-trade"})
+        self.assertEqual(owners, {"baobab-erp", "baobab-iam", "baobab-payments", "baobab-subscriptions", "baobab-trade"})
 
     def test_duplicate_catalogue_entry_rejected(self):
         self.edit_yaml(cc.CATALOGUE, lambda c: c["capabilities"].insert(0, copy.deepcopy(c["capabilities"][0])))
