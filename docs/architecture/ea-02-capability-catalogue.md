@@ -1,6 +1,6 @@
 # EA-02 — Canonical Capability Catalogue: implementation record
 
-**Governing decision:** ADR-SHARED-017 — Canonical Capability Catalogue, Provider Declaration, Engine Registry and Runtime Capability Convergence (**Proposed — Normative Target Architecture**)
+**Governing decision:** ADR-SHARED-017 — Canonical Capability Catalogue, Provider Declaration, Engine Registry and Runtime Capability Convergence (**Accepted — Normative Target Architecture**)
 **Supporting decisions:** ADR-SHARED-007, -008, -011, -012, -016; ADR-0020; ADR-BCP-002, -003, -006, -007, -009, -021
 **Related, not normative:** ADR-BCP-025, Engine Release, Artifact Identity and Deployment Observation (**Proposed**; not implemented or relied on here)
 **Date:** 2026-09-29
@@ -66,10 +66,11 @@ The existing mapping is:
 
 ## 3. Decisions and contradictions settled
 
-1. **Status.** ADR-SHARED-017 is *Proposed*. This cycle implements only its
-   additive Phase 1. It changes no runtime behaviour, and only a later,
-   accepted decision can make its "SHALL"s binding on the Control Plane.
-   ADR-BCP-025 is *Proposed* and nothing here depends on it.
+1. **Status.** ADR-SHARED-017 was *Proposed* when Phase 1 landed and has
+   since been *Accepted*, so its "SHALL"s now bind the Control Plane and
+   engines and the follow-up gates below are normative work, not options.
+   Phase 1 itself was additive and changed no runtime behaviour.
+   ADR-BCP-025 is still *Proposed*, and nothing here depends on it.
 2. **What an Engine is.** ADR-BCP-006 still describes Engine as a
    technology family (`medusa`, `idempiere`). ADR-SHARED-012 and CP
    persistence use the Baobab engine/service (`baobab-trade`). This cycle

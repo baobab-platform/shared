@@ -12,7 +12,7 @@ conflating them:
 
 It also holds the **Canonical Capability Catalogue** and the portable
 **provider declaration** contract. ADR-SHARED-017 is the governing EA-02
-decision for both (it is still *Proposed*; see "EA-02 status" below):
+decision for both (*Accepted*; see "EA-02 status" below):
 
 - **Which capabilities exist?** -> `catalogue.yaml` (`catalogue.schema.json`)
 - **Who claims to implement them?** -> each engine's
@@ -239,10 +239,11 @@ category of `contracts/authorization/v1/reason-code-registry.yaml`, alongside
 
 ADR-SHARED-017 reframes EA-02 as *Canonical Capability Catalogue, Provider
 Support, Engine Registry and Runtime Resolution Convergence*. Its status is
-**Proposed — Normative Target Architecture**. This package implements its
-Phase 1 (catalogue, provider-declaration schema, validation) additively
-within v1. Nothing here changes runtime behaviour: the Control Plane keeps
-its current bootstrap until the follow-up gates land. The `regulations`
+**Accepted — Normative Target Architecture**, so its "SHALL"s bind Shared,
+engines and the Control Plane. This package implements its Phase 1
+(catalogue, provider-declaration schema, validation) additively within v1.
+The Control Plane converges through the follow-up gates in
+`docs/architecture/ea-02-capability-catalogue.md`. The `regulations`
 namespace is not registered. SS43 requires the ADR-SHARED-007 architecture
 review first, so Regulations capabilities can only be *planned*
 (`proposed_key: regulations.*`) until that review accepts it.
