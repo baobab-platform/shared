@@ -163,6 +163,12 @@ environment, environment_text = load("reusable-foundation-environment.yml")
 assert ".foundation/.baobab/environment-profiles.json" in environment_text
 assert "1.2.6" not in environment_text
 assert "1.4.0-rc.0" not in environment_text
+# EA-01C/D: the lock check sees Shared main's full history, and the drift report is informational.
+history = next(step for step in environment["jobs"]["environment"]["steps"] if step.get("with", {}).get("path") == ".shared-history")
+assert history["with"]["ref"] == "main" and history["with"]["fetch-depth"] == 0
+assert history["with"]["persist-credentials"] is False
+assert "contract_lock.py check --repository-root . --shared-repo .shared-history --mode" in environment_text
+assert "contract_lock.py drift --repository-root . --shared-repo .shared-history >> \"$GITHUB_STEP_SUMMARY\"" in environment_text
 
 # Approved GitHub-hosted runner label for every workflow in this repository.
 RUNNER_LABEL = "ubuntu-26.04"

@@ -16,7 +16,7 @@ unless it says so.
 
 | Repository | Baseline | Note |
 |---|---|---|
-| `shared` | `7b9212f` (main) | EA-01 approved baseline for consumer pins: `1bb1c94` (the only later change, #154, is a Foundation workflow) |
+| `shared` | main | Consumer pins at `1bb1c94` are BEHIND_UNCHANGED: later changes touch Foundation tooling, not contracts |
 | `baobab-cp` | main | Pinned to Shared `1bb1c94` |
 | `baobab-iam` | main | Pinned to Shared `1bb1c94` |
 
@@ -27,17 +27,17 @@ BAOBAB EA READINESS                                   2026-09-30
 ─────────────────────────────────────────────────────────────────
 
 EA-01 Contract Convergence             IN PROGRESS
-  CP Shared pin                        CURRENT (1bb1c94), legacy lock schema name
-  IAM Shared pin                       CURRENT (1bb1c94), non-canonical lock shape
+  CP Shared pin                        BEHIND_UNCHANGED (1bb1c94); schema rename cp#229
+  IAM Shared pin                       BEHIND_UNCHANGED (1bb1c94); canonical lock iam#47
   Subscriptions Shared pin             STALE (canonical lock shape)
   Payments Shared pin                  STALE (canonical lock shape)
   Trade Shared pin                     STALE (legacy nabhold/* lock)
   ERP Shared pin                       STALE (legacy nabhold/* lock)
   Pulse Shared pin                     STALE (legacy nabhold/* lock)
   CMS contract lock                    MISSING
-  Lock schema in Shared (EA-01A)       MISSING
-  Foundation lock validation (EA-01C)  MISSING
-  Drift report (EA-01D)                MISSING
+  Lock schema in Shared (EA-01A)       READY (shared#157)
+  Foundation lock validation (EA-01C)  WARN MODE (shared#157)
+  Drift report (EA-01D)                READY (Foundation job summary)
 
 EA-02 Capability Governance            ADVANCED
   Canonical catalogue                  16 capabilities
@@ -101,7 +101,7 @@ validates a declaration. It never certifies or activates a provider.
 | # | Gate | State | Evidence |
 |---:|---|---|---|
 | 1 | EA plan v2 committed; prior sequence superseded | Dashboard done; supersession awaiting approval | Plan in `docs/adr`; this dashboard; the supersession marker and register classification are an ADR-status PR that needs owner approval |
-| 2 | Contract convergence audit and lock remediation | In progress | CP #227, IAM #46 re-pinned; engines and EA-01A–D open |
+| 2 | Contract convergence audit and lock remediation | In progress | CP #227, IAM #46 re-pinned; lock schema, check and drift report shared#157; CP #229 and IAM #47 canonical locks; other engines open ([EA-01 record](ea-01-contract-convergence.md)) |
 | 3 | `identity.workload-token.issue` provider neutrality | Done | shared#151 |
 | 4 | Complete IAM #42 | Done | iam#42 |
 | 5 | Shared #148 lifecycle semantics | Done | shared#148 |
