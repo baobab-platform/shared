@@ -68,6 +68,9 @@ EA-05 Governance                       ADVANCED
   AdministrativeGrant enforcement      BLOCKED (roles→grants decision)
 
 EA-06 Event Fabric                     PARTIAL      (plan §44, not re-audited)
+  event context registry               READY (ADR-SHARED-018; 29 contexts)
+  event-type registry                  READY (120 types: 101 ACTIVE, 19 PROPOSED)
+  Trade legacy event migration         T-COMPAT-03 next (38 legacy types)
 EA-09A Pre-deployment certification    NOT COMPLETE
 EA-10 Observability                    PARTIAL      (plan §44, not re-audited)
 EA-11 Recovery Engineering             NOT COMPLETE
@@ -124,6 +127,7 @@ validates a declaration. It never certifies or activates a provider.
 | Payments/Subscriptions lifecycle | Promoted to `active`; simulated support stays non-production | payments#14, subscriptions#19 |
 | Pulse lifecycle | `experimental` | pulse#26 |
 | ADR-BCP-025 | Accepted with amendments A1–A4 | cp#228 |
+| Event context governance | ADR-SHARED-018 Accepted; `erp` DEPRECATED, `payments` kept, fulfilment/logistics/trade.shipment distinct, Regulations owns classification and assessment, `thamani-*` retired in T-COMPAT-03 | shared#161 |
 
 Still open, and not to be decided in code: roles→grants flip; Keycloak
 `authority: self`; tenant suspend/activate routes; OEV-02 storage and regions;

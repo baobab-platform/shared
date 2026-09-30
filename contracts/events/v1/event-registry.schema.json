@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/events/v1/event-registry.schema.json",
+  "title": "Baobab Event Registry",
+  "description": "Platform index of canonical event types (ADR-SHARED-018 SS3.3). It indexes the AsyncAPI definitions; it does not replace them. The payload schema of each type is the one its AsyncAPI message declares.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "events"],
+  "properties": {
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "baobab-event-registry" },
+        "version": { "const": "1.0" }
+      }
+    },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Event" }
+    }
+  },
+  "$defs": {
+    "Event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "asyncapi", "lifecycle"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "pattern": "^com\\.baobab-platform\\.[a-z0-9]+(?:[.-][a-z0-9]+)*\\.v[1-9][0-9]*$",
+          "maxLength": 255
+        },
+        "asyncapi": {
+          "type": "string",
+          "pattern": "^contracts/[a-z0-9-]+/v[1-9][0-9]*/asyncapi\\.yaml$",
+          "description": "The AsyncAPI document that defines the message and its payload."
+        },
+        "producer": {
+          "type": "string",
+          "pattern": "^baobab-[a-z][a-z0-9-]*$",
+          "description": "The one engine authorised to produce this type. Required unless the lifecycle is PROPOSED."
+        },
+        "lifecycle": {
+          "enum": ["PROPOSED", "ACTIVE", "DEPRECATED", "RETIRED"],
+          "description": "PROPOSED: the contract is defined but no producer authority is assigned yet. ACTIVE: a registered producer may emit it."
+        },
+        "supersedes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^com\\.nabhold\\.[a-z0-9]+(?:[.-][a-z0-9]+)*\\.v[1-9][0-9]*$" },
+          "description": "Legacy types this canonical type replaces (ADR-SHARED-018 SS9). The only place a legacy com.nabhold.* type may appear in contracts/."
+        },
+        "naming_exception": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Why an already-published type keeps a name that breaks the SS3.4 hygiene rules (for example an engine token). Never granted to a new type."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "lifecycle": { "const": "PROPOSED" } } },
+          "else": { "required": ["producer"] }
+        }
+      ]
+    }
+  }
+}
