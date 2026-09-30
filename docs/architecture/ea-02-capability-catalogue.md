@@ -2,7 +2,7 @@
 
 **Governing decision:** ADR-SHARED-017 — Canonical Capability Catalogue, Provider Declaration, Engine Registry and Runtime Capability Convergence (**Accepted — Normative Target Architecture**)
 **Supporting decisions:** ADR-SHARED-007, -008, -011, -012, -016; ADR-0020; ADR-BCP-002, -003, -006, -007, -009, -021
-**Related, not normative:** ADR-BCP-025, Engine Release, Artifact Identity and Deployment Observation (**Proposed**; not implemented or relied on here)
+**Related:** ADR-BCP-025, Engine Release, Artifact Identity and Deployment Observation (**Accepted** 2026-09-30 with amendments A1–A4; A1 puts release support on provider + capability + contract major, matching this model)
 **Date:** 2026-09-29
 
 This record covers what the first EA-02 implementation cycle delivered, how
@@ -70,7 +70,7 @@ The existing mapping is:
    since been *Accepted*, so its "SHALL"s now bind the Control Plane and
    engines and the follow-up gates below are normative work, not options.
    Phase 1 itself was additive and changed no runtime behaviour.
-   ADR-BCP-025 is still *Proposed*, and nothing here depends on it.
+   ADR-BCP-025 was *Proposed* at the time and nothing here depended on it; it was accepted on 2026-09-30.
 2. **What an Engine is.** ADR-BCP-006 still describes Engine as a
    technology family (`medusa`, `idempiere`). ADR-SHARED-012 and CP
    persistence use the Baobab engine/service (`baobab-trade`). This cycle
@@ -227,11 +227,11 @@ and engines.
 
 | Migration gate | Status |
 |---|---|
-| 1. Rule in Foundation, findings reported as warnings | **Done.** `check-declaration-policy --mode warn` in `reusable-foundation-environment.yml`. A declaration that exists is always validated and fails Foundation when invalid (shared#152) |
-| 2. Declarations for IAM, CMS, Pulse, and Regulations once its first contracts land | IAM done (baobab-iam#45, planned-only). CMS can declare now. Pulse needs intelligence/v1. Regulations follows G-REG-NS |
-| 3. Audit lifecycle classification of every engine | Open. Current findings at Shared `main`: **CMS** and **Pulse** are active without a declaration; **Payments** and **Subscriptions** are experimental but declare IMPLEMENTED support for their sandbox/temporary providers. Each needs its declaration or its lifecycle corrected |
-| 4. Missing or disallowed declaration fails Foundation | Open: switch `--mode warn` to `enforce` once gates 2–3 are clean |
-| 5. Remove migration exceptions | Open |
+| 1. Rule in Foundation, findings reported as warnings | **Done** (shared#153) |
+| 2. Declarations for IAM, CMS, Pulse, and Regulations once its first contracts land | IAM done (baobab-iam#45, planned-only). CMS: declaration in progress. Pulse: not needed while experimental. Regulations follows G-REG-NS |
+| 3. Audit lifecycle classification of every engine | **Decided 2026-09-30.** Payments and Subscriptions are promoted to `active`: their sandbox and temporary-billing support stays `IMPLEMENTED`, `simulated`, not production-permitted, because the capabilities are real and only the provider is simulated. Pulse is reclassified `experimental`: a scaffold whose first production vertical must drive the intelligence/v1 contracts, never the gate. Regulations stays experimental |
+| 4. Missing or disallowed declaration fails Foundation | **Done**: `--mode enforce`. Active engines without a declaration (CMS until its declaration merges) fail when they bump their Foundation pin |
+| 5. Remove migration exceptions | None were granted |
 
 Engines pick up each change when they bump their Foundation pin.
 
