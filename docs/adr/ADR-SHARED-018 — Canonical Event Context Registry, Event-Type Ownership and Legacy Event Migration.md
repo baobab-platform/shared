@@ -110,9 +110,15 @@ Rules:
 3. A context MAY have several stewards when accepted ADRs divide authority
    within it. Each event type still has exactly one authorised producer
    (§3.3).
-4. Existing contexts are registered as found. `erp` is registered
-   `DEPRECATED`, with its replacement decided in a follow-up (§8), so no
-   shipped event breaks.
+4. Existing contexts are registered as found, so no shipped event breaks.
+   `erp` is registered `DEPRECATED` under §8.1, and `payments` is `ACTIVE`
+   under §8.2.
+5. A `DEPRECATED` context exists only for compatibility with events that
+   have already been published. No new event type may be registered
+   under it.
+6. `regulations` is registered `RESERVED` until G-REG-NS step 3 registers
+   the domain. Its event types become `ACTIVE` with the Regulations
+   engine's first accepted contracts.
 
 ### 3.3 Event registry
 
@@ -220,8 +226,8 @@ environment decision. It is not part of this contract.
 
 - The envelope's regex remains the syntax gate. The registries become the
   semantic gate that EA-06 builds on.
-- Existing Shared event types are registered without renaming, except
-  where §8 records a follow-up.
+- Existing Shared event types are registered without renaming. `erp.*`
+  types are re-homed under §8.1.
 - Trade's re-pin to current Shared (EA-01) waits for its event migration
   (§7). The old pin moves only after the semantic changes are absorbed.
 - Digital Estate projections are served by canonical business facts
@@ -253,37 +259,126 @@ environment decision. It is not part of this contract.
 
 Trade#110 (lock shape only, pin unchanged) is independent of this stack.
 
-## 8. Open decisions for review
+## 8. Decisions (closed 2026-09-30, platform architecture owner)
 
-1. **The `erp` context.** Shipped `erp.*` events name an engine role.
-   The options are to re-home them to business contexts (`finance.invoice.*`,
-   `inventory.availability.*`, …) or to keep `erp` as DEPRECATED
-   indefinitely. The proposed default is DEPRECATED with re-homing as a
-   separate ERP PR.
-2. **`payments` versus `payment`.** Register both, or align the event
-   context with the capability domain. The proposed default is to keep
-   `payments` (it is shipped) and record the relationship.
-3. **`fulfilment`, `logistics` and `trade.shipment`.** ADR-0016 gives Trade
-   the commerce fulfilment lifecycle and gives ERP/WMS/3PL physical
-   execution. `trade.shipment.*` already exists. Rows F-3 and F-4 (§9)
-   need a ruling on whether dispatch and delivery facts are
-   `fulfilment.*` (commerce lifecycle) or `trade.shipment.*` / `logistics.*`
-   (physical execution).
-4. **Compliance decisions after G-REG-NS.** Under Option B, Regulations
-   owns regulatory evaluation and Trade owns operational enforcement.
-   Rows R-1 and R-2 wait for the ADR-0021 and ADR-0024 amendments (G-REG-NS
-   step 2).
-5. **Digital Estate projections (`thamani-*`).** Estates are frozen until
-   the EA Unfreeze Gate. The proposal is to retire the estate-named types
-   and have estates consume canonical facts. The only question is timing:
-   in T-COMPAT-03, or deferred to the unfreeze.
+### 8.1 The `erp` context: DEPRECATED, mandatory time-bounded re-homing
+
+`erp` names an engine role, not a durable business context, so it is not
+part of the target taxonomy. It is registered `DEPRECATED`:
+
+> `erp` exists only to preserve compatibility with already-published
+> canonical events. No new event type may be registered under it.
+
+Each existing `erp.*` type is re-homed by business authority:
+
+```text
+existing erp.* event
+        ├─ financial or accounting fact   → finance.*
+        ├─ inventory fact                 → inventory.*
+        ├─ fulfilment or logistics fact   → fulfilment.* / logistics.*
+        └─ other domain fact              → the owning business context
+```
+
+The context is retired once no consumer, replay window or retained outbox
+data still needs the legacy types. The re-homing is a separate ERP change
+stack. It is mandatory and must not be deferred indefinitely.
+
+### 8.2 `payments` versus `payment`: keep `payments`
+
+`payments` stays the canonical event context (`ACTIVE`, related capability
+domain `payment`). Event contexts and capability domains intentionally
+differ here (§3.1). Renaming the shipped `payments.payment.*` types to
+`payment.*` would create compatibility work without improving their
+meaning.
+
+Only baobab-payments produces `payments.*`. Trade never emits
+payment-provider facts under `payments.*`. Its order-side facts stay
+distinct (`commerce.order-payment.*`, P-1 to P-4), so no business fact has
+two producers.
+
+### 8.3 `fulfilment`, `logistics` and `trade.shipment`: three distinct contexts
+
+ADR-0016 fixes the boundary. This ADR records it so later work does not
+collapse the three contexts:
+
+| Context | Meaning | Authority |
+|---|---|---|
+| `fulfilment.*` | The customer and commerce fulfilment lifecycle and promise | Trade (ADR-0016) |
+| `logistics.*` | Physical execution | ERP, WMS, 3PL or the bound logistics provider |
+| `trade.shipment.*` | The cross-border trade-shipment lifecycle | Trade, only where the shipment is a trade-execution aggregate and not another name for the logistics record |
+
+These are different facts, not duplicates. For example:
+
+```text
+logistics.shipment.dispatched          physical execution happened
+        │ evidence causes
+        ▼
+fulfilment.fulfilment-order.dispatched   the commerce fulfilment obligation moved to dispatched
+```
+
+F-3 and F-4 therefore become `fulfilment.fulfilment-order.dispatched.v1`
+and `fulfilment.fulfilment-order.delivered.v1`.
+
+### 8.4 Compliance after G-REG-NS Option B: decision and enforcement are split
+
+Regulations owns regulatory meaning and evaluation. Trade owns operational
+enforcement.
+
+- **R-1:** product classification is regulatory meaning. It becomes
+  `regulations.product-classification.assigned.v1`, produced by
+  baobab-regulations or by a provider acting through the Regulations
+  engine boundary. Customs consumes the classification. Customs-specific
+  facts stay under `customs.*`, for example
+  `customs.declaration.submitted`, `customs.duty-assessment.completed`
+  and `customs.clearance.granted`.
+- **R-2:** split into two facts. Regulations emits the decision,
+  `regulations.compliance-assessment.decided.v1`. Trade emits the
+  operational consequence, `trade.shipment-compliance.enforced.v1`, which
+  references the assessment or decision id and does not copy the
+  regulatory authority.
+
+```text
+Regulations  "this transaction is prohibited"  → regulations.compliance-assessment.decided
+Trade        blocks the shipment or order      → trade.shipment-compliance.enforced
+```
+
+This is a decision/enforcement split (PDP and PEP). ADR-0021 and ADR-0024
+are amended by reference as part of the G-REG-NS reconciliation (step 2).
+Interim rule: if Regulations does not yet produce these facts when
+T-COMPAT-03 lands, Trade does not mint them under a Trade- or
+customs-owned name, and it cannot keep the legacy names, which the
+current envelope rejects. Trade keeps its classification and compliance
+decisions as internal (LOCAL) facts until Regulations produces the
+canonical types, and it still emits `trade.shipment-compliance.enforced.v1`
+for the enforcement it performs.
+
+### 8.5 Digital Estate projections (`thamani-*`): retire now, in T-COMPAT-03
+
+The estates being frozen makes this the safest time. The `thamani-*` types
+name a Digital Estate, encode their target consumer, behave as commands,
+and make the producer aware of who consumes its events. D-1 to D-9 are
+retired in T-COMPAT-03:
+
+- **D-1 to D-8 (trigger-emitted).** A new forward migration re-creates
+  the trigger functions without the `thamani-*` commands. Migration
+  history is untouched, and nothing is dual-published.
+- **Pending unpublished legacy rows.** The T-COMPAT-03 PR states
+  explicitly whether it drains them before cutover or maps them once in
+  migration logic.
+- **Already-published events.** They stay historical and immutable
+  (§3.6).
+
+When Thamani development resumes, it consumes canonical business facts,
+for example `product.*`, `supplier.*`, `inventory.*`, `trade.order.*`,
+`trade.shipment.*`, `payments.*` and `commerce.order-payment.*`, subject
+to its subscriptions, context and authorisation.
 
 ## 9. Normative migration table (Trade)
 
 Every legacy type Trade emits, from `src/baobab/events/event-contracts.ts`,
 `src/baobab/thamani/events/index.ts` and the outbox trigger migrations
-`Migration20260909110000` and `Migration20260909190000`. "Proposed" entries
-become normative when this ADR is accepted. "Open" entries wait for §8.
+`Migration20260909110000` and `Migration20260909190000`. Every row becomes
+normative when this ADR is accepted. No row is open (§8).
 
 Disposition values:
 
@@ -293,6 +388,8 @@ Disposition values:
   fact.
 - **LOCAL:** the type is an internal fact and is not published
   cross-engine.
+- **REHOME:** the fact belongs to another engine's authority. That engine
+  produces the canonical type, and Trade stops producing it.
 
 Producer column: **S** means the event is emitted from service code;
 **T** means a database trigger function emits it.
@@ -330,8 +427,8 @@ Producer column: **S** means the event is emitted from service code;
 |---|---|---|---|---|---|
 | F-1 | `commerce.fulfilment.requested` | RENAME | `fulfilment.fulfilment-order.requested.v1` | S | ADR-0016: Trade owns the commerce fulfilment lifecycle. `fulfilment` is a registered capability domain. |
 | F-2 | `commerce.fulfilment.accepted` | RENAME | `fulfilment.fulfilment-order.accepted.v1` | S | As F-1. |
-| F-3 | `commerce.fulfilment.dispatched` | Open (§8.3) | `fulfilment.fulfilment-order.dispatched.v1`, or consume `trade.shipment.created.v1` | S | May duplicate the existing `trade.shipment.*` facts. |
-| F-4 | `commerce.fulfilment.delivered` | Open (§8.3) | `fulfilment.fulfilment-order.delivered.v1`, or consume `trade.shipment.delivered.v1` | S | As F-3. |
+| F-3 | `commerce.fulfilment.dispatched` | RENAME | `fulfilment.fulfilment-order.dispatched.v1` | S | §8.3: the commerce lifecycle fact. Physical dispatch is `logistics.*`. |
+| F-4 | `commerce.fulfilment.delivered` | RENAME | `fulfilment.fulfilment-order.delivered.v1` | S | §8.3, as F-3. |
 | F-5 | `commerce.fulfilment.exception` | RENAME | `fulfilment.fulfilment-order.exception-raised.v1` | S | The legacy name is not past tense. |
 | F-6 | `commerce.fulfilment.reconciled` | RENAME | `fulfilment.fulfilment-order.reconciled.v1` | S | As F-1. |
 
@@ -344,12 +441,12 @@ Producer column: **S** means the event is emitted from service code;
 | X-3 | `commerce.tax.reconciled` | RENAME | `tax.transaction-tax.reconciled.v1` | S | As X-1. |
 | X-4 | `commerce.tax-profile.verified` | RENAME | `tax.tax-registration.verified.v1` | S | Buyer tax-registration verification. |
 
-### Trade readiness and compliance (ADR-0021, ADR-0024; G-REG-NS)
+### Trade readiness and compliance (ADR-0021, ADR-0024; G-REG-NS Option B)
 
 | # | Legacy type | Disposition | Canonical type | Producer | Rationale |
 |---|---|---|---|---|---|
-| R-1 | `trade.classification.assigned` | Open (§8.4) | `customs.product-classification.assigned.v1` | S | ADR-0024 product classification. The producer may move to Regulations under Option B. |
-| R-2 | `trade.compliance.decided` | Open (§8.4) | Regulations: a `regulations.*` decision fact. Trade: `trade.shipment-compliance.enforced.v1` | S | Option B divides regulatory decisions from operational enforcement. |
+| R-1 | `trade.classification.assigned` | REHOME | `regulations.product-classification.assigned.v1` (producer: baobab-regulations) | S | §8.4: regulatory meaning belongs to Regulations. Customs consumes it. |
+| R-2 | `trade.compliance.decided` | REHOME + split | `regulations.compliance-assessment.decided.v1` (Regulations), then `trade.shipment-compliance.enforced.v1` (Trade; references the assessment id) | S | §8.4: decision and enforcement split. |
 | R-3 | `trade.cross-border-order.created` | RENAME | `trade.cross-border-order.created.v1` | S | Prefix change only. Relationship to `trade.order.placed.v1` to confirm in T-COMPAT-02. |
 
 ### ERP integration (commands expressed as events)
@@ -361,11 +458,11 @@ Producer column: **S** means the event is emitted from service code;
 | E-3 | `commerce.erp-financial-status.projected` | LOCAL | none; the authoritative fact is `erp.order.consequence-changed.v1` | S | Trade's local projection of an ERP fact. |
 | E-4 | `commerce.erp-integration.reconciliation-required` | RENAME | `integration.sync.discrepancy-detected.v1` | S | `integration` is a registered capability domain; the event names no engine. |
 
-### Digital Estate projections (`thamani-*`; estates frozen)
+### Digital Estate projections (`thamani-*`; retired in T-COMPAT-03, §8.5)
 
 | # | Legacy type | Disposition | Canonical facts consumed instead | Producer |
 |---|---|---|---|---|
-| D-1 | `commerce.thamani-product.projection-requested` | RETIRE (timing §8.5) | product facts | T |
+| D-1 | `commerce.thamani-product.projection-requested` | RETIRE | product facts | T |
 | D-2 | `commerce.thamani-supplier.projection-requested` | RETIRE | supplier facts | T |
 | D-3 | `commerce.thamani-warehouse.projection-requested` | RETIRE | `erp.warehouse.changed.v1` | T |
 | D-4 | `commerce.thamani-order.projection-requested` | RETIRE | `trade.order.placed.v1` | T |
@@ -383,11 +480,12 @@ facts filtered by the envelope's tenant and estate attributes.
 
 | Disposition | Count |
 |---|---:|
-| RENAME | 19 |
+| RENAME | 21 |
 | REPLACE | 1 |
 | RETIRE | 12 |
 | LOCAL | 2 |
-| Open | 4 |
+| REHOME | 2 |
+| Open | 0 |
 
 Eight types are emitted by database triggers and need the §3.7 forward
 migration: D-1 to D-8.
