@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.15.0",
-    "@grpc/grpc-js": "1.14.4",
+    "@grpc/grpc-js": "1.14.5",
     "google-protobuf": "4.0.2",
     "graphql": "17.0.2",
     "ts-proto": "2.12.1",
