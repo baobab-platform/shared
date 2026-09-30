@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/content/v1/content-resolve-response.schema.json",
+  "title": "Content Entry Resolution Response",
+  "description": "Resolution result for a content entry, including the resolved record, matched scope, and resolution trace for auditability per ADR-0014 content inheritance.",
+  "$defs": {
+    "ContentResolveResponse": {
+      "type": "object",
+      "required": ["matched_scope"],
+      "additionalProperties": false,
+      "properties": {
+        "record": {
+          "oneOf": [
+            {"$ref": "#/$defs/ResolvedContentEntry"},
+            {"type": "null"}
+          ],
+          "description": "The resolved content entry (null if no match found and matched_scope is NONE)"
+        },
+        "matched_scope": {
+          "type": "string",
+          "enum": ["EXACT", "FALLBACK", "NONE"],
+          "description": "Resolution outcome: EXACT (requested level matched), FALLBACK (fallback chain matched), or NONE (no eligible record)"
+        },
+        "provenance": {
+          "$ref": "#/$defs/ResolutionProvenance",
+          "description": "Provenance information including resolution trace for auditability"
+        }
+      }
+    },
+    "ResolvedContentEntry": {
+      "type": "object",
+      "required": ["id", "tenant_id", "content_key", "publication_state"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Engine-local content entry identifier"
+        },
+        "tenant_id": {
+          "type": "string",
+          "description": "Tenant scope"
+        },
+        "content_key": {
+          "type": "string",
+          "description": "Canonical content key"
+        },
+        "legal_entity_id": {
+          "type": ["string", "null"],
+          "description": "Legal entity context (if matched at this level)"
+        },
+        "digital_estate_id": {
+          "type": ["string", "null"],
+          "description": "Digital estate context (if matched at this level)"
+        },
+        "market_id": {
+          "type": ["string", "null"],
+          "description": "Market context (if matched at this level)"
+        },
+        "locale": {
+          "type": ["string", "null"],
+          "description": "Locale (if matched at this level)"
+        },
+        "publication_state": {
+          "type": "string",
+          "enum": ["DRAFT", "PUBLISHED", "UNPUBLISHED", "ARCHIVED"],
+          "description": "Publication lifecycle state"
+        },
+        "effective_from": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Effective start timestamp (if temporal window applies)"
+        },
+        "effective_to": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Effective end timestamp (if temporal window applies)"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Content entry data (schema varies by content_key and content type; not validated here)"
+        }
+      }
+    },
+    "ResolutionProvenance": {
+      "type": "object",
+      "required": ["trace"],
+      "additionalProperties": false,
+      "properties": {
+        "trace": {
+          "type": "array",
+          "description": "Resolution trace showing each specificity level attempted, per ADR-0014 §23-25",
+          "items": {
+            "$ref": "#/$defs/ResolutionTraceStep"
+          }
+        },
+        "inheritance_mode": {
+          "type": "string",
+          "enum": ["NONE", "INHERIT", "OVERRIDE", "COMPOSE"],
+          "description": "Inheritance mode applied during resolution (per ADR-0014 §17-21)"
+        }
+      }
+    },
+    "ResolutionTraceStep": {
+      "type": "object",
+      "required": ["match_count"],
+      "additionalProperties": false,
+      "properties": {
+        "scope_level": {
+          "type": "object",
+          "additionalProperties": {"type": ["string", "null"]},
+          "description": "Specificity level attempted (e.g., {locale: 'en-US', market_id: 'za', digital_estate_id: 'd1'})"
+        },
+        "locale_attempted": {
+          "type": ["string", "null"],
+          "description": "Locale fallback step (if applicable)"
+        },
+        "match_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of eligible records at this level"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/ContentResolveResponse"
+}

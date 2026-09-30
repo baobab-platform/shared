@@ -53,6 +53,9 @@ capabilities:
   - capability_key: commercial.rfq.manage
     owner: baobab-trade
     source: ../../trade/v1/capabilities.yaml
+  - capability_key: content.entry.resolve
+    owner: baobab-cms
+    source: ../../content/v1/capabilities.yaml
   - capability_key: customer.buyer-application.manage
     owner: baobab-trade
     source: ../../buyer-organisation/v1/capabilities.yaml
