@@ -68,31 +68,30 @@ jobs:
           IMAGE: "${{ steps.contract.outputs.image }}"
         shell: bash
         run: docker manifest inspect "$IMAGE" >/dev/null
-      # G-FCI-1 (ADR-SHARED-017, EA-02): a capability provider declaration
-      # is validated against the catalogue and schema of the pinned Shared
-      # commit whenever the caller ships one. Passing proves structure,
-      # catalogue references and that evidence paths exist; it does not
-      # certify anything (EA-09). The file is optional until every active
-      # engine has declared; an invalid declaration always fails.
-      - name: Detect capability provider declaration
-        id: declaration
-        shell: bash
-        run: |
-          if [ -f .baobab/capability-provider.yaml ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-          fi
+      # G-FCI-1 (ADR-SHARED-017, EA-02; G-FCI-1 decision 2026-09-30).
+      # Policy: an active repository with the engine trait must ship
+      # .baobab/capability-provider.yaml; an experimental engine may omit it
+      # or declare planned capabilities only. Migration Gate 1 reports policy
+      # findings as warnings; Gate 4 switches --mode to enforce. A declaration
+      # that exists is always validated against the pinned Shared commit and
+      # fails Foundation when invalid. Passing proves structure, catalogue
+      # references and evidence paths; it never certifies (EA-09) or
+      # activates (Control Plane) anything.
       - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
-        if: steps.declaration.outputs.present == 'true'
         with:
           python-version: "3.13"
+      - name: Install capability declaration validator runtime
+        shell: bash
+        run: python -m pip install --disable-pip-version-check -r .foundation/.github/foundation-tests/requirements.txt
+      - name: Check capability declaration lifecycle policy
+        if: hashFiles('.baobab/repository.yaml') != ''
+        shell: bash
+        run: python .foundation/scripts/capability_catalogue.py check-declaration-policy --repository-root . --mode warn
       - name: Validate capability provider declaration
-        if: steps.declaration.outputs.present == 'true'
+        if: hashFiles('.baobab/capability-provider.yaml') != ''
         env:
           ENGINE_ID: "${{ github.event.repository.name }}"
         shell: bash
         run: |
-          python -m pip install --disable-pip-version-check -r .foundation/.github/foundation-tests/requirements.txt
           python .foundation/scripts/capability_catalogue.py validate-declaration \
             .baobab/capability-provider.yaml --engine-id "$ENGINE_ID" --repository-root .

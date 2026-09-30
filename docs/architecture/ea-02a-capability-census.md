@@ -33,7 +33,7 @@ Each finding is classified as one of:
 | CMS | Surveyed | Can declare | 1 | — | `content.entry.resolve` catalogued (shared#150) |
 | ERP | Surveyed | Merged, planned-only (baobab-erp#40) | 1 | 0 | `inventory.availability.query` contract ready, not catalogued |
 | Pulse | Surveyed | Waits for its intelligence/v1 contract | 0 | — | Two keys reserved (EA-02B) |
-| Regulations | Paused: G-REG-NS is an open decision (`g-reg-ns-resolution.md`) | — | 0 | — | — |
+| Regulations | Pending: G-REG-NS decided Option B; census follows ADR-REG review and namespace registration | — | 0 | — | — |
 
 The survey order follows the EA-02 audit: engines with canonical
 definitions first, then IAM, CMS, ERP and Pulse, and Regulations last.
@@ -174,6 +174,6 @@ pipeline; that choice is part of the review.
    accepted `payment.intent.cancel` and `finance.order-consequence.process`
    into the catalogue, and reserved eight keys pending their Shared
    contracts.
-2. Survey Regulations once the G-REG-NS decision is taken (open; `g-reg-ns-resolution.md`).
+2. Survey Regulations once ADR-REG review and `regulations` namespace registration are done (G-REG-NS Option B, `g-reg-ns-resolution.md`).
 3. Until the active engines (Trade, ERP, CMS, Pulse, IAM) have
    declarations, Foundation enforcement (G-FCI-1) stays off.
