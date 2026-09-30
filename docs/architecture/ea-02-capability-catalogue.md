@@ -255,10 +255,12 @@ before engines can declare support. Work in progress (commit `f1ee987`):
    the `sku_id` and `warehouse_id` query parameters. OpenAPI endpoint
    updated to reference the schema. ERP can now declare
    `inventory.availability.query` as RESERVED.
-2. **buyer-organisation/v1 commands** — PENDING. Requires extracting
-   Trade-local route shapes (apply, evidence, review, decision; invite,
-   accept, revoke, resend) into Shared command schemas for Trade's two
-   customer capabilities.
+2. **buyer-organisation/v1 commands** — DONE. Created four schemas:
+   `buyer-application-request.schema.json`, `buyer-application-response.schema.json`,
+   `buyer-membership-request.schema.json`, `buyer-membership-response.schema.json`.
+   Formalizes apply/evidence/review/decision and invite/accept/revoke/role-update
+   workflows. Added to catalogue: `customer.buyer-application.manage` and
+   `customer.buyer-membership.manage` (now 13 capabilities total).
 3. **identity/v1 authentication profile** — PENDING. Requires formalizing
    the ADR-0006 token profile as request/response schemas (what relying
    parties send for authentication, what they receive). M1-B (provider-

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/buyer-organisation/v1/buyer-membership-response.schema.json",
+  "title": "Buyer Membership Response",
+  "description": "Response containing buyer membership state, roles, and access permissions.",
+  "$defs": {
+    "BuyerMembershipResponse": {
+      "type": "object",
+      "required": ["buyer_membership_id", "buyer_organisation_id", "status", "roles", "created_at", "updated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "buyer_membership_id": { "$ref": "./domain.schema.json#/$defs/buyerMembershipId" },
+        "buyer_organisation_id": { "$ref": "./domain.schema.json#/$defs/buyerOrganisationId" },
+        "status": { "$ref": "./domain.schema.json#/$defs/buyerMembershipStatus" },
+        "principal_id": {
+          "$ref": "../../identity/v1/principal.schema.json#/$defs/PrincipalId",
+          "description": "Canonical principal (null if INVITED status)"
+        },
+        "customer_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/customerId",
+          "description": "Canonical customer identifier (null if INVITED status)"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address of the member"
+        },
+        "roles": {
+          "type": "array",
+          "items": { "$ref": "./domain.schema.json#/$defs/buyerRole" },
+          "description": "Current roles assigned to this member"
+        },
+        "site_access": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SiteAccess"
+          },
+          "description": "Sites the member has access to; empty array means organisation-wide access"
+        },
+        "invitation_token": {
+          "type": "string",
+          "description": "One-time invitation token (only present for INVITED status)"
+        },
+        "invitation_sent_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the invitation was sent"
+        },
+        "invitation_expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the invitation expires (only for INVITED status)"
+        },
+        "activated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the member accepted the invitation (null if INVITED)"
+        },
+        "revoked_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When membership was revoked (if status is REVOKED)"
+        },
+        "revocation_reason": {
+          "type": "string",
+          "description": "Reason for revocation (if status is REVOKED)"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "SiteAccess": {
+      "type": "object",
+      "required": ["buyer_site_id", "site_type"],
+      "additionalProperties": false,
+      "properties": {
+        "buyer_site_id": { "$ref": "./domain.schema.json#/$defs/buyerSiteId" },
+        "site_type": { "$ref": "./domain.schema.json#/$defs/siteType" },
+        "access_level": {
+          "type": "string",
+          "enum": ["FULL", "READONLY"],
+          "description": "Level of access for this site"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/BuyerMembershipResponse"
+}
