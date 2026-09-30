@@ -209,27 +209,31 @@ existing sandbox and temporary-billing providers keep today's state.
 
 ### G-FCI-1 — Foundation CI enforcement
 
-**Status: validation gate delivered; requirement pending.** The reusable
-environment job (`reusable-foundation-environment.yml`) runs
-`validate-declaration` against the caller's pinned `foundation_ref` whenever
-`.baobab/capability-provider.yaml` exists, with the repository name as
-`--engine-id`. An invalid declaration fails Foundation. Engines pick this up
-when they bump their Foundation pin. Making the file *required* for active
-engines is still open, below. All five current declarations (Payments,
-Subscriptions, Trade, ERP, IAM) and the engine-template example pass at
-Shared `59b577d`.
+**Decision (2026-09-30):** `.baobab/capability-provider.yaml` is **mandatory**
+for every repository with `repository.lifecycle: active` and the Foundation
+`engine` trait. An experimental engine may omit it or declare planned
+capabilities only. A repository that provides no Baobab domain capability is
+not classified as an active engine; it does not get to omit the declaration.
+Foundation validates declarations and evidence. It never certifies (EA-09),
+activates (Control Plane), binds or grants.
 
-*Repository:* `shared` (reusable workflow) and engines. *Depends on:* this
-change, at least one engine declaration in real use, and lifecycle
-semantics reconciled.
+Requiring a declaration never requires claiming an implementation. An engine
+that isn't ready stays `experimental`, so the lifecycle reads:
+experimental → canonical contracts → implementation evidence → valid
+declaration → `active`.
 
-Add a reusable Foundation step that runs `validate-declaration` against the
-pinned Shared ref with `--engine-id ${repository name}
---repository-root .`, whenever `.baobab/capability-provider.yaml` exists.
-Make the file *required* only for `repository.lifecycle: active` engines
-with the `engine` trait. Experimental scaffolds may carry a planned-only
-declaration. Passing it proves structure, references and evidence
-existence; it does **not** mean certified.
+*Repository:* `shared` (reusable workflow, `scripts/capability_catalogue.py`)
+and engines.
+
+| Migration gate | Status |
+|---|---|
+| 1. Rule in Foundation, findings reported as warnings | **Done.** `check-declaration-policy --mode warn` in `reusable-foundation-environment.yml`. A declaration that exists is always validated and fails Foundation when invalid (shared#152) |
+| 2. Declarations for IAM, CMS, Pulse, and Regulations once its first contracts land | IAM done (baobab-iam#45, planned-only). CMS can declare now. Pulse needs intelligence/v1. Regulations follows G-REG-NS |
+| 3. Audit lifecycle classification of every engine | Open. Current findings at Shared `main`: **CMS** and **Pulse** are active without a declaration; **Payments** and **Subscriptions** are experimental but declare IMPLEMENTED support for their sandbox/temporary providers. Each needs its declaration or its lifecycle corrected |
+| 4. Missing or disallowed declaration fails Foundation | Open: switch `--mode warn` to `enforce` once gates 2–3 are clean |
+| 5. Remove migration exceptions | Open |
+
+Engines pick up each change when they bump their Foundation pin.
 
 ### G-02A — Capability census and declarations
 
@@ -240,7 +244,7 @@ for Payments (baobab-payments#12), Subscriptions (baobab-subscriptions#18),
 Trade (baobab-trade#109, planned-only) and ERP (baobab-erp#40, planned-only:
 `finance.order-consequence.process` CONTRACTED) are merged. IAM and CMS can
 declare now that their capabilities are catalogued; Pulse waits for its
-contract (step 5 below). Regulations waits for the G-REG-NS decision.
+contract (step 5 below). Regulations follows the G-REG-NS sequence (Option B).
 
 The EA-02B candidate review (`docs/architecture/ea-02b-candidate-review.md`)
 accepted `payment.intent.cancel` and `finance.order-consequence.process`
@@ -292,12 +296,13 @@ can declare support (`ea-02c-contract-work-plan.md`):
 
 ### G-REG-NS — `regulations` namespace review
 
-**Status: open decision.** shared#150 recorded this as resolved against a
-Regulations engine. That conclusion is withdrawn, because it would have
-settled a fork with the *Proposed* ADR-REG family by implication.
-`g-reg-ns-resolution.md` sets out the options and the interim state:
-`regulations` stays unregistered, and the Regulations census is paused, not
-deferred indefinitely.
+**Decided: Option B** (2026-09-30, `g-reg-ns-resolution.md`). `baobab-regulations`
+becomes a first-class capability provider for regulatory meaning, applicability
+and evaluation. Trade keeps trade execution and operational enforcement.
+`tax.*` and `customs.*` are retained, and `regulations.*` is added for
+cross-domain regulatory capabilities. Next: individual review of ADR-REG-0001–0030,
+ADR-0018/0021 amendments, namespace registration, census, contracts and
+declaration. The namespace is not registered yet.
 
 ### G-06 / G-09 — Events and certification
 

@@ -514,6 +514,34 @@ def validate_declaration(contracts: Contracts, declaration: object, repository_r
     return failures
 
 
+DECLARATION_PATH = ".baobab/capability-provider.yaml"
+REPOSITORY_CONTRACT_PATH = ".baobab/repository.yaml"
+POLICY_MODES = ("warn", "enforce")
+
+
+def declaration_policy(repository_contract: dict, declaration: object | None) -> list[str]:
+    """G-FCI-1 lifecycle policy (ADR-SHARED-017; G-FCI-1 decision, 2026-09-30).
+
+    An active repository with the Foundation engine trait must declare what it
+    provides; an experimental engine may declare planned capabilities only.
+    A repository without the engine trait has nothing to declare here.
+    Validity of a declaration that exists is validate_declaration's job.
+    """
+    lifecycle = (repository_contract.get("repository") or {}).get("lifecycle")
+    if "engine" not in (repository_contract.get("capabilities") or []):
+        return []
+    findings = []
+    if lifecycle == "active" and declaration is None:
+        findings.append(f"{DECLARATION_PATH} is required: this repository is an active engine "
+                        "(repository.lifecycle: active with the engine trait). Declare what it provides, "
+                        "or classify it experimental until it does")
+    if lifecycle == "experimental" and isinstance(declaration, dict) and declaration.get("providers"):
+        findings.append(f"{DECLARATION_PATH} declares provider support, but this engine is experimental: "
+                        "an experimental engine declares planned_capabilities only. Promote the repository "
+                        "to lifecycle active once its support is real, or move the support to planned capabilities")
+    return findings
+
+
 def evidence_errors(provider: str, capability: str, path: str, repository_root: Path | None) -> list[str]:
     if repository_root is None:
         return []
@@ -599,6 +627,21 @@ def report(failures: list[str], success: str) -> int:
     return 0
 
 
+def check_declaration_policy(repository_root: Path, mode: str) -> int:
+    contract_path = repository_root / REPOSITORY_CONTRACT_PATH
+    if not contract_path.is_file():
+        return report([f"{contract_path} is missing: Foundation classification needs it"], "")
+    declaration_path = repository_root / DECLARATION_PATH
+    declaration = yaml.safe_load(declaration_path.read_text()) if declaration_path.is_file() else None
+    findings = declaration_policy(yaml.safe_load(contract_path.read_text()) or {}, declaration)
+    if mode == "warn":
+        for finding in findings:
+            print(f"::warning title=Capability declaration policy (G-FCI-1)::{finding}")
+        print(f"capability declaration policy: {len(findings)} finding(s), reported as warnings")
+        return 0
+    return report(findings, "capability declaration policy passed")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--contracts-root", type=Path, default=CONTRACTS, help="a Shared contracts/ directory")
@@ -609,11 +652,18 @@ def main(argv: list[str] | None = None) -> int:
     declaration.add_argument("--repository-root", type=Path, help="engine repository root; checks evidence paths exist")
     declaration.add_argument("--engine-id", help="the engine id the declaration must name, e.g. baobab-payments")
     declaration.add_argument("--template", action="store_true", help="substitute engine-template placeholders first")
+    policy = commands.add_parser("check-declaration-policy",
+                                 help="check the G-FCI-1 lifecycle policy for an engine repository (Foundation)")
+    policy.add_argument("--repository-root", type=Path, default=Path("."), help="engine repository root")
+    policy.add_argument("--mode", choices=POLICY_MODES, default="enforce",
+                        help="warn reports findings and passes; enforce fails on any finding")
     generate = commands.add_parser("generate-registration", help="generate a transitional EngineRegistration")
     generate.add_argument("path", type=Path)
     generate.add_argument("--provider-key", required=True)
     generate.add_argument("--provider-lifecycle", default="DRAFT", choices=["DRAFT", "ACTIVE"])
     args = parser.parse_args(argv)
+    if args.command == "check-declaration-policy":
+        return check_declaration_policy(args.repository_root, args.mode)
     contracts = Contracts(args.contracts_root.resolve())
 
     if args.command == "validate-catalogue":

@@ -472,5 +472,40 @@ class DeclarationTest(unittest.TestCase):
         self.assertEqual(cc.main(["validate-declaration", str(path), "--template", "--engine-id", "baobab-example"]), 0)
 
 
+class DeclarationPolicyTest(unittest.TestCase):
+    """G-FCI-1: active engines must declare; experimental engines declare planned capabilities only."""
+
+    PLANNED = {"engine": {"engine_id": "baobab-example"}, "planned_capabilities": [{"proposed_key": "example.resource.act"}]}
+    SUPPORTING = {"engine": {"engine_id": "baobab-example"}, "providers": [{"provider_key": "baobab-example.example"}]}
+
+    @staticmethod
+    def contract(lifecycle, *capabilities):
+        return {"repository": {"lifecycle": lifecycle}, "capabilities": list(capabilities)}
+
+    def test_active_engine_must_declare(self):
+        self.assertEqual(len(cc.declaration_policy(self.contract("active", "go", "engine"), None)), 1)
+        self.assertEqual(cc.declaration_policy(self.contract("active", "engine"), self.PLANNED), [])
+        self.assertEqual(cc.declaration_policy(self.contract("active", "engine"), self.SUPPORTING), [])
+
+    def test_experimental_engine_declares_planned_capabilities_only(self):
+        self.assertEqual(cc.declaration_policy(self.contract("experimental", "engine"), None), [])
+        self.assertEqual(cc.declaration_policy(self.contract("experimental", "engine"), self.PLANNED), [])
+        self.assertEqual(len(cc.declaration_policy(self.contract("experimental", "engine"), self.SUPPORTING)), 1)
+
+    def test_repository_without_engine_trait_has_nothing_to_declare(self):
+        self.assertEqual(cc.declaration_policy(self.contract("active", "library", "go"), None), [])
+
+    def test_cli_warns_or_enforces(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / ".baobab").mkdir()
+            (root / ".baobab/repository.yaml").write_text(yaml.safe_dump(self.contract("active", "engine")))
+            self.assertEqual(cc.main(["check-declaration-policy", "--repository-root", directory, "--mode", "warn"]), 0)
+            self.assertEqual(cc.main(["check-declaration-policy", "--repository-root", directory, "--mode", "enforce"]), 1)
+            (root / ".baobab/capability-provider.yaml").write_text(yaml.safe_dump(self.PLANNED))
+            self.assertEqual(cc.main(["check-declaration-policy", "--repository-root", directory, "--mode", "enforce"]), 0)
+            self.assertEqual(cc.main(["check-declaration-policy", "--repository-root", str(root / "missing")]), 1)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
