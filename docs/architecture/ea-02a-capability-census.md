@@ -26,12 +26,12 @@ Each finding is classified as one of:
 
 | Engine | Census | Declaration | Canonical capabilities | Implemented | Candidates recorded |
 |---|---|---|---:|---:|---|
-| Payments | Surveyed | Merged (baobab-payments#12) | 4 | 4 (sandbox) | `payment.intent.cancel` |
+| Payments | Surveyed | Merged (baobab-payments#12) | 5 | 5 (sandbox), once the declaration adds `payment.intent.cancel` | none; `payment.intent.cancel` accepted |
 | Subscriptions | Surveyed | Merged (baobab-subscriptions#18) | 2 | 2 (temporary-billing) | none |
 | Trade | Surveyed | Merged, planned-only (baobab-trade#109) | 3 | 0 | B2B families (review, below) |
 | IAM | Surveyed | Waits for accepted candidates | 0 | — | Authentication families (review, below) |
 | CMS | Surveyed | Waits for accepted candidates | 0 | — | Content families (review, below) |
-| ERP | Surveyed | Waits for accepted candidates | 0 | — | Finance and order-to-cash families (review, below) |
+| ERP | Surveyed | Can declare `finance.order-consequence.process` (CONTRACTED) | 1 | 0 | Finance and order-to-cash families (review, below) |
 | Pulse | Surveyed | Waits for accepted candidates | 0 | — | Intelligence families (review, below) |
 | Regulations | Not yet (namespace review first, §43) | — | 0 | — | — |
 
@@ -167,10 +167,10 @@ pipeline; that choice is part of the review.
 
 ## Next
 
-1. Architecture review of the recorded candidates: `payment.intent.cancel`,
-   and the Trade, IAM, CMS, ERP and Pulse families above. The review
-   decides granularity against §13; accepted keys go into the catalogue
-   with canonical definitions, and each engine then declares them.
+1. **Done:** the candidate review (`ea-02b-candidate-review.md`)
+   accepted `payment.intent.cancel` and `finance.order-consequence.process`
+   into the catalogue, and reserved eight keys pending their Shared
+   contracts.
 2. Survey Regulations after the `regulations` namespace review.
 3. Until the active engines (Trade, ERP, CMS, Pulse, IAM) have
    declarations, Foundation enforcement (G-FCI-1) stays off.
