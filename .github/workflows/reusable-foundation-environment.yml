@@ -94,3 +94,27 @@ jobs:
         run: |
           python .foundation/scripts/capability_catalogue.py validate-declaration \
             .baobab/capability-provider.yaml --engine-id "$ENGINE_ID" --repository-root .
+      # EA-01C/D (EA Plan v2.0). contracts.lock.yaml must match
+      # .baobab/contract-consumer-lock.schema.json, pin a commit on Shared
+      # main, and list contracts that exist and parse at that commit; an
+      # active engine must carry one. Warn mode until engine locks converge,
+      # then enforce, as G-FCI-1 did. The drift report never fails: being
+      # behind is not a release failure; a removed consumed contract is
+      # incompatible and is a check finding.
+      - name: Checkout Shared main history for contract lock checks
+        if: hashFiles('.baobab/repository.yaml', 'contracts.lock.yaml') != ''
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: baobab-platform/shared
+          ref: main
+          path: .shared-history
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check contract consumer lock (EA-01C)
+        if: hashFiles('.baobab/repository.yaml', 'contracts.lock.yaml') != ''
+        shell: bash
+        run: python .foundation/scripts/contract_lock.py check --repository-root . --shared-repo .shared-history --mode warn
+      - name: Report Shared contract drift (EA-01D)
+        if: hashFiles('contracts.lock.yaml') != ''
+        shell: bash
+        run: python .foundation/scripts/contract_lock.py drift --repository-root . --shared-repo .shared-history >> "$GITHUB_STEP_SUMMARY"
