@@ -249,10 +249,12 @@ events:
     lifecycle: ACTIVE
   - type: com.baobab-platform.customer.buyer-commercial-profile.changed.v1
     asyncapi: contracts/buyer-organisation/v1/asyncapi.yaml
-    lifecycle: PROPOSED
+    producer: baobab-erp
+    lifecycle: ACTIVE
   - type: com.baobab-platform.customer.buyer-erp-projection.requested.v1
     asyncapi: contracts/buyer-organisation/v1/asyncapi.yaml
-    lifecycle: PROPOSED
+    producer: baobab-trade
+    lifecycle: ACTIVE
     naming_exception: >-
       Already published before ADR-SHARED-018. It names an engine role and
       reads as a command. Re-homing to a business fact is part of the
@@ -263,11 +265,11 @@ events:
     lifecycle: ACTIVE
   - type: com.baobab-platform.customer.buyer-organisation.registered.v1
     asyncapi: contracts/buyer-organisation/v1/asyncapi.yaml
-    producer: baobab-cp
+    producer: baobab-trade
     lifecycle: ACTIVE
   - type: com.baobab-platform.customer.buyer-organisation.status-changed.v1
     asyncapi: contracts/buyer-organisation/v1/asyncapi.yaml
-    producer: baobab-cp
+    producer: baobab-trade
     lifecycle: ACTIVE
   - type: com.baobab-platform.documents.trade-document.issued.v1
     asyncapi: contracts/trade-document/v1/asyncapi.yaml
