@@ -2,8 +2,9 @@
 # Canonical registry of workload (service-to-service) identities across the
 # Baobab platform (ADR-0007 §§42-43 "Workload Registration"/"Workload
 # Inventory", §101's illustrative shape). baobab-platform/baobab-iam owns
-# provisioning the Keycloak clients this registry describes (config/clients/
-# *-workload.json); baobab-platform/baobab-cp enforces against it at request time
+# provider-side workload credential/token mechanics; this registry owns the
+# canonical workload IDs, lifecycle, audiences, scopes and credential profile.
+# baobab-platform/baobab-cp enforces against it at request time
 # (rejecting any workload token whose client_id isn't listed here, or whose
 # audience/scope falls outside what its entry allows) -- per ADR-0007 §99's
 # ownership table, this file is the single source of truth both repos build
@@ -60,24 +61,26 @@
 #                              this workload's credential.
 #   status                  -- PROVISIONED | ACTIVE | SUSPENDED | REVOKED |
 #                              RETIRED (ADR-0007 §45's workload lifecycle
-#                              states). An entry is ACTIVE once its IdP
-#                              client exists (the older entries reflect
-#                              baobab-platform/baobab-iam's config/clients/
-#                              *-workload.json); PROVISIONED entries are
-#                              registered but have no IdP client yet, and
-#                              baobab-cp rejects their tokens until ACTIVE.
+#                              states). ACTIVE means the configured credential
+#                              profile has live evidence end to end: the identity
+#                              provider can issue/exchange a token and the actual
+#                              target resource server accepts it under this
+#                              registry's audience/scope constraints.
+#                              PROVISIONED means registered but not yet proven
+#                              under that full path; baobab-cp rejects incoming
+#                              tokens for non-ACTIVE registry entries.
 #
 # scripts/validate-authorization-contracts.rb checks every entry: its scopes
 # are registered, workload-usable and issued for one of its audiences; it
 # grants no privileged scope; and each audience is used by one of its scopes.
 #
-# Adding a workload: add an entry here first (this is the registration
-# ADR-0007 §42 requires), then provision the matching Keycloak client in
-# baobab-platform/baobab-iam. Removing one: set status to RETIRED here before
-# disabling/deleting the Keycloak client, never the other order, so
-# baobab-cp's enforcement (once it reads this registry -- Gate IAM-4 phase
-# 4) never has a live credential for a client this registry doesn't know
-# about.
+# Adding a workload: add an entry here first (ADR-0007 §42), then let
+# baobab-platform/baobab-iam provision the selected provider mechanics for the
+# declared credential_type. A federated_workload_token entry MUST NOT be
+# downgraded to a stored client secret. Promote PROVISIONED -> ACTIVE only after
+# the resource-server proof described above. Removing one: move the canonical
+# lifecycle to a non-active state before provider-side authority can continue,
+# so no live credential survives a canonical suspension/revocation/retirement.
 
 schema:
   name: baobab-platform-workload-registry
@@ -156,9 +159,12 @@ workloads:
 
   # Assessment §22 / EA-04: the Control Plane -> Subscriptions -> Payments
   # chain. Each identity is issued only for the one engine it calls, and is
-  # separate from the Control Plane's browser and admin clients. Neither
-  # has an IdP client yet: IdP work waits on the identity-provider migration
-  # ADR, so both are PROVISIONED.
+  # separate from the Control Plane's browser and admin clients. Both use the
+  # no-static-secret federated profile. They remain PROVISIONED until the
+  # identity-provider path can exchange the projected assertion and the actual
+  # target engine accepts the resulting access token with the audience,
+  # workload identity and scopes below. Provider configuration alone is not
+  # activation evidence.
   baobab-cp-workload:
     repository: baobab-platform/baobab-cp
     owner: baobab-platform/baobab-cp
