@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/events/v1/context-registry.schema.json",
+  "title": "Baobab Event Context Registry",
+  "description": "Governs the <context> segment of com.baobab-platform.<context>.<aggregate>.<fact>.v<major> (ADR-SHARED-018 SS3.2). Related to, but not identical with, the capability namespace registry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "contexts"],
+  "properties": {
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "baobab-event-context-registry" },
+        "version": { "const": "1.0" }
+      }
+    },
+    "contexts": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Context" }
+    }
+  },
+  "$defs": {
+    "Context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "status", "stewards", "description"],
+      "properties": {
+        "key": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$", "maxLength": 40 },
+        "status": {
+          "enum": ["ACTIVE", "RESERVED", "DEPRECATED"],
+          "description": "RESERVED: registered for a decided future steward; no event type may use it yet. DEPRECATED: kept only for already-published types listed in frozen_types (ADR-SHARED-018 SS8.1)."
+        },
+        "stewards": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/EngineId" },
+          "description": "Engines whose accepted ADRs grant authority over facts in this context. Every registered producer of a type in this context is one of them. Empty while no producer authority has been assigned."
+        },
+        "authority": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 3 },
+          "description": "Accepted ADRs or decision records that ground the stewardship."
+        },
+        "capability_domains": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "description": "Related capability domains in contracts/capability/v1/namespace-registry.yaml. Related, not identical (ADR-SHARED-018 SS3.1)."
+        },
+        "frozen_types": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^com\\.baobab-platform\\.[a-z0-9]+(?:[.-][a-z0-9]+)*\\.v[1-9][0-9]*$" },
+          "description": "DEPRECATED contexts only: the already-published types the context is kept for. No other type may use the context."
+        },
+        "description": { "type": "string", "minLength": 10 }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "DEPRECATED" } } },
+          "then": { "required": ["frozen_types"] },
+          "else": { "not": { "required": ["frozen_types"] } }
+        }
+      ]
+    },
+    "EngineId": { "type": "string", "pattern": "^baobab-[a-z][a-z0-9-]*$" }
+  }
+}

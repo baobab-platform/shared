@@ -37,6 +37,9 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/event_contexts.py and its tests to the governance-contracts
+#   job: the event context registry and event-type registry (ADR-SHARED-018,
+#   T-COMPAT-02).
 # * Added scripts/tests/test_contract_lock.py to the governance-contracts job:
 #   contract consumer lock validation and Shared drift reporting (EA Plan
 #   v2.0 EA-01A/C/D).
@@ -103,6 +106,7 @@ on:
       - "scripts/validate-control-plane-contracts.py"
       - "scripts/capability_catalogue.py"
       - "scripts/contract_lock.py"
+      - "scripts/event_contexts.py"
       - ".baobab/contract-consumer-lock.schema.json"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
@@ -130,6 +134,7 @@ on:
       - "scripts/validate-control-plane-contracts.py"
       - "scripts/capability_catalogue.py"
       - "scripts/contract_lock.py"
+      - "scripts/event_contexts.py"
       - ".baobab/contract-consumer-lock.schema.json"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
@@ -186,6 +191,10 @@ jobs:
         run: python scripts/tests/test_capability_catalogue.py
       - name: Test contract consumer lock validation and drift reporting (EA-01)
         run: python scripts/tests/test_contract_lock.py
+      - name: Validate the event context and event-type registries (ADR-SHARED-018)
+        run: python scripts/event_contexts.py
+      - name: Test event context and event-type registry validation (ADR-SHARED-018)
+        run: python scripts/tests/test_event_contexts.py
 
   action-pinning:
     name: Enforce action pinning (self-check)
