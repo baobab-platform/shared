@@ -83,13 +83,17 @@ contexts:
 
   - key: customer
     status: ACTIVE
-    stewards: [baobab-cp, baobab-trade]
-    authority: [ADR-BCP-016, ADR-BCP-018, baobab-trade:ADR-0017]
+    stewards: [baobab-erp, baobab-trade]
+    authority: [baobab-trade:ADR-0017, baobab-trade:ADR-0029, ADR-BCP-016, ADR-BCP-018]
     capability_domains: [customer]
     description: >
-      Buyer organisation facts. The Control Plane owns buyer-organisation
-      registration and status; Trade owns buyer applications, membership and
-      purchasing authority (buyer-organisation/v1 authority table).
+      Buyer organisation facts. Trade owns the buyer organisation, buyer
+      applications, membership and purchasing authority (ADR-0017), and
+      emits their lifecycle facts. ERP owns the buyer's credit and
+      commercial profile (ADR-0029). Registration of the canonical
+      Organisation entity that a buyer organisation references
+      (canonical_organisation_id) remains the Control Plane's
+      (ADR-BCP-016/018), and those are control-plane facts.
 
   - key: customs
     status: ACTIVE
