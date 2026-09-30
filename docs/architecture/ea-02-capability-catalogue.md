@@ -245,6 +245,31 @@ or catalogue entries before the census accepts them. The first natural
 adopters are `baobab-payments` and `baobab-subscriptions`, whose
 declarations can then generate their bundles.
 
+### Contract work (smallest gaps first)
+
+Reserved keys from EA-02B require Shared request/response contract schemas
+before engines can declare support. Work in progress (commit `f1ee987`):
+
+1. **erp/v1 InventoryAvailabilityQuery** — DONE. Created
+   `inventory-availability-query.schema.json` schema document formalizing
+   the `sku_id` and `warehouse_id` query parameters. OpenAPI endpoint
+   updated to reference the schema. ERP can now declare
+   `inventory.availability.query` as RESERVED.
+2. **buyer-organisation/v1 commands** — PENDING. Requires extracting
+   Trade-local route shapes (apply, evidence, review, decision; invite,
+   accept, revoke, resend) into Shared command schemas for Trade's two
+   customer capabilities.
+3. **identity/v1 authentication profile** — PENDING. Requires formalizing
+   the ADR-0006 token profile as request/response schemas (what relying
+   parties send for authentication, what they receive). M1-B (provider-
+   neutrality) and M1-C (Ory resolve fixtures) are merged; authentication
+   profile schemas would complete IAM's capability foundation.
+4. **content/v1 resolution** — PENDING. Requires CMS contract for
+   content resolution requests (context, market, locale, entry reference)
+   and responses (resolved entry with provenance).
+5. **intelligence/v1** — PENDING. Requires Pulse contract for research-
+   mission and evidence-search (request/response pairs).
+
 ### G-REG-NS — `regulations` namespace review
 
 An ADR-SHARED-007 architecture review of the `regulations` namespace.
