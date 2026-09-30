@@ -1,0 +1,9 @@
+{
+  "id": "b1ffcd00-0d1c-4f99-ac7e-7cc0ce491b22",
+  "principal_id": "8f14e45f-ceea-467e-bd42-7f8f8f8f8f8f",
+  "issuer": "https://hydra.baobab-platform.com/",
+  "subject": "kratos-identity-9c2d3e4f-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
+  "provider_type": "ory",
+  "status": "ACTIVE",
+  "created_at": "2026-09-30T08:00:00Z"
+}
