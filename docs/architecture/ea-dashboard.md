@@ -89,9 +89,9 @@ validates a declaration. It never certifies or activates a provider.
 | Engine | `repository.lifecycle` | Declaration | Support declared |
 |---|---|---|---|
 | baobab-iam | active | Yes | Planned only: `identity.authentication.perform`, `identity.workload-token.issue` |
-| baobab-payments | active (payments#14) | Yes | IMPLEMENTED, sandbox/temporary, simulated, `production_permitted: false` |
+| baobab-payments | active | Yes | IMPLEMENTED, sandbox/temporary, simulated, `production_permitted: false` |
 | baobab-subscriptions | active | Yes | IMPLEMENTED, sandbox/temporary, simulated, `production_permitted: false` |
-| baobab-cms | active | cms#17 | Planned only: `content.entry.resolve` |
+| baobab-cms | active | Yes | Planned only: `content.entry.resolve` |
 | baobab-pulse | experimental | None | None; intelligence/v1 not yet in scope |
 | baobab-trade | — | Not yet reviewed | — |
 | baobab-erp | — | Not yet reviewed | — |
@@ -106,7 +106,7 @@ validates a declaration. It never certifies or activates a provider.
 | 4 | Complete IAM #42 | Done | iam#42 |
 | 5 | Shared #148 lifecycle semantics | Done | shared#148 |
 | 6 | IAM provider declaration | Planned-only | iam#45; support waits on M2–M4 evidence |
-| 7 | CMS provider declaration and contract lock | Declaration in review; lock open | cms#17 |
+| 7 | CMS provider declaration and contract lock | Declaration done; lock open | cms#17 |
 | 8 | Foundation provider-declaration validation | Done (enforcing) | shared#152, #153, #154 |
 | 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
 | 10 | Implement EngineRelease | Open | ER-01…ER-05 authorised; ER-06 a separate gate |
