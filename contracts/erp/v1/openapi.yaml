@@ -122,15 +122,20 @@ paths:
     get:
       operationId: queryInventoryAvailability
       summary: Query an ERP-owned physical availability projection
+      description: |
+        Request parameters conform to InventoryAvailabilityQuery (inventory-availability-query.schema.json).
+        Query results respect warehouse-level granularity; Trade reservations remain Trade-owned (not included in availability).
       parameters:
         - name: sku_id
           in: query
           required: true
           schema: { $ref: ./domain.schema.json#/$defs/canonicalResourceId }
+          description: Canonical SKU identifier (from Trade or shared registry, never vendor or iDempiere reference)
         - name: warehouse_id
           in: query
           required: true
           schema: { $ref: ./domain.schema.json#/$defs/erpResourceId }
+          description: ERP warehouse identifier (minted by Baobab ERP boundary, binds to iDempiere or ERPNext warehouse)
         - $ref: "#/components/parameters/CorrelationId"
         - $ref: "#/components/parameters/Traceparent"
       responses:

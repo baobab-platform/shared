@@ -1,5 +1,5 @@
 # Baobab Platform  
-## Enterprise Architecture Production-Readiness Assessment
+## Enterprise Architecture Production-Readiness Assessment Version 1
 
 **Assessment date:** 25 September 2026  
 **Architecture scope:** Baobab Platform ecosystem  

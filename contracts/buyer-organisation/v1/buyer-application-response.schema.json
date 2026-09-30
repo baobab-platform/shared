@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/buyer-organisation/v1/buyer-application-response.schema.json",
+  "title": "Buyer Application Response",
+  "description": "Response containing buyer application state, status and decision outcome.",
+  "$defs": {
+    "BuyerApplicationResponse": {
+      "type": "object",
+      "required": ["buyer_application_id", "buyer_organisation_id", "status", "created_at", "updated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "buyer_application_id": { "$ref": "./domain.schema.json#/$defs/buyerApplicationId" },
+        "buyer_organisation_id": { "$ref": "./domain.schema.json#/$defs/buyerOrganisationId" },
+        "organisation_name": {
+          "type": "string",
+          "description": "Legal name of the applicant organisation"
+        },
+        "legal_entity_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId",
+          "description": "Canonical legal entity, if linked"
+        },
+        "status": { "$ref": "./domain.schema.json#/$defs/buyerApplicationStatus" },
+        "contact_email": {
+          "type": "string",
+          "format": "email",
+          "description": "Primary contact email address"
+        },
+        "tax_registration_number": {
+          "type": "string",
+          "description": "Tax ID or VAT registration if submitted"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when application was first submitted"
+        },
+        "decision": {
+          "$ref": "#/$defs/ApplicationDecision",
+          "description": "Decision details when status is APPROVED or REJECTED"
+        },
+        "information_requests": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/InformationRequest" },
+          "description": "Open information requests for the application"
+        },
+        "evidence_submitted": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SubmittedEvidence" },
+          "description": "Evidence items provided by applicant"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ApplicationDecision": {
+      "type": "object",
+      "required": ["decision_at", "decided_by"],
+      "additionalProperties": false,
+      "properties": {
+        "decision_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the decision"
+        },
+        "decided_by": {
+          "type": "string",
+          "description": "Identifier of the person or system that made the decision"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for REJECTION or conditional APPROVED decision"
+        },
+        "conditions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Conditions that must be satisfied for activation"
+        }
+      }
+    },
+    "InformationRequest": {
+      "type": "object",
+      "required": ["information_request_id", "question", "requested_at", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "information_request_id": {
+          "type": "string",
+          "description": "Unique identifier for this information request"
+        },
+        "question": {
+          "type": "string",
+          "description": "The question or information requirement"
+        },
+        "requested_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "RESPONDED", "SATISFIED"],
+          "description": "Status of the information request"
+        }
+      }
+    },
+    "SubmittedEvidence": {
+      "type": "object",
+      "required": ["evidence_type", "evidence_reference", "submitted_at"],
+      "additionalProperties": false,
+      "properties": {
+        "evidence_type": {
+          "type": "string",
+          "enum": ["kyb_document", "certificate_of_incorporation", "tax_compliance", "banking_reference", "commercial_reference"],
+          "description": "Category of evidence"
+        },
+        "evidence_reference": {
+          "type": "string",
+          "description": "Reference to evidence location (URI, document ID)"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/BuyerApplicationResponse"
+}

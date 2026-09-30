@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/workload-token-request.schema.json",
+  "title": "Workload Token Request",
+  "description": "Request for a short-lived Baobab workload access token (ADR-0006 token profile, ADR-0007 workload identity). Provider-neutral (ADR-IAM-0019, ADR-IAM-0020, ADR-SHARED-017 SS14): it names the registered workload, the resource server it calls and the scopes it needs. It never carries a credential and never names a grant type, realm or other identity-provider construct. How the workload proves itself -- a federated platform-projected token exchanged as an RFC 7523 JWT bearer grant, private_key_jwt, or an IdP client credential -- follows the workload's credential_type in workload-registry.yaml and is presented through the implementing provider's own protocol binding, outside this contract. A federated_workload_token workload never holds a static secret.",
+  "$defs": {
+    "WorkloadTokenRequest": {
+      "type": "object",
+      "required": ["workload_id", "audience"],
+      "additionalProperties": false,
+      "properties": {
+        "workload_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "maxLength": 63,
+          "description": "Canonical workload identifier: a key of workload-registry.yaml workloads. The provider refuses a workload that is not registered, not ACTIVE, or registered for another environment."
+        },
+        "audience": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "maxLength": 63,
+          "description": "Logical resource-server audience the token is for; must be one of the workload's allowed_audiences. A token for one audience does not work against another (ADR-0007 SS24-25)."
+        },
+        "scopes": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*:[a-z][a-z0-9-]*$",
+            "maxLength": 63
+          },
+          "description": "Requested scopes from authorization/v1 scope-registry.yaml; each must be in the workload's allowed_scopes. Omitted means the workload's least-privilege default for the audience; never a wildcard."
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/WorkloadTokenRequest"
+}

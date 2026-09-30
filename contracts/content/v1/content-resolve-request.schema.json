@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/content/v1/content-resolve-request.schema.json",
+  "title": "Content Entry Resolution Request",
+  "description": "Request to resolve a content entry by canonical key and contextual dimensions (market, locale, digital estate). Supports temporal resolution and preview mode for draft content per ADR-0014 inheritance policy.",
+  "$defs": {
+    "ContentResolveRequest": {
+      "type": "object",
+      "required": ["tenant_id", "content_key"],
+      "additionalProperties": false,
+      "properties": {
+        "tenant_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Tenant identifier (required; all content is tenant-scoped)"
+        },
+        "content_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Canonical content entry identifier (required; e.g., 'product-content.my-product')"
+        },
+        "legal_entity_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Legal entity context (optional; narrows resolution scope)"
+        },
+        "digital_estate_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Digital estate context (optional; narrows resolution scope)"
+        },
+        "market_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Market context (optional; narrows resolution scope per ADR-0014 §7)"
+        },
+        "locale": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+          "description": "Locale (optional, BCP 47 format; e.g., 'en', 'en-US', 'fr-CA'). Resolution follows explicit locale fallback chain per ADR-0014 §27."
+        },
+        "effective_time": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Effective timestamp for temporal resolution (optional; defaults to current time). Used to resolve entries with effectiveFrom/effectiveTo boundaries."
+        },
+        "preview_mode": {
+          "type": ["boolean", "null"],
+          "description": "Allow draft/preview content (optional; defaults to false). When true, includes DRAFT publication state in eligibility."
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/ContentResolveRequest"
+}

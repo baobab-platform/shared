@@ -21,6 +21,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Changes that have been merged but have not yet been included in a released version are recorded here.
 
+## Changed
+
+- **identity/v1 authentication contracts are provider-neutral (EA-02, follow-up to shared#150).** Breaking for `identity.workload-token.issue` and `identity.authentication.perform` contract 1. Both keys were catalogued the same day and have no consumer pinned yet.
+  - `WorkloadTokenRequest` names `workload_id`, `audience` and `scopes`, and carries no credential, grant type or realm. The mechanism (a federated platform token via RFC 7523, private_key_jwt, or an IdP client credential) follows the workload's registered `credential_type` behind the provider boundary. A `federated_workload_token` workload holds no static secret (ADR-0007, ADR-IAM-0019/0020).
+  - `HumanAuthenticationRequest` drops `realm` and `assurance_level`, and adds OIDC `acr_values` in line with `AssuranceRequirement` and `AuthenticationAssurance`.
+  - Capability metadata no longer names events that no AsyncAPI document defines. Buyer-organisation metadata now names its registered `com.baobab-platform.customer.*` events.
+- **G-REG-NS is an open decision again.** shared#150's "resolved" record, which said no Regulations engine was needed and deferred the census indefinitely, is withdrawn. It settled a fork with the *Proposed* ADR-REG family by implication. `regulations` stays unregistered as the status quo, and the Regulations census is paused pending an explicit decision (`docs/architecture/g-reg-ns-resolution.md`).
+- The EA-02 implementation record, census and contract work plan are reconciled with what merged, including a stray merge-conflict marker removed from the record.
+
 ## Added
 
 - **Capability resolution routes are described and conform to capability/v1 (EA-01, phase 3).** control-plane/v1 OpenAPI 1.21.0. **Breaking** for callers of the Control Plane's `/v1/capabilities/resolve` and `/resolve-batch`.
