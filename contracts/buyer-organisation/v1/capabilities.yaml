@@ -31,7 +31,7 @@ capabilities:
   data_classification: TENANT_CONFIDENTIAL
   metadata:
     applies_to: buyer-organisation-lifecycle-gate-zb-04
-    related_events: buyer-organisation.application.submitted.v1, buyer-organisation.application.approved.v1, buyer-organisation.application.rejected.v1
+    related_events: com.baobab-platform.customer.buyer-application.submitted.v1, com.baobab-platform.customer.buyer-application.decision-recorded.v1, com.baobab-platform.customer.buyer-application-evidence.decided.v1
 - capability_key: customer.buyer-membership.manage
   name: Manage buyer membership
   description: Invite, accept invitations, revoke, and update roles for members of a buyer organisation. Trade manages membership and purchasing authority independently of application approval.
@@ -47,4 +47,4 @@ capabilities:
   data_classification: TENANT_CONFIDENTIAL
   metadata:
     applies_to: buyer-membership-lifecycle
-    related_events: buyer-organisation.membership.invited.v1, buyer-organisation.membership.activated.v1, buyer-organisation.membership.revoked.v1
+    related_events: com.baobab-platform.customer.buyer-membership.changed.v1

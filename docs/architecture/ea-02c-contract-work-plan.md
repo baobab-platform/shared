@@ -13,7 +13,7 @@
 - Response schema: existing `inventory-availability.schema.json`
 - Merged in shared#149
 
-### Step 2: buyer-organisation/v1 commands (IN PROGRESS)
+### Step 2: buyer-organisation/v1 commands ✅ DONE (shared#150)
 
 **Scope:** Two capabilities
 - `customer.buyer-application.manage` — apply, provide evidence, review, decide
@@ -28,23 +28,23 @@
 **Authority:** Trade (buyer-organisation/v1 README §Authority Boundaries)  
 **Reference:** trade-buyer branch or live implementation
 
-### Step 3: identity/v1 authentication profile
+### Step 3: identity/v1 authentication profile ✅ DONE (shared#150; corrected for provider neutrality in its follow-up)
 
 **Scope:** Two capabilities  
 - `identity.authentication.perform` — human interactive + session
 - `identity.workload-token.issue` — client credentials, workload actor_type
 
 **Deliverables:**
-- `identity-authentication-request.schema.json` — credentials, realm, assurance
-- `identity-authentication-response.schema.json` — session, principal, claims
-- `workload-token-request.schema.json` — client_id, scope, grant_type
-- `workload-token-response.schema.json` — access_token, principal
+- `human-authentication-request.schema.json` — Authorization Code + PKCE, OIDC `acr_values`; no realm
+- `human-authentication-response.schema.json` — access token, ID token
+- `workload-token-request.schema.json` — workload_id, audience, scopes; no credential, grant type or realm (the mechanism follows the workload's registered `credential_type` behind the provider boundary)
+- `workload-token-response.schema.json` — access token and workload claims
 
 **Authority:** IAM (baobab-iam)  
-**Dependency:** M1-C Ory fixture (baobab-cp#225) merged ✅
+**Dependency:** M1-C Ory fixtures (baobab-cp#224, #225) merged ✅; federated path in baobab-iam#42
 **Reference:** ADR-0006 token profile, ADR-IAM-0024 assurance
 
-### Step 4: content/v1 resolution
+### Step 4: content/v1 resolution ✅ DONE (shared#150)
 
 **Scope:** One capability  
 - `content.entry.resolve` — deterministic content by market/locale/context
@@ -74,10 +74,9 @@
 
 ## Timeline
 
-- Step 2 (buyer-org): In progress
-- Step 3 (identity): Follows step 2 (depends on buyer-org delivery for sequencing)
-- Step 4 (content): Follows step 3
+- Steps 1–4: done. `inventory.availability.query` (step 1) still needs its catalogue entry.
 - Step 5 (intelligence): Deferred pending Pulse production lifecycle
+- Catalogue expansion is subordinate to EA-01 consumer-lock convergence: engines pin current Shared before more keys are added.
 
 ## Validation
 

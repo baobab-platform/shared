@@ -223,19 +223,20 @@ existence; it does **not** mean certified.
 
 ### G-02A — Capability census and declarations
 
-**Status: declarations merged, contract work in progress.** 
+**Status: declarations merged, contract work in progress.**
 `docs/architecture/ea-02a-capability-census.md` records the survey. Payments,
 Subscriptions, Trade, IAM, CMS, ERP and Pulse are surveyed. The declarations
 for Payments (baobab-payments#12), Subscriptions (baobab-subscriptions#18),
-Trade (baobab-trade#109, planned-only), and ERP (baobab-erp#40, contracted)
-are merged. IAM, CMS and Pulse can declare once their first contract lands;
-until then they may list the reserved keys as `proposed_key` candidates.
-Regulations remains, after G-REG-NS.
+Trade (baobab-trade#109, planned-only) and ERP (baobab-erp#40, planned-only:
+`finance.order-consequence.process` CONTRACTED) are merged. IAM and CMS can
+declare now that their capabilities are catalogued; Pulse waits for its
+contract (step 5 below). Regulations waits for the G-REG-NS decision.
 
 The EA-02B candidate review (`docs/architecture/ea-02b-candidate-review.md`)
 accepted `payment.intent.cancel` and `finance.order-consequence.process`
-into the catalogue, which now holds 16 capabilities (baobab-cp#223, merged
-2026-09-30). Contract work steps 1–4 complete; step 5 pending Pulse lifecycle.
+(catalogue of 11, projected into CP by baobab-cp#223). Contract work steps
+2–4 below catalogued five more keys, so Shared's catalogue holds **16**. The
+Control Plane projects them once it pins a Shared commit that contains them.
 
 Per ADR-SHARED-017 SS12 and Phase 2, every engine gets a census. Accepted
 candidates become catalogue entries through Shared PRs, and each engine then
@@ -246,45 +247,47 @@ declarations can then generate their bundles.
 
 ### Contract work (smallest gaps first)
 
-Reserved keys from EA-02B require Shared request/response contract schemas
-before engines can declare support. Work in progress (commit `f1ee987`):
+Keys reserved by EA-02B need Shared request/response contracts before engines
+can declare support (`ea-02c-contract-work-plan.md`):
 
-1. **erp/v1 InventoryAvailabilityQuery** — DONE. Created
-   `inventory-availability-query.schema.json` schema document formalizing
-   the `sku_id` and `warehouse_id` query parameters. OpenAPI endpoint
-   updated to reference the schema. ERP can now declare
-   `inventory.availability.query` as RESERVED.
-2. **buyer-organisation/v1 commands** — DONE. Created four schemas:
-   `buyer-application-request.schema.json`, `buyer-application-response.schema.json`,
-   `buyer-membership-request.schema.json`, `buyer-membership-response.schema.json`.
-   Formalizes apply/evidence/review/decision and invite/accept/revoke/role-update
-   workflows. Added to catalogue: `customer.buyer-application.manage` and
-   `customer.buyer-membership.manage` (now 13 capabilities total).
->>>>>>> origin/main
-3. **identity/v1 authentication profile** — DONE. Formalized ADR-0006 token
-   profile as four schemas:
-   `human-authentication-request.schema.json` (Authorization Code + PKCE),
-   `human-authentication-response.schema.json` (access token, ID token),
-   `workload-token-request.schema.json` (client credentials),
-   `workload-token-response.schema.json` (workload access token).
-   Added to catalogue: `identity.authentication.perform` and
-   `identity.workload-token.issue` (now 15 capabilities total).
-   M1-B (provider-neutrality) and M1-C (Ory fixtures) provide foundation.
-4. **content/v1 resolution** — DONE. Formalized ADR-0014 content inheritance
-   as two schemas: `content-resolve-request.schema.json` (entry_id, market,
-   locale, digital estate, legal entity, effective time, preview mode),
-   `content-resolve-response.schema.json` (resolved entry with provenance:
-   matched scope, resolution trace). Added to catalogue: `content.entry.resolve`
-   (now 16 capabilities total).
-5. **intelligence/v1** — PENDING. Requires Pulse contract for research-
-   mission and evidence-search (request/response pairs).
+1. **erp/v1 InventoryAvailabilityQuery** — contract DONE (shared#149).
+   `inventory-availability-query.schema.json` formalizes the `sku_id` and
+   `warehouse_id` query parameters. `inventory.availability.query` is **not
+   yet catalogued**: it needs a Shared PR that adds its definition to
+   `erp/v1/capabilities.yaml` and `catalogue.yaml`. Until then ERP lists it
+   as a `proposed_key` CANDIDATE, as its declaration already does.
+2. **buyer-organisation/v1 commands** — DONE (shared#150). Four schemas cover
+   apply/evidence/review/decision and invite/accept/revoke/role-update.
+   Catalogued: `customer.buyer-application.manage` and
+   `customer.buyer-membership.manage`.
+3. **identity/v1 authentication profile** — DONE (shared#150), **corrected
+   for provider neutrality** by the follow-up to shared#150. Catalogued:
+   `identity.authentication.perform` and `identity.workload-token.issue`.
+   - As first merged, the workload request fixed `grant_type` to
+     `client_credentials` and carried `client_secret` and `realm`. That
+     conflicted with the registered `federated_workload_token` workloads
+     (`baobab-cp-workload`, `baobab-subscriptions-workload`), which must
+     hold no static secret, and with the RFC 7523 path in baobab-iam#42.
+   - The corrected contract names the workload, audience and scopes, and
+     carries no credential. The mechanism follows the workload's
+     `credential_type` behind the provider boundary (ADR-0007,
+     ADR-IAM-0019/0020).
+   - The human request drops `realm`, and requests assurance as OIDC
+     `acr_values` instead of a LOW/MEDIUM/HIGH level.
+   - Event names were invented and never defined. They are removed.
+4. **content/v1 resolution** — DONE (shared#150). Two schemas formalize the
+   ADR-0014 content inheritance. Catalogued: `content.entry.resolve`.
+5. **intelligence/v1** — PENDING Pulse's first production domain: contracts
+   for research missions and evidence search.
 
 ### G-REG-NS — `regulations` namespace review
 
-**Status: resolved.** `g-reg-ns-resolution.md` documents the architecture
-review conclusion: `regulations` domain is **not registered**. Trade
-remains authoritative for customs (ADR-0021) and tax (ADR-0018) per
-ADR-SHARED-008. No Regulations engine or new namespace is needed.
+**Status: open decision.** shared#150 recorded this as resolved against a
+Regulations engine. That conclusion is withdrawn, because it would have
+settled a fork with the *Proposed* ADR-REG family by implication.
+`g-reg-ns-resolution.md` sets out the options and the interim state:
+`regulations` stays unregistered, and the Regulations census is paused, not
+deferred indefinitely.
 
 ### G-06 / G-09 — Events and certification
 

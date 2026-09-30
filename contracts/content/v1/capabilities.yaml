@@ -31,5 +31,4 @@ capabilities:
   data_classification: RESTRICTED
   metadata:
     profile: "ADR-0014 Content Inheritance and Locale Fallback"
-    related_events: com.baobab-platform.content.entry.resolved.v1, com.baobab-platform.content.entry.fallback.v1
     resolution_modes: "EXACT (requested level), FALLBACK (chain), NONE (no match)"
