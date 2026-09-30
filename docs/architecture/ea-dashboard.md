@@ -100,7 +100,7 @@ validates a declaration. It never certifies or activates a provider.
 
 | # | Gate | State | Evidence |
 |---:|---|---|---|
-| 1 | EA plan v2 committed; prior sequence superseded | Dashboard done; supersession awaiting approval | Plan in `docs/adr`; this dashboard; the supersession marker and register classification are an ADR-status PR that needs owner approval |
+| 1 | EA plan v2 committed; prior sequence superseded | Done | Plan in `docs/adr`; this dashboard (#155); v1 assessment marked Historical and plan registered Accepted (#156) |
 | 2 | Contract convergence audit and lock remediation | In progress | CP #227, IAM #46 re-pinned; lock schema, check and drift report shared#157; CP, IAM, CMS and Pulse canonical locks merged (cp#229, iam#47, cms#19, pulse#28); Trade, ERP re-lock and Subscriptions, Payments re-pin open ([EA-01 record](ea-01-contract-convergence.md)) |
 | 3 | `identity.workload-token.issue` provider neutrality | Done | shared#151 |
 | 4 | Complete IAM #42 | Done | iam#42 |
@@ -136,9 +136,9 @@ Normative status lives in each register, not here:
 
 | Class | Shared | CP |
 |---|---|---|
-| Accepted | ADR-0001…0006, ADR-SHARED-007…017, ADR-0020, Canonical Mapping Model | ADR-0001, 0004, 0006, ADR-BCP-001…025, Tenant Onboarding spec |
+| Accepted | ADR-0001…0006, ADR-SHARED-007…017, ADR-0020, Canonical Mapping Model, EA Plan v2.0 | ADR-0001, 0004, 0006, ADR-BCP-001…025, Tenant Onboarding spec |
 | Superseded (in part) | ADR-0001 tenancy portions (by ADR-0003) | ADR-0003 (by ADR-BCP-001…010, 018) |
-| Historical | Proposed for the Production-Readiness Assessment v1 (findings kept, sequencing superseded by v2.0), with EA Plan v2.0 registered as Accepted; awaiting owner approval | — |
+| Historical | Production-Readiness Assessment v1 (findings kept; sequencing superseded by EA Plan v2.0, which is registered Accepted) | — |
 | Proposed | — | — |
 | Rejected | — | — |
 
