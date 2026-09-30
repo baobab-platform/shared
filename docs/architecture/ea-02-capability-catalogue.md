@@ -272,9 +272,10 @@ before engines can declare support. Work in progress (commit `f1ee987`):
 
 ### G-REG-NS — `regulations` namespace review
 
-An ADR-SHARED-007 architecture review of the `regulations` namespace.
-Acceptance then updates `namespace-registry.yaml`, the `capabilityDomain`
-enum and the catalogue together. The validator enforces all three.
+**Status: resolved.** `g-reg-ns-resolution.md` documents the architecture
+review conclusion: `regulations` domain is **not registered**. Trade
+remains authoritative for customs (ADR-0021) and tax (ADR-0018) per
+ADR-SHARED-008. No Regulations engine or new namespace is needed.
 
 ### G-06 / G-09 — Events and certification
 
