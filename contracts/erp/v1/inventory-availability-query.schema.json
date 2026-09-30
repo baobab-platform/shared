@@ -1,5 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/erp/v1/inventory-availability-query.schema.json",
   "title": "InventoryAvailabilityQuery",
   "description": "Query parameters for ERP physical inventory availability projection.",
   "$defs": {
