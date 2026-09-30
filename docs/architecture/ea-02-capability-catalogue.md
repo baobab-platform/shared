@@ -209,6 +209,16 @@ existing sandbox and temporary-billing providers keep today's state.
 
 ### G-FCI-1 — Foundation CI enforcement
 
+**Status: validation gate delivered; requirement pending.** The reusable
+environment job (`reusable-foundation-environment.yml`) runs
+`validate-declaration` against the caller's pinned `foundation_ref` whenever
+`.baobab/capability-provider.yaml` exists, with the repository name as
+`--engine-id`. An invalid declaration fails Foundation. Engines pick this up
+when they bump their Foundation pin. Making the file *required* for active
+engines is still open, below. All five current declarations (Payments,
+Subscriptions, Trade, ERP, IAM) and the engine-template example pass at
+Shared `59b577d`.
+
 *Repository:* `shared` (reusable workflow) and engines. *Depends on:* this
 change, at least one engine declaration in real use, and lifecycle
 semantics reconciled.
