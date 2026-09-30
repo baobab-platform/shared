@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/buyer-organisation/v1/buyer-membership-request.schema.json",
+  "title": "Buyer Membership Request",
+  "description": "Request to invite, accept, revoke, or update roles for a buyer organisation member.",
+  "$defs": {
+    "BuyerMembershipRequest": {
+      "type": "object",
+      "discriminator": { "propertyName": "action" },
+      "oneOf": [
+        { "$ref": "#/$defs/InviteRequest" },
+        { "$ref": "#/$defs/AcceptInvitationRequest" },
+        { "$ref": "#/$defs/RevokeRequest" },
+        { "$ref": "#/$defs/UpdateRolesRequest" }
+      ]
+    },
+    "InviteRequest": {
+      "type": "object",
+      "required": ["action", "buyer_organisation_id", "email", "roles"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "const": "invite" },
+        "buyer_organisation_id": { "$ref": "./domain.schema.json#/$defs/buyerOrganisationId" },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Email address of person to invite"
+        },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "./domain.schema.json#/$defs/buyerRole" },
+          "description": "Roles to assign to the invited member"
+        },
+        "site_access": {
+          "type": "array",
+          "items": { "$ref": "./domain.schema.json#/$defs/buyerSiteId" },
+          "description": "Specific buyer sites the member should have access to (if empty, organisation-wide access)"
+        }
+      }
+    },
+    "AcceptInvitationRequest": {
+      "type": "object",
+      "required": ["action", "buyer_membership_id", "principal_id"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "const": "accept_invitation" },
+        "buyer_membership_id": { "$ref": "./domain.schema.json#/$defs/buyerMembershipId" },
+        "principal_id": {
+          "$ref": "../../identity/v1/principal.schema.json#/$defs/PrincipalId",
+          "description": "The canonical principal (authenticated user) accepting the invitation"
+        }
+      }
+    },
+    "RevokeRequest": {
+      "type": "object",
+      "required": ["action", "buyer_membership_id", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "const": "revoke" },
+        "buyer_membership_id": { "$ref": "./domain.schema.json#/$defs/buyerMembershipId" },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "description": "Reason for revocation"
+        },
+        "effective_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When revocation should take effect (defaults to immediately)"
+        }
+      }
+    },
+    "UpdateRolesRequest": {
+      "type": "object",
+      "required": ["action", "buyer_membership_id", "roles"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "const": "update_roles" },
+        "buyer_membership_id": { "$ref": "./domain.schema.json#/$defs/buyerMembershipId" },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "./domain.schema.json#/$defs/buyerRole" },
+          "description": "New set of roles for the member"
+        },
+        "site_access": {
+          "type": "array",
+          "items": { "$ref": "./domain.schema.json#/$defs/buyerSiteId" },
+          "description": "Updated site access (if provided, replaces previous access)"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/BuyerMembershipRequest"
+}

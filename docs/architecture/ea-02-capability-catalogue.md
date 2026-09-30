@@ -223,7 +223,7 @@ existence; it does **not** mean certified.
 
 ### G-02A — Capability census and declarations
 
-**Status: declarations merged, contract work pending.** 
+**Status: declarations merged, contract work in progress.** 
 `docs/architecture/ea-02a-capability-census.md` records the survey. Payments,
 Subscriptions, Trade, IAM, CMS, ERP and Pulse are surveyed. The declarations
 for Payments (baobab-payments#12), Subscriptions (baobab-subscriptions#18),
@@ -234,9 +234,8 @@ Regulations remains, after G-REG-NS.
 
 The EA-02B candidate review (`docs/architecture/ea-02b-candidate-review.md`)
 accepted `payment.intent.cancel` and `finance.order-consequence.process`
-into the catalogue, which now holds 11 capabilities (baobab-cp#223, merged
-2026-09-30). It also reserved eight keys that each wait for a Shared
-request/response contract before they can be declared as support.
+into the catalogue, which now holds 16 capabilities (baobab-cp#223, merged
+2026-09-30). Contract work steps 1–4 complete; step 5 pending Pulse lifecycle.
 
 Per ADR-SHARED-017 SS12 and Phase 2, every engine gets a census. Accepted
 candidates become catalogue entries through Shared PRs, and each engine then
@@ -255,26 +254,37 @@ before engines can declare support. Work in progress (commit `f1ee987`):
    the `sku_id` and `warehouse_id` query parameters. OpenAPI endpoint
    updated to reference the schema. ERP can now declare
    `inventory.availability.query` as RESERVED.
-2. **buyer-organisation/v1 commands** — PENDING. Requires extracting
-   Trade-local route shapes (apply, evidence, review, decision; invite,
-   accept, revoke, resend) into Shared command schemas for Trade's two
-   customer capabilities.
-3. **identity/v1 authentication profile** — PENDING. Requires formalizing
-   the ADR-0006 token profile as request/response schemas (what relying
-   parties send for authentication, what they receive). M1-B (provider-
-   neutrality) and M1-C (Ory resolve fixtures) are merged; authentication
-   profile schemas would complete IAM's capability foundation.
-4. **content/v1 resolution** — PENDING. Requires CMS contract for
-   content resolution requests (context, market, locale, entry reference)
-   and responses (resolved entry with provenance).
+2. **buyer-organisation/v1 commands** — DONE. Created four schemas:
+   `buyer-application-request.schema.json`, `buyer-application-response.schema.json`,
+   `buyer-membership-request.schema.json`, `buyer-membership-response.schema.json`.
+   Formalizes apply/evidence/review/decision and invite/accept/revoke/role-update
+   workflows. Added to catalogue: `customer.buyer-application.manage` and
+   `customer.buyer-membership.manage` (now 13 capabilities total).
+>>>>>>> origin/main
+3. **identity/v1 authentication profile** — DONE. Formalized ADR-0006 token
+   profile as four schemas:
+   `human-authentication-request.schema.json` (Authorization Code + PKCE),
+   `human-authentication-response.schema.json` (access token, ID token),
+   `workload-token-request.schema.json` (client credentials),
+   `workload-token-response.schema.json` (workload access token).
+   Added to catalogue: `identity.authentication.perform` and
+   `identity.workload-token.issue` (now 15 capabilities total).
+   M1-B (provider-neutrality) and M1-C (Ory fixtures) provide foundation.
+4. **content/v1 resolution** — DONE. Formalized ADR-0014 content inheritance
+   as two schemas: `content-resolve-request.schema.json` (entry_id, market,
+   locale, digital estate, legal entity, effective time, preview mode),
+   `content-resolve-response.schema.json` (resolved entry with provenance:
+   matched scope, resolution trace). Added to catalogue: `content.entry.resolve`
+   (now 16 capabilities total).
 5. **intelligence/v1** — PENDING. Requires Pulse contract for research-
    mission and evidence-search (request/response pairs).
 
 ### G-REG-NS — `regulations` namespace review
 
-An ADR-SHARED-007 architecture review of the `regulations` namespace.
-Acceptance then updates `namespace-registry.yaml`, the `capabilityDomain`
-enum and the catalogue together. The validator enforces all three.
+**Status: resolved.** `g-reg-ns-resolution.md` documents the architecture
+review conclusion: `regulations` domain is **not registered**. Trade
+remains authoritative for customs (ADR-0021) and tax (ADR-0018) per
+ADR-SHARED-008. No Regulations engine or new namespace is needed.
 
 ### G-06 / G-09 — Events and certification
 

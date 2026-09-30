@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/workload-token-response.schema.json",
+  "title": "Workload Token Response",
+  "description": "Workload (machine-to-machine) access token response following ADR-0006 and ADR-0007 workload profile.",
+  "$defs": {
+    "WorkloadTokenResponse": {
+      "type": "object",
+      "required": ["access_token", "token_type", "expires_in"],
+      "additionalProperties": false,
+      "properties": {
+        "access_token": {
+          "type": "string",
+          "minLength": 20,
+          "description": "Bearer token for workload API access (JWT per ADR-0006 §19); contains claims: iss, sub, aud, azp, actor_type=workload, scope, iat, exp"
+        },
+        "token_type": {
+          "const": "Bearer",
+          "description": "Token type (always 'Bearer')"
+        },
+        "expires_in": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 86400,
+          "description": "Token lifetime in seconds (typically short-lived for workloads)"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Granted scope (may differ from requested)"
+        }
+      }
+    },
+    "WorkloadTokenClaims": {
+      "type": "object",
+      "description": "Standard claims in the workload access token JWT per ADR-0006 §19 and ADR-0007",
+      "properties": {
+        "iss": {
+          "type": "string",
+          "format": "uri",
+          "description": "Issuer URI (Baobab IAM)"
+        },
+        "sub": {
+          "type": "string",
+          "description": "Subject (issuer-local workload client ID)"
+        },
+        "aud": {
+          "type": ["string", "array"],
+          "description": "Intended audience(s) / resource server identifier(s)"
+        },
+        "azp": {
+          "type": "string",
+          "description": "Authorized party (the workload client_id)"
+        },
+        "actor_type": {
+          "const": "workload",
+          "description": "Actor classification (always 'workload')"
+        },
+        "scope": {
+          "type": "string",
+          "description": "Granted scopes (space-separated, e.g. 'context:resolve trades:read')"
+        },
+        "iat": {
+          "type": "integer",
+          "description": "Issued-at timestamp (seconds since epoch)"
+        },
+        "exp": {
+          "type": "integer",
+          "description": "Expiration timestamp (seconds since epoch)"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/WorkloadTokenResponse"
+}

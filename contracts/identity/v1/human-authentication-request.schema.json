@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/human-authentication-request.schema.json",
+  "title": "Human Authentication Request",
+  "description": "Request for human interactive authentication following ADR-0006 Authorization Code + PKCE profile.",
+  "$defs": {
+    "HumanAuthenticationRequest": {
+      "type": "object",
+      "required": ["grant_type", "code_challenge", "code_challenge_method"],
+      "additionalProperties": false,
+      "properties": {
+        "grant_type": {
+          "const": "authorization_code",
+          "description": "OIDC/OAuth grant type (always 'authorization_code' for browser flow)"
+        },
+        "code_challenge": {
+          "type": "string",
+          "minLength": 43,
+          "maxLength": 128,
+          "description": "PKCE code challenge (S256: base64url(SHA256(code_verifier)))"
+        },
+        "code_challenge_method": {
+          "const": "S256",
+          "description": "PKCE challenge method (must be S256 per ADR-0006)"
+        },
+        "client_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "OAuth client identifier, registered with Baobab IAM"
+        },
+        "redirect_uri": {
+          "type": "string",
+          "format": "uri",
+          "description": "Registered redirect destination (must match exactly per ADR-0006 §11)"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500,
+          "description": "Requested scope (e.g. 'openid profile email')"
+        },
+        "state": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 500,
+          "description": "Application state / CSRF token (must be transaction-specific, non-static per ADR-0006 §13)"
+        },
+        "nonce": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 500,
+          "description": "Transaction-specific nonce for OIDC (must be non-static per ADR-0006 §13)"
+        },
+        "realm": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "description": "IAM realm/organization context"
+        },
+        "assurance_level": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH"],
+          "description": "Required authentication assurance level per ADR-IAM-0024"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/HumanAuthenticationRequest"
+}

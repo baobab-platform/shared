@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/buyer-organisation/v1/buyer-application-request.schema.json",
+  "title": "Buyer Application Request",
+  "description": "Request to apply for buyer status, provide evidence, or manage application lifecycle.",
+  "$defs": {
+    "BuyerApplicationRequest": {
+      "type": "object",
+      "discriminator": { "propertyName": "action" },
+      "oneOf": [
+        { "$ref": "#/$defs/ApplyRequest" },
+        { "$ref": "#/$defs/ProvideEvidenceRequest" },
+        { "$ref": "#/$defs/RespondToInformationRequest" },
+        { "$ref": "#/$defs/WithdrawApplicationRequest" }
+      ]
+    },
+    "ApplyRequest": {
+      "type": "object",
+      "required": ["action", "organisation_name", "legal_entity_id", "contact_email"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "const": "apply" },
+        "organisation_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Legal name of the buyer organisation"
+        },
+        "legal_entity_id": {
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId",
+          "description": "Canonical legal entity identifier, if already registered with CP"
+        },
+        "contact_email": {
+          "type": "string",
+          "format": "email",
+          "description": "Primary contact email for application communication"
+        },
+        "tax_registration_number": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "Tax ID or VAT registration, if known"
+        }
+      }
+    },
+    "ProvideEvidenceRequest": {
+      "type": "object",
+      "required": ["action", "buyer_application_id", "evidence_type", "evidence_reference"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "const": "provide_evidence" },
+        "buyer_application_id": { "$ref": "./domain.schema.json#/$defs/buyerApplicationId" },
+        "evidence_type": {
+          "type": "string",
+          "enum": ["kyb_document", "certificate_of_incorporation", "tax_compliance", "banking_reference", "commercial_reference"],
+          "description": "Category of KYB evidence being submitted"
+        },
+        "evidence_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "description": "Reference to evidence stored in CMS or external system (URI, document ID, or location)"
+        }
+      }
+    },
+    "RespondToInformationRequest": {
+      "type": "object",
+      "required": ["action", "buyer_application_id", "information_request_id", "response"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "const": "respond_to_information_request" },
+        "buyer_application_id": { "$ref": "./domain.schema.json#/$defs/buyerApplicationId" },
+        "information_request_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "description": "Identifier of the information request being responded to"
+        },
+        "response": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000,
+          "description": "Text response to the information request"
+        }
+      }
+    },
+    "WithdrawApplicationRequest": {
+      "type": "object",
+      "required": ["action", "buyer_application_id", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "action": { "const": "withdraw" },
+        "buyer_application_id": { "$ref": "./domain.schema.json#/$defs/buyerApplicationId" },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000,
+          "description": "Reason for withdrawal"
+        }
+      }
+    }
+  },
+  "$ref": "#/$defs/BuyerApplicationRequest"
+}
