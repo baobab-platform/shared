@@ -23,6 +23,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Foundation validates capability provider declarations (EA-02 G-FCI-1).** The reusable environment job runs `capability_catalogue.py validate-declaration` against the pinned `foundation_ref` whenever a caller has `.baobab/capability-provider.yaml`. An invalid declaration fails Foundation. The file is not yet required.
 - **identity/v1 authentication contracts are provider-neutral (EA-02, follow-up to shared#150).** Breaking for `identity.workload-token.issue` and `identity.authentication.perform` contract 1. Both keys were catalogued the same day and have no consumer pinned yet.
   - `WorkloadTokenRequest` names `workload_id`, `audience` and `scopes`, and carries no credential, grant type or realm. The mechanism (a federated platform token via RFC 7523, private_key_jwt, or an IdP client credential) follows the workload's registered `credential_type` behind the provider boundary. A `federated_workload_token` workload holds no static secret (ADR-0007, ADR-IAM-0019/0020).
   - `HumanAuthenticationRequest` drops `realm` and `assurance_level`, and adds OIDC `acr_values` in line with `AssuranceRequirement` and `AuthenticationAssurance`.

@@ -68,3 +68,31 @@ jobs:
           IMAGE: "${{ steps.contract.outputs.image }}"
         shell: bash
         run: docker manifest inspect "$IMAGE" >/dev/null
+      # G-FCI-1 (ADR-SHARED-017, EA-02): a capability provider declaration
+      # is validated against the catalogue and schema of the pinned Shared
+      # commit whenever the caller ships one. Passing proves structure,
+      # catalogue references and that evidence paths exist; it does not
+      # certify anything (EA-09). The file is optional until every active
+      # engine has declared; an invalid declaration always fails.
+      - name: Detect capability provider declaration
+        id: declaration
+        shell: bash
+        run: |
+          if [ -f .baobab/capability-provider.yaml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+        if: steps.declaration.outputs.present == 'true'
+        with:
+          python-version: "3.13"
+      - name: Validate capability provider declaration
+        if: steps.declaration.outputs.present == 'true'
+        env:
+          ENGINE_ID: "${{ github.event.repository.name }}"
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check -r .foundation/.github/foundation-tests/requirements.txt
+          python .foundation/scripts/capability_catalogue.py validate-declaration \
+            .baobab/capability-provider.yaml --engine-id "$ENGINE_ID" --repository-root .
