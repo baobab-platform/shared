@@ -37,6 +37,12 @@ providers:
         implementation_evidence:
           - type: source
             path: src/service.rs
+      - capability_key: payment.intent.cancel
+        contract_versions: [1]
+        implementation_status: IMPLEMENTED
+        implementation_evidence:
+          - type: source
+            path: src/service.rs
       - capability_key: payment.payment.authorize
         contract_versions: [1]
         implementation_status: IMPLEMENTED

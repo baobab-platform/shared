@@ -224,6 +224,11 @@ planned-only) are merged. IAM, CMS, ERP and Pulse have no canonical
 capability, so their declarations wait for the candidate review.
 Regulations remains, after G-REG-NS.
 
+The EA-02B candidate review (`docs/architecture/ea-02b-candidate-review.md`)
+accepted `payment.intent.cancel` and `finance.order-consequence.process`
+into the catalogue, which now holds 11 capabilities. It also reserved eight
+keys that each wait for a Shared request/response contract.
+
 Per ADR-SHARED-017 SS12 and Phase 2, every engine gets a census. Accepted
 candidates become catalogue entries through Shared PRs, and each engine then
 adds `.baobab/capability-provider.yaml`. Do not bulk-populate declarations
