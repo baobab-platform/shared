@@ -26,13 +26,13 @@ Each finding is classified as one of:
 
 | Engine | Census | Declaration | Canonical capabilities | Implemented | Candidates recorded |
 |---|---|---|---:|---:|---|
-| Payments | Surveyed | baobab-payments#12 | 4 | 4 (sandbox) | `payment.intent.cancel` |
-| Subscriptions | Surveyed | baobab-subscriptions#18 | 2 | 2 (temporary-billing) | none |
-| Trade | Surveyed | baobab-trade#109 (planned-only) | 3 | 0 | B2B onboarding family (review, below) |
-| IAM | Not yet | — | 0 | — | — |
-| CMS | Not yet | — | 0 | — | — |
-| ERP | Not yet | — | 0 | — | — |
-| Pulse | Not yet | — | 0 | — | — |
+| Payments | Surveyed | Merged (baobab-payments#12) | 4 | 4 (sandbox) | `payment.intent.cancel` |
+| Subscriptions | Surveyed | Merged (baobab-subscriptions#18) | 2 | 2 (temporary-billing) | none |
+| Trade | Surveyed | Merged, planned-only (baobab-trade#109) | 3 | 0 | B2B families (review, below) |
+| IAM | Surveyed | Waits for accepted candidates | 0 | — | Authentication families (review, below) |
+| CMS | Surveyed | Waits for accepted candidates | 0 | — | Content families (review, below) |
+| ERP | Surveyed | Waits for accepted candidates | 0 | — | Finance and order-to-cash families (review, below) |
+| Pulse | Surveyed | Waits for accepted candidates | 0 | — | Intelligence families (review, below) |
 | Regulations | Not yet (namespace review first, §43) | — | 0 | — | — |
 
 The survey order follows the EA-02 audit: engines with canonical
@@ -91,12 +91,86 @@ decide granularity (§13: consumable, contractable, grantable, replaceable,
 testable, auditable, provider-neutral) before any key is proposed.
 Declarations do not invent keys for them.
 
+## Engines without canonical capabilities
+
+IAM, CMS, ERP and Pulse have no canonical capability in the catalogue
+today. A declaration must name at least one supported or planned
+capability, so a declaration for any of them would have to propose new
+keys. They therefore get **no declaration yet**: their findings below are
+candidate families for architecture review, the same treatment as Trade's
+B2B families. Once a review accepts a key into the catalogue, the engine
+declares it, and until then nothing invents one. The namespaces named
+below are the registered `capabilityDomain` values each family would fall
+under; they are not keys.
+
+## IAM (`baobab-iam`, audited at `6891527`)
+
+IAM is Keycloak configured as code (ADR-0002); `providers/` holds no
+custom SPI. So the implemented provider would be `baobab-iam.keycloak`
+(`implementation_key: keycloak`), with `baobab-iam.ory` planned by
+ADR-IAM-0019 to ADR-IAM-0022. The ADR's §44 example shows why the
+capability must outlive either provider.
+
+| Finding | Class | Evidence |
+|---|---|---|
+| Human authentication: workforce SSO (IAM-5), B2B organisation members (IAM-6 phase 1) | **Candidate family, needs review** (`identity`) | `config/realm/baobab-realm.json`, `config/clients/*-admin.json`, `tests/integration/run.sh`. ADR-SHARED-017 §14 uses `identity.authentication.perform` only as a conceptual example; it is not a key |
+| Workload authentication (client credentials with `actor_type=workload`, IAM-4) | **Candidate family, needs review** (`identity`) | `config/clients/*-workload.json`; CP enforces the claim |
+| Sessions, revocation and identity lifecycle (IAM-12 phase 1) | **Candidate family, needs review** (`identity`) | Realm admin events and the disable-and-revoke flow; Shared `identity-events/v1` |
+| Credentials and MFA (IAM-11 phase 1) | Implementation detail today | Realm policy for privileged roles, not a separately consumable service |
+| Customer (IAM-7) and supplier (IAM-8) identity | Not implemented | Scoped only; each has an open ownership decision |
+| Canonical identity and external identity mapping | Owned elsewhere | `baobab-cp` (IAM-3) |
+| `iam.*` role names (`iam.identity.suspend`, …) | Implementation detail | Administrative permissions, not capabilities |
+
+## CMS (`baobab-cms`, audited at `1d74258`)
+
+CMS is Payload (ADR-0011), so the provider would be `baobab-cms.payload`.
+Its API surface is Payload's generated REST and GraphQL routes over the
+collections, plus health and OIDC endpoints.
+
+| Finding | Class | Evidence |
+|---|---|---|
+| Structured content management (pages, product content, digital estates, markets) | **Candidate family, needs review** (`content`) | `src/collections/*.ts`, tenant enforcement in `src/baobab/tenancy` |
+| Content resolution (specificity, inheritance, locale fallback, fail-closed ambiguity) | **Candidate family, needs review** (`content`) | `src/baobab/content-resolution/resolver.ts`, `resolver.test.ts`; used by `src/collections/Pages.ts` |
+| Media assets | **Candidate family, needs review** (`content`) | `src/collections/Media.ts`, `src/baobab/media/policy.ts` |
+| Publication, localisation, navigation, SEO and taxonomy (§12 table) | Not implemented as distinct services | Collection fields only; revisit when routes exist |
+| Outbox, webhooks, audit log, mapping projections | Implementation detail | Integration plumbing (ADR-0018) |
+
+## ERP (`baobab-erp`, audited at `de39818`)
+
+ERP is iDempiere (ADR-ERP-001), so the provider would be
+`baobab-erp.idempiere`. Its conformance ledger
+(`architecture/conformance.yaml`) is honest about maturity: 1 foundation,
+most `partial`, several `planned`.
+
+| Finding | Class | Evidence |
+|---|---|---|
+| Sell-side order-to-cash: sales order, shipment, customer invoice, payment and allocation (ADR-ERP-016) | **Candidate family, needs review** (`finance`, `fulfilment`) | `modules/order_to_cash/service.py`, tested over HTTP and Postgres against a fake iDempiere REST server. It is event-driven from Trade, not a caller-facing API |
+| Projection of Trade commercial facts into native documents (ZB-05) | **Candidate family, needs review** (`finance`, `integration`) | `modules/integration/trade_projection_adapter.py` |
+| Master data bootstrap: business partner, product (ADR-ERP-014) | **Candidate family, needs review** | Partial; ownership between CP, Trade and ERP needs deciding first |
+| Warehouse provisioning (ADR-ERP-015) | Implementation detail today | Provisioning step, not a consumable service |
+| General Ledger, AP, AR, costing, procurement accounting, reporting (§12 table) | Not implemented as Baobab services | iDempiere native only; ADR-ERP-008, -017 and -018 are partial or planned |
+| `/context/resolve*`, `/mapping/resolve*`, `/events/inbound` | Implementation detail | Tenant and mapping plumbing (`modules/application/server.py`) |
+
+## Pulse (`baobab-pulse`, audited at `004b748`)
+
+Pulse is a self-declared scaffold, with Haystack behind an
+anti-corruption layer (`src/baobab_pulse/infrastructure/haystack`). The
+provider would be `baobab-pulse.haystack` or a provider-neutral reference
+pipeline; that choice is part of the review.
+
+| Finding | Class | Evidence |
+|---|---|---|
+| Research missions: create and read (`POST /research-missions`, `GET /research-missions/{id}`) | **Candidate family, needs review** (`intelligence`) | `src/baobab_pulse/api/routers/research_missions.py`, `application/services/research_mission_service.py`; deterministic reference pipeline |
+| Evidence search, i.e. semantic retrieval (`POST /evidence/search`) | **Candidate family, needs review** (`intelligence`) | `api/routers/evidence.py`, `application/services/evidence_retrieval_service.py` |
+| Signals, observations, risks, opportunities, forecasting | Not implemented as services | Domain model only (`src/baobab_pulse/domain/*`); no routes |
+| Haystack pipelines, Qdrant projection | Implementation detail | §13's `haystack.pipeline-node.execute` is the named invalid example |
+
 ## Next
 
-1. Review the recorded candidates (`payment.intent.cancel`, Trade's B2B
-   families) and add accepted ones to the catalogue with canonical
-   definitions.
-2. Survey IAM, CMS, ERP and Pulse the same way, then Regulations after
-   the `regulations` namespace review.
+1. Architecture review of the recorded candidates: `payment.intent.cancel`,
+   and the Trade, IAM, CMS, ERP and Pulse families above. The review
+   decides granularity against §13; accepted keys go into the catalogue
+   with canonical definitions, and each engine then declares them.
+2. Survey Regulations after the `regulations` namespace review.
 3. Until the active engines (Trade, ERP, CMS, Pulse, IAM) have
    declarations, Foundation enforcement (G-FCI-1) stays off.
