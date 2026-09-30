@@ -1,0 +1,9 @@
+{
+  "id": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "principal_id": "8f14e45f-ceea-467e-bd42-7f8f8f8f8f8f",
+  "issuer": "https://iam.baobab-platform.com/realms/baobab",
+  "subject": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "provider_type": "keycloak",
+  "status": "ACTIVE",
+  "created_at": "2026-09-10T10:00:00Z"
+}

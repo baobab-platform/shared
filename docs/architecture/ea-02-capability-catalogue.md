@@ -261,6 +261,7 @@ before engines can declare support. Work in progress (commit `f1ee987`):
    Formalizes apply/evidence/review/decision and invite/accept/revoke/role-update
    workflows. Added to catalogue: `customer.buyer-application.manage` and
    `customer.buyer-membership.manage` (now 13 capabilities total).
+>>>>>>> origin/main
 3. **identity/v1 authentication profile** — PENDING. Requires formalizing
    the ADR-0006 token profile as request/response schemas (what relying
    parties send for authentication, what they receive). M1-B (provider-

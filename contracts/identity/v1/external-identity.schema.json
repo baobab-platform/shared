@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/external-identity.schema.json",
   "title": "ExternalIdentity",
-  "description": "An identity asserted by an external identity provider, mapped to a canonical principal.",
+  "description": "An identity asserted by an external identity provider, mapped to a canonical principal. The canonical resolution key is always issuer + subject (ADR-0004 / ADR-IAM-0019). provider_type is optional operational metadata only and MUST NOT gate platform authorization.",
   "type": "object",
   "properties": {
     "id": {
@@ -21,11 +21,12 @@
     },
     "subject": {
       "type": "string",
-      "description": "The provider‑local subject identifier."
+      "description": "The provider-local subject identifier."
     },
     "provider_type": {
       "type": "string",
-      "description": "e.g., keycloak, google, azure."
+      "minLength": 1,
+      "description": "Optional operational label for the identity engine implementation (e.g. keycloak, ory, google, azure, unknown). Free string — not an enum locked to a single provider. MUST NOT be required for correctness; MUST NOT be used as the authorization key (use issuer + subject)."
     },
     "status": {
       "type": "string",
