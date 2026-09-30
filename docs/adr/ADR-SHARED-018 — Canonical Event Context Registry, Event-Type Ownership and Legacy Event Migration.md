@@ -1,7 +1,7 @@
 # ADR-SHARED-018 — Canonical Event Context Registry, Event-Type Ownership and Legacy Event Migration
 
-**Status:** Proposed
-**Date:** 2026-09-30
+**Status:** Accepted — Normative Platform Contract
+**Date:** 2026-09-30 (accepted 2026-09-30 after the §8 rulings)
 **Repository:** `baobab-platform/shared`
 **Decision Type:** Cross-Platform Event Architecture / Contract Governance
 **Refines:** ADR-SHARED-008 §3 (canonical event-type convention). It does not replace it.
@@ -344,13 +344,57 @@ Trade        blocks the shipment or order      → trade.shipment-compliance.enf
 
 This is a decision/enforcement split (PDP and PEP). ADR-0021 and ADR-0024
 are amended by reference as part of the G-REG-NS reconciliation (step 2).
-Interim rule: if Regulations does not yet produce these facts when
-T-COMPAT-03 lands, Trade does not mint them under a Trade- or
-customs-owned name, and it cannot keep the legacy names, which the
-current envelope rejects. Trade keeps its classification and compliance
-decisions as internal (LOCAL) facts until Regulations produces the
-canonical types, and it still emits `trade.shipment-compliance.enforced.v1`
-for the enforcement it performs.
+#### Interim rule, until baobab-regulations is ready
+
+```text
+Trade
+ ├─ MAY retain legacy or internal classification state
+ ├─ MAY retain legacy or internal compliance-assessment state
+ ├─ MUST NOT publish either as a canonical regulatory fact
+ │    (no regulations.product-classification.assigned.*,
+ │     no regulations.compliance-assessment.decided.*,
+ │     and no customs.* or trade.* equivalent presenting those
+ │     determinations as canonical)
+ └─ MAY publish com.baobab-platform.trade.shipment-compliance.enforced.v1
+```
+
+Trade knows enough internally to enforce its operational gate. That does
+not make it the canonical regulatory authority.
+`trade.shipment-compliance.enforced` is legitimate because it states a
+fact Trade owns: Trade applied its operational shipment-compliance gate
+and produced an operational outcome.
+
+Safeguards:
+
+1. **The enforcement payload states the enforcement result, not the
+   regulatory decision.** Its fields are along the lines of
+   `shipment_id`, `enforcement_outcome`, `enforced_at`,
+   `assessment_reference?`, `evidence_reference?` and `reason_codes[]`.
+   It does not embed an authoritative tariff classification, a legal
+   interpretation or a complete compliance determination.
+2. **Interim identifiers stay Trade-local.** Classification and
+   assessment identifiers produced during the interim are Trade-local or
+   legacy references. They are never minted as canonical
+   RegulatoryClassification, RegulatoryAssessment or other
+   Regulations-owned identifiers before that authority exists.
+   `assessment_reference`, when present, says which of the two kinds it
+   carries.
+3. **Explicit cutover.**
+
+```text
+CURRENT (interim)
+  Trade internal assessment → Trade enforcement → trade.shipment-compliance.enforced
+
+TARGET
+  Regulations → regulations.product-classification.assigned
+              → regulations.compliance-assessment.decided
+  Trade consumes the canonical decision → Trade enforcement
+        → trade.shipment-compliance.enforced   (assessment_reference = the Regulations decision id)
+```
+
+   At cutover, Trade's internal regulatory determination becomes at most a
+   consumer projection or cache of the Regulations facts. It no longer
+   determines regulatory meaning independently.
 
 ### 8.5 Digital Estate projections (`thamani-*`): retire now, in T-COMPAT-03
 
