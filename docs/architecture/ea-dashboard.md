@@ -74,7 +74,14 @@ EA-04 Identity                         ADVANCED
   Subscriptions workload               PROVISIONED
 
 EA-05 Governance                       ADVANCED
-  AdministrativeGrant enforcement      BLOCKED (roles→grants decision paper: roles-to-grants-decision.md; needs grant administration API first)
+  Administrative authority             MIGRATION PATH ACCEPTED (roles-to-grants-decision.md); implementation in progress
+    ADA-05 grant administration        NEXT
+    ADA-06 maker/checker and SoD       NEXT
+    authority:self issuance            APPROVED (IAM action)
+    shadow blind spots                 OPEN
+    grant population / observation     BLOCKED on the above
+    per-permission enforcement         NOT AUTHORISED YET
+    realm-role retirement              NOT AUTHORISED
 
 EA-06 Event Fabric                     PARTIAL      (plan §44, not re-audited)
   event context registry               READY (ADR-SHARED-018; 29 contexts)
@@ -130,7 +137,7 @@ provides no resolvable capability, and may not carry a declaration
 | 10 | Implement EngineRelease | In progress | ER-01 contracts; ER-02 record and read (shared#169, #170, cp#233); release approval (shared#171, cp#235); ER-03 (shared#173, cp#237); ER-04, ER-05 next; ER-06 a separate gate, disabled |
 | 11 | DeploymentObservation model/interfaces | Intake merged; not operationally proven | ER-01 contracts; ER-04 (shared#178, cp#239). Production evidence waits on the gates in [er-04-production-gates.md](er-04-production-gates.md) |
 | 12 | Provider activation Changeset | Done | DRAFT-only registration and PROVIDER_ACTIVATION (shared#167, #168, cp#231, cp#232); binding integrity (cp#234). Release approval (cp#235) lets a release be APPROVED and a provider be activated without direct SQL |
-| 13 | AdministrativeGrant enforcement | Blocked | Awaiting the roles→grants decision |
+| 13 | AdministrativeGrant enforcement | Migration path accepted; flip not authorised | Staged path in roles-to-grants-decision.md; ADA-05/06 next |
 | 14–30 | Engine hardening onward | Not started | Plan §51 |
 
 ## Decisions
@@ -147,7 +154,7 @@ provides no resolvable capability, and may not carry a declaration
 | ADR-BCP-025 reporter | Infrastructure deployment controller and runtime observer, federated, no static secret; no admission webhook (production is ECS/Fargate, EKS deferred); PROVISIONED until proven | [er-04-production-gates.md](er-04-production-gates.md) |
 | Event context governance | ADR-SHARED-018 Accepted; `erp` DEPRECATED, `payments` kept, fulfilment/logistics/trade.shipment distinct, Regulations owns classification and assessment, `thamani-*` retired in T-COMPAT-03 | shared#161 |
 
-Still open, and not to be decided in code: roles→grants flip; Keycloak
+Still open, and not to be decided in code: the roles→grants *flip* (the migration path is accepted); Keycloak
 `authority: self`; tenant suspend/activate routes; OEV-02 storage and regions;
 CIPC/URSB access; capability resolution record retention.
 
