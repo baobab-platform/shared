@@ -245,11 +245,13 @@ and engines.
 | 4. Missing or disallowed declaration fails Foundation | **Done**: `--mode enforce`. Active engines without a declaration (CMS until its declaration merges) fail when they bump their Foundation pin |
 | 5. Remove migration exceptions | None were granted |
 
-Engines pick up each change when they bump their Foundation pin. **Until they
-do, enforcement is not fleet-wide**: every active engine still pins a Foundation
-older than shared#154 (`31de2bc`; Subscriptions `9331e6a`), so the validator
-being enforcing in Shared is not conformance. The platform gate stays open until
-CP is reclassified and the fleet pins an enforcing Foundation.
+Engines pick up each change when they bump their Foundation pin. Until they
+did, enforcement was not fleet-wide: the validator being enforcing in Shared is
+not conformance. **Closed 2026-10-01**: CP is classified `control-plane` (shared#174,
+cp#238) and every consumer now pins the enforcing Foundation `06c49e8` (IAM iam#48,
+CMS cms#20, Payments payments#17, Subscriptions subscriptions#23, Pulse pulse#29,
+Trade trade#113, ERP erp#42). Passing proves structure, catalogue references, evidence
+paths and contract locks. It never certifies (EA-09) or activates a provider.
 
 ### G-02A — Capability census and declarations
 
