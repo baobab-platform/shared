@@ -23,6 +23,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **`engine-release.record` administrative permission (ADR-BCP-025, gate ER-02).** It covers a platform administrator recording an engine release, beside release tooling's `engine-release:record` workload scope. Its risk class is HIGH, it is not delegable, and it belongs to the platform-administrator profile.
 - **Engine release record and read routes (ADR-BCP-025, gate ER-02).**
   - Control Plane OpenAPI 1.22.0 adds:
     - `recordEngineRelease` (`POST /engine-releases`): workload `engine-release:record` or admin `topology:write`. A byte-identical replay returns 200; otherwise `RELEASE_VERSION_CONFLICT`, `RELEASE_ARTIFACT_DIGEST_CONFLICT` (409), `RELEASE_PROVIDER_NOT_OWNED` or `RELEASE_CAPABILITY_NOT_CATALOGUED` (422).
