@@ -19,7 +19,7 @@
       "type": "array",
       "uniqueItems": true,
       "items": {
-        "enum": ["python", "node", "go", "java", "rust", "container", "infrastructure", "documentation", "contracts", "github-actions", "digital-estate", "engine", "library", "development-environment"]
+        "enum": ["python", "node", "go", "java", "rust", "container", "infrastructure", "documentation", "contracts", "github-actions", "digital-estate", "engine", "control-plane", "library", "development-environment"]
       }
     },
     "environment": {

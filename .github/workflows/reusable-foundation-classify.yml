@@ -114,7 +114,7 @@ jobs:
 
             declared = contract["capabilities"]
             abort "capabilities must be a unique string array" unless declared.is_a?(Array) && declared.all? { |item| item.is_a?(String) } && declared == declared.uniq
-            known = %w[python node go java rust container infrastructure documentation contracts github-actions digital-estate engine library development-environment]
+            known = %w[python node go java rust container infrastructure documentation contracts github-actions digital-estate engine control-plane library development-environment]
             unknown = declared - known
             abort "unknown capabilities: #{unknown.join(', ')}" unless unknown.empty?
 

@@ -57,6 +57,7 @@ for capability in (
     "github-actions",
     "digital-estate",
     "engine",
+    "control-plane",
     "library",
     "development-environment",
 ):

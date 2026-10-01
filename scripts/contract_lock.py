@@ -85,7 +85,13 @@ def load_yaml(path: Path) -> object | None:
 
 
 def is_engine(repository_contract: object) -> bool:
-    return isinstance(repository_contract, dict) and "engine" in (repository_contract.get("capabilities") or [])
+    """A repository that consumes Shared contracts as a platform runtime: an engine, or the Control Plane.
+
+    The control-plane trait (ADR-0020 amendment, 2026-10-01) is not an engine: it provides no
+    resolvable capability. It consumes and serves Shared contracts, so the lock rules apply to it.
+    """
+    traits = repository_contract.get("capabilities") or [] if isinstance(repository_contract, dict) else []
+    return "engine" in traits or "control-plane" in traits
 
 
 def effective_mode(mode: str, repository_root: Path) -> str:
@@ -98,7 +104,7 @@ def lock_required(repository_contract: object) -> bool:
     if not isinstance(repository_contract, dict):
         return False
     lifecycle = (repository_contract.get("repository") or {}).get("lifecycle")
-    return lifecycle == "active" and "engine" in (repository_contract.get("capabilities") or [])
+    return lifecycle == "active" and is_engine(repository_contract)
 
 
 def schema_findings(lock: object) -> list[str]:

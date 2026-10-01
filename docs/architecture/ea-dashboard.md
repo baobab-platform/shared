@@ -1,7 +1,7 @@
 # EA Implementation Dashboard
 
 **Governing plan:** [EA Implementation Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) (30 September 2026)
-**Last updated:** 2026-10-01
+**Last updated:** 2026-10-01 (reconciled against `main`)
 **Maintained:** every EA gate PR updates this page (plan §48).
 
 This page is the single live status for each EA stream, gate and PR. The plan
@@ -16,9 +16,11 @@ unless it says so.
 
 | Repository | Baseline | Note |
 |---|---|---|
-| `shared` | main | Consumer pins at `1bb1c94` are BEHIND_UNCHANGED: later changes touch Foundation tooling, not contracts |
-| `baobab-cp` | main | Pinned to Shared `24e1e9f` (cp#233) |
-| `baobab-iam` | main | Pinned to Shared `1bb1c94` |
+| `shared` | main (`e151243`, after shared#173) | Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin |
+| `baobab-cp` | main (`a241607`, after cp#237) | Lock pinned to Shared `e151243`; Foundation caller still `31de2bc` (pre-G-FCI-1 enforcement) |
+| `baobab-iam` | main | Lock pinned to Shared `1bb1c94` (BEHIND_UNCHANGED) |
+| `baobab-payments`, `baobab-subscriptions` | main | Re-pinned to Shared `3a8230e` (payments#16, subscriptions#21) |
+| `baobab-trade`, `baobab-erp` | main | Deliberately held at `2da1a42`: consumed contracts changed, so a mechanical re-pin is wrong (EA-01) |
 
 ## Readiness
 
@@ -27,22 +29,24 @@ BAOBAB EA READINESS                                   2026-10-01
 ─────────────────────────────────────────────────────────────────
 
 EA-01 Contract Convergence             IN PROGRESS
-  CP Shared pin                        CURRENT at merge (24e1e9f), canonical lock (cp#229, cp#233)
+  CP Shared pin                        CURRENT at merge (e151243), canonical lock (cp#229, cp#233, cp#237)
   IAM Shared pin                       BEHIND_UNCHANGED (1bb1c94), canonical lock (iam#47)
-  Subscriptions Shared pin             STALE (canonical lock shape)
-  Payments Shared pin                  STALE (canonical lock shape)
-  Trade Shared pin                     STALE (legacy nabhold/* lock)
-  ERP Shared pin                       STALE (legacy nabhold/* lock)
+  Subscriptions Shared pin             RE-PINNED (3a8230e, subscriptions#21)
+  Payments Shared pin                  RE-PINNED (3a8230e, payments#16)
+  Trade Shared pin                     HELD at 2da1a42, canonical lock (trade#110); semantic compatibility T-COMPAT-04…07 open
+  ERP Shared pin                       HELD at 2da1a42, canonical lock; semantic reconciliation not started
   Pulse Shared pin                     CURRENT at merge, canonical lock (pulse#28)
   CMS contract lock                    CURRENT at merge, canonical lock (cms#19)
   Lock schema in Shared (EA-01A)       READY (shared#157)
-  Foundation lock validation (EA-01C)  WARN MODE (shared#157)
+  Foundation lock validation (EA-01C)  ENFORCING for engine and control-plane repositories in current Shared; consumers enforce it only once their Foundation pin moves past 31de2bc
   Drift report (EA-01D)                READY (Foundation job summary)
 
-EA-02 Capability Governance            GATE COMPLETE (02A–02E)
+EA-02 Capability Governance            02A–02E IMPLEMENTED; PLATFORM CONFORMANCE GATE OPEN
   Canonical catalogue                  16 capabilities
   Provider declarations                PARTIAL (see table)
-  Foundation enforcement (G-FCI-1)     ENFORCING
+  Foundation enforcement (G-FCI-1)     VALIDATOR ENFORCING in Shared; FLEET NOT ENFORCED (all engines pin a Foundation older than shared#154: 31de2bc, Subscriptions 9331e6a)
+  Control Plane classification         control-plane trait defined (shared, this change); CP repository.yaml and Foundation pin move in a follow-up CP PR; gap stays open until it merges
+  Gate closes when                     CP is classified control-plane, and every active engine's Foundation pin enforces G-FCI-1
   Provider registration DRAFT (02C)    READY (shared#167, cp#231)
   Provider activation Changeset (02D)  READY (shared#167, #168, cp#232; ENGINE_RELEASE check cp#233)
   Binding integrity (02E)              READY (cp#234: constraint validated, fails loudly on unresolved bindings)
@@ -52,7 +56,9 @@ EA-03 Runtime Topology                 PARTIAL
   HealthObservation                    READY
   ProviderMigration                    READY
   EngineRelease architecture           ACCEPTED (ADR-BCP-025, A1–A4)
-  EngineRelease                        ER-01 contracts; ER-02 record/read (cp#233); ER-03…05 MISSING
+  EngineRelease                        ER-01 contracts; ER-02 record/read (cp#233); release approval via ENGINE_RELEASE_APPROVAL Changeset (shared#171, cp#235); ER-03 desired release/deprecation/revocation (shared#173, cp#237) MERGED; ER-04, ER-05 MISSING
+  Binding contract versions            positive integer majors (cp#236, ADR-BCP-025 §2.1.1)
+  Capability exclusion on observed state ER-06: DISABLED (amendment A4)
   DeploymentObservation                CONTRACTS (ER-01, topology/v1); CP ER-04 MISSING
 
 EA-04 Identity                         ADVANCED
@@ -69,8 +75,9 @@ EA-05 Governance                       ADVANCED
 
 EA-06 Event Fabric                     PARTIAL      (plan §44, not re-audited)
   event context registry               READY (ADR-SHARED-018; 29 contexts)
-  event-type registry                  READY (120 types: 101 ACTIVE, 19 PROPOSED)
-  Trade legacy event migration         T-COMPAT-03 next (38 legacy types)
+  event-type registry                  READY (124 types: 107 ACTIVE, 17 PROPOSED)
+  Trade legacy event migration         T-COMPAT-03 MERGED (trade#111); no com.nabhold in event code; legacy migrations immutable
+  Broker/relay/inbox/replay            OPEN
 EA-09A Pre-deployment certification    NOT COMPLETE
 EA-10 Observability                    PARTIAL      (plan §44, not re-audited)
 EA-11 Recovery Engineering             NOT COMPLETE
@@ -89,6 +96,10 @@ G-FCI-1 applies: an `active` engine must carry `.baobab/capability-provider.yaml
 an `experimental` one may omit it or declare planned support only. Foundation
 validates a declaration. It never certifies or activates a provider.
 
+The Control Plane is not an engine. It carries the `control-plane` trait,
+provides no resolvable capability, and may not carry a declaration
+(ADR-0020 amendment, 2026-10-01).
+
 | Engine | `repository.lifecycle` | Declaration | Support declared |
 |---|---|---|---|
 | baobab-iam | active | Yes | Planned only: `identity.authentication.perform`, `identity.workload-token.issue` |
@@ -96,15 +107,16 @@ validates a declaration. It never certifies or activates a provider.
 | baobab-subscriptions | active | Yes | IMPLEMENTED, sandbox/temporary, simulated, `production_permitted: false` |
 | baobab-cms | active | Yes | Planned only: `content.entry.resolve` |
 | baobab-pulse | experimental | None | None; intelligence/v1 not yet in scope |
-| baobab-trade | — | Not yet reviewed | — |
-| baobab-erp | — | Not yet reviewed | — |
+| baobab-trade | active | Yes | Declared; contents not re-reviewed here |
+| baobab-erp | active | Yes | Declared; contents not re-reviewed here |
+| baobab-cp | active, `control-plane` (pending CP PR; still `engine` on CP main) | None, by design | None: platform authority, not a provider |
 
 ## Immediate execution queue (plan §51)
 
 | # | Gate | State | Evidence |
 |---:|---|---|---|
 | 1 | EA plan v2 committed; prior sequence superseded | Done | Plan in `docs/adr`; this dashboard (#155); v1 assessment marked Historical and plan registered Accepted (#156) |
-| 2 | Contract convergence audit and lock remediation | In progress | CP #227, IAM #46 re-pinned; lock schema, check and drift report shared#157; CP, IAM, CMS and Pulse canonical locks merged (cp#229, iam#47, cms#19, pulse#28); Trade, ERP re-lock and Subscriptions, Payments re-pin open ([EA-01 record](ea-01-contract-convergence.md)) |
+| 2 | Contract convergence audit and lock remediation | In progress | CP #227, IAM #46 re-pinned; lock schema, check and drift report shared#157; CP, IAM, CMS and Pulse canonical locks merged (cp#229, iam#47, cms#19, pulse#28); Trade and ERP locks canonical but pinned to `2da1a42` pending semantic compatibility; Subscriptions, Payments re-pinned ([EA-01 record](ea-01-contract-convergence.md)) |
 | 3 | `identity.workload-token.issue` provider neutrality | Done | shared#151 |
 | 4 | Complete IAM #42 | Done | iam#42 |
 | 5 | Shared #148 lifecycle semantics | Done | shared#148 |
@@ -112,9 +124,9 @@ validates a declaration. It never certifies or activates a provider.
 | 7 | CMS provider declaration and contract lock | Done | cms#17, cms#19 |
 | 8 | Foundation provider-declaration validation | Done (enforcing) | shared#152, #153, #154 |
 | 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
-| 10 | Implement EngineRelease | In progress | ER-01 Shared `topology/v1` contracts; ER-02 record and read (shared#169, #170, cp#233); release approval and ER-03…ER-05 next; ER-06 a separate gate |
+| 10 | Implement EngineRelease | In progress | ER-01 contracts; ER-02 record and read (shared#169, #170, cp#233); release approval (shared#171, cp#235); ER-03 (shared#173, cp#237); ER-04, ER-05 next; ER-06 a separate gate, disabled |
 | 11 | DeploymentObservation model/interfaces | Contracts done | ER-01 (`deployment-observation.schema.json`, `deployment:observe`); intake is ER-04 |
-| 12 | Provider activation Changeset | Done | DRAFT-only registration and PROVIDER_ACTIVATION (shared#167, #168, cp#231, cp#232); binding integrity (cp#234). No release can be APPROVED through the API yet, so no activation can complete until the release approval lands |
+| 12 | Provider activation Changeset | Done | DRAFT-only registration and PROVIDER_ACTIVATION (shared#167, #168, cp#231, cp#232); binding integrity (cp#234). Release approval (cp#235) lets a release be APPROVED and a provider be activated without direct SQL |
 | 13 | AdministrativeGrant enforcement | Blocked | Awaiting the roles→grants decision |
 | 14–30 | Engine hardening onward | Not started | Plan §51 |
 
@@ -123,7 +135,8 @@ validates a declaration. It never certifies or activates a provider.
 | Decision | Outcome | Record |
 |---|---|---|
 | G-REG-NS | Option B: Regulations is a first-class capability provider; Trade keeps operational enforcement | [g-reg-ns-resolution.md](g-reg-ns-resolution.md) |
-| G-FCI-1 | Declaration mandatory for `active` engines; enforcing | [ea-02-capability-catalogue.md](ea-02-capability-catalogue.md) |
+| G-FCI-1 | Declaration mandatory for `active` engines; validator enforcing, fleet adoption open | [ea-02-capability-catalogue.md](ea-02-capability-catalogue.md) |
+| Control Plane classification | CP is `control-plane`, not `engine`; no provider declaration | [ea-02-capability-catalogue.md](ea-02-capability-catalogue.md), ADR-0020 amendment |
 | Payments/Subscriptions lifecycle | Promoted to `active`; simulated support stays non-production | payments#14, subscriptions#19 |
 | Pulse lifecycle | `experimental` | pulse#26 |
 | ADR-BCP-025 | Accepted with amendments A1–A4 | cp#228 |

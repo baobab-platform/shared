@@ -214,6 +214,18 @@ for every repository with `repository.lifecycle: active` and the Foundation
 `engine` trait. An experimental engine may omit it or declare planned
 capabilities only. A repository that provides no Baobab domain capability is
 not classified as an active engine; it does not get to omit the declaration.
+
+**Amendment (2026-10-01): the `control-plane` trait.** The Control Plane
+provides no catalogue capability: none of the 16 is owned by `baobab-cp`, and
+its functions (capability resolution, context resolution, mapping, provisioning,
+grants, bindings, provider activation, topology, Changesets) are platform
+authority, not providers selected through a `CapabilityBinding`. Registering
+`capability.resolution.perform` would make resolution depend on itself. So the
+defect was CP's Foundation classification, not a missing declaration. CP is
+classified `control-plane`, which is not an engine: it needs no declaration and
+may not carry one, still gets the contract-lock, runtime, container and
+security gates, and cannot combine with `engine` unless a future ADR permits a
+dual-role repository. No repository-name exception exists in Foundation.
 Foundation validates declarations and evidence. It never certifies (EA-09),
 activates (Control Plane), binds or grants.
 
@@ -233,7 +245,11 @@ and engines.
 | 4. Missing or disallowed declaration fails Foundation | **Done**: `--mode enforce`. Active engines without a declaration (CMS until its declaration merges) fail when they bump their Foundation pin |
 | 5. Remove migration exceptions | None were granted |
 
-Engines pick up each change when they bump their Foundation pin.
+Engines pick up each change when they bump their Foundation pin. **Until they
+do, enforcement is not fleet-wide**: every active engine still pins a Foundation
+older than shared#154 (`31de2bc`; Subscriptions `9331e6a`), so the validator
+being enforcing in Shared is not conformance. The platform gate stays open until
+CP is reclassified and the fleet pins an enforcing Foundation.
 
 ### G-02A — Capability census and declarations
 
