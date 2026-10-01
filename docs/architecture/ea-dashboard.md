@@ -78,7 +78,7 @@ EA-05 Governance                       ADVANCED
     ADA-05 grant administration        IMPLEMENTED (exact-scope delegation)
     grant replace/supersede            REQUIRED before enforcement
     narrower-scope delegation          REQUIRED before delegated customer admin
-    ADA-06 maker/checker and SoD       NEXT
+    ADA-06 maker/checker and SoD       CONTRACT IN REVIEW (CP implementation NEXT)
     authority:self issuance            DONE (iam#49)
     administrator:read/write issuance  APPROVED (iam#50)
     shadow blind spots                 OPEN

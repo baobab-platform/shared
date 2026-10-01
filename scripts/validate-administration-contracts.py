@@ -21,7 +21,10 @@ resolved against the contracts in this repository:
   7. the control-plane OpenAPI serves EffectiveAuthority at
      /admin/effective-authority under authority:self, a non-privileged,
      human-only scope;
-  8. contracts.lock.yaml registers exactly these files.
+  8. separation-of-duties.yaml is a sound policy set whose change kinds
+     exist in changeset-lifecycle.yaml and whose conflicting permissions are
+     registered (section 36);
+  9. contracts.lock.yaml registers exactly these files.
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -46,7 +49,7 @@ CONTRACTS = ROOT / "contracts"
 PKG = CONTRACTS / "administration" / "v1"
 BASE_URI = "https://contracts.baobab-platform.com/administration/v1/"
 SCHEMAS = ["domain.schema.json", "scope.schema.json", "grant.schema.json", "grant-administration.schema.json"]
-YAMLS = ["permission-registry.yaml", "profile-registry.yaml", "lifecycle.yaml"]
+YAMLS = ["permission-registry.yaml", "profile-registry.yaml", "lifecycle.yaml", "separation-of-duties.yaml"]
 RISK_ORDER = ["LOW", "MODERATE", "HIGH", "CRITICAL"]
 
 failures: list[str] = []
@@ -157,6 +160,42 @@ if reached != states:
     fail(f"lifecycle.yaml cannot reach {sorted(states - reached)}")
 if lifecycle["eligible_for_evaluation"] != ["ACTIVE"]:
     fail("lifecycle.yaml: only ACTIVE is eligible for evaluation (section 59)")
+
+# 4b. Separation of duties (sections 36-39, gate ADA-06).
+sod = load_yaml(PKG / "separation-of-duties.yaml")
+change_kinds = load_yaml(CONTRACTS / "control-plane" / "v1" / "changeset-lifecycle.yaml")["change_kinds"]
+risk_order = ["LOW", "MODERATE", "HIGH", "CRITICAL"]
+seen_policies = set()
+for policy in sod.get("policies", []):
+    pid = policy.get("id", "")
+    if not pid or pid in seen_policies:
+        fail(f"separation-of-duties.yaml policy id {pid!r} is missing or duplicated")
+    seen_policies.add(pid)
+    if policy.get("status") not in ("ACTIVE", "DRAFT", "RETIRED"):
+        fail(f"separation-of-duties.yaml {pid}: status must be ACTIVE, DRAFT or RETIRED")
+    if policy.get("risk_threshold") not in risk_order:
+        fail(f"separation-of-duties.yaml {pid}: risk_threshold is not a risk class")
+    for kind_name in policy.get("applies_to", {}).get("change_kinds", []):
+        if kind_name not in change_kinds:
+            fail(f"separation-of-duties.yaml {pid}: change kind {kind_name} is not in changeset-lifecycle.yaml")
+    if not policy.get("applies_to", {}).get("change_kinds"):
+        fail(f"separation-of-duties.yaml {pid}: applies_to.change_kinds is required")
+    if "minimum_distinct_actors" in policy:
+        actors = policy.get("actors", [])
+        if not set(actors) <= {"requester", "approver", "grantee"} or len(set(actors)) != len(actors) \
+                or not 2 <= policy["minimum_distinct_actors"] <= len(actors):
+            fail(f"separation-of-duties.yaml {pid}: minimum_distinct_actors must be between 2 and the number of named, distinct actors")
+        if "approver" not in actors or "requester" not in actors:
+            fail(f"separation-of-duties.yaml {pid}: an independence policy names at least requester and approver")
+    if "allowed_grant_types" in policy and not set(policy["allowed_grant_types"]) <= set(domain["grantType"]["enum"]):
+        fail(f"separation-of-duties.yaml {pid}: allowed_grant_types names an unknown grant type")
+    if "maximum_duration_days" in policy and not (isinstance(policy["maximum_duration_days"], int) and policy["maximum_duration_days"] >= 1):
+        fail(f"separation-of-duties.yaml {pid}: maximum_duration_days must be a positive integer")
+if not any(p.get("risk_threshold") == "HIGH" and "approver" in p.get("actors", []) and p["status"] == "ACTIVE" for p in sod["policies"]):
+    fail("separation-of-duties.yaml must keep an ACTIVE independence policy from HIGH risk (section 39)")
+for conflicting in sod.get("conflicting_permissions", []):
+    if len(conflicting.get("permissions", [])) < 2 or not set(conflicting["permissions"]) <= set(permissions):
+        fail(f"separation-of-duties.yaml conflicting_permissions {conflicting}: two or more registered permissions required")
 
 # 5. Examples.
 examples = json.loads((PKG / "examples" / "administrative-grants.json").read_text())

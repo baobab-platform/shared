@@ -129,6 +129,18 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "administrator:approve"
+    description: >-
+      A human administrator decides an AdministrativeGrant change request
+      (issuance or delegation of HIGH or CRITICAL authority) as its checker
+      (ADR-BCP-020 sections 38-39; gate ADA-06). Necessary but not
+      sufficient: the Control Plane also requires changeset:approve, refuses
+      an approver who is the requester or the grantee, and enforces
+      separation-of-duties.yaml.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "admission:review"
     description: >-
       A platform admission reviewer inspects applications, moves them through

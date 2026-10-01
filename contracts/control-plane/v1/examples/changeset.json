@@ -590,5 +590,169 @@
     },
     "verification_strategy": "Read the engine instance back and require its desired release to be the planned one.",
     "compensation_strategy": "Desire the previous release with another ENGINE_INSTANCE_DESIRED_RELEASE changeset; nothing irreversible is planned."
+  },
+  "administrative_grant_issuance_plan": {
+    "plan_id": "plan_0199a1b2c3d47ea6",
+    "plan_version": 1,
+    "plan_digest": "sha256:a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7",
+    "base_revision": 1,
+    "generated_at": "2026-10-01T10:00:00Z",
+    "expires_at": "2026-10-02T10:00:00Z",
+    "risk_class": "HIGH",
+    "changeset_id": "cs_0199a1b2c3d47ea6",
+    "changeset_type": "MODIFY",
+    "desired_change": {
+      "kind": "ADMINISTRATIVE_GRANT_ISSUANCE",
+      "principal_id": "2f1c5c3e-8f0e-4a55-9a3b-5d7f9a1b2c3d",
+      "permission": "tenant.suspend",
+      "scope": {
+        "level": "TENANT",
+        "tenant_id": "tn_acmeug"
+      },
+      "grant_type": "TIME_BOUND",
+      "valid_until": "2026-10-31T00:00:00Z"
+    },
+    "steps": [
+      {
+        "step_id": "issue-administrative-grant",
+        "operation": "ISSUE_ADMINISTRATIVE_GRANT",
+        "depends_on": [],
+        "resources": {
+          "grantee_principal_id": "2f1c5c3e-8f0e-4a55-9a3b-5d7f9a1b2c3d",
+          "from_status": "ACTIVE",
+          "target_revision": 1
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "verify-administrative-grant",
+        "operation": "VERIFY_ADMINISTRATIVE_GRANT",
+        "depends_on": [
+          "issue-administrative-grant"
+        ],
+        "resources": {
+          "grantee_principal_id": "2f1c5c3e-8f0e-4a55-9a3b-5d7f9a1b2c3d"
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [],
+    "readiness_requirements": [
+      {
+        "check": "GRANTEE_ACTIVE",
+        "description": "Passed."
+      },
+      {
+        "check": "REQUESTER_NOT_GRANTEE",
+        "description": "Passed."
+      },
+      {
+        "check": "PERMISSION_GRANTABLE",
+        "description": "Passed."
+      },
+      {
+        "check": "VALIDITY_WINDOW",
+        "description": "Passed."
+      },
+      {
+        "check": "SOD_CONFLICT",
+        "description": "Passed."
+      },
+      {
+        "check": "NOT_ALREADY_HELD",
+        "description": "Passed."
+      }
+    ],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Grants tenant.suspend over tenant tn_acmeug to the principal until 2026-10-31: HIGH risk authority, approved by a principal who is neither requester nor grantee.",
+      "resources_created": 1,
+      "resources_changed": 0,
+      "resources_removed": 0,
+      "security_impact": "The principal may suspend the tenant once the grant is ACTIVE; shadow comparison only until enforcement is authorised."
+    },
+    "verification_strategy": "Read the grant back and require it to be ACTIVE with the planned permission, scope and validity.",
+    "compensation_strategy": "Revoke the grant through its own lifecycle; the grant record is never amended."
+  },
+  "administrative_grant_delegation_plan": {
+    "plan_id": "plan_0199a1b2c3d47ea6",
+    "plan_version": 1,
+    "plan_digest": "sha256:a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7",
+    "base_revision": 3,
+    "generated_at": "2026-10-01T10:00:00Z",
+    "expires_at": "2026-10-02T10:00:00Z",
+    "risk_class": "HIGH",
+    "changeset_id": "cs_0199a1b2c3d47ea7",
+    "changeset_type": "MODIFY",
+    "desired_change": {
+      "kind": "ADMINISTRATIVE_GRANT_DELEGATION",
+      "source_grant_id": "agr_01k9src0001",
+      "principal_id": "2f1c5c3e-8f0e-4a55-9a3b-5d7f9a1b2c3d",
+      "permission": "tenant.suspend",
+      "scope": {
+        "level": "TENANT",
+        "tenant_id": "tn_acmeug"
+      },
+      "valid_until": "2026-10-15T00:00:00Z"
+    },
+    "steps": [
+      {
+        "step_id": "delegate-administrative-grant",
+        "operation": "DELEGATE_ADMINISTRATIVE_GRANT",
+        "depends_on": [],
+        "resources": {
+          "source_grant_id": "agr_01k9src0001",
+          "from_status": "ACTIVE",
+          "target_revision": 3
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "verify-administrative-grant",
+        "operation": "VERIFY_ADMINISTRATIVE_GRANT",
+        "depends_on": [
+          "delegate-administrative-grant"
+        ],
+        "resources": {
+          "source_grant_id": "agr_01k9src0001"
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [],
+    "readiness_requirements": [
+      {
+        "check": "GRANTEE_ACTIVE",
+        "description": "Passed."
+      },
+      {
+        "check": "REQUESTER_NOT_GRANTEE",
+        "description": "Passed."
+      },
+      {
+        "check": "REQUESTER_HOLDS_SOURCE",
+        "description": "Passed."
+      },
+      {
+        "check": "WITHIN_SOURCE",
+        "description": "Passed."
+      },
+      {
+        "check": "SOD_CONFLICT",
+        "description": "Passed."
+      }
+    ],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Delegates tenant.suspend over tenant tn_acmeug from grant agr_01k9src0001 until 2026-10-15, within its permission, scope and end.",
+      "resources_created": 1,
+      "resources_changed": 0,
+      "resources_removed": 0,
+      "security_impact": "The delegate may suspend the tenant while the source grant stays usable; revoking the source ends the delegation."
+    },
+    "verification_strategy": "Read the delegation back and require it to be ACTIVE within its source.",
+    "compensation_strategy": "Revoke the delegation, or its source, through the grant lifecycle."
   }
 }

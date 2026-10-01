@@ -108,6 +108,7 @@ contracts:
       - permission-registry.yaml
       - profile-registry.yaml
       - lifecycle.yaml
+      - separation-of-duties.yaml
   - domain: evidence
     version: v1
     schemas:

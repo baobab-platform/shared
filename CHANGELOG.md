@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+* ADA-06 maker-checker for administrative authority (control-plane OpenAPI 1.27.0): change kinds `ADMINISTRATIVE_GRANT_ISSUANCE` and `ADMINISTRATIVE_GRANT_DELEGATION` (changeset-lifecycle.yaml, changeset.schema.json, example plans, plan checks and eight `changeset_blocker` codes), the privileged human-only scope `administrator:approve`, and `administration/v1/separation-of-duties.yaml` (requester, approver and grantee of a HIGH or CRITICAL grant change are three different principals; a CRITICAL grant is never STANDING and lasts at most 30 days, a proposed default pending owner confirmation; conflicting permission sets are supported and none are declared). HIGH and CRITICAL issue or delegation, refused directly with `APPROVAL_REQUIRED`, now has its governed path. Shape only; roles remain authoritative.
+
 * ADA-05 grant administration contract (control-plane OpenAPI 1.26.0; 1.26.1 corrects the delegation wording: HIGH and CRITICAL delegation awaits approval, it is not forbidden): `/admin/grants` (issue, list), `/admin/grants/{grant_id}` (inspect), `/transitions` (suspend, resume, revoke, withdraw) and `/delegations`, the `grant-administration.schema.json` request and page shapes, human-only scopes `administrator:read` and `administrator:write` (the latter privileged) and reason code `GRANT_TRANSITION_INVALID`. HIGH and CRITICAL authority is refused with `APPROVAL_REQUIRED` until the ADA-06 maker-checker path exists. Shape only: it changes no enforcement.
 
 ## Changed
