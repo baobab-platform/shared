@@ -16,11 +16,11 @@ unless it says so.
 
 | Repository | Baseline | Note |
 |---|---|---|
-| `shared` | main (`1334a77`, after shared#175) | Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin |
+| `shared` | main (`7705c0f`, after shared#176) | Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin |
 | `baobab-cp` | main (`a241607`, after cp#237) | Lock pinned to Shared `e151243`; Foundation caller `06c49e8` (cp#238) |
 | `baobab-iam` | main | Lock pinned to Shared `1bb1c94` (BEHIND_UNCHANGED) |
 | `baobab-payments`, `baobab-subscriptions` | main | Re-pinned to Shared `3a8230e` (payments#16, subscriptions#21) |
-| `baobab-trade`, `baobab-erp` | main | Deliberately held at `2da1a42`: consumed contracts changed, so a mechanical re-pin is wrong (EA-01) |
+| `baobab-trade`, `baobab-erp` | main | Contract pin deliberately held at `2da1a42`: consumed contracts changed, so a mechanical re-pin is wrong (EA-01). Foundation `06c49e8` since trade#113 and erp#42 |
 
 ## Readiness
 
@@ -38,16 +38,16 @@ EA-01 Contract Convergence             IN PROGRESS
   Pulse Shared pin                     CURRENT at merge, canonical lock (pulse#28)
   CMS contract lock                    CURRENT at merge, canonical lock (cms#19)
   Lock schema in Shared (EA-01A)       READY (shared#157)
-  Foundation lock validation (EA-01C)  ENFORCING in Shared and on 7 of 8 consumers (Foundation `06c49e8`); ERP pending (erp#42)
+  Foundation lock validation (EA-01C)  ENFORCING in Shared and on all 8 consumers (Foundation `06c49e8`)
   Drift report (EA-01D)                READY (Foundation job summary)
 
-EA-02 Capability Governance            02A–02E IMPLEMENTED; PLATFORM CONFORMANCE GATE OPEN
+EA-02 Capability Governance            02A–02E IMPLEMENTED; G-FCI-1 ENFORCED FLEET-WIDE; PLATFORM CONFORMANCE GATE CLOSED (not certification)
   Canonical catalogue                  16 capabilities
   Provider declarations                PARTIAL (see table)
-  Foundation enforcement (G-FCI-1)     ENFORCING on 7 of 8: CP (cp#238), IAM (iam#48), CMS (cms#20), Payments (payments#17), Subscriptions (subscriptions#23), Pulse (pulse#29), Trade (trade#113), all on Foundation `06c49e8`. ERP pending: erp#42 is open and red on the container scan (see below)
+  Foundation enforcement (G-FCI-1)     ENFORCING on all 8 consumers, all on Foundation `06c49e8`: CP (cp#238), IAM (iam#48), CMS (cms#20), Payments (payments#17), Subscriptions (subscriptions#23), Pulse (pulse#29), Trade (trade#113), ERP (erp#42)
   Control Plane classification         DONE: control-plane trait (shared#174); CP classified control-plane, no declaration, Foundation `06c49e8` (cp#238)
-  ERP Foundation (erp#42)              BLOCKED, not by the pin: Trivy finds 2 HIGH CVEs in jackson-databind 2.15.4 inside the upstream idempiere:13-release image. The same scan fails on ERP main (still on 31de2bc), so this predates the pin change. Needs an ERP owner decision: newer base image or jar, or a time-boxed exceptions.container-scan with a named approver
-  Gate closes when                     ERP adopts an enforcing Foundation (erp#42 merged green or an owner-approved exception); all other engines already do
+  ERP container scan (erp#42)          FIXED: jackson-databind 2.15.4 CVE-2026-91776/91777 in the upstream idempiere:13-release image replaced by Jackson 2.18.11 (ADR-ERP-004 s5 emergency mitigation, in the Dockerfile with owner, removal condition and build guards). jackson-datatype-joda stays 2.15.4 (needs joda-time 2.12, image has 2.10.14). Not boot-tested: no CI job starts iDempiere. Upstream issue not yet filed
+  Gate closed because                  every consumer pins an enforcing Foundation and passes it in CI. It proves structure, catalogue references and contract locks only; it never certifies (EA-09) or activates (Control Plane) anything
   Provider registration DRAFT (02C)    READY (shared#167, cp#231)
   Provider activation Changeset (02D)  READY (shared#167, #168, cp#232; ENGINE_RELEASE check cp#233)
   Binding integrity (02E)              READY (cp#234: constraint validated, fails loudly on unresolved bindings)
@@ -136,7 +136,7 @@ provides no resolvable capability, and may not carry a declaration
 | Decision | Outcome | Record |
 |---|---|---|
 | G-REG-NS | Option B: Regulations is a first-class capability provider; Trade keeps operational enforcement | [g-reg-ns-resolution.md](g-reg-ns-resolution.md) |
-| G-FCI-1 | Declaration mandatory for `active` engines; validator enforcing, fleet adoption open | [ea-02-capability-catalogue.md](ea-02-capability-catalogue.md) |
+| G-FCI-1 | Declaration mandatory for `active` engines; enforcing on all 8 consumers (closed 2026-10-01) | [ea-02-capability-catalogue.md](ea-02-capability-catalogue.md) |
 | Control Plane classification | CP is `control-plane`, not `engine`; no provider declaration | [ea-02-capability-catalogue.md](ea-02-capability-catalogue.md), ADR-0020 amendment |
 | Payments/Subscriptions lifecycle | Promoted to `active`; simulated support stays non-production | payments#14, subscriptions#19 |
 | Pulse lifecycle | `experimental` | pulse#26 |
