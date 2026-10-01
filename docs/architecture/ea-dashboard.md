@@ -76,9 +76,9 @@ EA-04 Identity                         ADVANCED
 EA-05 Governance                       ADVANCED
   Administrative authority             MIGRATION PATH ACCEPTED (roles-to-grants-decision.md); implementation in progress
     ADA-05 grant administration        IMPLEMENTED (exact-scope delegation)
-    grant replace/supersede            CONTRACT IN REVIEW (required before enforcement)
-    narrower-scope delegation          REQUIRED before delegated customer admin
-    ADA-06 maker/checker and SoD       CONTRACT MERGED (shared#187), CP IN REVIEW (cp#245)
+    grant replace/supersede            IMPLEMENTED (cp#246 in review)
+    narrower-scope delegation          IMPLEMENTED for provable containment; org->tenant and group-descendant need canonical relation data (decision)
+    ADA-06 maker/checker and SoD       IMPLEMENTED (shared#187, cp#245)
     authority:self issuance            DONE (iam#49)
     administrator:read/write issuance  APPROVED (iam#50)
     shadow blind spots                 OPEN
