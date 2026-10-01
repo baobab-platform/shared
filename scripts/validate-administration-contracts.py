@@ -51,8 +51,8 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = ROOT / "contracts"
 PKG = CONTRACTS / "administration" / "v1"
 BASE_URI = "https://contracts.baobab-platform.com/administration/v1/"
-SCHEMAS = ["domain.schema.json", "scope.schema.json", "grant.schema.json", "grant-administration.schema.json"]
-YAMLS = ["permission-registry.yaml", "profile-registry.yaml", "lifecycle.yaml", "separation-of-duties.yaml", "assurance-policy.yaml"]
+SCHEMAS = ["domain.schema.json", "scope.schema.json", "grant.schema.json", "grant-administration.schema.json", "authority-migration.schema.json"]
+YAMLS = ["permission-registry.yaml", "profile-registry.yaml", "lifecycle.yaml", "separation-of-duties.yaml", "assurance-policy.yaml", "enforcement-policy.yaml"]
 RISK_ORDER = ["LOW", "MODERATE", "HIGH", "CRITICAL"]
 
 failures: list[str] = []
@@ -250,6 +250,57 @@ for risk in RISK_ORDER:
 critical_req = requirements.get("CRITICAL", {})
 if not critical_req.get("phishing_resistant_required") or not critical_req.get("max_authentication_age_seconds"):
     fail("assurance-policy.yaml: CRITICAL requires fresh, phishing-resistant step-up (section 72)")
+
+# 4c. Enforcement policy and the migration documents (roles-to-grants
+# decision, rulings 1, 3, 4 and 5).
+enforcement = load_yaml(PKG / "enforcement-policy.yaml")
+criteria = enforcement.get("criteria", {})
+if criteria.get("status") not in ("DRAFT", "PROPOSED", "APPROVED"):
+    fail("enforcement-policy.yaml: criteria.status must be DRAFT, PROPOSED or APPROVED")
+for field in ("minimum_observation_days", "minimum_decisions"):
+    if not isinstance(criteria.get(field), int) or criteria[field] < 1:
+        fail(f"enforcement-policy.yaml: criteria.{field} must be a positive integer")
+for field in ("maximum_grants_narrower", "maximum_not_evaluated", "maximum_unresolved_or_error"):
+    if not isinstance(criteria.get(field), int) or criteria[field] < 0:
+        fail(f"enforcement-policy.yaml: criteria.{field} must be a non-negative integer")
+if "maximum_grants_broader" in criteria:
+    fail("enforcement-policy.yaml: grants_broader is always zero and is not a tunable (section 144)")
+if [w.get("risk_class") for w in enforcement.get("waves", [])] != RISK_ORDER or [w.get("wave") for w in enforcement.get("waves", [])] != [1, 2, 3, 4]:
+    fail("enforcement-policy.yaml: waves must run LOW, MODERATE, HIGH, CRITICAL as 1 to 4 (ruling 4)")
+critical_policy = enforcement.get("critical", {})
+if critical_policy.get("enforcement") != "PROHIBITED" and not {
+    "maker_checker", "step_up_evidence", "independent_approver", "grant_lifecycle_administration", "audit", "rollback"
+} <= set(critical_policy.get("lift_requires", [])):
+    fail("enforcement-policy.yaml: CRITICAL enforcement may be lifted only when every lift_requires item is named")
+seen_enforced = set()
+for entry in enforcement.get("enforced") or []:
+    key = entry.get("permission")
+    if key not in permissions:
+        fail(f"enforcement-policy.yaml: enforced permission {key!r} is not registered")
+        continue
+    if key in seen_enforced:
+        fail(f"enforcement-policy.yaml: {key} is enforced twice")
+    seen_enforced.add(key)
+    if permissions[key]["risk_class"] == "CRITICAL" and critical_policy.get("enforcement") == "PROHIBITED":
+        fail(f"enforcement-policy.yaml: {key} is CRITICAL and CRITICAL enforcement is prohibited")
+    for field in ("approved_by", "approved_at", "evidence_ref"):
+        if not entry.get(field):
+            fail(f"enforcement-policy.yaml: enforced {key} must name {field} (the owner's decision)")
+    if criteria.get("status") != "APPROVED":
+        fail(f"enforcement-policy.yaml: {key} cannot be enforced while the exit criteria are not APPROVED")
+    if set(entry) - {"permission", "scope", "approved_by", "approved_at", "evidence_ref"}:
+        fail(f"enforcement-policy.yaml: enforced {key} has unknown fields")
+population = json.loads((PKG / "examples" / "reviewed-population.json").read_text())
+for problem in errors("authority-migration.schema.json#/$defs/ReviewedPopulation", population):
+    fail(f"example reviewed-population.json: {problem}")
+for record in population["administrators"]:
+    entry = permissions.get(record["permission"])
+    if entry is None:
+        fail(f"example reviewed-population.json: permission {record['permission']} is not registered")
+    elif record["scope"]["level"] not in entry["scope_levels"]:
+        fail(f"example reviewed-population.json: {record['permission']} may not be granted at {record['scope']['level']}")
+    if record["reviewed_by"] == record["principal_id"]:
+        fail("example reviewed-population.json: nobody reviews their own authority (section 39)")
 
 # 5. Examples.
 examples = json.loads((PKG / "examples" / "administrative-grants.json").read_text())

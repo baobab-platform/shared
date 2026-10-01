@@ -105,11 +105,13 @@ contracts:
       - scope.schema.json
       - grant.schema.json
       - grant-administration.schema.json
+      - authority-migration.schema.json
       - permission-registry.yaml
       - profile-registry.yaml
       - lifecycle.yaml
       - separation-of-duties.yaml
       - assurance-policy.yaml
+      - enforcement-policy.yaml
   - domain: evidence
     version: v1
     schemas:

@@ -117,6 +117,15 @@ EA-05 Administrative Authority      MIGRATION DECISION ACCEPTED, implementation 
 | HIGH maker-checker | May become usable once IAM issues the scope. |
 | CRITICAL | Grants may be prepared under the controlled workflow while roles remain authoritative. CRITICAL AdministrativeGrant **enforcement stays disabled** until the assurance/step-up path is implemented and proven. |
 
+### Remaining sequence (implemented as mechanism, owner decisions open)
+
+| Item | State |
+|---|---|
+| Step-up / assurance evaluation | Implemented (`assurance-policy.yaml`, shared#192, cp#249). IAM issues no phishing-resistant level, so CRITICAL stays disabled. |
+| Reviewed population | Format and validation only (`ReviewedPopulation`). The list is Platform Security / Control Plane Governance's; no grant is issued from here. |
+| Shadow evidence | Readiness read model (`GET /admin/authority-migration/readiness`) against `enforcement-policy.yaml`. The criteria are PROPOSED; approving them is the owner's. |
+| Per-permission enforcement | Mechanism in place (per permission, fail closed, independent rollback). `enforced` is empty: **no permission is enforced and none is authorised**. |
+
 Sequence: organisation-to-tenant containment, CRITICAL bound (this change), IAM issuance, step-up/assurance evaluation, reviewed grant population, shadow evidence, permission-by-permission enforcement. Nothing here authorises a roles-to-grants flip.
 
 Status: ADA-05 IMPLEMENTED (shared#184/#185, baobab-cp#244). IAM issuance of the two scopes: baobab-iam#50.

@@ -1,0 +1,21 @@
+{
+  "population_id": "example-population",
+  "version": 1,
+  "status": "DRAFT",
+  "prepared_at": "2026-10-01T09:00:00Z",
+  "administrators": [
+    {
+      "principal_id": "prn_example_admin",
+      "current_roles": ["cp:tenant-admin"],
+      "permission": "tenant.view",
+      "scope": {"level": "TENANT", "tenant_id": "tn_exampletenant"},
+      "organisation_attestation_ref": "attestation:example-tenant-2026-09",
+      "grant_type": "STANDING",
+      "valid_from": "2026-10-02T00:00:00Z",
+      "risk_class": "LOW",
+      "reason": "Example only: the tenant administrator views the tenant they administer today.",
+      "reviewed_by": "prn_example_reviewer",
+      "reviewed_at": "2026-10-01T09:00:00Z"
+    }
+  ]
+}
