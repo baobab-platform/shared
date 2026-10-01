@@ -84,6 +84,9 @@ observation:
 #                a mandatory dependency (a capability whose every usable binding
 #                is affected); a release_drift code, never a resolution denial.
 #   DEGRADED  -- visible in readiness (degrading_reasons), never a blocker.
+# A BLOCKED reason blocks only through a mandatory dependency all of whose usable
+# bindings are affected; on an optional dependency, or one with an unaffected
+# usable binding, it degrades instead.
 # Readiness consequence is not routing eligibility: capability resolution is
 # unchanged (gate ER-06 is not accepted, amendment A4), so a tenant may be
 # BLOCKED while resolution keeps working.

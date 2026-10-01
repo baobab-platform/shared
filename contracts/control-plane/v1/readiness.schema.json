@@ -41,13 +41,13 @@
         },
         "degrading_reasons": {
           "type": "array",
-          "description": "Why a snapshot is DEGRADED: release_drift codes whose readiness_effect in topology/v1 release-policy.yaml is DEGRADED (ADR-BCP-025 section 2.8). Visible, never blockers.",
+          "description": "Why a snapshot is DEGRADED: release_drift codes that degrade it without blocking it (ADR-BCP-025 section 2.8): a drift whose readiness_effect in topology/v1 release-policy.yaml is DEGRADED, or a BLOCKED-effect drift on a dependency that is not mandatory or still has a usable binding on an unaffected instance. Visible, never blockers.",
           "items": {
             "type": "object",
             "additionalProperties": false,
             "required": ["code"],
             "properties": {
-              "code": { "type": "string", "description": "A release_drift code whose readiness_effect is DEGRADED." },
+              "code": { "type": "string", "description": "A release_drift code." },
               "capability_key": { "$ref": "../../capability/v1/domain.schema.json#/$defs/capabilityKey" },
               "detail": { "type": "string", "maxLength": 500 }
             }

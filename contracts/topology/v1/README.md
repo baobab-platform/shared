@@ -54,7 +54,7 @@ Related changes outside this package:
 - **Readiness consequence (owner ruling, gate ER-05).** Each drift reason's `readiness_effect` in `release-policy.yaml` is separate from its severity:
   - `BLOCKED` (`REVOKED_RELEASE_RUNNING`, `UNKNOWN_ARTIFACT_RUNNING`, `DEPLOYMENT_LOCATION_MISMATCH`): a readiness blocking reason, with the drift's own `release_drift` code, but only where the affected instance serves a mandatory dependency.
   - `DEGRADED` (`RELEASE_MISMATCH`, `RELEASE_UNOBSERVED`): visible in the snapshot's `degrading_reasons`, never a blocker.
-  - Blocking propagates up Provider → Capability → Product → Estate → Tenant only through mandatory dependencies, so one instance's drift does not block every tenant. A tenant can be BLOCKED while capability resolution keeps working: that asymmetry is intended until ER-06 is accepted.
+  - Blocking propagates up Provider → Capability → Product → Estate → Tenant only through mandatory dependencies, and only when every usable binding of the capability is on an affected instance; otherwise it degrades. One instance's drift therefore does not block every tenant. A tenant can be BLOCKED while capability resolution keeps working: that asymmetry is intended until ER-06 is accepted.
 
 ## Routes
 
