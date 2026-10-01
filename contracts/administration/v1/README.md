@@ -36,9 +36,8 @@ A scope is *within* another when every resource the first reaches the second rea
 - an environment-less scope contains any environment; a named environment contains only itself;
 - `PLATFORM` contains every scope;
 - otherwise the levels and anchors match (`PLATFORM_ACCOUNT`, `ORGANISATION`, `TENANT`, `LEGAL_ENTITY`, `DIGITAL_ESTATE`, `RESOURCE`), a `MARKET` scope contains the same market with a narrower set of qualifiers (`organisation_id`, `tenant_id`), and a `CORPORATE_GROUP` scope contains, by `STATIC_MEMBERSHIP`, an organisation in its list or a shorter list of the same group, and, by `DYNAMIC_GROUP_DESCENDANTS`, the same group, exact or dynamic;
-- nothing else is assumed. In particular no organisation-to-tenant relation and no group-descendant membership is followed unless the evaluator holds it as canonical data, so an `ORGANISATION` scope does not contain a `TENANT` scope and a dynamic group does not contain an organisation. Where containment cannot be proven the answer is *not within*, and a delegation is refused rather than widened.
-
-Following such relations (for example ACME to ACME Uganda) is a separate decision: the relation must be canonical data the evaluator reads, and coverage and containment must move together.
+- an `ORGANISATION` scope contains a `TENANT` scope only through an explicit, effective `TenantOrganisationMapping` (ADR-BCP-018: `ACTIVE` and inside its effective window) between that tenant and that organisation. Ownership, naming, common parentage and `PlatformAccount` membership are not relations. The reverse never holds: a tenant scope does not contain an organisation. The permission must be valid at both levels. Coverage follows the same mapping, so containment implies coverage; a delegation resting on a mapping stops being usable when the mapping ends;
+- nothing else is assumed. In particular no group-descendant membership is followed unless the evaluator holds the canonical group graph, so a dynamic group does not contain an organisation without it, and corporate groups have no automatic expansion. Where containment cannot be proven, including when the evaluator holds no mapping data, the answer is *not within*, and a delegation is refused rather than widened.
 
 ## Versioning
 
