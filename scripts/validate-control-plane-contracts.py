@@ -947,6 +947,10 @@ def check_changeset() -> None:
             fail(f"change kind {kind} names statuses its {spec['target']} lifecycle lacks")
         if "approval_scope" in spec and spec["approval_scope"] not in registered_scopes:
             fail(f"change kind {kind} names unregistered approval_scope {spec['approval_scope']}")
+        if "request_scope" in spec and spec["request_scope"] not in registered_scopes:
+            fail(f"change kind {kind} names unregistered request_scope {spec['request_scope']}")
+        if spec.get("target", "").startswith("ADMINISTRATIVE_") and spec.get("request_scope") != "administrator:write":
+            fail(f"change kind {kind} changes administrative authority and needs request_scope administrator:write")
     # An outcome can name every kind's target as the resource it changed.
     affected = set(defs["affectedResource"]["properties"]["resource_type"]["enum"])
     targets = {spec.get("target") for spec in kinds.values()}

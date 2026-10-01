@@ -135,6 +135,9 @@ triggers:
 # to_status, and its target keeps its status. approval_scope, where set, is the scope the
 # approver must also hold, so a changeset never grants authority the
 # resource's direct route would refuse (ADR-BCP-020, ADR-BCP-021 section 24).
+# request_scope, where set, is the scope the requester must also hold to
+# draft a changeset of that kind: changing administrative authority is itself
+# an administrative action (ADR-BCP-020 gate ADA-06).
 change_kinds:
   TENANT_SUSPENSION:
     target: TENANT
@@ -297,6 +300,7 @@ change_kinds:
     changeset_type: MODIFY
     from_status: [ACTIVE]
     changes: administrative_authority
+    request_scope: "administrator:write"
     approval_scope: "administrator:approve"
     operations: [ISSUE_ADMINISTRATIVE_GRANT, VERIFY_ADMINISTRATIVE_GRANT]
     plan_checks:
@@ -332,6 +336,7 @@ change_kinds:
     changeset_type: MODIFY
     from_status: [ACTIVE]
     changes: administrative_authority
+    request_scope: "administrator:write"
     approval_scope: "administrator:approve"
     operations: [DELEGATE_ADMINISTRATIVE_GRANT, VERIFY_ADMINISTRATIVE_GRANT]
     plan_checks:
