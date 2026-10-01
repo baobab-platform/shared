@@ -1,6 +1,6 @@
 # Roles to AdministrativeGrants: decision paper
 
-**Status:** Decision paper. **Nothing here changes enforcement.** The flip is the owner's decision and is not made on a green build (`ada-00-administrative-authority-inventory.md`, baobab-cp).
+**Status:** **Migration path ACCEPTED (owner, 2026-10-01). The enforcement flip is NOT authorised.** Nothing here changes enforcement. The flip is the owner's decision and is not made on a green build (`ada-00-administrative-authority-inventory.md`, baobab-cp).
 **Date:** 2026-10-01
 **Authority:** ADR-BCP-020 §143–144 (migration from broad roles, shadow evaluation), gates ADA-00 to ADA-12.
 **Dashboard row:** EA-05 "AdministrativeGrant enforcement: BLOCKED (roles→grants decision)".
@@ -61,5 +61,34 @@ Gates ADA-07 to ADA-09 (time-bound/JIT, support access, break-glass), ADA-11 (ac
 3. **Population source:** who supplies the reviewed administrator list for step 4.
 4. **Flip granularity:** confirm per-permission, then per-tenant, rather than a single switch.
 5. **Bootstrap policy:** until step 1 exists, should the 30-day bootstrap grants be renewed manually by an operator procedure, or should role authority simply stay primary (the current state) and bootstrap grants be left to lapse? I recommend the latter: roles stay authoritative, so nothing is lost when they lapse.
+
+## Rulings (owner, 2026-10-01)
+
+| # | Decision | Ruling |
+|---|---|---|
+| 1 | Accept the staged path | **Accepted.** No enforcement flip before grant administration, authority visibility, shadow blind-spot closure, population/reconciliation and a representative shadow-observation period. Steps 1 to 5 are prerequisites for the first flip, not follow-up work |
+| 2 | `authority:self` | **Approved.** Configure it in the current IAM provider for the human administration client only; never for workloads. The canonical scope stays provider-neutral: Keycloak may issue it today, Baobab owns its semantics, and it must remain valid after the Ory migration |
+| 3 | Administrator population | **Platform Security / Control Plane Governance** owns the reviewed list. IAM supplies *evidence* of current role holders and must not become the grant source of truth. Tenant-scoped grants need tenant/organisation attestation. No script maps a role to every permission. Each reviewed record names: canonical principal, current roles, proposed permissions, scope, environment, tenant/organisation, grant type, validity, risk, reason, reviewer. Approval: Platform Architecture/Security owner |
+| 4 | Enforcement granularity | **Per permission first, then per applicable tenant/environment scope.** No platform-wide switch. Each permission has an independent rollback to the role decision. Order: low-risk reads, then moderate mutations, then high-risk mutations, CRITICAL last. For platform-scoped permissions, canary by environment and administrator cohort |
+| 5 | Bootstrap grants | **Let them lapse.** Do not mass-renew. Roles stay authoritative until each controlled flip. `cmd/admin-bootstrap` stays only for initial bootstrap and exceptional recovery; an exceptional grant before ADA-05 is a fresh, explicitly approved, time-bounded one, never part of the migration population |
+
+### Requirements the rulings add
+
+- **Grant administration API** (step 1) supports at least issue, inspect/list, amend where permitted, suspend, revoke, delegate, expiry/lifecycle visibility and audit, and enforces that a principal cannot delegate authority they do not possess. HIGH and CRITICAL authority changes go through the Changeset/maker-checker path, not direct mutation.
+- **CRITICAL permissions do not move** until maker/checker, step-up evidence, an independent approver, grant lifecycle administration, audit and rollback all exist. Missing step-up does not block migrating low-risk permissions later; it blocks critical privilege enforcement.
+
+### Status after the rulings
+
+```text
+EA-05 Administrative Authority      MIGRATION DECISION ACCEPTED, implementation in progress
+  ADA-05 grant administration       NEXT
+  ADA-06 maker/checker and SoD      NEXT
+  authority:self issuance           APPROVED (IAM action)
+  shadow blind spots                OPEN
+  grant population                  BLOCKED on the above
+  shadow observation                BLOCKED on population
+  per-permission enforcement        NOT AUTHORISED YET
+  realm-role retirement             NOT AUTHORISED
+```
 
 Nothing in this paper issues a grant, changes a route, or alters the realm roles.
