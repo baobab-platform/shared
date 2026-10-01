@@ -16,8 +16,8 @@ unless it says so.
 
 | Repository | Baseline | Note |
 |---|---|---|
-| `shared` | main (`e151243`, after shared#173) | Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin |
-| `baobab-cp` | main (`a241607`, after cp#237) | Lock pinned to Shared `e151243`; Foundation caller still `31de2bc` (pre-G-FCI-1 enforcement) |
+| `shared` | main (`06c49e8`, after shared#174) | Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin |
+| `baobab-cp` | main (`a241607`, after cp#237) | Lock pinned to Shared `e151243`; Foundation caller `06c49e8` (cp#238) |
 | `baobab-iam` | main | Lock pinned to Shared `1bb1c94` (BEHIND_UNCHANGED) |
 | `baobab-payments`, `baobab-subscriptions` | main | Re-pinned to Shared `3a8230e` (payments#16, subscriptions#21) |
 | `baobab-trade`, `baobab-erp` | main | Deliberately held at `2da1a42`: consumed contracts changed, so a mechanical re-pin is wrong (EA-01) |
@@ -45,8 +45,8 @@ EA-02 Capability Governance            02A–02E IMPLEMENTED; PLATFORM CONFORMAN
   Canonical catalogue                  16 capabilities
   Provider declarations                PARTIAL (see table)
   Foundation enforcement (G-FCI-1)     VALIDATOR ENFORCING in Shared; FLEET NOT ENFORCED (all engines pin a Foundation older than shared#154: 31de2bc, Subscriptions 9331e6a)
-  Control Plane classification         control-plane trait defined (shared, this change); CP repository.yaml and Foundation pin move in a follow-up CP PR; gap stays open until it merges
-  Gate closes when                     CP is classified control-plane, and every active engine's Foundation pin enforces G-FCI-1
+  Control Plane classification         DONE: control-plane trait (shared#174); CP classified control-plane, no declaration, Foundation `06c49e8` (cp#238)
+  Gate closes when                     every active engine's Foundation pin enforces G-FCI-1 (all still pre-enforcement; checked locally: every engine already passes the enforcing checks at 06c49e8)
   Provider registration DRAFT (02C)    READY (shared#167, cp#231)
   Provider activation Changeset (02D)  READY (shared#167, #168, cp#232; ENGINE_RELEASE check cp#233)
   Binding integrity (02E)              READY (cp#234: constraint validated, fails loudly on unresolved bindings)
@@ -109,7 +109,7 @@ provides no resolvable capability, and may not carry a declaration
 | baobab-pulse | experimental | None | None; intelligence/v1 not yet in scope |
 | baobab-trade | active | Yes | Declared; contents not re-reviewed here |
 | baobab-erp | active | Yes | Declared; contents not re-reviewed here |
-| baobab-cp | active, `control-plane` (pending CP PR; still `engine` on CP main) | None, by design | None: platform authority, not a provider |
+| baobab-cp | active, `control-plane` (cp#238) | None, by design | None: platform authority, not a provider |
 
 ## Immediate execution queue (plan §51)
 
