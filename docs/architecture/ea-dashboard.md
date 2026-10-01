@@ -57,10 +57,10 @@ EA-03 Runtime Topology                 PARTIAL
   HealthObservation                    READY
   ProviderMigration                    READY
   EngineRelease architecture           ACCEPTED (ADR-BCP-025, A1–A4)
-  EngineRelease                        ER-01 contracts; ER-02 record/read (cp#233); release approval via ENGINE_RELEASE_APPROVAL Changeset (shared#171, cp#235); ER-03 desired release/deprecation/revocation (shared#173, cp#237) MERGED; ER-04, ER-05 MISSING
+  EngineRelease                        ER-01 contracts; ER-02 record/read (cp#233); release approval via ENGINE_RELEASE_APPROVAL Changeset (shared#171, cp#235); ER-03 desired release/deprecation/revocation (shared#173, cp#237) MERGED; ER-04 intake and observed release MERGED (shared#178, cp#239) but NOT OPERATIONALLY PROVEN (see ER-04 production gates); ER-05 drift in review (cp#240), events/metrics next
   Binding contract versions            positive integer majors (cp#236, ADR-BCP-025 §2.1.1)
   Capability exclusion on observed state ER-06: DISABLED (amendment A4)
-  DeploymentObservation                CONTRACTS (ER-01, topology/v1); CP ER-04 MISSING
+  DeploymentObservation                CP intake MERGED (cp#239); production reporter registered PROVISIONED; no observation received
 
 EA-04 Identity                         ADVANCED
   provider-neutral identity contracts  READY (shared#151)
@@ -68,6 +68,8 @@ EA-04 Identity                         ADVANCED
   activation evidence (#148)           MERGED
   IAM provider declaration             PLANNED-ONLY
   federated workload path              IMPLEMENTED / UNPROVEN
+  Workload registry authority          Shared owns it; production CP does not yet load or enforce it (ER-04 production gate 1)
+  Deployment controller workload       PROVISIONED (baobab-deployment-controller-production)
   CP workload                          PROVISIONED
   Subscriptions workload               PROVISIONED
 
@@ -126,7 +128,7 @@ provides no resolvable capability, and may not carry a declaration
 | 8 | Foundation provider-declaration validation | Done (enforcing) | shared#152, #153, #154 |
 | 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
 | 10 | Implement EngineRelease | In progress | ER-01 contracts; ER-02 record and read (shared#169, #170, cp#233); release approval (shared#171, cp#235); ER-03 (shared#173, cp#237); ER-04, ER-05 next; ER-06 a separate gate, disabled |
-| 11 | DeploymentObservation model/interfaces | Contracts done | ER-01 (`deployment-observation.schema.json`, `deployment:observe`); intake is ER-04 |
+| 11 | DeploymentObservation model/interfaces | Intake merged; not operationally proven | ER-01 contracts; ER-04 (shared#178, cp#239). Production evidence waits on the gates in [er-04-production-gates.md](er-04-production-gates.md) |
 | 12 | Provider activation Changeset | Done | DRAFT-only registration and PROVIDER_ACTIVATION (shared#167, #168, cp#231, cp#232); binding integrity (cp#234). Release approval (cp#235) lets a release be APPROVED and a provider be activated without direct SQL |
 | 13 | AdministrativeGrant enforcement | Blocked | Awaiting the roles→grants decision |
 | 14–30 | Engine hardening onward | Not started | Plan §51 |
@@ -141,6 +143,8 @@ provides no resolvable capability, and may not carry a declaration
 | Payments/Subscriptions lifecycle | Promoted to `active`; simulated support stays non-production | payments#14, subscriptions#19 |
 | Pulse lifecycle | `experimental` | pulse#26 |
 | ADR-BCP-025 | Accepted with amendments A1–A4 | cp#228 |
+| Workload registry in production CP | Mandatory and fail-closed; ACTIVE lifecycle enforced for every inbound workload after the existing ACTIVE entries are reconciled | [er-04-production-gates.md](er-04-production-gates.md) |
+| ADR-BCP-025 reporter | Infrastructure deployment controller and runtime observer, federated, no static secret; no admission webhook (production is ECS/Fargate, EKS deferred); PROVISIONED until proven | [er-04-production-gates.md](er-04-production-gates.md) |
 | Event context governance | ADR-SHARED-018 Accepted; `erp` DEPRECATED, `payments` kept, fulfilment/logistics/trade.shipment distinct, Regulations owns classification and assessment, `thamani-*` retired in T-COMPAT-03 | shared#161 |
 
 Still open, and not to be decided in code: roles→grants flip; Keycloak

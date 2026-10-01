@@ -196,3 +196,26 @@ workloads:
     credential_type: federated_workload_token
     rotation_owner: baobab-platform/baobab-subscriptions
     status: PROVISIONED
+
+  # ADR-BCP-025 section 2.9 reporter for production. Owner ruling: the reporter
+  # is infrastructure-owned deployment tooling, not an engine and not an
+  # admission webhook (production is ECS/Fargate; EKS is deferred). It reads
+  # desired releases and reports the artifact digests it observes actually
+  # running, after each deployment and periodically (an observation expires
+  # within release-policy.yaml observation.ttl_seconds.maximum, 3600 s), from
+  # the runtime's own state rather than from the release it intended to
+  # deploy. It holds no static secret. PROVISIONED until the federated
+  # exchange is proven end to end and the Control Plane accepts
+  # aud=baobab-control-plane, deployment:observe, this environment and region
+  # from it; only then is it promoted to ACTIVE.
+  baobab-deployment-controller-production:
+    repository: baobab-platform/infrastructure
+    owner: baobab-platform/infrastructure
+    runtime: "production deployment controller and runtime observer"
+    environment: production
+    deployment_regions: [af-south-1]
+    allowed_audiences: ["baobab-control-plane"]
+    allowed_scopes: ["desired-release:read", "deployment:observe"]
+    credential_type: federated_workload_token
+    rotation_owner: baobab-platform/infrastructure
+    status: PROVISIONED

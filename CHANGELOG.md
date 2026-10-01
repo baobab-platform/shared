@@ -29,6 +29,9 @@ Changes that have been merged but have not yet been included in a released versi
   - `baobab-cp` adopts the trait in a follow-up PR once it can pin a Foundation ref carrying this change.
   - The EA dashboard now records EA-02 as 02A–02E implemented with the platform conformance gate open (fleet not yet on an enforcing Foundation), and is reconciled with `main` (lock shapes and re-pins, release approval, ER-03, event registry 124/107/17, T-COMPAT-03).
 
+- **Production reporter registered, and the ER-04 production gates recorded.**
+  - `baobab-deployment-controller-production` (`baobab-platform/infrastructure`; production, `af-south-1`; `desired-release:read` and `deployment:observe`; federated, no static secret) is registered `PROVISIONED`. It is promoted only after the federated exchange is proven and the Control Plane accepts it.
+  - `docs/architecture/er-04-production-gates.md` records the owner rulings: the production Control Plane loads and enforces the workload registry (fail closed) after the existing `ACTIVE` entries are reconciled; the reporter is the deployment controller, not an admission webhook; reporting is post-deployment and periodic.
 - **Deployment observation intake and reads (ADR-BCP-025 gate ER-04).**
   - Control Plane OpenAPI 1.25.0 adds:
     - `submitDeploymentObservation` (`POST /deployment-observations`): workload `deployment:observe` only. It appends an observation; the Control Plane mints `observation_id`, assigns `recorded_at` and `ingestion_sequence`, and takes `source` from the caller. Out-of-scope, unknown-instance and bad-window submissions are `DEPLOYMENT_OBSERVATION_OUT_OF_SCOPE` (403), `_INSTANCE_UNKNOWN` (404) and `_WINDOW_INVALID` (422), using the reason codes already registered.
