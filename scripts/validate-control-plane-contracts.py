@@ -928,6 +928,11 @@ def check_changeset() -> None:
             fail(f"change kind {kind} names statuses its {spec['target']} lifecycle lacks")
         if "approval_scope" in spec and spec["approval_scope"] not in registered_scopes:
             fail(f"change kind {kind} names unregistered approval_scope {spec['approval_scope']}")
+    # An outcome can name every kind's target as the resource it changed.
+    affected = set(defs["affectedResource"]["properties"]["resource_type"]["enum"])
+    targets = {spec.get("target") for spec in kinds.values()}
+    if not targets <= affected:
+        fail(f"affectedResource resource_type lacks change kind targets {sorted(targets - affected)}")
     # The schema itself binds every plan to its kind's type and exact
     # operations, not only the example: a branch per kind, matching the
     # lifecycle, and a crossed plan is rejected.
