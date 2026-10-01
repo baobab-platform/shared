@@ -93,6 +93,10 @@ class CheckTest(LockTest):
     def test_active_engine_without_lock_fails(self):
         self.assertIn("is missing", self.check()[0])
 
+    def test_active_control_plane_without_lock_fails(self):
+        self.repository(lifecycle="active", capabilities=["go", "control-plane"])
+        self.assertIn("is missing", self.check()[0])
+
     def test_experimental_engine_or_non_engine_may_omit_lock(self):
         self.repository(lifecycle="experimental", capabilities=["engine"])
         self.assertEqual(self.check(), [])
@@ -162,6 +166,11 @@ class AutoModeTest(LockTest):
         self.lock(schema="nabhold-contract-consumer-lock")
         self.assertEqual(self.run_auto(), 1)
         self.repository(lifecycle="experimental", capabilities=["engine"])
+        self.assertEqual(self.run_auto(), 1)
+
+    def test_auto_enforces_for_the_control_plane(self):
+        self.repository(lifecycle="active", capabilities=["go", "control-plane"])
+        self.lock(schema="nabhold-contract-consumer-lock")
         self.assertEqual(self.run_auto(), 1)
 
     def test_auto_warns_for_non_engines(self):

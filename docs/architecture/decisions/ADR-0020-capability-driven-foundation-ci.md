@@ -25,3 +25,11 @@ A temporary legacy bridge accepts `.nabhold/environment.yaml` during controlled 
 - The private `shared` repository requires organisation Actions access to consumer repositories.
 - Rollout must occur through new immutable pins and representative pilots.
 
+## Amendment 1 (2026-10-01): the `control-plane` repository trait
+
+The `capabilities` vocabulary gains `control-plane`, a technical role distinct from `engine`.
+
+- `engine`: implements one or more Baobab domain capabilities. An `active` engine must carry `.baobab/capability-provider.yaml` (ADR-SHARED-017, G-FCI-1).
+- `control-plane`: owns platform governance, capability resolution and desired-state authority. It provides no resolvable capability, so it needs no provider declaration and may not carry one: capability resolution cannot itself be a capability resolved through the Control Plane.
+
+The two traits are mutually exclusive. A `control-plane` repository still receives the contract-consumer-lock (EA-01C), runtime, container and security gates. Classification is by trait, never by repository name. A function extracted from the Control Plane may become a capability only if it passes the ADR-SHARED-017 capability test without circular dependence on resolution, and then belongs to an engine.

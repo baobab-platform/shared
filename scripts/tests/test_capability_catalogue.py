@@ -500,6 +500,17 @@ class DeclarationPolicyTest(unittest.TestCase):
     def test_repository_without_engine_trait_has_nothing_to_declare(self):
         self.assertEqual(cc.declaration_policy(self.contract("active", "library", "go"), None), [])
 
+    def test_control_plane_needs_no_declaration(self):
+        self.assertEqual(cc.declaration_policy(self.contract("active", "go", "container", "control-plane"), None), [])
+        self.assertEqual(cc.declaration_policy(self.contract("experimental", "control-plane"), None), [])
+
+    def test_control_plane_may_not_declare_capabilities(self):
+        self.assertEqual(len(cc.declaration_policy(self.contract("active", "control-plane"), self.PLANNED)), 1)
+        self.assertEqual(len(cc.declaration_policy(self.contract("active", "control-plane"), self.SUPPORTING)), 1)
+
+    def test_control_plane_and_engine_traits_are_exclusive(self):
+        self.assertEqual(len(cc.declaration_policy(self.contract("active", "control-plane", "engine"), None)), 1)
+
     def test_cli_warns_or_enforces(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

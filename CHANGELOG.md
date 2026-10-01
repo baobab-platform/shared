@@ -23,6 +23,12 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **`control-plane` Foundation repository trait (ADR-0020 Amendment 1).**
+  - `.baobab/repository.schema.json` and the classifier accept `control-plane`. It is not an engine: G-FCI-1 `check-declaration-policy` requires no `.baobab/capability-provider.yaml` for it, rejects one if present, and rejects combining it with `engine`.
+  - `contract_lock.py` treats a `control-plane` repository like an engine: an `active` one must carry a lock and `--mode auto` enforces.
+  - `baobab-cp` adopts the trait in a follow-up PR once it can pin a Foundation ref carrying this change.
+  - The EA dashboard now records EA-02 as 02A–02E implemented with the platform conformance gate open (fleet not yet on an enforcing Foundation), and is reconciled with `main` (lock shapes and re-pins, release approval, ER-03, event registry 124/107/17, T-COMPAT-03).
+
 - **Desired release, deprecation and revocation (ADR-BCP-025 gate ER-03).**
   - A new `ENGINE_INSTANCE_DESIRED_RELEASE` change kind sets or clears an engine instance's desired release. It changes no status: the lifecycle now lets a kind name the attribute it `changes` instead of a `to_status`. Its approver holds the new `desired-release:approve` scope.
   - Its plan runs five checks, each with a new `changeset_blocker` code: the change changes something, and a named release is APPROVED, of the instance's engine, with the provenance and certification `release-policy.yaml` approval requires for the instance's environment.

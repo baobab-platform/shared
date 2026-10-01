@@ -35,7 +35,7 @@ reference.
 `scripts/contract_lock.py check` runs in the reusable Foundation environment
 job against a full-history checkout of Shared `main`:
 
-1. An `active` repository with the `engine` trait must have a lock.
+1. An `active` repository with the `engine` or `control-plane` trait must have a lock.
    Experimental engines and non-engine repositories may omit one. Any lock
    that exists is checked.
 2. The lock matches the schema.

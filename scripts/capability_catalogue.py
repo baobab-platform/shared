@@ -526,11 +526,26 @@ def declaration_policy(repository_contract: dict, declaration: object | None) ->
 
     An active repository with the Foundation engine trait must declare what it
     provides; an experimental engine may declare planned capabilities only.
-    A repository without the engine trait has nothing to declare here.
-    Validity of a declaration that exists is validate_declaration's job.
+    A repository without the engine trait has nothing to declare here. The
+    control-plane trait marks the Control Plane: platform authority, not a
+    resolvable capability provider, so it needs no declaration and may not
+    carry one (capability resolution would become circular), nor combine with
+    the engine trait. Validity of a declaration that exists is
+    validate_declaration's job.
     """
     lifecycle = (repository_contract.get("repository") or {}).get("lifecycle")
-    if "engine" not in (repository_contract.get("capabilities") or []):
+    traits = repository_contract.get("capabilities") or []
+    if "control-plane" in traits:
+        findings = []
+        if "engine" in traits:
+            findings.append("the control-plane and engine traits are mutually exclusive: the Control Plane "
+                            "governs and resolves capabilities and provides none (ADR-0020 amendment)")
+        if declaration is not None:
+            findings.append(f"{DECLARATION_PATH} is not permitted for a control-plane repository: capability "
+                            "resolution is not itself a resolvable capability. A capability extracted from the "
+                            "Control Plane needs its own engine and an ADR")
+        return findings
+    if "engine" not in traits:
         return []
     findings = []
     if lifecycle == "active" and declaration is None:
