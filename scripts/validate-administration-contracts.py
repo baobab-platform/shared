@@ -224,8 +224,10 @@ for level in assurance.get("levels", []):
         if raw in raw_seen:
             fail(f"assurance-policy.yaml: raw acr value {raw!r} maps to more than one level")
         raw_seen.add(raw)
-    if not level.get("raw_acr_values"):
-        fail(f"assurance-policy.yaml level {name}: raw_acr_values is required (what IAM issues)")
+    if not isinstance(level.get("issuable"), bool):
+        fail(f"assurance-policy.yaml level {name}: issuable states whether IAM issues this level today")
+    elif level["issuable"] != bool(level.get("raw_acr_values")):
+        fail(f"assurance-policy.yaml level {name}: raw_acr_values must be listed exactly when IAM issues the level")
 if sorted(ladder.values()) != list(range(len(ladder))):
     fail("assurance-policy.yaml: ranks must be 0..n-1 without gaps or repeats")
 if not assurance.get("phishing_resistant_methods"):
