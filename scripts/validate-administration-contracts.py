@@ -436,8 +436,8 @@ must_reject("an effective grant exposing who granted it", "grant.schema.json#/$d
 
 # 6b. Metrics: the catalogue's labels are closed, and the permission label
 #     can only take registered keys or "unregistered", so series stay bounded.
-if domain["administrativeMetricLabel"]["enum"] != ["permission", "legacy", "grants", "agreement"]:
-    fail("administrativeMetricLabel must be exactly permission, legacy, grants and agreement")
+if domain["administrativeMetricLabel"]["enum"] != ["permission", "legacy", "grants", "agreement", "result"]:
+    fail("administrativeMetricLabel must be exactly permission, legacy, grants, agreement and result")
 for name in domain["administrativeMetric"]["enum"]:
     if not name.endswith("_total") or errors("domain.schema.json#/$defs/administrativeMetric", name):
         fail(f"metric {name} must be a counter name ending _total")
