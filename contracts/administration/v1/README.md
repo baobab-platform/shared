@@ -40,6 +40,16 @@ A scope is *within* another when every resource the first reaches the second rea
 
 Following such relations (for example ACME to ACME Uganda) is a separate decision: the relation must be canonical data the evaluator reads, and coverage and containment must move together.
 
+## Authentication assurance
+
+`assurance-policy.yaml` (sections 72-74) is the ladder of assurance levels and what each risk class needs. Baobab IAM owns the mechanism; the policy records the raw `acr` values IAM issues for each level, so the Control Plane never guesses an order from identifier text.
+
+- A session's rank comes from the token's `acr` through the ladder. An absent or unlisted `acr` has no rank and meets nothing.
+- A grant's `conditions.minimum_acr` names a ladder level. A name the ladder does not list is never met, and a grant naming one is refused at issuance.
+- The effective requirement is the strictest of the grant's own `minimum_acr` and the requirement for its risk class: LOW and MODERATE `urn:baobab:acr:basic`; HIGH `urn:baobab:acr:mfa`; CRITICAL `urn:baobab:acr:step-up`, authenticated within 300 seconds, with a phishing-resistant method.
+- Freshness uses `step_up_at`, else `auth_time`; a time in the future is not fresh.
+- Meeting a requirement never creates authority: it only lets a grant be used (section 74). IAM does not yet issue a phishing-resistant step-up, so CRITICAL enforcement stays disabled until it does and that is proven.
+
 ## Versioning
 
 Adding a permission, profile, reason code or optional field is additive. Removing or renaming any of them, or narrowing a grammar, is breaking and needs a v2.

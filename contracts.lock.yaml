@@ -109,6 +109,7 @@ contracts:
       - profile-registry.yaml
       - lifecycle.yaml
       - separation-of-duties.yaml
+      - assurance-policy.yaml
   - domain: evidence
     version: v1
     schemas:

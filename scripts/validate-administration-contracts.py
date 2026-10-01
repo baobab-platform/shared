@@ -24,6 +24,9 @@ resolved against the contracts in this repository:
   8. separation-of-duties.yaml is a sound policy set whose change kinds
      exist in changeset-lifecycle.yaml and whose conflicting permissions are
      registered (section 36);
+  8b. assurance-policy.yaml is a gap-free ladder with a requirement for every
+     risk class that never falls as risk rises, and CRITICAL demands fresh,
+     phishing-resistant step-up (sections 72-74);
   9. contracts.lock.yaml registers exactly these files.
 
 Setup (same dependencies as the Foundation fixture suite):
@@ -49,7 +52,7 @@ CONTRACTS = ROOT / "contracts"
 PKG = CONTRACTS / "administration" / "v1"
 BASE_URI = "https://contracts.baobab-platform.com/administration/v1/"
 SCHEMAS = ["domain.schema.json", "scope.schema.json", "grant.schema.json", "grant-administration.schema.json"]
-YAMLS = ["permission-registry.yaml", "profile-registry.yaml", "lifecycle.yaml", "separation-of-duties.yaml"]
+YAMLS = ["permission-registry.yaml", "profile-registry.yaml", "lifecycle.yaml", "separation-of-duties.yaml", "assurance-policy.yaml"]
 RISK_ORDER = ["LOW", "MODERATE", "HIGH", "CRITICAL"]
 
 failures: list[str] = []
@@ -207,6 +210,45 @@ for conflicting in sod.get("conflicting_permissions", []):
     if len(conflicting.get("permissions", [])) < 2 or not set(conflicting["permissions"]) <= set(permissions):
         fail(f"separation-of-duties.yaml conflicting_permissions {conflicting}: two or more registered permissions required")
 
+# 4b. Assurance policy (sections 72-74).
+assurance = load_yaml(PKG / "assurance-policy.yaml")
+ladder = {}
+raw_seen = set()
+for level in assurance.get("levels", []):
+    name, rank = level.get("name"), level.get("rank")
+    if not name or name in ladder or not isinstance(rank, int):
+        fail(f"assurance-policy.yaml level {name!r}: a unique name and an integer rank are required")
+        continue
+    ladder[name] = rank
+    for raw in level.get("raw_acr_values", []):
+        if raw in raw_seen:
+            fail(f"assurance-policy.yaml: raw acr value {raw!r} maps to more than one level")
+        raw_seen.add(raw)
+    if not level.get("raw_acr_values"):
+        fail(f"assurance-policy.yaml level {name}: raw_acr_values is required (what IAM issues)")
+if sorted(ladder.values()) != list(range(len(ladder))):
+    fail("assurance-policy.yaml: ranks must be 0..n-1 without gaps or repeats")
+if not assurance.get("phishing_resistant_methods"):
+    fail("assurance-policy.yaml: phishing_resistant_methods is required")
+requirements = {r["risk_class"]: r for r in assurance.get("requirements", [])}
+if set(requirements) != set(RISK_ORDER):
+    fail("assurance-policy.yaml: exactly one requirement for each risk class is required")
+previous = -1
+for risk in RISK_ORDER:
+    req = requirements.get(risk, {})
+    if req.get("minimum_acr") not in ladder:
+        fail(f"assurance-policy.yaml {risk}: minimum_acr is not a level of the ladder")
+        continue
+    if ladder[req["minimum_acr"]] < previous:
+        fail(f"assurance-policy.yaml {risk}: a higher risk class never requires less assurance than a lower one")
+    previous = ladder[req["minimum_acr"]]
+    age = req.get("max_authentication_age_seconds")
+    if age is not None and (not isinstance(age, int) or age <= 0):
+        fail(f"assurance-policy.yaml {risk}: max_authentication_age_seconds must be a positive integer")
+critical_req = requirements.get("CRITICAL", {})
+if not critical_req.get("phishing_resistant_required") or not critical_req.get("max_authentication_age_seconds"):
+    fail("assurance-policy.yaml: CRITICAL requires fresh, phishing-resistant step-up (section 72)")
+
 # 5. Examples.
 examples = json.loads((PKG / "examples" / "administrative-grants.json").read_text())
 grants = {g["grant_id"]: g for g in examples["grants"]}
@@ -218,6 +260,9 @@ for grant in examples["grants"]:
         fail(f"example {gid}: a principal never grants to themselves (section 39)")
     if "valid_until" in grant and when(grant["valid_until"]) <= when(grant["valid_from"]):
         fail(f"example {gid}: valid_until must be later than valid_from")
+    minimum = (grant.get("conditions") or {}).get("minimum_acr")
+    if minimum is not None and minimum not in ladder:
+        fail(f"example {gid}: minimum_acr {minimum} is not a level of assurance-policy.yaml")
     entry = permissions.get(grant["permission"])
     if entry is None:
         fail(f"example {gid}: permission {grant['permission']} is not registered")
