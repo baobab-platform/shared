@@ -81,7 +81,7 @@ Gates ADA-07 to ADA-09 (time-bound/JIT, support access, break-glass), ADA-11 (ac
 
 ```text
 EA-05 Administrative Authority      MIGRATION DECISION ACCEPTED, implementation in progress
-  ADA-05 grant administration       NEXT
+  ADA-05 grant administration       IMPLEMENTED (exact-scope delegation; replace/supersede and narrower-scope delegation follow-ups)
   ADA-06 maker/checker and SoD      NEXT
   authority:self issuance           APPROVED (IAM action)
   shadow blind spots                OPEN
@@ -90,5 +90,18 @@ EA-05 Administrative Authority      MIGRATION DECISION ACCEPTED, implementation 
   per-permission enforcement        NOT AUTHORISED YET
   realm-role retirement             NOT AUTHORISED
 ```
+
+### ADA-05 follow-up rulings (owner, 2026-10-01)
+
+| Item | Decision |
+|---|---|
+| IAM `administrator:read` | Approved. Human workforce client `baobab-control-plane-admin` only; provider-neutral. |
+| IAM `administrator:write` | Approved. Privileged, explicitly requested, human admin client only, never a workload. The scope makes the route callable; authority still comes from `administrator.view/grant/revoke/delegate` grants. HIGH/CRITICAL changes stay refused until ADA-06. |
+| Exact-scope delegation | Accepted for ADA-05 as a deliberately restrictive first implementation (cannot expand authority). |
+| Narrower-scope delegation | **Required follow-up**, not an ADA-05 blocker. Must be done before delegated customer/organisation administration is relied on in production, using the canonical organisation/tenant/group relationships, never string-prefix or hierarchy guessing. Target: delegated authority is a subset of the delegator's effective authority (ADR-BCP-020). |
+| Amend a grant in place | **Rejected.** Authority-bearing fields (permission, scope, validity, delegation source) are never rewritten; grants stay historically truthful. |
+| Atomic replace/supersede | **Required before AdministrativeGrants become the enforcing authority.** One transaction: validate the replacement, create the new immutable grant, preserve provenance, revoke the old grant, handle dependent delegations. Not an amend: both records remain. Avoids lockout (revoke first) and overlapping broader authority (issue first). |
+
+Status: ADA-05 IMPLEMENTED (shared#184/#185, baobab-cp#244). IAM issuance of the two scopes: baobab-iam#50.
 
 Nothing in this paper issues a grant, changes a route, or alters the realm roles.

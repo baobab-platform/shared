@@ -75,9 +75,12 @@ EA-04 Identity                         ADVANCED
 
 EA-05 Governance                       ADVANCED
   Administrative authority             MIGRATION PATH ACCEPTED (roles-to-grants-decision.md); implementation in progress
-    ADA-05 grant administration        CONTRACT IN REVIEW (CP implementation NEXT)
+    ADA-05 grant administration        IMPLEMENTED (exact-scope delegation)
+    grant replace/supersede            REQUIRED before enforcement
+    narrower-scope delegation          REQUIRED before delegated customer admin
     ADA-06 maker/checker and SoD       NEXT
-    authority:self issuance            APPROVED (IAM action)
+    authority:self issuance            DONE (iam#49)
+    administrator:read/write issuance  APPROVED (iam#50)
     shadow blind spots                 OPEN
     grant population / observation     BLOCKED on the above
     per-permission enforcement         NOT AUTHORISED YET
