@@ -514,5 +514,81 @@
     },
     "verification_strategy": "Read the release back and require status APPROVED.",
     "compensation_strategy": "Deprecate or revoke the release through its own lifecycle; approval is never undone in place."
+  },
+  "desired_release_plan": {
+    "plan_id": "plan_0199a1b2c3d47ea5",
+    "plan_version": 1,
+    "plan_digest": "sha256:f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
+    "base_revision": 3,
+    "generated_at": "2026-10-01T10:00:00Z",
+    "expires_at": "2026-10-02T10:00:00Z",
+    "risk_class": "HIGH",
+    "changeset_id": "cs_0199a1b2c3d47ea5",
+    "changeset_type": "MODIFY",
+    "desired_change": {
+      "kind": "ENGINE_INSTANCE_DESIRED_RELEASE",
+      "engine_instance_id": "ei_01k9paystg1",
+      "release_id": "erl_01k9pay150"
+    },
+    "steps": [
+      {
+        "step_id": "set-desired-release",
+        "operation": "SET_DESIRED_RELEASE",
+        "depends_on": [],
+        "resources": {
+          "engine_instance_id": "ei_01k9paystg1",
+          "desired_release_id": "erl_01k9pay150",
+          "from_status": "ACTIVE",
+          "target_revision": 3
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "verify-desired-release",
+        "operation": "VERIFY_DESIRED_RELEASE",
+        "depends_on": [
+          "set-desired-release"
+        ],
+        "resources": {
+          "engine_instance_id": "ei_01k9paystg1",
+          "desired_release_id": "erl_01k9pay150"
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [],
+    "readiness_requirements": [
+      {
+        "check": "DESIRED_RELEASE_CHANGES",
+        "description": "The instance desires release 1.4.0 now."
+      },
+      {
+        "check": "RELEASE_APPROVED",
+        "description": "Release 1.5.0 is APPROVED."
+      },
+      {
+        "check": "RELEASE_ENGINE",
+        "description": "Release 1.5.0 is a release of baobab-payments."
+      },
+      {
+        "check": "PROVENANCE",
+        "description": "Staging does not require provenance (release-policy.yaml)."
+      },
+      {
+        "check": "CERTIFICATION",
+        "description": "Staging does not require certification (release-policy.yaml)."
+      }
+    ],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Desires release 1.5.0 of baobab-payments for its staging instance: infrastructure tooling reads it and rolls the instance to it.",
+      "resources_created": 0,
+      "resources_changed": 1,
+      "resources_removed": 0,
+      "availability_impact": "The instance rolls to the new release when tooling executes it; nothing changes until then."
+    },
+    "verification_strategy": "Read the engine instance back and require its desired release to be the planned one.",
+    "compensation_strategy": "Desire the previous release with another ENGINE_INSTANCE_DESIRED_RELEASE changeset; nothing irreversible is planned."
   }
 }

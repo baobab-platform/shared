@@ -415,6 +415,21 @@ reason_codes:
   - code: RELEASE_NOT_CERTIFIED
     category: changeset_blocker
     description: "An environment the release may serve requires certification, and none is recorded."
+  - code: DESIRED_RELEASE_UNCHANGED
+    category: changeset_blocker
+    description: "The engine instance already desires the release the change names, or already desires none."
+  - code: DESIRED_RELEASE_NOT_APPROVED
+    category: changeset_blocker
+    description: "Only an APPROVED release may become an engine instance's desired release."
+  - code: DESIRED_RELEASE_ENGINE_MISMATCH
+    category: changeset_blocker
+    description: "The release belongs to a different engine than the engine instance."
+  - code: DESIRED_RELEASE_PROVENANCE_MISSING
+    category: changeset_blocker
+    description: "The engine instance's environment requires a provenance reference, and the release has none."
+  - code: DESIRED_RELEASE_NOT_CERTIFIED
+    category: changeset_blocker
+    description: "The engine instance's environment requires certification, and none is recorded."
 
   # -- market_validation (market-lifecycle.yaml validation_rules) -------
   # Why a DRAFT market is not yet VALIDATED.
@@ -474,7 +489,7 @@ reason_codes:
     description: "The release's current status does not allow the requested status change."
   - code: RELEASE_PROVENANCE_REQUIRED
     category: engine_release
-    description: "This environment requires a provenance reference before a release can be approved."
+    description: "This environment requires a provenance reference before a release can be approved or become an engine instance's desired release."
   - code: RELEASE_NOT_APPROVED
     category: engine_release
     description: "Only an approved release may become an engine instance's desired release."
@@ -484,6 +499,9 @@ reason_codes:
   - code: RELEASE_REVOCATION_UNCOVERED
     category: engine_release
     description: "An engine instance that desires the release being revoked is neither given a replacement nor cleared."
+  - code: ENGINE_INSTANCE_DESIRED_RELEASE_UNAVAILABLE
+    category: engine_release
+    description: "The engine instance's desired release is in a status a desired-state read never returns; nothing is returned until it is replaced or cleared."
   - code: DEPLOYMENT_OBSERVATION_OUT_OF_SCOPE
     category: engine_release
     description: "The reporter is not registered for the environment or region the observation names."

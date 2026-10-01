@@ -289,6 +289,24 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "desired-release:approve"
+    description: >-
+      Approve the plan of an ENGINE_INSTANCE_DESIRED_RELEASE changeset, the
+      only way an engine instance's desired release is set or cleared
+      outside a revocation (ADR-BCP-025 section 2.5, gate ER-03). Held with
+      changeset:approve; never by the changeset's requester.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
+  - name: "desired-release:read"
+    description: >-
+      Infrastructure tooling reads an engine instance's desired release and
+      executes it (ADR-BCP-025 sections 2.5, 93). Reading changes nothing;
+      the Control Plane never deploys. Never held by an engine for itself.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
   - name: "engine-release:record"
     description: >-
       Release tooling records an immutable engine release: its
