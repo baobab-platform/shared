@@ -89,7 +89,7 @@ RESPONSIBILITIES = {
         "taskResult", "EngineMigrationTask", "EngineMigrationTaskPage", "EngineMigrationTaskReport",
     },
     "changeset.schema.json": {
-        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "ProviderActivation", "EngineReleaseApproval", "DesiredReleaseChange", "desiredChange",
+        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "ProviderActivation", "EngineReleaseApproval", "DesiredReleaseChange", "AdministrativeGrantIssuance", "AdministrativeGrantDelegation", "administrativePrincipalStatus", "desiredChange",
         "ChangesetCreateRequest", "ChangesetCancelRequest", "planReference", "Changeset", "ChangesetPage",
         "changesetOperation", "changesetStepResources", "changesetStep", "ChangesetPlan", "affectedResource",
         "verificationResult", "ChangeOutcome",
@@ -926,7 +926,11 @@ def check_changeset() -> None:
         "PROVIDER": set(json.loads((CONTRACTS / "capability" / "v1" / "domain.schema.json").read_text())["$defs"]["capabilityLifecycle"]["enum"]),
         "ENGINE_RELEASE": set(json.loads((CONTRACTS / "topology" / "v1" / "domain.schema.json").read_text())["$defs"]["releaseStatus"]["enum"]),
         "ENGINE_INSTANCE": set(json.loads((CP / "domain.schema.json").read_text())["$defs"]["engineInstanceStatus"]["enum"]),
+        "ADMINISTRATIVE_PRINCIPAL": set(json.loads((CONTRACTS / "identity" / "v1" / "principal.schema.json").read_text())["properties"]["status"]["enum"]),
+        "ADMINISTRATIVE_GRANT": set(json.loads((CONTRACTS / "administration" / "v1" / "domain.schema.json").read_text())["$defs"]["grantStatus"]["enum"]),
     }
+    if defs["administrativePrincipalStatus"]["enum"] != target_statuses["ADMINISTRATIVE_PRINCIPAL"] and set(defs["administrativePrincipalStatus"]["enum"]) != target_statuses["ADMINISTRATIVE_PRINCIPAL"]:
+        fail("administrativePrincipalStatus differs from identity/v1 principal.schema.json status")
     registered_scopes = {entry["name"] for entry in yaml.safe_load(
         (CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
     for kind, spec in kinds.items():
@@ -1140,6 +1144,44 @@ def check_changeset() -> None:
     rejects(schema, "ChangesetCreateRequest",
             {**create, "desired_change": {"kind": "ENGINE_INSTANCE_DESIRED_RELEASE", "engine_instance_id": desired_plan["desired_change"]["engine_instance_id"]}},
             "a desired release change that names no release_id, not even null")
+
+    # Administrative grant changes (ADR-BCP-020 gate ADA-06): maker-checker
+    # for HIGH and CRITICAL authority. Both kinds change administrative
+    # authority, never a status, under administrator:approve; their steps act
+    # on the grantee principal or the source grant alone.
+    for kind_name, plan_key, target, operations in (
+            ("ADMINISTRATIVE_GRANT_ISSUANCE", "administrative_grant_issuance_plan", "grantee_principal_id", ["ISSUE_ADMINISTRATIVE_GRANT", "VERIFY_ADMINISTRATIVE_GRANT"]),
+            ("ADMINISTRATIVE_GRANT_DELEGATION", "administrative_grant_delegation_plan", "source_grant_id", ["DELEGATE_ADMINISTRATIVE_GRANT", "VERIFY_ADMINISTRATIVE_GRANT"])):
+        grant_kind = kinds[kind_name]
+        if grant_kind.get("approval_scope") != "administrator:approve" or grant_kind.get("changes") != "administrative_authority" \
+                or "to_status" in grant_kind or grant_kind["from_status"] != ["ACTIVE"] or grant_kind["operations"] != operations:
+            fail(f"{kind_name} must change administrative_authority of an ACTIVE target under administrator:approve")
+        grant_plan = example[plan_key]
+        accepts(schema, "ChangesetPlan", grant_plan, f"changeset {plan_key}")
+        if [c["check"] for c in grant_plan["readiness_requirements"]] != [c["check"] for c in grant_kind["plan_checks"]]:
+            fail(f"changeset {plan_key} does not report every plan check of {kind_name}")
+        for step in grant_plan["steps"]:
+            if set(step["resources"]) - {target, "from_status", "target_revision"}:
+                fail(f"changeset {plan_key}: step {step['step_id']} names resources beyond {target}")
+        crossed_grant = copy.deepcopy(grant_plan)
+        other = "source_grant_id" if target == "grantee_principal_id" else "grantee_principal_id"
+        crossed_grant["steps"][0]["resources"][other] = "agr_01k9src0001" if other == "source_grant_id" else "2f1c5c3e-8f0e-4a55-9a3b-5d7f9a1b2c3d"
+        rejects(schema, "ChangesetPlan", crossed_grant, f"a {plan_key} step naming both grant resources")
+        tenant_step = copy.deepcopy(grant_plan)
+        tenant_step["steps"][0]["resources"]["tenant_id"] = plan["desired_change"]["tenant_id"]
+        rejects(schema, "ChangesetPlan", tenant_step, f"a {plan_key} step also naming a tenant")
+        wrong_type = copy.deepcopy(grant_plan)
+        wrong_type["changeset_type"] = "SUSPEND"
+        rejects(schema, "ChangesetPlan", wrong_type, f"a {plan_key} typed SUSPEND")
+        statused = copy.deepcopy(grant_plan)
+        statused["steps"][0]["resources"]["from_status"] = "active"
+        rejects(schema, "ChangesetPlan", statused, f"a {plan_key} step outside its target's status vocabulary")
+    standing_with_end = {"kind": "ADMINISTRATIVE_GRANT_ISSUANCE", **{k: v for k, v in example["administrative_grant_issuance_plan"]["desired_change"].items() if k != "kind"}, "grant_type": "STANDING"}
+    rejects(schema, "ChangesetCreateRequest", {**create, "desired_change": standing_with_end}, "a STANDING grant issuance with valid_until")
+    timed_without_end = {k: v for k, v in example["administrative_grant_issuance_plan"]["desired_change"].items() if k != "valid_until"}
+    rejects(schema, "ChangesetCreateRequest", {**create, "desired_change": timed_without_end}, "a TIME_BOUND grant issuance without valid_until")
+    accepts(schema, "ChangesetCreateRequest", {**create, "desired_change": example["administrative_grant_issuance_plan"]["desired_change"]}, "a grant issuance request")
+    accepts(schema, "ChangesetCreateRequest", {**create, "desired_change": example["administrative_grant_delegation_plan"]["desired_change"]}, "a grant delegation request")
 
     # Tenant step resources keep their v1 shape: no resource at all, or
     # statuses alone, stay valid tenant steps.

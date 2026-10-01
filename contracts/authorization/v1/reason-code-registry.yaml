@@ -433,6 +433,30 @@ reason_codes:
   - code: DESIRED_RELEASE_NOT_CERTIFIED
     category: changeset_blocker
     description: "The engine instance's environment requires certification, and none is recorded."
+  - code: GRANT_GRANTEE_NOT_ACTIVE
+    category: changeset_blocker
+    description: "The principal the grant is for is not an active Control Plane principal."
+  - code: GRANT_REQUESTER_IS_GRANTEE
+    category: changeset_blocker
+    description: "The requester is the grantee: nobody requests authority for themselves (ADR-BCP-020 section 39)."
+  - code: GRANT_PERMISSION_NOT_GRANTABLE
+    category: changeset_blocker
+    description: "The permission is not registered, may not be granted at the scope level, or the scope is malformed."
+  - code: GRANT_VALIDITY_INVALID
+    category: changeset_blocker
+    description: "The validity window is malformed, starts in the past, or breaks a separation-of-duties bound for the risk class."
+  - code: GRANT_SOD_CONFLICT
+    category: changeset_blocker
+    description: "The grantee holds a live grant that conflicts with the permission under a separation-of-duties policy."
+  - code: GRANT_ALREADY_HELD
+    category: changeset_blocker
+    description: "The grantee already holds a live grant of this permission over this scope."
+  - code: DELEGATION_REQUESTER_NOT_HOLDER
+    category: changeset_blocker
+    description: "The requester does not hold the source grant being delegated."
+  - code: DELEGATION_EXCEEDS_SOURCE
+    category: changeset_blocker
+    description: "The delegation exceeds its source grant in permission, scope, end or depth, the permission is not delegable, or the source is not usable now."
 
   # -- market_validation (market-lifecycle.yaml validation_rules) -------
   # Why a DRAFT market is not yet VALIDATED.
