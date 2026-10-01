@@ -85,7 +85,7 @@ EA-09A Pre-deployment certification    NOT COMPLETE
 EA-10 Observability                    PARTIAL      (plan §44, not re-audited)
 EA-11 Recovery Engineering             NOT COMPLETE
 EA-12 Console                          FOUNDATION
-EA-13 Regulations                      DECIDED — Option B; follow-through open
+EA-13 Regulations                      DECIDED — Option B; step 1 ADR review drafted (g-reg-ns-adr-review.md), nothing accepted; follow-through open
 
 Infrastructure Deployment              DEFERRED BY PLAN
 ─────────────────────────────────────────────────────────────────
