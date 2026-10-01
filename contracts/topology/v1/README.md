@@ -64,6 +64,9 @@ The Control Plane's `openapi.yaml` serves the routes as their gates land:
   - `POST /engine-releases/{release_id}/status-changes` deprecates or revokes a release under admin `topology:write`. Revocation disposes of every instance that desires the release, in the same transaction.
   - An engine instance's desired release is set or cleared by the control-plane/v1 `ENGINE_INSTANCE_DESIRED_RELEASE` changeset. Its approver holds `desired-release:approve`.
   - `GET /engine-instances/{engine_instance_id}/desired-release` is how infrastructure tooling reads it, under workload `desired-release:read` (or admin `topology:read`).
-- Gate ER-04 adds observation intake in the same change as its handlers. That keeps the OpenAPI drift test and the generated client truthful.
+- Gate ER-04:
+  - `POST /deployment-observations` appends one observation, under workload `deployment:observe` only. An administrator is not a reporter, and an engine never reports itself.
+  - The reporter's registration is its workload-registry entry: its `environment`, and its `deployment_regions` (required of exactly the workloads that may hold `deployment:observe`). An observation for another environment or region is refused as `DEPLOYMENT_OBSERVATION_OUT_OF_SCOPE`, never stored.
+  - `GET /engine-instances/{engine_instance_id}/deployment-observations` lists an instance's observations, and `GET /engine-instances/{engine_instance_id}/observed-release` reads the derived observed release, both under admin `topology:read`.
 
 Validated by `scripts/validate-topology-contracts.py`.
