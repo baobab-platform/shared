@@ -270,6 +270,15 @@ scopes:
     audience: ["baobab-control-plane"]
     allowed_actors: ["workload"]
 
+  - name: "provider:approve"
+    description: >-
+      Approve the plan of a PROVIDER_ACTIVATION changeset, the only path
+      from a registered DRAFT capability provider to ACTIVE (EA-02D). Held
+      with changeset:approve; never by the changeset's requester.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "deployment:observe"
     description: >-
       Infrastructure tooling (a deploy controller or admission webhook)

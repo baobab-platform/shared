@@ -450,9 +450,14 @@ class DeclarationTest(unittest.TestCase):
         self.assertEqual(registration["provider"]["lifecycle"], "DRAFT")
         self.assertEqual(SHARED.errors(cc.REGISTRATION_REF, registration), [])
 
+    def test_registration_never_activates_a_provider(self):
+        registration = cc.generate_registration(SHARED, declaration(), "baobab-payments.sandbox")
+        registration["provider"]["lifecycle"] = "ACTIVE"
+        self.assertNotEqual(SHARED.errors(cc.REGISTRATION_REF, registration), [])
+
     def test_example_regenerates_the_committed_payments_bundle(self):
         example = yaml.safe_load((cc.CONTRACTS / cc.DECLARATION_EXAMPLE).read_text())
-        generated = cc.generate_registration(SHARED, example, "baobab-payments.sandbox", "ACTIVE")
+        generated = cc.generate_registration(SHARED, example, "baobab-payments.sandbox", "DRAFT")
         committed = json.loads((cc.CONTRACTS / "payments/v1/capabilities.json").read_text())
         self.assertEqual({k: v for k, v in generated["provider"].items() if k != "engine_key"},
                          {k: v for k, v in committed["provider"].items() if k != "engine_key"})

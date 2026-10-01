@@ -35,7 +35,9 @@ One tool, three uses:
       the canonical definitions plus one provider of a declaration. Only
       IMPLEMENTED support is registered; PARTIAL support and planned
       capabilities never are. The provider lifecycle defaults to DRAFT
-      (SS33); pass ACTIVE only to reproduce today's bootstrap bundles.
+      (SS33) and is never anything else: registration never activates a
+      provider (EA-02C). Activation is the PROVIDER_ACTIVATION changeset
+      (control-plane/v1 changeset-lifecycle.yaml, EA-02D).
 
 A provider declaration never certifies, activates, binds, grants or reports
 health; nothing here infers any of those facts from it.
@@ -608,7 +610,7 @@ def validate_shared(contracts: Contracts) -> list[str]:
     if failures:
         return failures
     # Canonical definitions + provider declaration regenerate today's bundle.
-    generated = generate_registration(contracts, example, "baobab-payments.sandbox", provider_lifecycle="ACTIVE")
+    generated = generate_registration(contracts, example, "baobab-payments.sandbox", provider_lifecycle="DRAFT")
     committed = load_document(contracts.root / "payments/v1/capabilities.json")
     generated["provider"]["engine_key"] = committed["provider"]["engine_key"]  # deprecated, see engineKey
     if generated != committed:
@@ -660,7 +662,7 @@ def main(argv: list[str] | None = None) -> int:
     generate = commands.add_parser("generate-registration", help="generate a transitional EngineRegistration")
     generate.add_argument("path", type=Path)
     generate.add_argument("--provider-key", required=True)
-    generate.add_argument("--provider-lifecycle", default="DRAFT", choices=["DRAFT", "ACTIVE"])
+    generate.add_argument("--provider-lifecycle", default="DRAFT", choices=["DRAFT"])
     args = parser.parse_args(argv)
     if args.command == "check-declaration-policy":
         return check_declaration_policy(args.repository_root, args.mode)

@@ -379,6 +379,33 @@ reason_codes:
   - code: CHANGESET_TARGET_LOCKED
     category: changeset_blocker
     description: "Another changeset that has not ended already changes the same target; overlapping changes are serialised (section 66)."
+  - code: PROVIDER_DECLARATION_MISSING
+    category: changeset_blocker
+    description: "The provider is not declared in its engine's capability provider declaration."
+  - code: PROVIDER_SUPPORT_NOT_IMPLEMENTED
+    category: changeset_blocker
+    description: "The provider has no capability support declared as implemented."
+  - code: PROVIDER_CONTRACT_INCOMPATIBLE
+    category: changeset_blocker
+    description: "The provider supports a contract version its capability does not define."
+  - code: PROVIDER_NOT_CERTIFIED
+    category: changeset_blocker
+    description: "The environment requires certification, and the provider's support is not certified."
+  - code: PROVIDER_PRODUCTION_NOT_PERMITTED
+    category: changeset_blocker
+    description: "The provider is simulated or not permitted in production, and would serve a production instance."
+  - code: PROVIDER_NO_ELIGIBLE_RELEASE
+    category: changeset_blocker
+    description: "No approved release of the provider's engine supports the provider's contracts."
+  - code: PROVIDER_NO_ELIGIBLE_INSTANCE
+    category: changeset_blocker
+    description: "No engine instance of the provider's engine can serve the provider."
+  - code: PROVIDER_HEALTH_NOT_ELIGIBLE
+    category: changeset_blocker
+    description: "The provider's or its instances' health is not eligible under the health policy."
+  - code: PROVIDER_MIGRATION_CONFLICT
+    category: changeset_blocker
+    description: "A provider migration that has not ended moves capabilities to or from the provider."
 
   # -- market_validation (market-lifecycle.yaml validation_rules) -------
   # Why a DRAFT market is not yet VALIDATED.

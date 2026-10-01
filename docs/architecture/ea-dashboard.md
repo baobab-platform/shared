@@ -43,8 +43,8 @@ EA-02 Capability Governance            ADVANCED
   Canonical catalogue                  16 capabilities
   Provider declarations                PARTIAL (see table)
   Foundation enforcement (G-FCI-1)     ENFORCING
-  Provider registration DRAFT (02C)    MISSING
-  Provider activation Changeset (02D)  MISSING
+  Provider registration DRAFT (02C)    CONTRACTS (Shared); CP MISSING
+  Provider activation Changeset (02D)  CONTRACTS (Shared); CP MISSING
   Binding integrity (02E)              MISSING
 
 EA-03 Runtime Topology                 PARTIAL
@@ -114,7 +114,7 @@ validates a declaration. It never certifies or activates a provider.
 | 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
 | 10 | Implement EngineRelease | In progress | ER-01 Shared `topology/v1` contracts; ER-02…ER-05 in CP; ER-06 a separate gate |
 | 11 | DeploymentObservation model/interfaces | Contracts done | ER-01 (`deployment-observation.schema.json`, `deployment:observe`); intake is ER-04 |
-| 12 | Provider activation Changeset | Open | EA-02C/D |
+| 12 | Provider activation Changeset | In progress | Shared: DRAFT-only registration, PROVIDER_ACTIVATION change kind; CP implementation next |
 | 13 | AdministrativeGrant enforcement | Blocked | Awaiting the roles→grants decision |
 | 14–30 | Engine hardening onward | Not started | Plan §51 |
 

@@ -23,6 +23,12 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Provider registration never activates; PROVIDER_ACTIVATION changeset (EA-02C/D).**
+  - EA-02C: an EngineRegistration's provider `lifecycle` must be `DRAFT` (`registration.schema.json`), and the payments and subscriptions bootstrap bundles now register their providers as `DRAFT`. `capability_catalogue.py generate-registration` generates DRAFT only.
+  - The Control Plane must not change an existing provider's lifecycle on re-registration. Providers already ACTIVE stay ACTIVE when the CP re-pins.
+  - EA-02D: a new `PROVIDER_ACTIVATION` change kind (MODIFY, DRAFT → ACTIVE, operations `ACTIVATE_PROVIDER` and `VERIFY_PROVIDER_STATE`) is the only path to ACTIVE. Its approver holds the new `provider:approve` scope.
+  - Its plan runs nine checks, each with a registered `changeset_blocker` code: declaration, implemented support, contract compatibility, certification (where policy requires it), production permission, an approved engine release, an eligible instance, health, and migration conflicts.
+  - Changeset steps may now name a `provider_id`, in the `capabilityLifecycle` vocabulary.
 - **Engine release and deployment observation contracts (ADR-BCP-025, gate ER-01).** New `contracts/topology/v1` package:
   - `release.schema.json`: the immutable `EngineRelease`, its content-addressed `Artifact`s (a `sha256:` digest is the identity; a tag is display-only), per-provider `ProviderSupport` with integer contract majors (A1), the declaration digest (A2), `Provenance`, record and status-change requests (revocation must dispose of every desiring instance), and the instance's `EngineInstanceDesiredRelease`.
   - `deployment-observation.schema.json`: the reporter's submission (no Control Plane-assigned field accepted), the stored observation with `ingestion_sequence`, and the derived `ObservedRelease` (`RELEASE`, `UNKNOWN_ARTIFACT`, `FOREIGN_ARTIFACT`, `MIXED`, `UNKNOWN`).
