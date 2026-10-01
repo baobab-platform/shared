@@ -310,6 +310,9 @@ reason_codes:
   - code: GRANT_TRANSITION_INVALID
     category: administrative_denial
     description: "The lifecycle command is not permitted from the grant's current status (lifecycle.yaml)."
+  - code: GRANT_REPLACEMENT_INVALID
+    category: administrative_denial
+    description: "The grant cannot be replaced: it is not a live DIRECT grant, or the replacement is for another principal."
   - code: PRINCIPAL_INACTIVE
     category: administrative_denial
     description: "The principal is not active."
@@ -457,6 +460,9 @@ reason_codes:
   - code: DELEGATION_EXCEEDS_SOURCE
     category: changeset_blocker
     description: "The delegation exceeds its source grant in permission, scope, end or depth, the permission is not delegable, or the source is not usable now."
+  - code: GRANT_REPLACED_GRANT_INVALID
+    category: changeset_blocker
+    description: "The grant to replace is not the grantee's own live DIRECT grant, or another change is already replacing it."
 
   # -- market_validation (market-lifecycle.yaml validation_rules) -------
   # Why a DRAFT market is not yet VALIDATED.

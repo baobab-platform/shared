@@ -661,6 +661,10 @@
       {
         "check": "NOT_ALREADY_HELD",
         "description": "Passed."
+      },
+      {
+        "check": "REPLACED_GRANT_VALID",
+        "description": "Passed."
       }
     ],
     "blockers": [],

@@ -271,6 +271,12 @@ def must_reject(label: str, ref: str, instance) -> None:
         fail(f"negative fixture accepted: {label}")
 
 
+def must_accept(label, ref, instance):
+    problems = errors(ref, instance)
+    if problems:
+        fail(f"positive fixture rejected: {label}: {problems[0]}")
+
+
 def mutate(base, **changes):
     out = copy.deepcopy(base)
     for key, value in changes.items():
@@ -292,6 +298,17 @@ must_reject("a DELEGATION grant without its source", G, mutate(tenant_grant, sou
 must_reject("a REVOKED grant without who revoked it", G, mutate(revoked, revoked_by=None))
 must_reject("an ACTIVE grant carrying revocation", G, mutate(revoked, status="ACTIVE"))
 must_reject("a grant naming its grantee by email", G, mutate(tenant_grant, principal_id="jane@acme.example"))
+must_reject("an ACTIVE grant claiming to be superseded", G, mutate(tenant_grant, superseded_by_grant_id="agr_01k9new0001"))
+must_accept("a REVOKED grant naming its replacement", G, mutate(revoked, superseded_by_grant_id="agr_01k9new0001"))
+must_accept("a grant naming what it replaced", G, mutate(tenant_grant, supersedes_grant_id="agr_01k9old0001"))
+R = "grant-administration.schema.json#/$defs/GrantReplaceRequest"
+replace_request = {"permission": "tenant.view", "scope": {"level": "TENANT", "tenant_id": "tn_acmeug"}, "grant_type": "STANDING",
+                   "dependent_delegations": "REVOKE", "reason": "Narrowing to one tenant."}
+must_accept("a replacement request", R, replace_request)
+must_reject("a replacement that does not say what happens to delegations", R, mutate(replace_request, dependent_delegations=None))
+must_reject("a replacement that would keep delegations", R, mutate(replace_request, dependent_delegations="RETAIN"))
+must_reject("a TIME_BOUND replacement without an end", R, mutate(replace_request, grant_type="TIME_BOUND"))
+must_reject("a replacement naming another principal", R, mutate(replace_request, principal_id="prn_other"))
 must_reject("a scope with no anchor", S, {"level": "TENANT"})
 must_reject("a tenant scope also naming an organisation", S, {"level": "TENANT", "tenant_id": "tn_acmeug", "organisation_id": "ORG-ACME"})
 must_reject("a platform scope naming a tenant", S, {"level": "PLATFORM", "tenant_id": "tn_acmeug"})
@@ -337,6 +354,14 @@ else:
         fail(f"GET /admin/effective-authority returns {schema_ref}, not EffectiveAuthority")
     if operation["security"] != [{"adminOidc": ["authority:self"]}]:
         fail("GET /admin/effective-authority must require adminOidc authority:self")
+replace_op = openapi["paths"].get("/admin/grants/{grant_id}/replacements", {}).get("post")
+if replace_op is None or replace_op.get("operationId") != "replaceAdministrativeGrant" or replace_op["security"] != [{"adminOidc": ["administrator:write"]}]:
+    fail("control-plane openapi.yaml must serve replaceAdministrativeGrant at POST /admin/grants/{grant_id}/replacements under administrator:write")
+else:
+    if replace_op["requestBody"]["content"]["application/json"]["schema"]["$ref"] != "../../administration/v1/grant-administration.schema.json#/$defs/GrantReplaceRequest":
+        fail("replaceAdministrativeGrant must take GrantReplaceRequest")
+    if replace_op["responses"]["201"]["content"]["application/json"]["schema"]["$ref"] != "../../administration/v1/grant-administration.schema.json#/$defs/GrantReplacement":
+        fail("replaceAdministrativeGrant must return GrantReplacement")
 scopes = {s["name"]: s for s in load_yaml(CONTRACTS / "authorization" / "v1" / "scope-registry.yaml")["scopes"]}
 self_scope = scopes.get("authority:self")
 if self_scope is None or self_scope.get("allowed_actors") != ["human"] or self_scope.get("privileged"):
