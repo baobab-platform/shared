@@ -45,7 +45,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = ROOT / "contracts"
 PKG = CONTRACTS / "administration" / "v1"
 BASE_URI = "https://contracts.baobab-platform.com/administration/v1/"
-SCHEMAS = ["domain.schema.json", "scope.schema.json", "grant.schema.json"]
+SCHEMAS = ["domain.schema.json", "scope.schema.json", "grant.schema.json", "grant-administration.schema.json"]
 YAMLS = ["permission-registry.yaml", "profile-registry.yaml", "lifecycle.yaml"]
 RISK_ORDER = ["LOW", "MODERATE", "HIGH", "CRITICAL"]
 

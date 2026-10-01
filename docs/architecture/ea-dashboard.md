@@ -75,7 +75,7 @@ EA-04 Identity                         ADVANCED
 
 EA-05 Governance                       ADVANCED
   Administrative authority             MIGRATION PATH ACCEPTED (roles-to-grants-decision.md); implementation in progress
-    ADA-05 grant administration        NEXT
+    ADA-05 grant administration        CONTRACT IN REVIEW (CP implementation NEXT)
     ADA-06 maker/checker and SoD       NEXT
     authority:self issuance            APPROVED (IAM action)
     shadow blind spots                 OPEN
