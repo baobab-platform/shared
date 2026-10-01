@@ -7,8 +7,8 @@
 # assurance (section 72): the raw_acr_values below are what IAM's realm
 # issues today (realm attribute acr.loa.map {silver: 1, gold: 2}; the
 # "Baobab - Step-Up" flow at loa-condition-level 2 with loa-max-age 300 is
-# the only flow that sets a level; Keycloak emits no amr by default) and
-# are the one place this file depends on IAM. Changing IAM's vocabulary is a
+# the only flow that sets a level; Keycloak emits no amr by default) and are
+# the one place this file depends on IAM. Changing IAM's vocabulary is a
 # change to this file first.
 #
 # Assurance is never permission (section 74): meeting a requirement lets a
@@ -24,6 +24,7 @@
 #      does not list is never met (fail closed) and a grant naming one is
 #      refused at issuance.
 #   3. A session meets a level when its rank is at least the level's rank.
+#      A level IAM does not issue (issuable: false) is met by no session.
 #   4. When the requirement sets max_authentication_age_seconds, the session's
 #      latest authentication (step_up_at, else auth_time) is no older and no
 #      later than now (a future time is not fresh).
@@ -58,26 +59,6 @@ levels:
       and this file lists the acr it emits.
     issuable: false
     raw_acr_values: []
-phishing_resistant_methods.
-#   6. The effective requirement is the strictest of the grant's own
-#      minimum_acr and the requirement for the grant's risk class.
-version: 1
-levels:
-  - name: urn:baobab:acr:basic
-    rank: 0
-    description: Authenticated by the realm's first factor (single factor).
-    raw_acr_values: ["0"]
-  - name: urn:baobab:acr:mfa
-    rank: 1
-    description: A second factor was presented in the session (IAM LoA "silver").
-    raw_acr_values: ["1", "silver"]
-  - name: urn:baobab:acr:step-up
-    rank: 2
-    description: >-
-      Re-authenticated on demand by the Baobab - Step-Up flow (IAM LoA
-      "gold"). Pair with max_authentication_age_seconds: the level proves a
-      step-up happened, freshness proves it was recent.
-    raw_acr_values: ["2", "gold"]
 phishing_resistant_methods: [hwk, webauthn]
 requirements:
   # ADR-BCP-020 section 72: ordinary use needs a normal session, privileged
