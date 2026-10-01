@@ -108,6 +108,27 @@ scopes:
     audience: ["baobab-control-plane"]
     allowed_actors: ["human"]
 
+  - name: "administrator:read"
+    description: >-
+      A human administrator inspects AdministrativeGrants within the scopes
+      they administer (ADR-BCP-020 section 6; ADA-05). Necessary but not
+      sufficient: the Control Plane also requires administrator.view over the
+      grant's scope.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+
+  - name: "administrator:write"
+    description: >-
+      A human administrator issues, suspends, resumes, revokes, withdraws or
+      delegates AdministrativeGrants (ADR-BCP-020 sections 38-48, 57-64;
+      ADA-05). Necessary but not sufficient: the Control Plane also requires
+      administrator.grant, administrator.revoke or administrator.delegate
+      over the grant's scope, and refuses self-grants. HIGH and CRITICAL
+      authority changes additionally need the maker-checker path (ADA-06).
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "admission:review"
     description: >-
       A platform admission reviewer inspects applications, moves them through

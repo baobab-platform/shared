@@ -104,6 +104,7 @@ contracts:
       - domain.schema.json
       - scope.schema.json
       - grant.schema.json
+      - grant-administration.schema.json
       - permission-registry.yaml
       - profile-registry.yaml
       - lifecycle.yaml

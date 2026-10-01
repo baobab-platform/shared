@@ -307,6 +307,9 @@ reason_codes:
   - code: APPROVAL_REQUIRED
     category: administrative_denial
     description: "The action needs an approval that has not been recorded."
+  - code: GRANT_TRANSITION_INVALID
+    category: administrative_denial
+    description: "The lifecycle command is not permitted from the grant's current status (lifecycle.yaml)."
   - code: PRINCIPAL_INACTIVE
     category: administrative_denial
     description: "The principal is not active."
