@@ -23,11 +23,22 @@ Administrative authority answers one question: may this principal perform this C
 - **Deny by default (section 14).** No grant means no authority. An unknown scope is never global scope, and an ambiguous one is never guessed.
 - **One grant, one decision (sections 13, 111).** A single ACTIVE, currently valid grant must cover both the permission and the scope. Grants are never combined across scope to manufacture authority nobody granted.
 - **No implicit inheritance (sections 15-20).** A corporate group grant covers its organisations only when its mode says so. `STATIC_MEMBERSHIP` lists them at grant time; `DYNAMIC_GROUP_DESCENDANTS` must be stated explicitly. The default is `EXACT`.
-- **Delegation never widens (sections 43-48).** A delegated grant has the same permission and scope as its source, never outlives it, stays within its source's `delegable_depth`, and is granted by the source's holder. Non-delegable permissions are never delegated.
+- **Delegation never widens (sections 43-48).** A delegated grant has the same permission as its source and a scope within the source's (see *Scope containment*), never outlives it, stays within its source's `delegable_depth`, and is granted by the source's holder. Non-delegable permissions are never delegated.
 - **Nobody grants to themselves (section 39).** `granted_by` is never the grantee.
 - **Bootstrap is exceptional (sections 128-129).** A `BOOTSTRAP` grant is platform-scoped and `TIME_BOUND`, never standing.
 - **Safe explanations (section 98).** A denial carries codes from the `administrative_denial` category of `authorization/v1/reason-code-registry.yaml`, never internal policy detail.
 - **Effective authority is a read model, not a permission (section 99).** The Console uses it for navigation and scope display. The backend evaluates every request again.
+
+## Scope containment
+
+A scope is *within* another when every resource the first reaches the second reaches. Evaluators decide it from the scopes themselves, as the converse of how they decide coverage, and never from identifier text:
+
+- an environment-less scope contains any environment; a named environment contains only itself;
+- `PLATFORM` contains every scope;
+- otherwise the levels and anchors match (`PLATFORM_ACCOUNT`, `ORGANISATION`, `TENANT`, `LEGAL_ENTITY`, `DIGITAL_ESTATE`, `RESOURCE`), a `MARKET` scope contains the same market with a narrower set of qualifiers (`organisation_id`, `tenant_id`), and a `CORPORATE_GROUP` scope contains, by `STATIC_MEMBERSHIP`, an organisation in its list or a shorter list of the same group, and, by `DYNAMIC_GROUP_DESCENDANTS`, the same group, exact or dynamic;
+- nothing else is assumed. In particular no organisation-to-tenant relation and no group-descendant membership is followed unless the evaluator holds it as canonical data, so an `ORGANISATION` scope does not contain a `TENANT` scope and a dynamic group does not contain an organisation. Where containment cannot be proven the answer is *not within*, and a delegation is refused rather than widened.
+
+Following such relations (for example ACME to ACME Uganda) is a separate decision: the relation must be canonical data the evaluator reads, and coverage and containment must move together.
 
 ## Versioning
 
