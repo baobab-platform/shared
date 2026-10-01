@@ -23,6 +23,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **A changeset outcome can name a provider as the resource it changed (EA-02D).** `affectedResource.resource_type` gains `PROVIDER`, the target of `PROVIDER_ACTIVATION`, which shared#167 added without it. `validate-control-plane-contracts.py` now requires every change kind's target to be an affected-resource type.
 - **Provider registration never activates; PROVIDER_ACTIVATION changeset (EA-02C/D).**
   - EA-02C: an EngineRegistration's provider `lifecycle` must be `DRAFT` (`registration.schema.json`), and the payments and subscriptions bootstrap bundles now register their providers as `DRAFT`. `capability_catalogue.py generate-registration` generates DRAFT only.
   - The Control Plane must not change an existing provider's lifecycle on re-registration. Providers already ACTIVE stay ACTIVE when the CP re-pins.
