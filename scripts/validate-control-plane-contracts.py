@@ -89,7 +89,7 @@ RESPONSIBILITIES = {
         "taskResult", "EngineMigrationTask", "EngineMigrationTaskPage", "EngineMigrationTaskReport",
     },
     "changeset.schema.json": {
-        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "ProviderActivation", "EngineReleaseApproval", "desiredChange",
+        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "ProviderActivation", "EngineReleaseApproval", "DesiredReleaseChange", "desiredChange",
         "ChangesetCreateRequest", "ChangesetCancelRequest", "planReference", "Changeset", "ChangesetPage",
         "changesetOperation", "changesetStepResources", "changesetStep", "ChangesetPlan", "affectedResource",
         "verificationResult", "ChangeOutcome",
@@ -914,6 +914,7 @@ def check_changeset() -> None:
         "MAPPING": set(json.loads((CP / "domain.schema.json").read_text())["$defs"]["mappingStatus"]["enum"]),
         "PROVIDER": set(json.loads((CONTRACTS / "capability" / "v1" / "domain.schema.json").read_text())["$defs"]["capabilityLifecycle"]["enum"]),
         "ENGINE_RELEASE": set(json.loads((CONTRACTS / "topology" / "v1" / "domain.schema.json").read_text())["$defs"]["releaseStatus"]["enum"]),
+        "ENGINE_INSTANCE": set(json.loads((CP / "domain.schema.json").read_text())["$defs"]["engineInstanceStatus"]["enum"]),
     }
     registered_scopes = {entry["name"] for entry in yaml.safe_load(
         (CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
@@ -925,7 +926,9 @@ def check_changeset() -> None:
         statuses = target_statuses.get(spec.get("target"))
         if statuses is None:
             fail(f"change kind {kind} names unknown target {spec.get('target')!r}")
-        elif not set(spec["from_status"]) | {spec["to_status"]} <= statuses:
+        elif ("to_status" in spec) == ("changes" in spec):
+            fail(f"change kind {kind} must name exactly one of to_status and changes")
+        elif not set(spec["from_status"]) | ({spec["to_status"]} if "to_status" in spec else set()) <= statuses:
             fail(f"change kind {kind} names statuses its {spec['target']} lifecycle lacks")
         if "approval_scope" in spec and spec["approval_scope"] not in registered_scopes:
             fail(f"change kind {kind} names unregistered approval_scope {spec['approval_scope']}")
@@ -1088,6 +1091,44 @@ def check_changeset() -> None:
     status_change = json.loads((CONTRACTS / "topology" / "v1" / "release.schema.json").read_text())["$defs"]["EngineReleaseStatusChangeRequest"]
     if "APPROVED" in status_change["properties"]["target_status"]["enum"]:
         fail("EngineReleaseStatusChangeRequest must not approve: approval is the ENGINE_RELEASE_APPROVAL changeset")
+
+    # Desired release (ADR-BCP-025 section 2.5, gate ER-03): changes an
+    # engine instance's desired release, never its status, under
+    # desired-release:approve; its plan reports every check, and its steps
+    # act on the instance alone, naming the release they desire.
+    desired_kind = kinds["ENGINE_INSTANCE_DESIRED_RELEASE"]
+    if desired_kind.get("approval_scope") != "desired-release:approve" or desired_kind.get("changes") != "desired_release" \
+            or "to_status" in desired_kind or "RETIRED" in desired_kind["from_status"]:
+        fail("ENGINE_INSTANCE_DESIRED_RELEASE must change desired_release of an instance that is not RETIRED, under desired-release:approve")
+    desired_checks = [c["check"] for c in desired_kind.get("plan_checks", [])]
+    if desired_checks != ["DESIRED_RELEASE_CHANGES", "RELEASE_APPROVED", "RELEASE_ENGINE", "PROVENANCE", "CERTIFICATION"]:
+        fail(f"ENGINE_INSTANCE_DESIRED_RELEASE plan_checks are not the gate ER-03 checks: {desired_checks}")
+    desired_plan = example["desired_release_plan"]
+    accepts(schema, "ChangesetPlan", desired_plan, "changeset desired_release_plan")
+    if [step["operation"] for step in desired_plan["steps"]] != desired_kind["operations"] \
+            or [c["check"] for c in desired_plan["readiness_requirements"]] != desired_checks:
+        fail("changeset desired_release_plan does not run its change kind's operations and report every check")
+    for step in desired_plan["steps"]:
+        if step["resources"].get("engine_instance_id") != desired_plan["desired_change"]["engine_instance_id"] \
+                or step["resources"].get("desired_release_id") != desired_plan["desired_change"]["release_id"]:
+            fail(f"changeset desired_release_plan: step {step['step_id']} acts on another instance or release")
+    clearing = copy.deepcopy(desired_plan)
+    clearing["desired_change"]["release_id"] = None
+    for step in clearing["steps"]:
+        step["resources"]["desired_release_id"] = None
+    accepts(schema, "ChangesetPlan", clearing, "a desired release plan that clears it")
+    mixed = copy.deepcopy(desired_plan)
+    mixed["steps"][0]["resources"]["release_id"] = desired_plan["desired_change"]["release_id"]
+    rejects(schema, "ChangesetPlan", mixed, "an engine instance step naming a release step's release_id too")
+    lowered = copy.deepcopy(desired_plan)
+    lowered["steps"][0]["resources"]["from_status"] = "active"
+    rejects(schema, "ChangesetPlan", lowered, "an engine instance step outside engineInstanceStatus")
+    stray = copy.deepcopy(release_plan)
+    stray["steps"][0]["resources"]["desired_release_id"] = desired_plan["desired_change"]["release_id"]
+    rejects(schema, "ChangesetPlan", stray, "a desired_release_id outside an engine instance step")
+    rejects(schema, "ChangesetCreateRequest",
+            {**create, "desired_change": {"kind": "ENGINE_INSTANCE_DESIRED_RELEASE", "engine_instance_id": desired_plan["desired_change"]["engine_instance_id"]}},
+            "a desired release change that names no release_id, not even null")
 
     # Tenant step resources keep their v1 shape: no resource at all, or
     # statuses alone, stay valid tenant steps.

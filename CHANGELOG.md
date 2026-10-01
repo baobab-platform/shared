@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Desired release, deprecation and revocation (ADR-BCP-025 gate ER-03).**
+  - A new `ENGINE_INSTANCE_DESIRED_RELEASE` change kind sets or clears an engine instance's desired release. It changes no status: the lifecycle now lets a kind name the attribute it `changes` instead of a `to_status`. Its approver holds the new `desired-release:approve` scope.
+  - Its plan runs five checks, each with a new `changeset_blocker` code: the change changes something, and a named release is APPROVED, of the instance's engine, with the provenance and certification `release-policy.yaml` approval requires for the instance's environment.
+  - Changeset steps may name an `engine_instance_id` (new `engineInstanceStatus` vocabulary) and the `desired_release_id` they set; an outcome may name an `ENGINE_INSTANCE`.
+  - Control Plane OpenAPI 1.24.0 adds:
+    - `changeEngineReleaseStatus` (`POST /engine-releases/{release_id}/status-changes`, admin `topology:write`, new non-delegable `engine-release.change-status` permission). It deprecates or revokes a release; a revocation disposes of every desiring instance or is `RELEASE_REVOCATION_UNCOVERED`.
+    - `getEngineInstanceDesiredRelease` (`GET /engine-instances/{engine_instance_id}/desired-release`): workload `desired-release:read` (new, unprivileged) or admin `topology:read`. A desired release in a status a read never returns is `ENGINE_INSTANCE_DESIRED_RELEASE_UNAVAILABLE` (409).
 - **Engine release approval is a changeset (ADR-BCP-025 section 2.4).**
   - A new `ENGINE_RELEASE_APPROVAL` change kind (MODIFY, CANDIDATE → APPROVED, operations `APPROVE_ENGINE_RELEASE` and `VERIFY_ENGINE_RELEASE_STATE`) is the only path to APPROVED. Recording never approves.
   - Its approver holds the new `engine-release:approve` scope (human, privileged) and is neither the requester nor the principal who recorded the release (`RELEASE_SELF_APPROVAL`, 403, on `decideChangesetPlan`; Control Plane OpenAPI 1.23.0).

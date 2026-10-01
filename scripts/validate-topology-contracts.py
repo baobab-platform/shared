@@ -465,6 +465,33 @@ for route in ("/engine-releases", "/engine-releases/{release_id}"):
     if read is None or read.get("security") != [{"adminOidc": ["topology:read"]}]:
         fail(f"GET {route} must be served under topology:read")
 
+# 12. Gate ER-03: deprecation and revocation, and the desired release read.
+change = paths.get("/engine-releases/{release_id}/status-changes", {}).get("post")
+if change is None:
+    fail("control-plane openapi.yaml must serve POST /engine-releases/{release_id}/status-changes (gate ER-03)")
+else:
+    body = change["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+    if not body.endswith("topology/v1/release.schema.json#/$defs/EngineReleaseStatusChangeRequest"):
+        fail("status-changes must accept only EngineReleaseStatusChangeRequest")
+    if change.get("security") != [{"adminOidc": ["topology:write"]}]:
+        fail("status-changes must be served to administrators under topology:write only")
+desired = paths.get("/engine-instances/{engine_instance_id}/desired-release", {}).get("get")
+if desired is None:
+    fail("control-plane openapi.yaml must serve GET /engine-instances/{engine_instance_id}/desired-release (gate ER-03)")
+else:
+    returned = desired["responses"]["200"]["content"]["application/json"]["schema"]["$ref"]
+    if not returned.endswith("topology/v1/release.schema.json#/$defs/EngineInstanceDesiredRelease"):
+        fail("GET desired-release must return EngineInstanceDesiredRelease")
+    schemes = {name: required for requirement in desired["security"] for name, required in requirement.items()}
+    if schemes != {"workloadOidc": ["desired-release:read"], "adminOidc": ["topology:read"]}:
+        fail("GET desired-release must admit workloads under desired-release:read and administrators under topology:read")
+reader = scopes.get("desired-release:read")
+if reader is None or reader.get("allowed_actors") != ["workload"] or reader.get("privileged"):
+    fail("desired-release:read must be an unprivileged workload-only scope")
+if any(t["command"] == "approve" for t in policy["status_transitions"]["transitions"]) and \
+        "APPROVED" in json.loads((PKG / "release.schema.json").read_text())["$defs"]["EngineReleaseStatusChangeRequest"]["properties"]["target_status"]["enum"]:
+    fail("a status change request never approves (ENGINE_RELEASE_APPROVAL changeset)")
+
 if failures:
     for message in failures:
         print(f"topology contract validation failed: {message}", file=sys.stderr)

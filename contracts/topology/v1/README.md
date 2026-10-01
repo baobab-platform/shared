@@ -60,6 +60,10 @@ The Control Plane's `openapi.yaml` serves the routes as their gates land:
   - `POST /engine-releases` records a release. It takes workload `engine-release:record` or admin `topology:write`.
   - `GET /engine-releases` and `GET /engine-releases/{release_id}` read releases under `topology:read`.
 - Approval (CANDIDATE → APPROVED) has no route of its own. It is the control-plane/v1 `ENGINE_RELEASE_APPROVAL` changeset, served by the generic changeset routes: its approver holds `engine-release:approve` and is neither the requester nor the release's recorder.
-- Gates ER-03 and ER-04 add deprecation and revocation, the desired release and observation intake, each in the same change as its handlers. That keeps the OpenAPI drift test and the generated client truthful.
+- Gate ER-03:
+  - `POST /engine-releases/{release_id}/status-changes` deprecates or revokes a release under admin `topology:write`. Revocation disposes of every instance that desires the release, in the same transaction.
+  - An engine instance's desired release is set or cleared by the control-plane/v1 `ENGINE_INSTANCE_DESIRED_RELEASE` changeset. Its approver holds `desired-release:approve`.
+  - `GET /engine-instances/{engine_instance_id}/desired-release` is how infrastructure tooling reads it, under workload `desired-release:read` (or admin `topology:read`).
+- Gate ER-04 adds observation intake in the same change as its handlers. That keeps the OpenAPI drift test and the generated client truthful.
 
 Validated by `scripts/validate-topology-contracts.py`.
