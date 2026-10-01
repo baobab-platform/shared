@@ -515,6 +515,9 @@ reason_codes:
   # -- release_drift (ADR-BCP-025 section 2.7) --------------------------
   # Why an engine instance differs from its desired release. Never a denial:
   # observation does not change resolution (gate ER-06 is not accepted).
+  # A code whose readiness_effect in topology/v1 release-policy.yaml is BLOCKED may
+  # also be a ReadinessSnapshot blocking reason (one that is DEGRADED is a
+  # degrading reason); that is a readiness consequence, not a denial.
   - code: RELEASE_MISMATCH
     category: release_drift
     description: "The instance is observed running a release other than its desired release past the rollout grace period, or several releases past it."

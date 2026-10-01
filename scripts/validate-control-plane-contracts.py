@@ -461,6 +461,17 @@ def check_tenant_provisioning() -> None:
             "succeeded operation naming the resource's state")
     readiness = example["readiness"]
     rejects("tenant-provisioning.schema.json", "ProvisioningReadiness", {**readiness, "snapshots": []}, "evaluated readiness without snapshots")
+    # ADR-BCP-025 section 2.8: release drift reaches readiness. A BLOCKED
+    # snapshot names its blockers; a DEGRADED one names what degrades it and
+    # nothing else, so DEGRADED can never be mistaken for a blocker.
+    base_snapshot = readiness["snapshots"][0]
+    drift_blocked = {**base_snapshot, "status": "BLOCKED", "blocking_reasons": [{"code": "REVOKED_RELEASE_RUNNING", "capability_key": "commerce.order.manage"}]}
+    drift_degraded = {**base_snapshot, "status": "DEGRADED", "blocking_reasons": [], "degrading_reasons": [{"code": "RELEASE_MISMATCH"}]}
+    accepts("readiness.schema.json", "readinessSnapshot", drift_blocked, "a snapshot blocked by release drift")
+    accepts("readiness.schema.json", "readinessSnapshot", drift_degraded, "a snapshot degraded by release drift")
+    rejects("readiness.schema.json", "readinessSnapshot", {**drift_degraded, "degrading_reasons": []}, "DEGRADED without a reason")
+    rejects("readiness.schema.json", "readinessSnapshot", {k: v for k, v in drift_degraded.items() if k != "degrading_reasons"}, "DEGRADED without degrading_reasons")
+    rejects("readiness.schema.json", "readinessSnapshot", {**drift_blocked, "blocking_reasons": []}, "BLOCKED without a blocking reason")
     unknown = {key: value for key, value in readiness.items() if key != "evaluated_at"}
     accepts("tenant-provisioning.schema.json", "ProvisioningReadiness", {**unknown, "status": "UNKNOWN", "snapshots": []}, "unevaluated readiness")
     rejects("tenant-provisioning.schema.json", "TenantProvisioningReplanRequest", {"desired_state_version": 2}, "replan without a reason")
@@ -1411,7 +1422,7 @@ def check_external_systems() -> None:
             fail(f"external-systems.yaml: {namespace} needs a description")
 
 
-BLOCKING_CATEGORIES = ("capability_resolution_denial", "provisioning_blocker")
+BLOCKING_CATEGORIES = ("capability_resolution_denial", "provisioning_blocker", "release_drift")
 
 
 # Where a blocking reason is carried: TenantProvisioning and readiness
@@ -1445,6 +1456,15 @@ def check_blocking_reason_codes() -> None:
              "readiness": {"snapshots": [{"blocking_reasons": [{"code": "A_REASON"}]}]}}
     if sorted(blocking_codes(probe)) != ["A_BLOCKER", "A_REASON"]:
         fail(f"blocking_codes collects {sorted(blocking_codes(probe))} from a plan and readiness probe")
+    # A release_drift code is a blocking reason only where Shared policy gives
+    # that drift a BLOCKED readiness effect; a DEGRADED one is never a blocker.
+    drift_policy = yaml.safe_load((CONTRACTS / "topology" / "v1" / "release-policy.yaml").read_text())["drift"]["reasons"]
+    drift_codes = {entry["code"] for entry in registry["reason_codes"] if entry["category"] == "release_drift"}
+    for code in drift_codes:
+        if drift_policy.get(code, {}).get("readiness_effect") not in ("BLOCKED", "DEGRADED"):
+            fail(f"release-policy.yaml: drift reason {code} needs a readiness_effect of BLOCKED or DEGRADED")
+    blockable = {code for code in drift_codes if drift_policy.get(code, {}).get("readiness_effect") == "BLOCKED"}
+    registered = (registered - drift_codes) | blockable
     for path in sorted((CP / "examples").glob("*.json")):
         if path.name in ("provider-migration.json", "changeset.json"):
             continue  # checked against their own categories by check_provider_migration and check_changeset

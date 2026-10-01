@@ -517,6 +517,13 @@ observe = scopes.get("deployment:observe")
 if not observe or observe.get("privileged") or observe.get("allowed_actors") != ["workload"]:
     fail("deployment:observe must be an unprivileged workload-only scope")
 
+# 14. Gate ER-05: every drift reason says what it does to readiness (ADR-BCP-008:
+# each drift class is blocking or not), apart from its severity.
+drift_rules = policy["drift"]["reasons"]
+for reason, rule in drift_rules.items():
+    if rule.get("readiness_effect") not in ("BLOCKED", "DEGRADED"):
+        fail(f"release-policy.yaml drift.reasons.{reason} needs readiness_effect BLOCKED or DEGRADED")
+
 if failures:
     for message in failures:
         print(f"topology contract validation failed: {message}", file=sys.stderr)
