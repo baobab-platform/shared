@@ -135,6 +135,22 @@ events:
     asyncapi: contracts/organisation/v1/asyncapi.yaml
     producer: baobab-cp
     lifecycle: ACTIVE
+  - type: com.baobab-platform.control-plane.engine-instance.desired-release-changed.v1
+    asyncapi: contracts/topology/v1/asyncapi.yaml
+    producer: baobab-cp
+    lifecycle: ACTIVE
+  - type: com.baobab-platform.control-plane.engine-instance.release-drift-detected.v1
+    asyncapi: contracts/topology/v1/asyncapi.yaml
+    producer: baobab-cp
+    lifecycle: ACTIVE
+  - type: com.baobab-platform.control-plane.engine-release.recorded.v1
+    asyncapi: contracts/topology/v1/asyncapi.yaml
+    producer: baobab-cp
+    lifecycle: ACTIVE
+  - type: com.baobab-platform.control-plane.engine-release.status-changed.v1
+    asyncapi: contracts/topology/v1/asyncapi.yaml
+    producer: baobab-cp
+    lifecycle: ACTIVE
   - type: com.baobab-platform.control-plane.legal-entity.verified.v1
     asyncapi: contracts/organisation/v1/asyncapi.yaml
     producer: baobab-cp

@@ -1,0 +1,20 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000002502",
+  "type": "com.baobab-platform.control-plane.engine-release.status-changed.v1",
+  "source": "https://control-plane.baobab-platform.com/topology",
+  "subject": "engine-release/erl_01k9pay120",
+  "time": "2026-09-21T10:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/topology/v1/events.schema.json#/$defs/EngineReleaseStatusChanged",
+  "baobabscope": "platform",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-000000002552",
+  "data": {
+    "release_id": "erl_01k9pay120",
+    "engine_id": "baobab-payments",
+    "release_version": "1.2.0",
+    "previous_status": "APPROVED",
+    "status": "REVOKED",
+    "changed_at": "2026-09-21T10:00:00Z"
+  }
+}

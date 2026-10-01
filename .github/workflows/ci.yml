@@ -37,6 +37,9 @@
 #
 # CHANGE LOG (most recent first)
 # ------------------------------------------------------------------------------
+# * Added scripts/validate-topology-contracts.py to the governance-contracts
+#   job, covering the new contracts/topology/v1 package (ADR-BCP-025, gate
+#   ER-01): engine releases, deployment observations and release drift.
 # * Added scripts/event_contexts.py and its tests to the governance-contracts
 #   job: the event context registry and event-type registry (ADR-SHARED-018,
 #   T-COMPAT-02).
@@ -104,6 +107,7 @@ on:
       - "scripts/validate-evidence-contracts.py"
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
+      - "scripts/validate-topology-contracts.py"
       - "scripts/capability_catalogue.py"
       - "scripts/contract_lock.py"
       - "scripts/event_contexts.py"
@@ -132,6 +136,7 @@ on:
       - "scripts/validate-evidence-contracts.py"
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
+      - "scripts/validate-topology-contracts.py"
       - "scripts/capability_catalogue.py"
       - "scripts/contract_lock.py"
       - "scripts/event_contexts.py"
@@ -185,6 +190,8 @@ jobs:
         run: python scripts/validate-commercial-contracts.py
       - name: Validate Control Plane administrative read models (Draft 2020-12)
         run: python scripts/validate-control-plane-contracts.py
+      - name: Validate engine release and deployment observation contracts (ADR-BCP-025, Draft 2020-12)
+        run: python scripts/validate-topology-contracts.py
       - name: Validate the canonical capability catalogue and provider declarations (ADR-SHARED-017)
         run: python scripts/capability_catalogue.py validate-catalogue
       - name: Test capability catalogue and provider declaration validation (ADR-SHARED-017)

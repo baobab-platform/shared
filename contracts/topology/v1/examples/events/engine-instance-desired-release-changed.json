@@ -1,0 +1,38 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000002503",
+  "type": "com.baobab-platform.control-plane.engine-instance.desired-release-changed.v1",
+  "source": "https://control-plane.baobab-platform.com/topology",
+  "subject": "engine-instance/ei_01k9paystg2",
+  "time": "2026-09-21T10:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/topology/v1/events.schema.json#/$defs/EngineInstanceDesiredReleaseChanged",
+  "baobabscope": "platform",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-000000002553",
+  "data": {
+    "engine_instance_id": "ei_01k9paystg2",
+    "engine_id": "baobab-payments",
+    "previous_release_id": "erl_01k9pay120",
+    "desired_release_id": "erl_01k9pay140",
+    "desired_release_version": "1.4.0",
+    "desired_artifacts": [
+      {
+        "artifact_type": "OCI_IMAGE",
+        "repository": "ghcr.io/baobab-platform/baobab-payments",
+        "digest": "sha256:6d3c6b8b6aa8062fccf034871f74a87786fe7dac8e23f29b9170934dcd4728e8",
+        "platform": "linux/amd64",
+        "display_tag": "1.4.0"
+      },
+      {
+        "artifact_type": "OCI_IMAGE",
+        "repository": "ghcr.io/baobab-platform/baobab-payments",
+        "digest": "sha256:4ecee67be0bb659ba16859d97e818e977d6c39b09075cd3b247c088e37153cbc",
+        "platform": "linux/arm64",
+        "display_tag": "1.4.0"
+      }
+    ],
+    "changeset_id": "cs_01k9pay120rv",
+    "version": 5,
+    "changed_at": "2026-09-21T10:00:00Z"
+  }
+}
