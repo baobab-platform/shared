@@ -29,6 +29,10 @@ Changes that have been merged but have not yet been included in a released versi
   - `baobab-cp` adopts the trait in a follow-up PR once it can pin a Foundation ref carrying this change.
   - The EA dashboard now records EA-02 as 02A–02E implemented with the platform conformance gate open (fleet not yet on an enforcing Foundation), and is reconciled with `main` (lock shapes and re-pins, release approval, ER-03, event registry 124/107/17, T-COMPAT-03).
 
+- **Release drift has a readiness effect (ADR-BCP-025 gate ER-05, owner ruling).**
+  - `release-policy.yaml` gives every drift reason a `readiness_effect`, separate from severity: `BLOCKED` for `REVOKED_RELEASE_RUNNING`, `UNKNOWN_ARTIFACT_RUNNING` and `DEPLOYMENT_LOCATION_MISMATCH`; `DEGRADED` for `RELEASE_MISMATCH` and `RELEASE_UNOBSERVED`.
+  - `readiness.schema.json` lets a blocking reason carry a `release_drift` code that policy marks BLOCKED, and adds `degrading_reasons` (required, non-empty, for a DEGRADED snapshot). Release drift stays a readiness consequence and never a capability resolution denial; ER-06 is not accepted.
+  - The validators require an explicit effect for every drift reason and check the new snapshot shapes.
 - **Production reporter registered, and the ER-04 production gates recorded.**
   - `baobab-deployment-controller-production` (`baobab-platform/infrastructure`; production, `af-south-1`; `desired-release:read` and `deployment:observe`; federated, no static secret) is registered `PROVISIONED`. It is promoted only after the federated exchange is proven and the Control Plane accepts it.
   - `docs/architecture/er-04-production-gates.md` records the owner rulings: the production Control Plane loads and enforces the workload registry (fail closed) after the existing `ACTIVE` entries are reconciled; the reporter is the deployment controller, not an admission webhook; reporting is post-deployment and periodic.
