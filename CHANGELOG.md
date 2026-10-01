@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Engine release record and read routes (ADR-BCP-025, gate ER-02).**
+  - Control Plane OpenAPI 1.22.0 adds:
+    - `recordEngineRelease` (`POST /engine-releases`): workload `engine-release:record` or admin `topology:write`. A byte-identical replay returns 200; otherwise `RELEASE_VERSION_CONFLICT`, `RELEASE_ARTIFACT_DIGEST_CONFLICT` (409), `RELEASE_PROVIDER_NOT_OWNED` or `RELEASE_CAPABILITY_NOT_CATALOGUED` (422).
+    - `listEngineReleases` and `getEngineRelease` under `topology:read`.
+  - A new scope, `engine-release:record`, is workload-only and unprivileged.
+  - `validate-topology-contracts.py` checks the routes' request and response schemas and their scopes.
+  - Status changes and the desired release come with their gates.
 - **A changeset outcome can name a provider as the resource it changed (EA-02D).** `affectedResource.resource_type` gains `PROVIDER`, the target of `PROVIDER_ACTIVATION`, which shared#167 added without it. `validate-control-plane-contracts.py` now requires every change kind's target to be an affected-resource type.
 - **Provider registration never activates; PROVIDER_ACTIVATION changeset (EA-02C/D).**
   - EA-02C: an EngineRegistration's provider `lifecycle` must be `DRAFT` (`registration.schema.json`), and the payments and subscriptions bootstrap bundles now register their providers as `DRAFT`. `capability_catalogue.py generate-registration` generates DRAFT only.

@@ -279,6 +279,15 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "engine-release:record"
+    description: >-
+      Release tooling records an immutable engine release: its
+      content-addressed artifacts, per-provider contract support and
+      declaration digest (ADR-BCP-025 gate ER-02). Recording never approves,
+      desires or deploys a release. Never held by an engine for itself.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
   - name: "deployment:observe"
     description: >-
       Infrastructure tooling (a deploy controller or admission webhook)
