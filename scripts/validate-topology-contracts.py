@@ -492,6 +492,31 @@ if any(t["command"] == "approve" for t in policy["status_transitions"]["transiti
         "APPROVED" in json.loads((PKG / "release.schema.json").read_text())["$defs"]["EngineReleaseStatusChangeRequest"]["properties"]["target_status"]["enum"]:
     fail("a status change request never approves (ENGINE_RELEASE_APPROVAL changeset)")
 
+# 13. Gate ER-04: observation intake and the reads of what was observed.
+submit = paths.get("/deployment-observations", {}).get("post")
+if not submit or submit.get("operationId") != "submitDeploymentObservation":
+    fail("control-plane openapi.yaml must serve POST /deployment-observations (gate ER-04)")
+else:
+    if submit.get("security") != [{"workloadOidc": ["deployment:observe"]}]:
+        fail("POST /deployment-observations must admit only workloads holding deployment:observe (section 2.9: an engine never reports itself, and an administrator is not a reporter)")
+    body = submit["requestBody"]["content"]["application/json"]["schema"].get("$ref", "")
+    if not body.endswith("deployment-observation.schema.json#/$defs/DeploymentObservationSubmission"):
+        fail("POST /deployment-observations must take DeploymentObservationSubmission")
+    if "201" not in submit["responses"] or "403" not in submit["responses"] or "404" not in submit["responses"] or "422" not in submit["responses"]:
+        fail("POST /deployment-observations must document 201, 403, 404 and 422")
+for route, op in (
+    ("/engine-instances/{engine_instance_id}/deployment-observations", "listEngineInstanceDeploymentObservations"),
+    ("/engine-instances/{engine_instance_id}/observed-release", "getEngineInstanceObservedRelease"),
+):
+    got = paths.get(route, {}).get("get")
+    if not got or got.get("operationId") != op:
+        fail(f"control-plane openapi.yaml must serve GET {route} (gate ER-04)")
+    elif got.get("security") != [{"adminOidc": ["topology:read"]}]:
+        fail(f"GET {route} must be admin topology:read only")
+observe = scopes.get("deployment:observe")
+if not observe or observe.get("privileged") or observe.get("allowed_actors") != ["workload"]:
+    fail("deployment:observe must be an unprivileged workload-only scope")
+
 if failures:
     for message in failures:
         print(f"topology contract validation failed: {message}", file=sys.stderr)

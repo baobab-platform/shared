@@ -103,6 +103,18 @@ workloads.each do |client_id, entry|
   (audiences - used).each do |audience|
     fail_contract("workload #{client_id} allows audience #{audience} but no scope issued for it")
   end
+  # ADR-BCP-025 section 2.9: a reporter is registered for the environments
+  # and regions it may report on. Its environment is `environment`; its
+  # regions are `deployment_regions`, required of exactly the workloads that
+  # may hold deployment:observe, and nobody else.
+  regions = entry["deployment_regions"]
+  if entry.fetch("allowed_scopes").include?("deployment:observe")
+    unless regions.is_a?(Array) && !regions.empty? && regions.uniq.size == regions.size && regions.all? { |r| r.is_a?(String) && r.match?(/\A[a-z][a-z0-9]*(?:-[a-z0-9]+)*\z/) && r.length <= 63 }
+      fail_contract("workload #{client_id} allows deployment:observe, so it must list its deployment_regions (distinct, lower-case region names)")
+    end
+  elsif !regions.nil?
+    fail_contract("workload #{client_id} lists deployment_regions but does not allow deployment:observe")
+  end
 end
 
 # 5. Every scope an OpenAPI operation requires is registered, and a

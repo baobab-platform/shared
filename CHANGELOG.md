@@ -29,6 +29,13 @@ Changes that have been merged but have not yet been included in a released versi
   - `baobab-cp` adopts the trait in a follow-up PR once it can pin a Foundation ref carrying this change.
   - The EA dashboard now records EA-02 as 02A–02E implemented with the platform conformance gate open (fleet not yet on an enforcing Foundation), and is reconciled with `main` (lock shapes and re-pins, release approval, ER-03, event registry 124/107/17, T-COMPAT-03).
 
+- **Deployment observation intake and reads (ADR-BCP-025 gate ER-04).**
+  - Control Plane OpenAPI 1.25.0 adds:
+    - `submitDeploymentObservation` (`POST /deployment-observations`): workload `deployment:observe` only. It appends an observation; the Control Plane mints `observation_id`, assigns `recorded_at` and `ingestion_sequence`, and takes `source` from the caller. Out-of-scope, unknown-instance and bad-window submissions are `DEPLOYMENT_OBSERVATION_OUT_OF_SCOPE` (403), `_INSTANCE_UNKNOWN` (404) and `_WINDOW_INVALID` (422), using the reason codes already registered.
+    - `listEngineInstanceDeploymentObservations` and `getEngineInstanceObservedRelease` (admin `topology:read`).
+  - The workload registry gains `deployment_regions`, where a reporter is registered for its regions (its `environment` is the environment). It is required of exactly the workloads allowed `deployment:observe`, and rejected for any other. No workload is granted the scope here: no reporter is registered yet, and registering one is an owner decision.
+  - `validate-authorization-contracts.rb` and `validate-topology-contracts.py` enforce both.
+
 - **Desired release, deprecation and revocation (ADR-BCP-025 gate ER-03).**
   - A new `ENGINE_INSTANCE_DESIRED_RELEASE` change kind sets or clears an engine instance's desired release. It changes no status: the lifecycle now lets a kind name the attribute it `changes` instead of a `to_status`. Its approver holds the new `desired-release:approve` scope.
   - Its plan runs five checks, each with a new `changeset_blocker` code: the change changes something, and a named release is APPROVED, of the instance's engine, with the provenance and certification `release-policy.yaml` approval requires for the instance's environment.

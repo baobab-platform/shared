@@ -28,6 +28,16 @@
 #                             NOT authenticate as this workload in another
 #                             (ADR-0007 §102's "development credential
 #                             rejected in production" isolation test).
+#   deployment_regions     -- optional; required of exactly the workloads
+#                             that may hold deployment:observe. The deployment
+#                             regions the reporter may report on, within its
+#                             `environment` (ADR-BCP-025 section 2.9: "a
+#                             reporter is registered for the environments and
+#                             regions it may report on"). An observation for
+#                             another environment or region is refused, never
+#                             stored. One reporter is one environment; a
+#                             platform with several environments registers one
+#                             reporter per environment.
 #   allowed_audiences      -- the aud values baobab-cp's verifier accepts
 #                             for this workload's tokens (§§24-25: "A token
 #                             intended for Control Plane SHALL not
