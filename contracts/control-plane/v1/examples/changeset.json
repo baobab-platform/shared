@@ -356,5 +356,96 @@
     },
     "verification_strategy": "Read the mapping back and require status ACTIVE.",
     "compensation_strategy": "Retire the mapping through its own lifecycle; nothing irreversible is planned."
+  },
+  "provider_activation_plan": {
+    "plan_id": "plan_0199a1b2c3d47ea3",
+    "plan_version": 1,
+    "plan_digest": "sha256:d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+    "base_revision": 4,
+    "generated_at": "2026-09-28T08:01:00Z",
+    "expires_at": "2026-09-29T08:01:00Z",
+    "risk_class": "MEDIUM",
+    "changeset_id": "cs_0199a1b2c3d47ea3",
+    "changeset_type": "MODIFY",
+    "desired_change": {
+      "kind": "PROVIDER_ACTIVATION",
+      "provider_id": "provider_01k9paysbx"
+    },
+    "steps": [
+      {
+        "step_id": "activate-provider",
+        "operation": "ACTIVATE_PROVIDER",
+        "depends_on": [],
+        "resources": {
+          "provider_id": "provider_01k9paysbx",
+          "from_status": "DRAFT",
+          "to_status": "ACTIVE",
+          "target_revision": 1
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "verify-provider-state",
+        "operation": "VERIFY_PROVIDER_STATE",
+        "depends_on": [
+          "activate-provider"
+        ],
+        "resources": {
+          "provider_id": "provider_01k9paysbx",
+          "to_status": "ACTIVE"
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [],
+    "readiness_requirements": [
+      {
+        "check": "PROVIDER_DECLARATION",
+        "description": "The provider is declared in baobab-payments' capability provider declaration."
+      },
+      {
+        "check": "CAPABILITY_SUPPORT",
+        "description": "Two capabilities have IMPLEMENTED support."
+      },
+      {
+        "check": "CONTRACT_COMPATIBILITY",
+        "description": "Every supported contract major is defined by its capability."
+      },
+      {
+        "check": "CERTIFICATION",
+        "description": "Staging does not require certification (release-policy.yaml)."
+      },
+      {
+        "check": "PRODUCTION_PERMITTED",
+        "description": "The provider is simulated; it serves only staging instances."
+      },
+      {
+        "check": "ENGINE_RELEASE",
+        "description": "Release 1.4.0 is APPROVED and supports the provider's contracts."
+      },
+      {
+        "check": "ENGINE_INSTANCE",
+        "description": "One staging instance of baobab-payments can serve the provider."
+      },
+      {
+        "check": "HEALTH",
+        "description": "The instance is HEALTHY."
+      },
+      {
+        "check": "MIGRATION_CONFLICTS",
+        "description": "No provider migration involves the provider."
+      }
+    ],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Activates the DRAFT sandbox payment provider for the staging instances it can serve; every plan check passed.",
+      "resources_created": 0,
+      "resources_changed": 1,
+      "resources_removed": 0,
+      "availability_impact": "None until activation; bindings to the provider may then become ACTIVE."
+    },
+    "verification_strategy": "Read the provider back and require lifecycle ACTIVE.",
+    "compensation_strategy": "Suspend the provider through its own lifecycle; nothing irreversible is planned."
   }
 }

@@ -89,7 +89,7 @@ RESPONSIBILITIES = {
         "taskResult", "EngineMigrationTask", "EngineMigrationTaskPage", "EngineMigrationTaskReport",
     },
     "changeset.schema.json": {
-        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "desiredChange",
+        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "ProviderActivation", "desiredChange",
         "ChangesetCreateRequest", "ChangesetCancelRequest", "planReference", "Changeset", "ChangesetPage",
         "changesetOperation", "changesetStepResources", "changesetStep", "ChangesetPlan", "affectedResource",
         "verificationResult", "ChangeOutcome",
@@ -912,6 +912,7 @@ def check_changeset() -> None:
         "TENANT": set(json.loads((CP / "tenant.schema.json").read_text())["$defs"]["lifecycleStatus"]["enum"]),
         "MARKET": set(json.loads((CP / "market.schema.json").read_text())["$defs"]["market"]["properties"]["status"]["enum"]),
         "MAPPING": set(json.loads((CP / "domain.schema.json").read_text())["$defs"]["mappingStatus"]["enum"]),
+        "PROVIDER": set(json.loads((CONTRACTS / "capability" / "v1" / "domain.schema.json").read_text())["$defs"]["capabilityLifecycle"]["enum"]),
     }
     registered_scopes = {entry["name"] for entry in yaml.safe_load(
         (CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
@@ -997,6 +998,49 @@ def check_changeset() -> None:
         for step in activation["steps"]:
             if step["resources"][target_key] != activation["desired_change"][target_key]:
                 fail(f"changeset {key}: step {step['step_id']} acts on another {target_key} than its desired change")
+    # Provider activation (EA-02D): the only path from a registered DRAFT
+    # provider to ACTIVE. Every plan check names a registered blocker, the
+    # example plan reports every check, and its steps act on the provider
+    # alone, in capabilityLifecycle.
+    provider_kind = kinds["PROVIDER_ACTIVATION"]
+    if provider_kind.get("approval_scope") != "provider:approve" or provider_kind["from_status"] != ["DRAFT"]:
+        fail("PROVIDER_ACTIVATION must start from DRAFT and require provider:approve")
+    checks = provider_kind.get("plan_checks", [])
+    expected_checks = {"PROVIDER_DECLARATION", "CAPABILITY_SUPPORT", "CONTRACT_COMPATIBILITY", "CERTIFICATION",
+                       "PRODUCTION_PERMITTED", "ENGINE_RELEASE", "ENGINE_INSTANCE", "HEALTH", "MIGRATION_CONFLICTS"}
+    if {c["check"] for c in checks} != expected_checks:
+        fail(f"PROVIDER_ACTIVATION plan_checks must be exactly the EA-02D inspections {sorted(expected_checks)}")
+    for check in checks:
+        if check["blocker"] not in lifecycle["blocking_codes"]:
+            fail(f"PROVIDER_ACTIVATION check {check['check']} blocker {check['blocker']} is not a blocking code")
+    for kind_name, spec in kinds.items():
+        if "plan_checks" in spec and kind_name != "PROVIDER_ACTIVATION":
+            for check in spec["plan_checks"]:
+                if check["blocker"] not in lifecycle["blocking_codes"]:
+                    fail(f"{kind_name} check {check['check']} blocker {check['blocker']} is not a blocking code")
+    provider_plan = example["provider_activation_plan"]
+    accepts(schema, "ChangesetPlan", provider_plan, "changeset provider_activation_plan")
+    if [step["operation"] for step in provider_plan["steps"]] != provider_kind["operations"] \
+            or provider_plan["changeset_type"] != provider_kind["changeset_type"]:
+        fail("changeset provider_activation_plan does not run its change kind's operations and type")
+    if [c["check"] for c in provider_plan["readiness_requirements"]] != [c["check"] for c in checks]:
+        fail("changeset provider_activation_plan must report every PROVIDER_ACTIVATION plan check, in order")
+    for step in provider_plan["steps"]:
+        if step["resources"].get("provider_id") != provider_plan["desired_change"]["provider_id"]:
+            fail(f"changeset provider_activation_plan: step {step['step_id']} acts on another provider")
+    mixed = copy.deepcopy(provider_plan)
+    mixed["steps"][0]["resources"]["tenant_id"] = plan["desired_change"]["tenant_id"]
+    rejects(schema, "ChangesetPlan", mixed, "a provider step naming a tenant too")
+    lowered = copy.deepcopy(provider_plan)
+    lowered["steps"][0]["resources"]["to_status"] = "active"
+    rejects(schema, "ChangesetPlan", lowered, "a provider step in the tenant status vocabulary")
+    crossed = copy.deepcopy(provider_plan)
+    crossed["steps"] = example["mapping_activation_plan"]["steps"]
+    rejects(schema, "ChangesetPlan", crossed, "a provider activation plan running mapping steps")
+    rejects(schema, "ChangesetPlan", {**provider_plan, "changeset_type": "ONBOARD"}, "a provider activation typed ONBOARD")
+    rejects(schema, "ChangesetCreateRequest",
+            {**create, "desired_change": {**provider_plan["desired_change"], "lifecycle": "ACTIVE"}},
+            "a provider activation desired change with an extra property")
 
     # Tenant step resources keep their v1 shape: no resource at all, or
     # statuses alone, stay valid tenant steps.
