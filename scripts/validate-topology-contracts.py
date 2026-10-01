@@ -31,7 +31,10 @@ resolved against the contracts in this repository:
   8. negative fixtures prove the load-bearing rules reject bad data;
   9. every event payload is published by asyncapi.yaml and registered to
      baobab-cp;
- 10. contracts.lock.yaml registers exactly these files.
+ 10. contracts.lock.yaml registers exactly these files;
+ 11. the Control Plane's engine release routes (gate ER-02) record only the
+     record request, return EngineRelease, and are open to release tooling
+     only under the workload-only engine-release:record scope.
 
 Setup (same dependencies as the Foundation fixture suite):
   python3 -m pip install -r .github/foundation-tests/requirements.txt
@@ -435,6 +438,31 @@ entry = next((c for c in lock["contracts"] if c["domain"] == "topology" and c["v
 expected = set(SCHEMAS) | {"release-policy.yaml"}
 if entry is None or set(entry.get("schemas", [])) != expected:
     fail(f"contracts.lock.yaml must register topology v1 with exactly {sorted(expected)}")
+
+# 11. Engine release routes (ER-02).
+openapi = load_yaml(CP / "openapi.yaml")
+paths = openapi.get("paths", {})
+record = paths.get("/engine-releases", {}).get("post")
+if record is None:
+    fail("control-plane openapi.yaml must serve POST /engine-releases (gate ER-02)")
+else:
+    body = record["requestBody"]["content"]["application/json"]["schema"]["$ref"]
+    if not body.endswith("topology/v1/release.schema.json#/$defs/EngineReleaseRecordRequest"):
+        fail("POST /engine-releases must accept only EngineReleaseRecordRequest")
+    for code in ("200", "201"):
+        returned = record["responses"][code]["content"]["application/json"]["schema"]["$ref"]
+        if not returned.endswith("topology/v1/release.schema.json#/$defs/EngineRelease"):
+            fail(f"POST /engine-releases {code} must return EngineRelease")
+    schemes = {name: required for requirement in record["security"] for name, required in requirement.items()}
+    if schemes.get("workloadOidc") != ["engine-release:record"]:
+        fail("POST /engine-releases must admit workloads only under engine-release:record")
+recorder = scopes.get("engine-release:record")
+if recorder is None or recorder.get("allowed_actors") != ["workload"] or recorder.get("privileged"):
+    fail("engine-release:record must be an unprivileged workload-only scope")
+for route in ("/engine-releases", "/engine-releases/{release_id}"):
+    read = paths.get(route, {}).get("get")
+    if read is None or read.get("security") != [{"adminOidc": ["topology:read"]}]:
+        fail(f"GET {route} must be served under topology:read")
 
 if failures:
     for message in failures:

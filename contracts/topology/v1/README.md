@@ -52,8 +52,13 @@ Related changes outside this package:
 - **Reporters, not engines, observe (section 2.9).** Observations come from registered infrastructure workloads holding `deployment:observe`, for their registered environments and regions only. Expired, missing or future-dated observations mean `UNKNOWN`.
 - **Observation stays observation (section 2.8, A4).** Release drift appears in readiness and events. It never changes capability resolution; that is gate ER-06, which is not accepted.
 
-## Not in this package yet
+## Routes
 
-The OpenAPI routes land with the Control Plane implementation that serves them (ER-02 to ER-04). They are added to `control-plane/v1/openapi.yaml` in the same change as the handlers, so the OpenAPI drift test and the generated client stay truthful.
+The Control Plane's `openapi.yaml` serves the routes as their gates land:
+
+- Gate ER-02:
+  - `POST /engine-releases` records a release. It takes workload `engine-release:record` or admin `topology:write`.
+  - `GET /engine-releases` and `GET /engine-releases/{release_id}` read releases under `topology:read`.
+- Gates ER-03 and ER-04 add status changes, the desired release and observation intake, each in the same change as its handlers. That keeps the OpenAPI drift test and the generated client truthful.
 
 Validated by `scripts/validate-topology-contracts.py`.
