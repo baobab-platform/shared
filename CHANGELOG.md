@@ -23,7 +23,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
-* ADA-05 grant administration contract (control-plane OpenAPI 1.26.0): `/admin/grants` (issue, list), `/admin/grants/{grant_id}` (inspect), `/transitions` (suspend, resume, revoke, withdraw) and `/delegations`, the `grant-administration.schema.json` request and page shapes, human-only scopes `administrator:read` and `administrator:write` (the latter privileged) and reason code `GRANT_TRANSITION_INVALID`. HIGH and CRITICAL authority is refused with `APPROVAL_REQUIRED` until the ADA-06 maker-checker path exists. Shape only: it changes no enforcement.
+* ADA-05 grant administration contract (control-plane OpenAPI 1.26.0; 1.26.1 corrects the delegation wording: HIGH and CRITICAL delegation awaits approval, it is not forbidden): `/admin/grants` (issue, list), `/admin/grants/{grant_id}` (inspect), `/transitions` (suspend, resume, revoke, withdraw) and `/delegations`, the `grant-administration.schema.json` request and page shapes, human-only scopes `administrator:read` and `administrator:write` (the latter privileged) and reason code `GRANT_TRANSITION_INVALID`. HIGH and CRITICAL authority is refused with `APPROVAL_REQUIRED` until the ADA-06 maker-checker path exists. Shape only: it changes no enforcement.
 
 ## Changed
 
