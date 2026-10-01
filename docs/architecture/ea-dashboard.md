@@ -77,7 +77,7 @@ EA-05 Governance                       ADVANCED
   Administrative authority             MIGRATION PATH ACCEPTED (roles-to-grants-decision.md); implementation in progress
     ADA-05 grant administration        IMPLEMENTED (exact-scope delegation)
     grant replace/supersede            IMPLEMENTED (cp#246 in review)
-    narrower-scope delegation          IMPLEMENTED for provable containment; org->tenant and group-descendant need canonical relation data (decision)
+    narrower-scope delegation          IMPLEMENTED for provable containment, incl. org->tenant via effective TenantOrganisationMapping; group-descendant needs a supplied canonical group graph
     ADA-06 maker/checker and SoD       IMPLEMENTED (shared#187, cp#245)
     authority:self issuance            DONE (iam#49)
     administrator:read/write issuance  APPROVED (iam#50)
