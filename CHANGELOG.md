@@ -21,6 +21,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Changes that have been merged but have not yet been included in a released version are recorded here.
 
+## Changed
+
+* CRITICAL grant bound (owner decision, 2026-10-01): `separation-of-duties.yaml` now bounds a CRITICAL grant to `maximum_duration_hours: 24` (was a proposed 30 days, which was the bootstrap analogue and not the right one) and states `jit_target_hours: 1` as guidance for JUST_IN_TIME CRITICAL grants. A CRITICAL grant is never STANDING; extending beyond 24 hours is a new approval, not a renewal in place. HIGH grants are policy-controlled separately and do not inherit the bound. Durations are stated in hours (`maximum_duration_days` is no longer accepted). The validator refuses a CRITICAL bound above 24 hours.
+
 ## Added
 
 * Narrower-scope delegation (control-plane OpenAPI 1.28.1; wording only): a delegation's scope may be the source grant's or one provably within it, replacing "the source's scope exactly". The rules are in the administration/v1 README, "Scope containment": from the scopes' own anchors, environment, market qualifiers and corporate-group membership lists, never from identifier text. Organisation-to-tenant and group-descendant relations are not followed; they need canonical data the evaluator reads, and are a separate decision. No schema change.
