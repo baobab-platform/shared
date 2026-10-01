@@ -189,8 +189,18 @@ for policy in sod.get("policies", []):
             fail(f"separation-of-duties.yaml {pid}: an independence policy names at least requester and approver")
     if "allowed_grant_types" in policy and not set(policy["allowed_grant_types"]) <= set(domain["grantType"]["enum"]):
         fail(f"separation-of-duties.yaml {pid}: allowed_grant_types names an unknown grant type")
-    if "maximum_duration_days" in policy and not (isinstance(policy["maximum_duration_days"], int) and policy["maximum_duration_days"] >= 1):
-        fail(f"separation-of-duties.yaml {pid}: maximum_duration_days must be a positive integer")
+    if "maximum_duration_days" in policy:
+        fail(f"separation-of-duties.yaml {pid}: durations are stated in hours (maximum_duration_hours)")
+    for hours in ("maximum_duration_hours", "jit_target_hours"):
+        if hours in policy and not (isinstance(policy[hours], int) and policy[hours] >= 1):
+            fail(f"separation-of-duties.yaml {pid}: {hours} must be a positive integer")
+    if "jit_target_hours" in policy and "maximum_duration_hours" in policy and policy["jit_target_hours"] > policy["maximum_duration_hours"]:
+        fail(f"separation-of-duties.yaml {pid}: jit_target_hours exceeds maximum_duration_hours")
+    if policy.get("risk_threshold") == "CRITICAL" and "allowed_grant_types" in policy and "STANDING" in policy["allowed_grant_types"]:
+        fail(f"separation-of-duties.yaml {pid}: a CRITICAL grant is never STANDING")
+critical = [p for p in sod["policies"] if p.get("risk_threshold") == "CRITICAL" and p["status"] == "ACTIVE" and "maximum_duration_hours" in p]
+if not critical or min(p["maximum_duration_hours"] for p in critical) > 24:
+    fail("separation-of-duties.yaml must bound ACTIVE CRITICAL grants to at most 24 hours (owner decision)")
 if not any(p.get("risk_threshold") == "HIGH" and "approver" in p.get("actors", []) and p["status"] == "ACTIVE" for p in sod["policies"]):
     fail("separation-of-duties.yaml must keep an ACTIVE independence policy from HIGH risk (section 39)")
 for conflicting in sod.get("conflicting_permissions", []):

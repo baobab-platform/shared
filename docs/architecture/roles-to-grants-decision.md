@@ -102,6 +102,23 @@ EA-05 Administrative Authority      MIGRATION DECISION ACCEPTED, implementation 
 | Amend a grant in place | **Rejected.** Authority-bearing fields (permission, scope, validity, delegation source) are never rewritten; grants stay historically truthful. |
 | Atomic replace/supersede | **Required before AdministrativeGrants become the enforcing authority.** One transaction: validate the replacement, create the new immutable grant, preserve provenance, revoke the old grant, handle dependent delegations. Not an amend: both records remain. Avoids lockout (revoke first) and overlapping broader authority (issue first). |
 
+### ADA-06 rulings (owner, 2026-10-01)
+
+| Item | Decision |
+|---|---|
+| Narrower-scope containment baseline (cp#247) | Accepted in its conservative form. |
+| `ORGANISATION` to `TENANT` containment | **Wanted**, only through the explicit, effective `TenantOrganisationMapping` of ADR-BCP-018. Not through corporate ownership, naming, common parentage or PlatformAccount membership; never the reverse (a tenant scope does not contain an organisation scope). The source permission must be valid at both scope levels. Coverage and containment must consume the same mapping relation. |
+| Corporate groups | Keep NO AUTOMATIC EXPANSION. `STATIC_MEMBERSHIP` uses its frozen member set. `DYNAMIC_GROUP_DESCENDANTS` may traverse the canonical effective group graph only when that graph is supplied to the evaluator. |
+| CRITICAL `STANDING` | Prohibited. |
+| CRITICAL `TIME_BOUND` | At most 24 hours. Extension is a new approval/change. |
+| CRITICAL `JUST_IN_TIME` | Target 1 hour, shorter where the operation bounds it. |
+| HIGH grants | Policy-controlled separately; do not inherit the CRITICAL bound. |
+| IAM `administrator:approve` | Approved: optional, privileged, human admin client only, never a workload or default scope. The scope is not approval authority: approval still needs `changeset:approve`, separation of duties and, eventually, the required assurance. |
+| HIGH maker-checker | May become usable once IAM issues the scope. |
+| CRITICAL | Grants may be prepared under the controlled workflow while roles remain authoritative. CRITICAL AdministrativeGrant **enforcement stays disabled** until the assurance/step-up path is implemented and proven. |
+
+Sequence: organisation-to-tenant containment, CRITICAL bound (this change), IAM issuance, step-up/assurance evaluation, reviewed grant population, shadow evidence, permission-by-permission enforcement. Nothing here authorises a roles-to-grants flip.
+
 Status: ADA-05 IMPLEMENTED (shared#184/#185, baobab-cp#244). IAM issuance of the two scopes: baobab-iam#50.
 
 Nothing in this paper issues a grant, changes a route, or alters the realm roles.
