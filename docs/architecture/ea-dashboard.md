@@ -1,7 +1,7 @@
 # EA Implementation Dashboard
 
 **Governing plan:** [EA Implementation Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) (30 September 2026)
-**Last updated:** 2026-09-30
+**Last updated:** 2026-10-01
 **Maintained:** every EA gate PR updates this page (plan §48).
 
 This page is the single live status for each EA stream, gate and PR. The plan
@@ -17,17 +17,17 @@ unless it says so.
 | Repository | Baseline | Note |
 |---|---|---|
 | `shared` | main | Consumer pins at `1bb1c94` are BEHIND_UNCHANGED: later changes touch Foundation tooling, not contracts |
-| `baobab-cp` | main | Pinned to Shared `1bb1c94` |
+| `baobab-cp` | main | Pinned to Shared `24e1e9f` (cp#233) |
 | `baobab-iam` | main | Pinned to Shared `1bb1c94` |
 
 ## Readiness
 
 ```text
-BAOBAB EA READINESS                                   2026-09-30
+BAOBAB EA READINESS                                   2026-10-01
 ─────────────────────────────────────────────────────────────────
 
 EA-01 Contract Convergence             IN PROGRESS
-  CP Shared pin                        BEHIND_UNCHANGED (1bb1c94), canonical lock (cp#229)
+  CP Shared pin                        CURRENT at merge (24e1e9f), canonical lock (cp#229, cp#233)
   IAM Shared pin                       BEHIND_UNCHANGED (1bb1c94), canonical lock (iam#47)
   Subscriptions Shared pin             STALE (canonical lock shape)
   Payments Shared pin                  STALE (canonical lock shape)
@@ -39,20 +39,20 @@ EA-01 Contract Convergence             IN PROGRESS
   Foundation lock validation (EA-01C)  WARN MODE (shared#157)
   Drift report (EA-01D)                READY (Foundation job summary)
 
-EA-02 Capability Governance            ADVANCED
+EA-02 Capability Governance            GATE COMPLETE (02A–02E)
   Canonical catalogue                  16 capabilities
   Provider declarations                PARTIAL (see table)
   Foundation enforcement (G-FCI-1)     ENFORCING
-  Provider registration DRAFT (02C)    CONTRACTS (Shared); CP MISSING
-  Provider activation Changeset (02D)  CONTRACTS (Shared); CP MISSING
-  Binding integrity (02E)              MISSING
+  Provider registration DRAFT (02C)    READY (shared#167, cp#231)
+  Provider activation Changeset (02D)  READY (shared#167, #168, cp#232; ENGINE_RELEASE check cp#233)
+  Binding integrity (02E)              READY (cp#234: constraint validated, fails loudly on unresolved bindings)
 
 EA-03 Runtime Topology                 PARTIAL
   EngineInstance                       READY
   HealthObservation                    READY
   ProviderMigration                    READY
   EngineRelease architecture           ACCEPTED (ADR-BCP-025, A1–A4)
-  EngineRelease                        CONTRACTS (ER-01, topology/v1); CP ER-02…05 MISSING
+  EngineRelease                        ER-01 contracts; ER-02 record/read (cp#233); ER-03…05 MISSING
   DeploymentObservation                CONTRACTS (ER-01, topology/v1); CP ER-04 MISSING
 
 EA-04 Identity                         ADVANCED
@@ -112,9 +112,9 @@ validates a declaration. It never certifies or activates a provider.
 | 7 | CMS provider declaration and contract lock | Done | cms#17, cms#19 |
 | 8 | Foundation provider-declaration validation | Done (enforcing) | shared#152, #153, #154 |
 | 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
-| 10 | Implement EngineRelease | In progress | ER-01 Shared `topology/v1` contracts; ER-02…ER-05 in CP; ER-06 a separate gate |
+| 10 | Implement EngineRelease | In progress | ER-01 Shared `topology/v1` contracts; ER-02 record and read (shared#169, #170, cp#233); release approval and ER-03…ER-05 next; ER-06 a separate gate |
 | 11 | DeploymentObservation model/interfaces | Contracts done | ER-01 (`deployment-observation.schema.json`, `deployment:observe`); intake is ER-04 |
-| 12 | Provider activation Changeset | In progress | Shared: DRAFT-only registration, PROVIDER_ACTIVATION change kind; CP implementation next |
+| 12 | Provider activation Changeset | Done | DRAFT-only registration and PROVIDER_ACTIVATION (shared#167, #168, cp#231, cp#232); binding integrity (cp#234). No release can be APPROVED through the API yet, so no activation can complete until the release approval lands |
 | 13 | AdministrativeGrant enforcement | Blocked | Awaiting the roles→grants decision |
 | 14–30 | Engine hardening onward | Not started | Plan §51 |
 
