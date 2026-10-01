@@ -251,8 +251,8 @@
   ],
   "status_change_requests": [
     {
-      "target_status": "APPROVED",
-      "reason": "Passed staging qualification."
+      "target_status": "DEPRECATED",
+      "reason": "Superseded by 1.4.0."
     },
     {
       "target_status": "REVOKED",

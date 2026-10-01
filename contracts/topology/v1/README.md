@@ -59,6 +59,7 @@ The Control Plane's `openapi.yaml` serves the routes as their gates land:
 - Gate ER-02:
   - `POST /engine-releases` records a release. It takes workload `engine-release:record` or admin `topology:write`.
   - `GET /engine-releases` and `GET /engine-releases/{release_id}` read releases under `topology:read`.
-- Gates ER-03 and ER-04 add status changes, the desired release and observation intake, each in the same change as its handlers. That keeps the OpenAPI drift test and the generated client truthful.
+- Approval (CANDIDATE → APPROVED) has no route of its own. It is the control-plane/v1 `ENGINE_RELEASE_APPROVAL` changeset, served by the generic changeset routes: its approver holds `engine-release:approve` and is neither the requester nor the release's recorder.
+- Gates ER-03 and ER-04 add deprecation and revocation, the desired release and observation intake, each in the same change as its handlers. That keeps the OpenAPI drift test and the generated client truthful.
 
 Validated by `scripts/validate-topology-contracts.py`.
