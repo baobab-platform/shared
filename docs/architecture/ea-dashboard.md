@@ -81,9 +81,11 @@ EA-05 Governance                       ADVANCED
     ADA-06 maker/checker and SoD       IMPLEMENTED (shared#187, cp#245)
     authority:self issuance            DONE (iam#49)
     administrator:read/write issuance  APPROVED (iam#50)
-    shadow blind spots                 OPEN
-    grant population / observation     BLOCKED on the above
-    per-permission enforcement         NOT AUTHORISED YET
+    ADA-07 step-up / assurance         IMPLEMENTED (shared#192, cp#249); IAM issues no phishing-resistant level, so CRITICAL stays disabled
+    shadow blind spots                 operations routes closed (cp); organisation ancestry via TenantOrganisationMapping
+    shadow evidence / readiness        IMPLEMENTED (read model); criteria PROPOSED, owner approval pending
+    grant population                   tooling only: the reviewed list is Platform Security / CP Governance's to supply
+    per-permission enforcement         MECHANISM IN PLACE, EMPTY: no permission enforced, NOT AUTHORISED YET
     realm-role retirement              NOT AUTHORISED
 
 EA-06 Event Fabric                     PARTIAL      (plan §44, not re-audited)

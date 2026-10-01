@@ -15,6 +15,9 @@ Administrative authority answers one question: may this principal perform this C
   - `AdministrativeGrant`: one principal, one permission, one scope, a lifecycle and provenance.
   - `AdministrativeDecision`: the result of one evaluation.
   - `EffectiveAuthority`: the caller's current grants, served at `GET /admin/effective-authority`.
+- `authority-migration.schema.json`: `ReviewedPopulation` (the reviewed list of administrators the owner approves; IAM role holders are evidence in it, never the source) and `MigrationReadiness` (served at `GET /admin/authority-migration/readiness`).
+- `assurance-policy.yaml`: the assurance ladder and what each risk class needs (see *Authentication assurance*).
+- `enforcement-policy.yaml`: the exit criteria for moving a permission from roles to grants, the enforcement order, the CRITICAL prohibition and the list of enforced permissions (empty).
 - `lifecycle.yaml`: the grant state machine, PENDING → ACTIVE → SUSPENDED / EXPIRED / REVOKED.
 - `examples/administrative-grants.json`: grants from a profile, a bootstrap, a delegation, just-in-time access and a static group membership; allow, deny and step-up decisions; and one effective-authority response.
 
@@ -48,6 +51,16 @@ A scope is *within* another when every resource the first reaches the second rea
 - The effective requirement is the strictest of the grant's own `minimum_acr` and the requirement for its risk class: LOW and MODERATE `urn:baobab:acr:basic`; HIGH `urn:baobab:acr:mfa`; CRITICAL `urn:baobab:acr:step-up`, authenticated within 300 seconds, with a phishing-resistant method.
 - Freshness uses `step_up_at`, else `auth_time`; a time in the future is not fresh.
 - Meeting a requirement never creates authority: it only lets a grant be used (section 74). Today IAM's only level above basic is the OTP step-up (`acr` gold, `urn:baobab:acr:mfa`); it issues no phishing-resistant level and no `amr`, so nothing meets a CRITICAL requirement and CRITICAL enforcement stays disabled until IAM does and that is proven.
+
+## Moving a permission from roles to grants
+
+The realm roles stay authoritative until the owner lists a permission in `enforcement-policy.yaml` `enforced`. Nothing in this package, and no green build, makes that decision.
+
+- **Population.** A `ReviewedPopulation` is prepared and approved by Platform Security / Control Plane Governance. Each record names the canonical principal, current roles (evidence), permission, scope, tenant or organisation attestation, grant type, validity, risk, reason and reviewer; nobody reviews their own authority. No tool maps a role to every permission.
+- **Readiness.** `GET /admin/authority-migration/readiness` reports, per permission, the shadow comparison of the role decision with the grant decision against the policy's exit criteria. `grants_broader` must be zero; narrower, not-evaluated and error counts are bounded by the criteria. While the criteria are not `APPROVED` nothing is ready, and CRITICAL permissions are never ready.
+- **Order and scope.** Per permission, in waves: LOW, MODERATE, HIGH, CRITICAL last. An entry may be limited to environments or tenants. There is no platform-wide switch.
+- **Fail closed, roll back alone.** An enforced permission is allowed only when the caller's grants allow it. Removing its entry, or the Control Plane's emergency rollback list, returns that permission to the role decision; neither can enforce anything.
+- **CRITICAL.** Prohibited until the owner lifts it with maker-checker, step-up evidence, an independent approver, grant lifecycle administration, audit and rollback all proven.
 
 ## Versioning
 
