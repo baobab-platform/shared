@@ -74,7 +74,7 @@ EA-04 Identity                         ADVANCED
   Subscriptions workload               PROVISIONED
 
 EA-05 Governance                       ADVANCED
-  AdministrativeGrant enforcement      BLOCKED (roles→grants decision)
+  AdministrativeGrant enforcement      BLOCKED (roles→grants decision paper: roles-to-grants-decision.md; needs grant administration API first)
 
 EA-06 Event Fabric                     PARTIAL      (plan §44, not re-audited)
   event context registry               READY (ADR-SHARED-018; 29 contexts)
