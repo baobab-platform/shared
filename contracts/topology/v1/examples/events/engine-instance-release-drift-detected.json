@@ -1,0 +1,22 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000002504",
+  "type": "com.baobab-platform.control-plane.engine-instance.release-drift-detected.v1",
+  "source": "https://control-plane.baobab-platform.com/topology",
+  "subject": "engine-instance/ei_01k9paystg2",
+  "time": "2026-09-22T09:40:01Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/topology/v1/events.schema.json#/$defs/EngineInstanceReleaseDriftDetected",
+  "baobabscope": "platform",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-000000002554",
+  "data": {
+    "engine_instance_id": "ei_01k9paystg2",
+    "engine_id": "baobab-payments",
+    "drift_reason": "REVOKED_RELEASE_RUNNING",
+    "desired_release_id": "erl_01k9pay140",
+    "observed_state": "RELEASE",
+    "observed_release_id": "erl_01k9pay120",
+    "observation_id": "dob_01k9obs003",
+    "detected_at": "2026-09-22T09:40:01Z"
+  }
+}

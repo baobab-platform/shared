@@ -270,6 +270,16 @@ scopes:
     audience: ["baobab-control-plane"]
     allowed_actors: ["workload"]
 
+  - name: "deployment:observe"
+    description: >-
+      Infrastructure tooling (a deploy controller or admission webhook)
+      submits DeploymentObservations of what is running on engine instances
+      (ADR-BCP-025 section 2.9). Held only by a registered reporter workload,
+      and accepted only for the environments and regions it is registered
+      for. Never held by an engine: an engine cannot report its own release.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
   - name: "verification:read"
     description: >-
       Read verification cases, their claims, checks, results and

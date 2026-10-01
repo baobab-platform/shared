@@ -1,0 +1,65 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab-Platform engine release events
+  version: 1.0.0
+  description: >
+    ADR-BCP-025 section 2.10 events for engine releases, desired releases and
+    release drift. Produced by baobab-platform/baobab-cp from its
+    transactional outbox in the same transaction as the change; a replayed
+    command that changes nothing publishes nothing. Every event is
+    platform-scoped. Infrastructure tooling may consume the desired release
+    changes instead of polling the Control Plane. Event types follow
+    ADR-SHARED-008 and are registered in contracts/events/v1/event-registry.yaml.
+defaultContentType: application/json
+channels:
+  engineRelease:
+    address: baobab-platform.control-plane.engine-release.v1
+    messages:
+      engineReleaseRecorded: { $ref: "#/components/messages/EngineReleaseRecorded" }
+      engineReleaseStatusChanged: { $ref: "#/components/messages/EngineReleaseStatusChanged" }
+  engineInstanceRelease:
+    address: baobab-platform.control-plane.engine-instance-release.v1
+    messages:
+      engineInstanceDesiredReleaseChanged: { $ref: "#/components/messages/EngineInstanceDesiredReleaseChanged" }
+      engineInstanceReleaseDriftDetected: { $ref: "#/components/messages/EngineInstanceReleaseDriftDetected" }
+operations:
+  publishEngineRelease:
+    action: send
+    channel: { $ref: "#/channels/engineRelease" }
+  publishEngineInstanceRelease:
+    action: send
+    channel: { $ref: "#/channels/engineInstanceRelease" }
+components:
+  messages:
+    EngineReleaseRecorded:
+      name: com.baobab-platform.control-plane.engine-release.recorded.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/EngineReleaseRecorded" }
+    EngineReleaseStatusChanged:
+      name: com.baobab-platform.control-plane.engine-release.status-changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/EngineReleaseStatusChanged" }
+    EngineInstanceDesiredReleaseChanged:
+      name: com.baobab-platform.control-plane.engine-instance.desired-release-changed.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/EngineInstanceDesiredReleaseChanged" }
+    EngineInstanceReleaseDriftDetected:
+      name: com.baobab-platform.control-plane.engine-instance.release-drift-detected.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./events.schema.json#/$defs/EngineInstanceReleaseDriftDetected" }

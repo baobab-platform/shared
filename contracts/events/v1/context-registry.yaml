@@ -67,11 +67,12 @@ contexts:
   - key: control-plane
     status: ACTIVE
     stewards: [baobab-cp]
-    authority: [ADR-BCP-001, ADR-BCP-017, ADR-BCP-018]
+    authority: [ADR-BCP-001, ADR-BCP-017, ADR-BCP-018, ADR-BCP-025]
     capability_domains: [tenant, organisation]
     description: >
       Tenant provisioning, admission, organisation and platform-account
-      facts owned by the Control Plane.
+      facts owned by the Control Plane, and its engine topology facts:
+      engine releases, desired releases and release drift.
 
   - key: credential
     status: ACTIVE

@@ -1,0 +1,20 @@
+{
+  "specversion": "1.0",
+  "id": "0192a1b0-7c3e-7a10-8000-000000002501",
+  "type": "com.baobab-platform.control-plane.engine-release.recorded.v1",
+  "source": "https://control-plane.baobab-platform.com/topology",
+  "subject": "engine-release/erl_01k9pay150rc1",
+  "time": "2026-09-20T08:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/topology/v1/events.schema.json#/$defs/EngineReleaseRecorded",
+  "baobabscope": "platform",
+  "correlationid": "0192a1b0-7c3e-7a10-8000-000000002551",
+  "data": {
+    "release_id": "erl_01k9pay150rc1",
+    "engine_id": "baobab-payments",
+    "release_version": "1.5.0-rc.1",
+    "source_revision": "e79786b0d655ddfa16a6b104b45fe8e213f9e808",
+    "status": "CANDIDATE",
+    "recorded_at": "2026-09-20T08:00:00Z"
+  }
+}

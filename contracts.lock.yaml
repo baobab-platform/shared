@@ -115,3 +115,11 @@ contracts:
       - verification.schema.json
       - lifecycle.yaml
       - source-registry.yaml
+  - domain: topology
+    version: v1
+    schemas:
+      - domain.schema.json
+      - release.schema.json
+      - deployment-observation.schema.json
+      - events.schema.json
+      - release-policy.yaml

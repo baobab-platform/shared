@@ -52,8 +52,8 @@ EA-03 Runtime Topology                 PARTIAL
   HealthObservation                    READY
   ProviderMigration                    READY
   EngineRelease architecture           ACCEPTED (ADR-BCP-025, A1–A4)
-  EngineRelease                        MISSING
-  DeploymentObservation                MISSING
+  EngineRelease                        CONTRACTS (ER-01, topology/v1); CP ER-02…05 MISSING
+  DeploymentObservation                CONTRACTS (ER-01, topology/v1); CP ER-04 MISSING
 
 EA-04 Identity                         ADVANCED
   provider-neutral identity contracts  READY (shared#151)
@@ -112,8 +112,8 @@ validates a declaration. It never certifies or activates a provider.
 | 7 | CMS provider declaration and contract lock | Done | cms#17, cms#19 |
 | 8 | Foundation provider-declaration validation | Done (enforcing) | shared#152, #153, #154 |
 | 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
-| 10 | Implement EngineRelease | Open | ER-01…ER-05 authorised; ER-06 a separate gate |
-| 11 | DeploymentObservation model/interfaces | Open | |
+| 10 | Implement EngineRelease | In progress | ER-01 Shared `topology/v1` contracts; ER-02…ER-05 in CP; ER-06 a separate gate |
+| 11 | DeploymentObservation model/interfaces | Contracts done | ER-01 (`deployment-observation.schema.json`, `deployment:observe`); intake is ER-04 |
 | 12 | Provider activation Changeset | Open | EA-02C/D |
 | 13 | AdministrativeGrant enforcement | Blocked | Awaiting the roles→grants decision |
 | 14–30 | Engine hardening onward | Not started | Plan §51 |

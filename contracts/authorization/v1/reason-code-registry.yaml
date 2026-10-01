@@ -6,7 +6,7 @@
 # SHALL not expose sensitive information indiscriminately to external
 # clients").
 #
-# Nine categories exist for nine different moments, not six different
+# Twelve categories exist for twelve different moments, not six different
 # vocabularies for the same thing:
 #
 #   authorization_denial          -- decision.schema.json's `reason_code`,
@@ -58,6 +58,16 @@
 #                                     Market `validation_findings`: why a DRAFT
 #                                     market is not yet VALIDATED
 #                                     (market-lifecycle.yaml validation_rules).
+#   engine_release                 -- contracts/topology/v1's engineReleaseReasonCode:
+#                                     why the Control Plane refused to record an
+#                                     engine release, change its status, set a
+#                                     desired release or accept a deployment
+#                                     observation (ADR-BCP-025 sections 2.1-2.9).
+#   release_drift                  -- contracts/topology/v1's releaseDriftReason and
+#                                     an ENGINE_INSTANCE_RELEASE drift record's
+#                                     `reason_code`: why an engine instance differs
+#                                     from its desired release (ADR-BCP-025
+#                                     section 2.7). Observation, never a denial.
 #
 # TENANT_SUSPENDED (authorization_denial) and TENANT_SUSPENSION
 # (lifecycle_revocation) are deliberately two distinct, near-identical-
@@ -402,3 +412,67 @@ reason_codes:
   - code: MARKET_PARENT_UNKNOWN
     category: market_validation
     description: "parent_market_id does not name another existing market."
+
+  # -- engine_release (ADR-BCP-025 sections 2.1-2.9) --------------------
+  # Why a release, desired-release or observation request was refused.
+  - code: RELEASE_VERSION_CONFLICT
+    category: engine_release
+    description: "The engine already has a release with this version and different content; correcting a release means recording a new version."
+  - code: RELEASE_ARTIFACT_DIGEST_CONFLICT
+    category: engine_release
+    description: "An artifact digest already belongs to another release; a digest identifies at most one release of one engine."
+  - code: RELEASE_ARTIFACT_DIGEST_REQUIRED
+    category: engine_release
+    description: "An artifact was named by tag without a content digest; a tag is never release identity."
+  - code: RELEASE_PROVIDER_NOT_OWNED
+    category: engine_release
+    description: "A provider in the release's support belongs to a different engine."
+  - code: RELEASE_CAPABILITY_NOT_CATALOGUED
+    category: engine_release
+    description: "A capability in the release's support is not in the Shared capability catalogue."
+  - code: RELEASE_SUPPORT_DECLARATION_MISMATCH
+    category: engine_release
+    description: "The release's provider support differs from the IMPLEMENTED support of the provider declaration its digest names."
+  - code: RELEASE_STATUS_TRANSITION_INVALID
+    category: engine_release
+    description: "The release's current status does not allow the requested status change."
+  - code: RELEASE_PROVENANCE_REQUIRED
+    category: engine_release
+    description: "This environment requires a provenance reference before a release can be approved."
+  - code: RELEASE_NOT_APPROVED
+    category: engine_release
+    description: "Only an approved release may become an engine instance's desired release."
+  - code: RELEASE_ENGINE_MISMATCH
+    category: engine_release
+    description: "The release belongs to a different engine than the engine instance."
+  - code: RELEASE_REVOCATION_UNCOVERED
+    category: engine_release
+    description: "An engine instance that desires the release being revoked is neither given a replacement nor cleared."
+  - code: DEPLOYMENT_OBSERVATION_OUT_OF_SCOPE
+    category: engine_release
+    description: "The reporter is not registered for the environment or region the observation names."
+  - code: DEPLOYMENT_OBSERVATION_WINDOW_INVALID
+    category: engine_release
+    description: "The observation's validity window is empty or outside the policy's time-to-live bounds."
+  - code: DEPLOYMENT_OBSERVATION_INSTANCE_UNKNOWN
+    category: engine_release
+    description: "The observation names an engine instance the Control Plane does not know."
+
+  # -- release_drift (ADR-BCP-025 section 2.7) --------------------------
+  # Why an engine instance differs from its desired release. Never a denial:
+  # observation does not change resolution (gate ER-06 is not accepted).
+  - code: RELEASE_MISMATCH
+    category: release_drift
+    description: "The instance is observed running a release other than its desired release past the rollout grace period, or several releases past it."
+  - code: REVOKED_RELEASE_RUNNING
+    category: release_drift
+    description: "The instance is observed running a revoked release."
+  - code: UNKNOWN_ARTIFACT_RUNNING
+    category: release_drift
+    description: "The instance is observed running an artifact that belongs to no release of its engine."
+  - code: RELEASE_UNOBSERVED
+    category: release_drift
+    description: "The instance has a desired release but no current deployment observation."
+  - code: DEPLOYMENT_LOCATION_MISMATCH
+    category: release_drift
+    description: "The observed environment or region differs from the instance's own."
