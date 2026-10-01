@@ -279,6 +279,16 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "engine-release:approve"
+    description: >-
+      Approve the plan of an ENGINE_RELEASE_APPROVAL changeset, the only
+      path from a recorded CANDIDATE engine release to APPROVED (ADR-BCP-025
+      section 2.4). Held with changeset:approve; never by the changeset's
+      requester or the release's recorder. Approval is not certification.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["human"]
+    privileged: true
+
   - name: "engine-release:record"
     description: >-
       Release tooling records an immutable engine release: its

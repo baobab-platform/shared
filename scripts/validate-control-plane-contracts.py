@@ -89,7 +89,7 @@ RESPONSIBILITIES = {
         "taskResult", "EngineMigrationTask", "EngineMigrationTaskPage", "EngineMigrationTaskReport",
     },
     "changeset.schema.json": {
-        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "ProviderActivation", "desiredChange",
+        "changesetState", "changesetType", "changeSource", "TenantSuspension", "TenantReinstatement", "MarketActivation", "MappingActivation", "ProviderActivation", "EngineReleaseApproval", "desiredChange",
         "ChangesetCreateRequest", "ChangesetCancelRequest", "planReference", "Changeset", "ChangesetPage",
         "changesetOperation", "changesetStepResources", "changesetStep", "ChangesetPlan", "affectedResource",
         "verificationResult", "ChangeOutcome",
@@ -913,6 +913,7 @@ def check_changeset() -> None:
         "MARKET": set(json.loads((CP / "market.schema.json").read_text())["$defs"]["market"]["properties"]["status"]["enum"]),
         "MAPPING": set(json.loads((CP / "domain.schema.json").read_text())["$defs"]["mappingStatus"]["enum"]),
         "PROVIDER": set(json.loads((CONTRACTS / "capability" / "v1" / "domain.schema.json").read_text())["$defs"]["capabilityLifecycle"]["enum"]),
+        "ENGINE_RELEASE": set(json.loads((CONTRACTS / "topology" / "v1" / "domain.schema.json").read_text())["$defs"]["releaseStatus"]["enum"]),
     }
     registered_scopes = {entry["name"] for entry in yaml.safe_load(
         (CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
@@ -1046,6 +1047,47 @@ def check_changeset() -> None:
     rejects(schema, "ChangesetCreateRequest",
             {**create, "desired_change": {**provider_plan["desired_change"], "lifecycle": "ACTIVE"}},
             "a provider activation desired change with an extra property")
+
+    # Engine release approval (ADR-BCP-025 section 2.4): the only path from
+    # a recorded CANDIDATE release to APPROVED, approved under
+    # engine-release:approve. Its plan reports every check, and its steps act
+    # on the release alone, in releaseStatus.
+    release_kind = kinds["ENGINE_RELEASE_APPROVAL"]
+    if release_kind.get("approval_scope") != "engine-release:approve" or release_kind["from_status"] != ["CANDIDATE"] \
+            or release_kind["to_status"] != "APPROVED":
+        fail("ENGINE_RELEASE_APPROVAL must move CANDIDATE to APPROVED and require engine-release:approve")
+    release_checks = release_kind.get("plan_checks", [])
+    if {c["check"] for c in release_checks} != {"SUPPORT_CATALOGUED", "PROVENANCE", "CERTIFICATION"}:
+        fail("ENGINE_RELEASE_APPROVAL plan_checks must be SUPPORT_CATALOGUED, PROVENANCE and CERTIFICATION")
+    policy = yaml.safe_load((CONTRACTS / "topology" / "v1" / "release-policy.yaml").read_text())
+    approve = [t for t in policy["status_transitions"]["transitions"] if t["command"] == "approve"]
+    if len(approve) != 1 or approve[0]["from"] != release_kind["from_status"] or approve[0]["to"] != release_kind["to_status"]:
+        fail("ENGINE_RELEASE_APPROVAL must be release-policy.yaml's approve transition")
+    release_plan = example["engine_release_approval_plan"]
+    accepts(schema, "ChangesetPlan", release_plan, "changeset engine_release_approval_plan")
+    if [step["operation"] for step in release_plan["steps"]] != release_kind["operations"] \
+            or release_plan["changeset_type"] != release_kind["changeset_type"]:
+        fail("changeset engine_release_approval_plan does not run its change kind's operations and type")
+    if [c["check"] for c in release_plan["readiness_requirements"]] != [c["check"] for c in release_checks]:
+        fail("changeset engine_release_approval_plan must report every ENGINE_RELEASE_APPROVAL plan check, in order")
+    for step in release_plan["steps"]:
+        if step["resources"].get("release_id") != release_plan["desired_change"]["release_id"]:
+            fail(f"changeset engine_release_approval_plan: step {step['step_id']} acts on another release")
+    mixed = copy.deepcopy(release_plan)
+    mixed["steps"][0]["resources"]["provider_id"] = provider_plan["desired_change"]["provider_id"]
+    rejects(schema, "ChangesetPlan", mixed, "a release step naming a provider too")
+    lowered = copy.deepcopy(release_plan)
+    lowered["steps"][0]["resources"]["to_status"] = "ACTIVE"
+    rejects(schema, "ChangesetPlan", lowered, "a release step in the provider lifecycle vocabulary")
+    crossed = copy.deepcopy(release_plan)
+    crossed["steps"] = provider_plan["steps"]
+    rejects(schema, "ChangesetPlan", crossed, "a release approval plan running provider steps")
+    rejects(schema, "ChangesetCreateRequest",
+            {**create, "desired_change": {**release_plan["desired_change"], "status": "APPROVED"}},
+            "a release approval desired change with an extra property")
+    status_change = json.loads((CONTRACTS / "topology" / "v1" / "release.schema.json").read_text())["$defs"]["EngineReleaseStatusChangeRequest"]
+    if "APPROVED" in status_change["properties"]["target_status"]["enum"]:
+        fail("EngineReleaseStatusChangeRequest must not approve: approval is the ENGINE_RELEASE_APPROVAL changeset")
 
     # Tenant step resources keep their v1 shape: no resource at all, or
     # statuses alone, stay valid tenant steps.

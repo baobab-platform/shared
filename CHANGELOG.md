@@ -23,6 +23,12 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+- **Engine release approval is a changeset (ADR-BCP-025 section 2.4).**
+  - A new `ENGINE_RELEASE_APPROVAL` change kind (MODIFY, CANDIDATE → APPROVED, operations `APPROVE_ENGINE_RELEASE` and `VERIFY_ENGINE_RELEASE_STATE`) is the only path to APPROVED. Recording never approves.
+  - Its approver holds the new `engine-release:approve` scope (human, privileged) and is neither the requester nor the principal who recorded the release (`RELEASE_SELF_APPROVAL`, 403, on `decideChangesetPlan`; Control Plane OpenAPI 1.23.0).
+  - Its plan runs three checks, each with a new `changeset_blocker` code: the release's support is still catalogued (`RELEASE_SUPPORT_NOT_CATALOGUED`), and the provenance (`RELEASE_PROVENANCE_MISSING`) and certification (`RELEASE_NOT_CERTIFIED`) that `release-policy.yaml` approval requires for the Control Plane's environment and every environment the engine has a non-RETIRED instance in.
+  - Changeset steps may name a `release_id`, in the topology/v1 `releaseStatus` vocabulary; an outcome may name an `ENGINE_RELEASE`.
+  - `EngineReleaseStatusChangeRequest` no longer approves: its `target_status` is `DEPRECATED` or `REVOKED`. No route served it yet.
 - **`engine-release.record` administrative permission (ADR-BCP-025, gate ER-02).** It covers a platform administrator recording an engine release, beside release tooling's `engine-release:record` workload scope. Its risk class is HIGH, it is not delegable, and it belongs to the platform-administrator profile.
 - **Engine release record and read routes (ADR-BCP-025, gate ER-02).**
   - Control Plane OpenAPI 1.22.0 adds:

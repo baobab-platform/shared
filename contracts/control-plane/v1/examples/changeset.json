@@ -447,5 +447,72 @@
     },
     "verification_strategy": "Read the provider back and require lifecycle ACTIVE.",
     "compensation_strategy": "Suspend the provider through its own lifecycle; nothing irreversible is planned."
+  },
+  "engine_release_approval_plan": {
+    "plan_id": "plan_0199a1b2c3d47ea4",
+    "plan_version": 1,
+    "plan_digest": "sha256:e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+    "base_revision": 1,
+    "generated_at": "2026-10-01T09:00:00Z",
+    "expires_at": "2026-10-02T09:00:00Z",
+    "risk_class": "HIGH",
+    "changeset_id": "cs_0199a1b2c3d47ea4",
+    "changeset_type": "MODIFY",
+    "desired_change": {
+      "kind": "ENGINE_RELEASE_APPROVAL",
+      "release_id": "erl_0199a1b2c3d47ea38f1e2d3c4b5a6978"
+    },
+    "steps": [
+      {
+        "step_id": "approve-engine-release",
+        "operation": "APPROVE_ENGINE_RELEASE",
+        "depends_on": [],
+        "resources": {
+          "release_id": "erl_0199a1b2c3d47ea38f1e2d3c4b5a6978",
+          "from_status": "CANDIDATE",
+          "to_status": "APPROVED",
+          "target_revision": 1
+        },
+        "irreversible": false
+      },
+      {
+        "step_id": "verify-engine-release-state",
+        "operation": "VERIFY_ENGINE_RELEASE_STATE",
+        "depends_on": [
+          "approve-engine-release"
+        ],
+        "resources": {
+          "release_id": "erl_0199a1b2c3d47ea38f1e2d3c4b5a6978",
+          "to_status": "APPROVED"
+        },
+        "irreversible": false
+      }
+    ],
+    "security_checks": [],
+    "readiness_requirements": [
+      {
+        "check": "SUPPORT_CATALOGUED",
+        "description": "Both supported capabilities and their contract majors are catalogued."
+      },
+      {
+        "check": "PROVENANCE",
+        "description": "Production requires provenance; the release names its attestation."
+      },
+      {
+        "check": "CERTIFICATION",
+        "description": "No environment requires certification (release-policy.yaml)."
+      }
+    ],
+    "blockers": [],
+    "warnings": [],
+    "impact_analysis": {
+      "summary": "Approves release 1.4.0 of baobab-payments: it may then be named as an instance's desired release and carry provider activations.",
+      "resources_created": 0,
+      "resources_changed": 1,
+      "resources_removed": 0,
+      "availability_impact": "None until an instance desires the release."
+    },
+    "verification_strategy": "Read the release back and require status APPROVED.",
+    "compensation_strategy": "Deprecate or revoke the release through its own lifecycle; approval is never undone in place."
   }
 }

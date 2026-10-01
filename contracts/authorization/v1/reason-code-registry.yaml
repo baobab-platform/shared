@@ -406,6 +406,15 @@ reason_codes:
   - code: PROVIDER_MIGRATION_CONFLICT
     category: changeset_blocker
     description: "A provider migration that has not ended moves capabilities to or from the provider."
+  - code: RELEASE_SUPPORT_NOT_CATALOGUED
+    category: changeset_blocker
+    description: "A capability or contract major in the release's provider support is not in the Shared capability catalogue."
+  - code: RELEASE_PROVENANCE_MISSING
+    category: changeset_blocker
+    description: "An environment the release may serve requires a provenance reference, and the release has none."
+  - code: RELEASE_NOT_CERTIFIED
+    category: changeset_blocker
+    description: "An environment the release may serve requires certification, and none is recorded."
 
   # -- market_validation (market-lifecycle.yaml validation_rules) -------
   # Why a DRAFT market is not yet VALIDATED.
