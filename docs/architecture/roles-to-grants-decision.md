@@ -15,7 +15,11 @@ Today the Control Plane authorises administration with two Keycloak realm roles 
 
 This paper takes that as a hard prerequisite and checks it against the code.
 
-## What exists, verified in `baobab-cp`
+## What existed when this paper was written (HISTORICAL SNAPSHOT, 2026-10-01)
+
+> **Historical.** This table and the "Why the flip is unsafe today" section describe the Control Plane **before** ADA-05. They are kept because the reasoning behind the migration path rests on them, not because they describe today. Grant administration routes, `authority:self`, maker-checker, atomic replacement, scope containment, step-up evaluation, persistent shadow evidence, readiness, the reviewed-population check and the per-permission enforcement gate have since been implemented; see *Rulings*, *Evidence-phase rulings* and `ea-dashboard.md` for current state. Nothing is enforced: `enforced: []`.
+
+## Table as of 2026-10-01 (superseded)
 
 | Capability | State |
 |---|---|
@@ -33,7 +37,7 @@ This paper takes that as a hard prerequisite and checks it against the code.
 | Step-up | The verified token carries no assurance claim the Control Plane reads, so a grant requiring step-up counts as `step_up`, never allow |
 | Bootstrap grants | Platform-scoped, TIME_BOUND, **at most 30 days**, never CRITICAL or EMERGENCY |
 
-## Why the flip is unsafe today
+## Why the flip was unsafe on 2026-10-01 (HISTORICAL; reasons 1, 2 and 4 are now addressed by machinery, reason 3 by evidence still to be gathered)
 
 1. **Lockout by design.** The only way to hold a grant is the bootstrap CLI, whose grants expire within 30 days and exclude CRITICAL/EMERGENCY permissions. Flipping would leave every administrator without a bootstrap grant with no authority, and would remove all authority from the rest in 30 days. There is no governed path to renew or issue.
 2. **Self-service is unproven.** Nobody can yet see their own authority through the public API (`authority:self` unissued), so there is no way to verify a population before cutting it over.

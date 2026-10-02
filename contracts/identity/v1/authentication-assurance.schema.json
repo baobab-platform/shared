@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/authentication-assurance.schema.json",
   "title": "AuthenticationAssurance",
-  "description": "Descriptive information about how a principal authenticated for the current context -- not a business authorization grant (ADR-0015 §180). Consumers use this to decide whether a risk-sensitive operation's AssuranceRequirement (assurance-requirement.schema.json) is met, not to authorize the operation itself.",
+  "description": "Descriptive information about how a principal authenticated for the current context -- not a business authorization grant (ADR-0015 §180). Consumers use this to decide whether a risk-sensitive operation's AssuranceRequirement (assurance-requirement.schema.json) is met, not to authorize the operation itself. acr is the required assurance context; amr is optional authentication-method evidence. Both are issuer-authenticated: a browser never asserts either. A provider that proves a strong authentication through its acr alone (for example a LoA reserved for a WebAuthn-only flow) need not emit amr, and no provider is required to add a custom extension just to emit one.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -12,7 +12,7 @@
     "acr": {
       "type": "string",
       "minLength": 1,
-      "description": "OIDC Authentication Context Class Reference for this authentication event, as asserted by the issuer."
+      "description": "OIDC Authentication Context Class Reference for this authentication event, as asserted by the issuer. This is the assurance context; its meaning (for example a level reserved for a phishing-resistant flow) is defined by the issuer's flow configuration and mapped to a canonical Baobab level by the consuming policy."
     },
     "amr": {
       "type": "array",
@@ -21,7 +21,7 @@
         "type": "string",
         "minLength": 1
       },
-      "description": "OIDC Authentication Methods References used to establish this authentication (e.g. pwd, webauthn, otp)."
+      "description": "OIDC Authentication Methods References used to establish this authentication (e.g. pwd, webauthn, otp). Optional method evidence: present when the issuer can attest the methods, absent otherwise. Absence is not evidence of a weak method; a requirement that needs a method and finds no amr is satisfied only through an accepted acr (see AssuranceRequirement.accepted_acr_values)."
     },
     "authenticated_at": {
       "type": "string",
@@ -44,5 +44,11 @@
       "description": "The OAuth client (azp) the authentication was performed for."
     }
   },
-  "required": ["actor_type", "acr", "amr", "authenticated_at", "issuer", "client_id"]
+  "required": [
+    "actor_type",
+    "acr",
+    "authenticated_at",
+    "issuer",
+    "client_id"
+  ]
 }

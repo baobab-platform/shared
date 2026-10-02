@@ -310,6 +310,45 @@ for record in population["administrators"]:
     if record["reviewed_by"] == record["principal_id"]:
         fail("example reviewed-population.json: nobody reviews their own authority (section 39)")
 
+# 4d. The provider-neutral identity assurance contracts accept issuer-proven
+# ACR evidence without amr (architecture owner, 2026-10-02): the assurance
+# policy above relies on a trusted acr, so the schemas it rests on must not
+# force every provider to emit amr.
+from jsonschema import Draft7Validator
+
+from referencing import Registry, Resource
+from referencing.jsonschema import DRAFT7
+
+IDENTITY = CONTRACTS / "identity" / "v1"
+identity_registry = Registry()
+for identity_path in sorted(IDENTITY.glob("*.schema.json")):
+    identity_doc = json.loads(identity_path.read_text())
+    identity_registry = identity_registry.with_resource(identity_doc["$id"], Resource.from_contents(identity_doc, default_specification=DRAFT7))
+auth_assurance = Draft7Validator(json.loads((IDENTITY / "authentication-assurance.schema.json").read_text()), registry=identity_registry)
+assurance_requirement = Draft7Validator(json.loads((IDENTITY / "assurance-requirement.schema.json").read_text()), registry=identity_registry)
+base_assurance = {"actor_type": "human", "acr": "3", "authenticated_at": "2026-10-02T00:00:00Z",
+                  "issuer": "https://iam.example.com/realms/baobab", "client_id": "baobab-control-plane-admin"}
+for name, instance, valid in (
+    ("assurance with acr only", base_assurance, True),
+    ("assurance with acr and amr", {**base_assurance, "amr": ["pwd", "webauthn"]}, True),
+    ("assurance with an empty amr", {**base_assurance, "amr": []}, False),
+    ("assurance without acr", {k: v for k, v in base_assurance.items() if k != "acr"}, False),
+):
+    if auth_assurance.is_valid(instance) != valid:
+        fail(f"identity AuthenticationAssurance: {name} must be {'valid' if valid else 'invalid'}")
+for name, instance, valid in (
+    ("requirement by trusted acr", {"minimum_acr": "urn:baobab:acr:step-up", "accepted_acr_values": ["3"],
+                                    "max_authentication_age_seconds": 300, "phishing_resistant_required": True}, True),
+    ("requirement by method", {"minimum_acr": "2", "accepted_methods": ["webauthn"]}, True),
+    ("requirement by either form", {"minimum_acr": "2", "accepted_acr_values": ["3"], "accepted_methods": ["webauthn", "hwk"]}, True),
+    ("requirement by acr floor alone", {"minimum_acr": "2"}, True),
+    ("requirement without minimum_acr", {"accepted_acr_values": ["3"]}, False),
+    ("requirement with an empty accepted_acr_values", {"minimum_acr": "2", "accepted_acr_values": []}, False),
+    ("requirement with an unknown field", {"minimum_acr": "2", "allow_anything": True}, False),
+):
+    if assurance_requirement.is_valid(instance) != valid:
+        fail(f"identity AssuranceRequirement: {name} must be {'valid' if valid else 'invalid'}")
+
 # 5. Examples.
 examples = json.loads((PKG / "examples" / "administrative-grants.json").read_text())
 grants = {g["grant_id"]: g for g in examples["grants"]}

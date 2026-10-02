@@ -75,7 +75,7 @@ re-pin PR, not from Foundation.
 | Gate | Action | State |
 |---|---|---|
 | 1 | Schema, check and drift report in Foundation, `warn` mode | This change |
-| 2 | Migrate every engine lock to the canonical shape (see below) | CP, IAM, CMS, Pulse done; Trade, ERP open |
+| 2 | Migrate every engine lock to the canonical shape (see below) | CP, IAM, CMS, Pulse, Trade done (Trade re-pinned to `b063f8a` after semantic compatibility, trade#114); ERP open |
 | 3 | Enforce: `--mode auto` fails engine repositories on any finding and warns for others, so frozen Digital Estates such as zuribeans (legacy lock) are not failed before the EA Unfreeze Gate | This change |
 
 ## Engine status at Shared `7b9212f` (2026-09-30, before migration)
@@ -98,7 +98,11 @@ five consumed contracts), CMS (cms#19, new lock on `content/v1`) and Pulse
 (pulse#28, legacy lock replaced; events moved to `com.baobab-platform.pulse.*`
 and fixtures refreshed). All four pass the check.
 
-## Open
+## Open (as of 2026-10-02)
+
+- **ERP semantic convergence (the principal blocker):** ERP stays held at `2da1a42`. Its Mapping persistence, HTTP surface, event envelope and error model differ from the Shared contracts it consumes. Sequence: semantic census, implementation reconciliation, an exact-pin compatibility suite, re-pin (the Trade pattern, trade#114). Not started.
+- **IAM pin vs issued scopes:** IAM issues `administrator:read`, `administrator:write` and `administrator:approve` (iam#50, iam#51) while its lock pins `1bb1c94`, whose scope registry has none of them. Re-pin IAM and add a check that every Baobab-defined scope IAM issues exists in the exact pinned registry.
+- **Identity assurance contracts:** provider-neutral `AuthenticationAssurance` and `AssuranceRequirement` no longer force `amr` (ACR-or-AMR, no Keycloak SPI).
 
 - **EA-01B:** remove operational `nabhold/*` references from the Trade, ERP
   and Pulse configuration.

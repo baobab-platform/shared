@@ -1,7 +1,7 @@
 # EA Implementation Dashboard
 
 **Governing plan:** [EA Implementation Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) (30 September 2026)
-**Last updated:** 2026-10-01 (reconciled against `main`)
+**Last updated:** 2026-10-02 (reconciled against `main`; every row below states its evidence, and a row older than its evidence is a defect)
 **Maintained:** every EA gate PR updates this page (plan §48).
 
 This page is the single live status for each EA stream, gate and PR. The plan
@@ -14,13 +14,17 @@ unless it says so.
 
 ## Baselines
 
-| Repository | Baseline | Note |
-|---|---|---|
-| `shared` | main (`7705c0f`, after shared#176) | Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin |
-| `baobab-cp` | main (`a241607`, after cp#237) | Lock pinned to Shared `e151243`; Foundation caller `06c49e8` (cp#238) |
-| `baobab-iam` | main | Lock pinned to Shared `1bb1c94` (BEHIND_UNCHANGED) |
-| `baobab-payments`, `baobab-subscriptions` | main | Re-pinned to Shared `3a8230e` (payments#16, subscriptions#21) |
-| `baobab-trade`, `baobab-erp` | main | Contract pin deliberately held at `2da1a42`: consumed contracts changed, so a mechanical re-pin is wrong (EA-01). Foundation `06c49e8` since trade#113 and erp#42 |
+Verified against each repository's `main` on 2026-10-02. Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin.
+
+| Repository | `main` | Shared pin | Note |
+|---|---|---|---|
+| `shared` | `a503649` (shared#195) | n/a | Administration policy: criteria APPROVED, phishing-resistant evidence = trusted `acr` 3 or `webauthn`/`hwk` `amr` |
+| `baobab-cp` | `f234ee5` (cp#252) | `a503649` | CURRENT. Consumes the approved shadow criteria and the ACR-or-AMR evidence form |
+| `baobab-iam` | `2a5bd78` (iam#51) | `1bb1c94` | **BEHIND, and behind in substance**: IAM issues `administrator:read/write/approve` (iam#50, iam#51), which the pinned registry does not contain. Correction open (see *Open corrections*). iam#52 open |
+| `baobab-payments`, `baobab-subscriptions` | `fc144da`, `0019f3a` | `3a8230e` | Re-pinned (payments#16, subscriptions#21) |
+| `baobab-cms`, `baobab-pulse` | `19deac1`, `0cece91` | `b63ce52` | Canonical locks (cms#19, pulse#28) |
+| `baobab-trade` | `78d16b8` (trade#114) | `b063f8a` | T-COMPAT-04…07 DONE: adapted, re-pinned, exact-pin conformance suite |
+| `baobab-erp` | `b65ef74` | `2da1a42` | HELD deliberately: consumed contracts changed, so a mechanical re-pin is wrong. Semantic reconciliation not started |
 
 ## Readiness
 
@@ -28,13 +32,13 @@ unless it says so.
 BAOBAB EA READINESS                                   2026-10-01
 ─────────────────────────────────────────────────────────────────
 
-EA-01 Contract Convergence             IN PROGRESS
-  CP Shared pin                        CURRENT at merge (e151243), canonical lock (cp#229, cp#233, cp#237)
-  IAM Shared pin                       BEHIND_UNCHANGED (1bb1c94), canonical lock (iam#47)
+EA-01 Contract Convergence             IN PROGRESS (open: ERP; IAM pin vs issued scopes; identity assurance schemas)
+  CP Shared pin                        CURRENT (a503649, cp#252), canonical lock
+  IAM Shared pin                       BEHIND (1bb1c94): issues administrator:read/write/approve, absent from the pinned scope registry; canonical lock (iam#47)
   Subscriptions Shared pin             RE-PINNED (3a8230e, subscriptions#21)
   Payments Shared pin                  RE-PINNED (3a8230e, payments#16)
-  Trade Shared pin                     HELD at 2da1a42, canonical lock (trade#110); semantic compatibility T-COMPAT-04…07 open
-  ERP Shared pin                       HELD at 2da1a42, canonical lock; semantic reconciliation not started
+  Trade Shared pin                     CURRENT (b063f8a, trade#114); T-COMPAT-04…07 DONE with an exact-pin conformance suite
+  ERP Shared pin                       HELD at 2da1a42, canonical lock; semantic reconciliation NOT STARTED (the principal EA-01 blocker)
   Pulse Shared pin                     CURRENT at merge, canonical lock (pulse#28)
   CMS contract lock                    CURRENT at merge, canonical lock (cms#19)
   Lock schema in Shared (EA-01A)       READY (shared#157)
@@ -52,15 +56,16 @@ EA-02 Capability Governance            02A–02E IMPLEMENTED; G-FCI-1 ENFORCED F
   Provider activation Changeset (02D)  READY (shared#167, #168, cp#232; ENGINE_RELEASE check cp#233)
   Binding integrity (02E)              READY (cp#234: constraint validated, fails loudly on unresolved bindings)
 
-EA-03 Runtime Topology                 PARTIAL
+EA-03 Runtime Topology                 PARTIAL      (ER-01…05 IMPLEMENTED; capability-based invocation and operational proof OPEN)
   EngineInstance                       READY
   HealthObservation                    READY
   ProviderMigration                    READY
   EngineRelease architecture           ACCEPTED (ADR-BCP-025, A1–A4)
-  EngineRelease                        ER-01 contracts; ER-02 record/read (cp#233); release approval via ENGINE_RELEASE_APPROVAL Changeset (shared#171, cp#235); ER-03 desired release/deprecation/revocation (shared#173, cp#237) MERGED; ER-04 intake and observed release MERGED (shared#178, cp#239) but NOT OPERATIONALLY PROVEN (see ER-04 production gates); ER-05 drift in review (cp#240), events/metrics next
+  EngineRelease                        ER-01 contracts; ER-02 record/read (cp#233); release approval via ENGINE_RELEASE_APPROVAL Changeset (shared#171, cp#235); ER-03 desired release/deprecation/revocation (shared#173, cp#237) MERGED; ER-04 intake and observed release MERGED (shared#178, cp#239) but NOT OPERATIONALLY PROVEN (see ER-04 production gates); ER-05 MERGED: drift (cp#240), release/status/desired-release events and topology metrics (cp#242), readiness consequences (cp#243)
   Binding contract versions            positive integer majors (cp#236, ADR-BCP-025 §2.1.1)
   Capability exclusion on observed state ER-06: DISABLED (amendment A4)
   DeploymentObservation                CP intake MERGED (cp#239); production reporter registered PROVISIONED; no observation received
+  Capability-based invocation (EA-03D) OPEN: the Control Plane still invokes Subscriptions through BILLING_ENGINE_URL rather than CapabilityResolution to an eligible instance
 
 EA-04 Identity                         ADVANCED
   provider-neutral identity contracts  READY (shared#151)
@@ -68,24 +73,25 @@ EA-04 Identity                         ADVANCED
   activation evidence (#148)           MERGED
   IAM provider declaration             PLANNED-ONLY
   federated workload path              IMPLEMENTED / UNPROVEN
-  Workload registry authority          Shared owns it; production CP does not yet load or enforce it (ER-04 production gate 1)
+  Workload registry authority          Shared owns it; a production CP loads it and fails closed (cp#241). The six existing ACTIVE records still need reconciling before ACTIVE lifecycle enforcement is trusted (ER-04 production gate 1)
   Deployment controller workload       PROVISIONED (baobab-deployment-controller-production)
   CP workload                          PROVISIONED
   Subscriptions workload               PROVISIONED
 
 EA-05 Governance                       ADVANCED
   Administrative authority             MIGRATION PATH ACCEPTED (roles-to-grants-decision.md); implementation in progress
-    ADA-05 grant administration        IMPLEMENTED (exact-scope delegation)
-    grant replace/supersede            IMPLEMENTED (cp#246 in review)
-    narrower-scope delegation          IMPLEMENTED for provable containment, incl. org->tenant via effective TenantOrganisationMapping; group-descendant needs a supplied canonical group graph
+    ADA-05 grant administration        IMPLEMENTED (cp#244, shared#184/#185; exact-scope delegation, then narrower-scope cp#247)
+    grant replace/supersede            IMPLEMENTED (cp#246)
+    narrower-scope delegation          IMPLEMENTED (cp#247, cp#248) for provable containment, incl. org->tenant via effective TenantOrganisationMapping; group-descendant needs a supplied canonical group graph
+    CRITICAL grant bound               24 hours, STANDING prohibited (shared#190, cp#248)
     ADA-06 maker/checker and SoD       IMPLEMENTED (shared#187, cp#245)
     authority:self issuance            DONE (iam#49)
-    administrator:read/write issuance  APPROVED (iam#50)
-    ADA-07 step-up / assurance         IMPLEMENTED (shared#192, cp#249); IAM issues no phishing-resistant level, so CRITICAL stays disabled
+    administrator:read/write/approve   DONE (iam#50, iam#51): optional, privileged, human admin client only
+    ADA-07 step-up / assurance         IMPLEMENTED (shared#192, cp#249, shared#195, cp#252): trusted acr 3 or webauthn/hwk amr; CRITICAL stays PROHIBITED. IAM passkey step-up (raw LoA 3) is iam#52, OPEN and blocked by a base-image CVE gate; no real passkey login has been driven
     shadow blind spots                 operations routes closed (cp); organisation ancestry via TenantOrganisationMapping
-    shadow evidence / readiness        IMPLEMENTED (read model); exit criteria APPROVED 2026-10-02 (14 days / 100 decisions / 0 narrower, not-evaluated, errors)
-    grant population                   tooling only: the reviewed list is Platform Security / CP Governance's to supply
-    per-permission enforcement         MECHANISM IN PLACE, EMPTY: no permission enforced, NOT AUTHORISED YET
+    shadow evidence / readiness        IMPLEMENTED (shared#193, cp#250); exit criteria APPROVED 2026-10-02 (shared#195, cp#252): 14 observed UTC days / 100 decisions / 0 narrower, not-evaluated, unresolved-or-error; no evidence collected yet
+    grant population                   tooling only (cp#251): the reviewed list is Platform Security / CP Governance's to supply; approved_by must be a real accountable human principal
+    per-permission enforcement         MECHANISM IN PLACE (cp#251), EMPTY: `enforced: []`, no permission enforced, NOT AUTHORISED YET; CRITICAL PROHIBITED
     realm-role retirement              NOT AUTHORISED
 
 EA-06 Event Fabric                     PARTIAL      (plan §44, not re-audited)
@@ -139,10 +145,10 @@ provides no resolvable capability, and may not carry a declaration
 | 7 | CMS provider declaration and contract lock | Done | cms#17, cms#19 |
 | 8 | Foundation provider-declaration validation | Done (enforcing) | shared#152, #153, #154 |
 | 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
-| 10 | Implement EngineRelease | In progress | ER-01 contracts; ER-02 record and read (shared#169, #170, cp#233); release approval (shared#171, cp#235); ER-03 (shared#173, cp#237); ER-04, ER-05 next; ER-06 a separate gate, disabled |
+| 10 | Implement EngineRelease | ER-01…05 implemented; operational proof open | ER-01 contracts; ER-02 record and read (shared#169, #170, cp#233); release approval (shared#171, cp#235); ER-03 (shared#173, cp#237); ER-04 (shared#178, cp#239); ER-05 (cp#240, cp#242, cp#243); ER-06 a separate gate, disabled |
 | 11 | DeploymentObservation model/interfaces | Intake merged; not operationally proven | ER-01 contracts; ER-04 (shared#178, cp#239). Production evidence waits on the gates in [er-04-production-gates.md](er-04-production-gates.md) |
 | 12 | Provider activation Changeset | Done | DRAFT-only registration and PROVIDER_ACTIVATION (shared#167, #168, cp#231, cp#232); binding integrity (cp#234). Release approval (cp#235) lets a release be APPROVED and a provider be activated without direct SQL |
-| 13 | AdministrativeGrant enforcement | Migration path accepted; flip not authorised | Staged path in roles-to-grants-decision.md; ADA-05/06 next |
+| 13 | AdministrativeGrant enforcement | Machinery built; evidence phase not begun; flip not authorised | Staged path in roles-to-grants-decision.md; ADA-05/06/07, readiness, population check and enforcement gate merged; `enforced: []` |
 | 14–30 | Engine hardening onward | Not started | Plan §51 |
 
 ## Decisions
@@ -159,8 +165,8 @@ provides no resolvable capability, and may not carry a declaration
 | ADR-BCP-025 reporter | Infrastructure deployment controller and runtime observer, federated, no static secret; no admission webhook (production is ECS/Fargate, EKS deferred); PROVISIONED until proven | [er-04-production-gates.md](er-04-production-gates.md) |
 | Event context governance | ADR-SHARED-018 Accepted; `erp` DEPRECATED, `payments` kept, fulfilment/logistics/trade.shipment distinct, Regulations owns classification and assessment, `thamani-*` retired in T-COMPAT-03 | shared#161 |
 
-Still open, and not to be decided in code: the roles→grants *flip* (the migration path is accepted); Keycloak
-`authority: self`; tenant suspend/activate routes; OEV-02 storage and regions;
+Still open, and not to be decided in code: the roles→grants *flip* (the migration path is accepted;
+`authority:self` is issued, iam#49); tenant suspend/activate routes; OEV-02 storage and regions;
 CIPC/URSB access; capability resolution record retention.
 
 ## ADR status
@@ -179,3 +185,14 @@ Normative status lives in each register, not here:
 Outside these registers: `baobab-regulations` ADR-REG-0001…0030 are all
 Proposed, pending individual review (G-REG-NS step 1). Trade ADR-0018 and
 ADR-0021 are Accepted and due amendments under G-REG-NS step 2.
+
+## Open corrections (audit of 2026-10-02)
+
+| # | Correction | State |
+|---:|---|---|
+| 1 | Provider-neutral identity assurance contracts must not force `amr` (ACR-or-AMR, no SPI) | This change: `AuthenticationAssurance.amr` optional, `AssuranceRequirement.accepted_acr_values` added, `accepted_methods` optional, behaviour validated |
+| 2 | CP consumes shared#195 | DONE (cp#252, pin `a503649`) |
+| 3 | IAM consumer lock must cover the scopes IAM issues; every Baobab-defined scope IAM issues must exist in the exact pinned scope registry | OPEN: re-pin IAM and add the assertion |
+| 4 | iam#52 (passkey step-up) is blocked by the Foundation container scan: Keycloak 26.7.4 ships jackson-core 2.21.5 (CVE-2026-89407, CVE-2026-89425, fixed in 2.21.7). Not weakened, not merged. `main` fails the same scan | OPEN: a supported Keycloak patch or a governed, reviewed override; `upstream.lock.yaml` digest also still UNRESOLVED |
+| 5 | ERP semantic convergence (Trade-style census, reconciliation, exact-pin suite, re-pin) | OPEN, largest EA-01 blocker |
+| 6 | Reconcile this page and the historical sections of roles-to-grants-decision.md | This change |
