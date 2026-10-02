@@ -1,6 +1,8 @@
 {
   "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
   "tenant_provisioning_id": "tp_0199a1b2c3d47e8f",
+  "plan_id": "plan_0199a1b2c3d47e8f",
+  "plan_version": 1,
   "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
   "legal_entity": {
     "legal_entity_id": "ZURIBEANS-ZA",

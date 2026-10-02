@@ -4,9 +4,21 @@
   "title": "ERP provisioning request",
   "type": "object",
   "additionalProperties": false,
-  "required": ["tenant_id", "legal_entity_ids", "requested_countries", "functional_currencies"],
+  "required": ["tenant_id", "control_plane_authority", "legal_entity_ids", "requested_countries", "functional_currencies"],
   "properties": {
     "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+    "control_plane_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenant_provisioning_id", "plan_id", "plan_version", "plan_digest"],
+      "description": "The exact Control Plane plan that authorises this request (ADR-BCP-021: an approval binds the plan id, version and digest together). ERP reads Control Plane's ERP assignment for each legal entity and compares: the tenant, the provisioning, this exact plan id, version and digest, and the legal entity must all agree, otherwise ERP answers 409 PLAN_AUTHORITY_MISMATCH and provisions nothing. Naming only the provisioning would let a replan between approval and execution change what ERP executes. Approval records are Control Plane's: ERP does not interpret them and the request carries no approval id. The countries and currencies below are requested intent, never authority: ERP provisions what the approved plan and the Finance baseline say and refuses a mismatch.",
+      "properties": {
+        "tenant_provisioning_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantProvisioningId" },
+        "plan_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/provisioningPlanId" },
+        "plan_version": { "type": "integer", "minimum": 1 },
+        "plan_digest": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/planDigest" }
+      }
+    },
     "legal_entity_ids": {
       "type": "array", "minItems": 1, "uniqueItems": true,
       "items": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId" }

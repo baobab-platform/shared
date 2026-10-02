@@ -191,6 +191,28 @@ end
     fail_contract("#{method.upcase} #{path} must declare 400 BadRequest for malformed identifiers and query parameters")
   end
 end
+# ERP provisioning is authorised by one exact Control Plane plan (ERP OpenAPI 1.0.2). The request must name it with
+# the full approval-binding tuple, not only the provisioning, so a replan cannot change what ERP executes.
+provisioning_request = JSON.parse(File.read(File.join(ERP_ROOT, "provisioning-request.schema.json")))
+authority = provisioning_request.dig("properties", "control_plane_authority")
+fail_contract("provisioning request must require control_plane_authority") unless provisioning_request.fetch("required").include?("control_plane_authority") && authority
+authority_members = %w[tenant_provisioning_id plan_id plan_version plan_digest]
+unless authority.fetch("required").sort == authority_members.sort && authority.fetch("properties").keys.sort == authority_members.sort && authority["additionalProperties"] == false
+  fail_contract("control_plane_authority must be exactly #{authority_members.inspect} and closed")
+end
+{ "tenant_provisioning_id" => "#/$defs/tenantProvisioningId", "plan_id" => "#/$defs/provisioningPlanId", "plan_digest" => "#/$defs/planDigest" }.each do |member, definition|
+  unless authority.dig("properties", member, "$ref") == "../../control-plane/v1/domain.schema.json" + definition
+    fail_contract("control_plane_authority.#{member} must reuse the Control Plane #{definition}")
+  end
+end
+fail_contract("control_plane_authority.plan_version must be an integer >= 1") unless authority.dig("properties", "plan_version") == { "type" => "integer", "minimum" => 1 }
+if provisioning_request.fetch("properties").key?("approval_id")
+  fail_contract("the provisioning request must not carry an approval id: approval semantics are Control Plane's")
+end
+post_text = openapi.dig("paths", "/provisioning-operations", "post", "description").to_s.gsub(/\s+/, " ")
+["control_plane_authority", "PLAN_AUTHORITY_MISMATCH", "provisions nothing", "intent, not authority", "Finance-approved baseline"].each do |phrase|
+  fail_contract("POST /provisioning-operations must document #{phrase.inspect}") unless post_text.include?(phrase)
+end
 idempotency = load_yaml(File.join(ROOT, "contracts/idempotency/v1/policy.yaml"))
 header = openapi.dig("components", "parameters", "IdempotencyKey", "schema")
 policy_key = idempotency.dig("http_commands", "key")
