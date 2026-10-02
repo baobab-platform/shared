@@ -161,9 +161,9 @@ end
 # 501 is a narrow, transitional response (ERP OpenAPI 1.0.1): the provider recognises the canonical operation but
 # the backing capability is absent in this engine release. Exactly these operations may declare it; it is never a
 # readiness outcome and is distinct from 503 (an implemented capability temporarily unavailable).
-not_implemented_operations = [
-  ["get", "/inventory-availability"]
-]
+# ERP OpenAPI 1.0.5: ERP serves every operation of the contract, so none declares 501 now. The NotImplemented response
+# stays defined, with its wording pinned, for an operation a later contract declares before an engine builds it.
+not_implemented_operations = []
 declaring_501 = openapi.fetch("paths").flat_map do |path, item|
   item.select { |method, operation| operation.is_a?(Hash) && operation.fetch("responses", {}).key?("501") }
       .keys.map { |method| [method, path] }
@@ -235,8 +235,8 @@ inventory_text = openapi.dig("paths", "/inventory-availability", "get", "descrip
 ["physical inventory", "never from a Baobab-side stock ledger", "never from Trade", "not a commerce reservation", "no stale or estimated quantity"].each do |phrase|
   fail_contract("GET /inventory-availability must document #{phrase.inspect}") unless inventory_text.include?(phrase)
 end
-# Operations ERP now serves no longer declare the transitional 501 (ERP OpenAPI 1.0.4).
-[["post", "/provisioning-operations"], ["get", "/provisioning-operations/{operation_id}"], ["get", "/order-consequences/{commerce_order_id}"]].each do |method, path|
+# Operations ERP serves do not declare the transitional 501 (ERP OpenAPI 1.0.4 and 1.0.5).
+[["post", "/provisioning-operations"], ["get", "/provisioning-operations/{operation_id}"], ["get", "/order-consequences/{commerce_order_id}"], ["get", "/inventory-availability"]].each do |method, path|
   fail_contract("#{method.upcase} #{path} is served and must not declare 501") if openapi.dig("paths", path, method, "responses").key?("501")
 end
 unless openapi.dig("paths", "/provisioning-operations/{operation_id}", "get", "responses", "400", "$ref") == "#/components/responses/BadRequest"
