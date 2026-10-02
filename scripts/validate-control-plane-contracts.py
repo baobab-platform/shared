@@ -99,7 +99,7 @@ RESPONSIBILITIES = {
         "MarketCreateRequest", "MarketUpdateRequest", "MarketActivationRequest",
     },
     "erp-assignment.schema.json": {
-        "erpAssignmentMarket", "erpAssignmentBinding", "erpAssignmentLegalEntity", "ErpAssignment",
+        "erpAssignmentMarket", "erpAssignmentLegalEntity", "ErpAssignment",
     },
     "tenant-provisioning.schema.json": {
         "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningReplanRequest",
@@ -562,15 +562,18 @@ def check_erp_assignment() -> None:
     # per-market currencies, localisation and warehouses are not stored by Control Plane: none is projected.
     for field in ("native_client_mode", "native_client_key", "ad_client", "ad_org", "functional_currency",
                   "chart_of_accounts_template", "tax_profile", "currencies", "localisation_profile",
-                  "warehouse_codes", "legal_entity_code", "target_environment"):
+                  "warehouse_codes", "legal_entity_code", "target_environment",
+                  "isolation_profile_id", "capability_bindings", "capability_binding_id"):
         rejects(schema, "ErpAssignment", {**example, field: "x"}, f"ERP assignment carrying {field}")
     for field in ("tenant_id", "tenant_provisioning_id", "plan_digest", "legal_entity", "markets", "engine_id",
-                  "engine_instance_id", "isolation_profile_id", "capability_bindings", "issued_at", "expires_at"):
+                  "engine_instance_id", "isolation_requirement", "capabilities", "issued_at", "expires_at"):
         missing = copy.deepcopy(example)
         del missing[field]
         rejects(schema, "ErpAssignment", missing, f"ERP assignment without {field}")
     rejects(schema, "ErpAssignment", {**example, "markets": []}, "ERP assignment without a market")
-    rejects(schema, "ErpAssignment", {**example, "capability_bindings": []}, "ERP assignment without a binding")
+    rejects(schema, "ErpAssignment", {**example, "capabilities": []}, "ERP assignment without a capability")
+    rejects(schema, "ErpAssignment", {**example, "capabilities": ["finance.order-consequence.process"] * 2}, "ERP assignment with a duplicate capability")
+    rejects(schema, "ErpAssignment", {**example, "isolation_requirement": "iso-zuribeans"}, "ERP assignment with an isolation requirement outside the canonical enum")
     rejects(schema, "ErpAssignment", {**example, "plan_digest": "abc123"}, "ERP assignment with an unqualified digest")
 
     # The read is workload-only, narrowly scoped, and authority comes from the tenant context, not the scope.

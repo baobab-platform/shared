@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab Control Plane API
-  version: 1.30.0
+  version: 1.31.0
   description: >-
     The Control Plane's runtime and administrative API (ADR-BCP-022).
     Implementations live in baobab-platform/baobab-cp. Every adminOidc
@@ -3840,9 +3840,11 @@ paths:
         The narrow projection of an APPROVED provisioning plan that an ERP
         workload needs to provision one legal entity (erp-assignment.schema.json):
         the legal entity's verified profile, the tenant's markets and the
-        resolved topology (engine instance, isolation profile, capability
-        bindings). It carries no native ERP placement and no accounting
-        configuration. The erp-assignment:read scope grants no authority over a
+        resolved topology (engine, engine instance, the capability keys bound
+        to it) and the isolation requirement the plan was made under. It
+        carries no registry identifiers (Control Plane's UUIDs for bindings
+        and isolation profiles are internal), no native ERP placement and no
+        accounting configuration. The erp-assignment:read scope grants no authority over a
         resource: Control Plane requires the token's tenant_id to equal the path
         tenant_id and the provisioning and legal entity to belong to it, and
         answers 404 otherwise. A plan that is not approved, or a legal entity
