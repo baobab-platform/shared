@@ -23,6 +23,7 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* Evidence-phase rulings (architecture owner, 2026-10-02; policy values only, no contract shape change): `enforcement-policy.yaml` criteria are `APPROVED` with the proposed values unchanged (nothing is enforced); `assurance-policy.yaml` maps raw Keycloak LoA `3` to `urn:baobab:acr:step-up`, the only phishing-resistant method is `webauthn`, and the CRITICAL requirement stays fresh within 300 seconds; the validator pins these. CRITICAL enforcement remains PROHIBITED.
 * CRITICAL grant bound (owner decision, 2026-10-01): `separation-of-duties.yaml` now bounds a CRITICAL grant to `maximum_duration_hours: 24` (was a proposed 30 days, which was the bootstrap analogue and not the right one) and states `jit_target_hours: 1` as guidance for JUST_IN_TIME CRITICAL grants. A CRITICAL grant is never STANDING; extending beyond 24 hours is a new approval, not a renewal in place. HIGH grants are policy-controlled separately and do not inherit the bound. Durations are stated in hours (`maximum_duration_days` is no longer accepted). The validator refuses a CRITICAL bound above 24 hours.
 
 ## Added

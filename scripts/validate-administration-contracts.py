@@ -247,7 +247,14 @@ for risk in RISK_ORDER:
     age = req.get("max_authentication_age_seconds")
     if age is not None and (not isinstance(age, int) or age <= 0):
         fail(f"assurance-policy.yaml {risk}: max_authentication_age_seconds must be a positive integer")
+if assurance.get("phishing_resistant_methods") != ["webauthn"]:
+    fail("assurance-policy.yaml: phishing_resistant_methods is exactly webauthn (architecture owner, 2026-10-02)")
+step_up = next((l for l in assurance.get("levels", []) if l.get("name") == "urn:baobab:acr:step-up"), {})
+if step_up.get("raw_acr_values") != ["3"]:
+    fail("assurance-policy.yaml: urn:baobab:acr:step-up is raw Keycloak LoA 3 (architecture owner, 2026-10-02)")
 critical_req = requirements.get("CRITICAL", {})
+if critical_req.get("max_authentication_age_seconds") != 300:
+    fail("assurance-policy.yaml: CRITICAL step-up freshness is 300 seconds")
 if not critical_req.get("phishing_resistant_required") or not critical_req.get("max_authentication_age_seconds"):
     fail("assurance-policy.yaml: CRITICAL requires fresh, phishing-resistant step-up (section 72)")
 
