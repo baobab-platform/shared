@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab ERP Boundary API
-  version: 1.0.2
+  version: 1.0.3
   description: Vendor-neutral synchronous provisioning and query contract. Business state propagation uses the ERP AsyncAPI contract.
   license:
     name: Apache-2.0
@@ -47,6 +47,7 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "409": { $ref: "#/components/responses/Conflict" }
         "501": { $ref: "#/components/responses/NotImplemented" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /provisioning-operations/{operation_id}:
     get:
       operationId: getErpProvisioningOperation
@@ -61,6 +62,7 @@ paths:
           content:
             application/json:
               schema: { $ref: ./provisioning-state.schema.json }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -233,6 +235,19 @@ components:
           schema: { $ref: "#/components/schemas/ProblemDetails" }
     Conflict:
       description: Incompatible state or idempotency replay
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    ServiceUnavailable:
+      description: |
+        A dependency this operation needs is temporarily unavailable (for example Control Plane's ERP assignment or the
+        Finance baseline store), so nothing was provisioned and the same request can be retried with the same
+        Idempotency-Key. This is an implemented capability that is temporarily unavailable; it is distinct from 501,
+        where the capability is absent from this engine release.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema: { type: integer, minimum: 0 }
       content:
         application/problem+json:
           schema: { $ref: "#/components/schemas/ProblemDetails" }
