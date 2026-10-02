@@ -594,6 +594,12 @@ def check_erp_assignment() -> None:
     for status in ("401", "403", "404", "409"):
         if status not in operation["responses"]:
             fail(f"the ERP assignment read must declare {status}")
+    prose = " ".join(operation.get("description", "").split())
+    for phrase in ("403: the token lacks the scope", "404: the provisioning does not exist", "409: the sources disagree",
+                   "conflicting engine instances", "never repairs a disagreement", "frozen desired state",
+                   "never from the live registry", "not a planning API"):
+        if phrase not in prose:
+            fail(f"the ERP assignment read must document {phrase!r}")
     # Defined, not granted: no workload client may hold it until IAM decides (separate change).
     registry = yaml.safe_load((CONTRACTS / "identity" / "v1" / "workload-registry.yaml").read_text())
     if "erp-assignment:read" in json.dumps(registry):
