@@ -55,6 +55,18 @@ scopes:
     allowed_actors: ["workload"]
     grants_authority: false
 
+  - name: "erp:read"
+    description: "Allows a workload to call baobab-erp's Boundary API read operations (mappings, order consequences, inventory availability, provisioning state). It grants no tenant authority: ERP takes the tenant only from the token's trusted tenant_id claim and answers 403 when the claim is absent. It is not erp:integrate (the internal integration boundary), erp:provision or erp-assignment:read."
+    audience: ["baobab-erp"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
+  - name: "erp:provision"
+    description: "Allows a workload to submit a provisioning command to baobab-erp's Boundary API. It grants no tenant authority and authorises nothing by itself: ERP provisions only what the exact approved Control Plane plan and its Finance-approved baseline allow, and takes the tenant only from the token's trusted tenant_id claim. It is not erp:read, erp:integrate or erp-assignment:read."
+    audience: ["baobab-erp"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
   - name: "mapping:write"
     description: "Record external references and propose, change, validate or retire canonical mappings (privileged; the actor is always the verified caller)."
     audience: ["baobab-control-plane"]

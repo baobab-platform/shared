@@ -250,6 +250,23 @@ end
 unless unavailable.dig("headers", "Retry-After", "schema", "type") == "integer"
   fail_contract("ServiceUnavailable must carry an integer Retry-After header")
 end
+# The two scopes the Boundary API requires are registered, workload-only and audience-bound to ERP, grant no authority of their own,
+# and are allowed to the ERP workload and to no other workload (the tenant authority is the token's tenant_id claim, never the scope).
+registry_scopes = load_yaml(File.join(ROOT, "contracts/authorization/v1/scope-registry.yaml")).fetch("scopes").to_h { |scope| [scope.fetch("name"), scope] }
+required_scopes = openapi.fetch("paths").values.flat_map { |item| item.values.grep(Hash).flat_map { |operation| Array(operation["security"]).flat_map { |requirement| requirement["workloadOidc"] || [] } } }
+required_scopes = (required_scopes + Array(openapi["security"]).flat_map { |requirement| requirement["workloadOidc"] || [] }).uniq.sort
+fail_contract("the Boundary API must require exactly erp:read and erp:provision; found #{required_scopes.inspect}") unless required_scopes == %w[erp:provision erp:read]
+required_scopes.each do |name|
+  scope = registry_scopes[name]
+  fail_contract("#{name} is required by the ERP Boundary API but is not in the scope registry") if scope.nil?
+  unless scope["audience"] == ["baobab-erp"] && scope["allowed_actors"] == ["workload"] && scope["grants_authority"] == false && !scope["privileged"]
+    fail_contract("#{name} must be a non-privileged workload-only scope for baobab-erp that grants no authority")
+  end
+  fail_contract("#{name} must say it grants no tenant authority") unless scope.fetch("description").include?("grants no tenant authority")
+end
+holders = load_yaml(File.join(ROOT, "contracts/identity/v1/workload-registry.yaml")).fetch("workloads").select { |_, entry| (entry["allowed_scopes"] & required_scopes).any? }.keys
+fail_contract("only baobab-erp-workload may be allowed the ERP Boundary API scopes; found #{holders.inspect}") unless holders == ["baobab-erp-workload"]
+
 idempotency = load_yaml(File.join(ROOT, "contracts/idempotency/v1/policy.yaml"))
 header = openapi.dig("components", "parameters", "IdempotencyKey", "schema")
 policy_key = idempotency.dig("http_commands", "key")

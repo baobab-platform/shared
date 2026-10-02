@@ -116,9 +116,12 @@ workloads:
     # Gate IAM-10 (ADR-0014 §111): added baobab-erp/erp:integrate so this
     # workload's own iDempiere OSGi bundles (org.baobab-platform.baobab.erp.context/
     # mapping) can authenticate to baobab-app's HTTP boundary, which
-    # previously trusted network location alone.
+    # previously trusted network location alone. erp:read and erp:provision
+    # (the Boundary API) are allowed here and to no other workload; the
+    # tenant_id claim they require is a separate decision, so until it exists
+    # the Boundary API answers 403 and these scopes reach no tenant's data.
     allowed_audiences: ["baobab-control-plane", "baobab-erp"]
-    allowed_scopes: ["context:resolve", "erp:integrate", "provider-migration:task"]
+    allowed_scopes: ["context:resolve", "erp:integrate", "erp:read", "erp:provision", "provider-migration:task"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-erp
     status: ACTIVE
