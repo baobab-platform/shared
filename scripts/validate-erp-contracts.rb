@@ -162,9 +162,6 @@ end
 # the backing capability is absent in this engine release. Exactly these operations may declare it; it is never a
 # readiness outcome and is distinct from 503 (an implemented capability temporarily unavailable).
 not_implemented_operations = [
-  ["post", "/provisioning-operations"],
-  ["get", "/provisioning-operations/{operation_id}"],
-  ["get", "/order-consequences/{commerce_order_id}"],
   ["get", "/inventory-availability"]
 ]
 declaring_501 = openapi.fetch("paths").flat_map do |path, item|
@@ -220,11 +217,27 @@ declaring_503 = openapi.fetch("paths").flat_map do |path, item|
   item.select { |method, operation| operation.is_a?(Hash) && operation.fetch("responses", {}).key?("503") }
       .keys.map { |method| [method, path] }
 end
-unless declaring_503 == [["post", "/provisioning-operations"]]
-  fail_contract("only POST /provisioning-operations may declare 503; found #{declaring_503.inspect}")
+unless declaring_503.sort == [["get", "/inventory-availability"], ["post", "/provisioning-operations"]]
+  fail_contract("only POST /provisioning-operations and GET /inventory-availability may declare 503; found #{declaring_503.inspect}")
 end
 unless openapi.dig("paths", "/provisioning-operations", "post", "responses", "503", "$ref") == "#/components/responses/ServiceUnavailable"
   fail_contract("POST /provisioning-operations must reference the reusable ServiceUnavailable response")
+end
+# ERP OpenAPI 1.0.4: the inventory read depends on the engine's physical stock, so it too can be temporarily unavailable
+# (503) and rejects a malformed sku_id or warehouse_id (400); neither answer carries a figure.
+%w[400 503].each do |status|
+  expected = status == "400" ? "BadRequest" : "ServiceUnavailable"
+  unless openapi.dig("paths", "/inventory-availability", "get", "responses", status, "$ref") == "#/components/responses/#{expected}"
+    fail_contract("GET /inventory-availability must declare #{status} #{expected}")
+  end
+end
+inventory_text = openapi.dig("paths", "/inventory-availability", "get", "description").to_s.gsub(/\s+/, " ")
+["physical inventory", "never from a Baobab-side stock ledger", "never from Trade", "not a commerce reservation", "no stale or estimated quantity"].each do |phrase|
+  fail_contract("GET /inventory-availability must document #{phrase.inspect}") unless inventory_text.include?(phrase)
+end
+# Operations ERP now serves no longer declare the transitional 501 (ERP OpenAPI 1.0.4).
+[["post", "/provisioning-operations"], ["get", "/provisioning-operations/{operation_id}"], ["get", "/order-consequences/{commerce_order_id}"]].each do |method, path|
+  fail_contract("#{method.upcase} #{path} is served and must not declare 501") if openapi.dig("paths", path, method, "responses").key?("501")
 end
 unless openapi.dig("paths", "/provisioning-operations/{operation_id}", "get", "responses", "400", "$ref") == "#/components/responses/BadRequest"
   fail_contract("GET /provisioning-operations/{operation_id} must declare 400 BadRequest for a malformed operation id")
