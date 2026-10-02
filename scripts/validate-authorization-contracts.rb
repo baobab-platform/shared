@@ -64,13 +64,18 @@ end
 # 3. AuthenticationAssurance / AssuranceRequirement carry the fields
 #    ADR-0015 §180-181 specifies, not a differently-shaped stand-in.
 assurance = load_json("contracts/identity/v1/authentication-assurance.schema.json")
-%w[actor_type acr amr authenticated_at issuer client_id].each do |field|
+%w[actor_type acr authenticated_at issuer client_id].each do |field|
   fail_contract("authentication-assurance.schema.json is missing required field #{field.inspect}") unless assurance.fetch("required", []).include?(field)
 end
+# amr is optional method evidence: a provider that proves strong authentication
+# through its acr alone (no custom extension to emit amr) must remain valid.
+fail_contract("authentication-assurance.schema.json must not require amr (ACR-or-AMR evidence, architecture owner 2026-10-02)") if assurance.fetch("required", []).include?("amr")
+fail_contract("authentication-assurance.schema.json must still describe amr") unless assurance.dig("properties", "amr")
 
 requirement = load_json("contracts/identity/v1/assurance-requirement.schema.json")
-%w[minimum_acr accepted_methods].each do |field|
-  fail_contract("assurance-requirement.schema.json is missing required field #{field.inspect}") unless requirement.fetch("required", []).include?(field)
+fail_contract("assurance-requirement.schema.json requires exactly minimum_acr") unless requirement.fetch("required", []) == ["minimum_acr"]
+%w[accepted_acr_values accepted_methods max_authentication_age_seconds phishing_resistant_required].each do |field|
+  fail_contract("assurance-requirement.schema.json is missing property #{field.inspect}") unless requirement.dig("properties", field)
 end
 
 # 4. workload-registry.yaml (ADR-0007 §§22-25, §42): every workload is
