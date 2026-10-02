@@ -99,7 +99,7 @@ RESPONSIBILITIES = {
         "MarketCreateRequest", "MarketUpdateRequest", "MarketActivationRequest",
     },
     "erp-assignment.schema.json": {
-        "erpAssignmentMarket", "erpAssignmentBinding", "erpAssignmentLegalEntity", "ErpAssignment",
+        "erpAssignmentMarket", "erpAssignmentLegalEntity", "ErpAssignment",
     },
     "tenant-provisioning.schema.json": {
         "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningReplanRequest",
@@ -562,15 +562,18 @@ def check_erp_assignment() -> None:
     # per-market currencies, localisation and warehouses are not stored by Control Plane: none is projected.
     for field in ("native_client_mode", "native_client_key", "ad_client", "ad_org", "functional_currency",
                   "chart_of_accounts_template", "tax_profile", "currencies", "localisation_profile",
-                  "warehouse_codes", "legal_entity_code", "target_environment"):
+                  "warehouse_codes", "legal_entity_code", "target_environment",
+                  "isolation_profile_id", "capability_bindings", "capability_binding_id"):
         rejects(schema, "ErpAssignment", {**example, field: "x"}, f"ERP assignment carrying {field}")
     for field in ("tenant_id", "tenant_provisioning_id", "plan_digest", "legal_entity", "markets", "engine_id",
-                  "engine_instance_id", "isolation_profile_id", "capability_bindings", "issued_at", "expires_at"):
+                  "engine_instance_id", "isolation_requirement", "capabilities", "issued_at", "expires_at"):
         missing = copy.deepcopy(example)
         del missing[field]
         rejects(schema, "ErpAssignment", missing, f"ERP assignment without {field}")
     rejects(schema, "ErpAssignment", {**example, "markets": []}, "ERP assignment without a market")
-    rejects(schema, "ErpAssignment", {**example, "capability_bindings": []}, "ERP assignment without a binding")
+    rejects(schema, "ErpAssignment", {**example, "capabilities": []}, "ERP assignment without a capability")
+    rejects(schema, "ErpAssignment", {**example, "capabilities": ["finance.order-consequence.process"] * 2}, "ERP assignment with a duplicate capability")
+    rejects(schema, "ErpAssignment", {**example, "isolation_requirement": "iso-zuribeans"}, "ERP assignment with an isolation requirement outside the canonical enum")
     rejects(schema, "ErpAssignment", {**example, "plan_digest": "abc123"}, "ERP assignment with an unqualified digest")
 
     # The read is workload-only, narrowly scoped, and authority comes from the tenant context, not the scope.
@@ -591,6 +594,12 @@ def check_erp_assignment() -> None:
     for status in ("401", "403", "404", "409"):
         if status not in operation["responses"]:
             fail(f"the ERP assignment read must declare {status}")
+    prose = " ".join(operation.get("description", "").split())
+    for phrase in ("403: the token lacks the scope", "404: the provisioning does not exist", "409: the sources disagree",
+                   "conflicting engine instances", "never repairs a disagreement", "frozen desired state",
+                   "never from the live registry", "not a planning API"):
+        if phrase not in prose:
+            fail(f"the ERP assignment read must document {phrase!r}")
     # Defined, not granted: no workload client may hold it until IAM decides (separate change).
     registry = yaml.safe_load((CONTRACTS / "identity" / "v1" / "workload-registry.yaml").read_text())
     if "erp-assignment:read" in json.dumps(registry):
