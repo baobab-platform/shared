@@ -565,8 +565,8 @@ def check_erp_assignment() -> None:
                   "warehouse_codes", "legal_entity_code", "target_environment",
                   "isolation_profile_id", "capability_bindings", "capability_binding_id"):
         rejects(schema, "ErpAssignment", {**example, field: "x"}, f"ERP assignment carrying {field}")
-    for field in ("tenant_id", "tenant_provisioning_id", "plan_digest", "legal_entity", "markets", "engine_id",
-                  "engine_instance_id", "isolation_requirement", "capabilities", "issued_at", "expires_at"):
+    for field in ("tenant_id", "tenant_provisioning_id", "plan_id", "plan_version", "plan_digest", "legal_entity", "markets",
+                  "engine_id", "engine_instance_id", "isolation_requirement", "capabilities", "issued_at", "expires_at"):
         missing = copy.deepcopy(example)
         del missing[field]
         rejects(schema, "ErpAssignment", missing, f"ERP assignment without {field}")
@@ -575,6 +575,14 @@ def check_erp_assignment() -> None:
     rejects(schema, "ErpAssignment", {**example, "capabilities": ["finance.order-consequence.process"] * 2}, "ERP assignment with a duplicate capability")
     rejects(schema, "ErpAssignment", {**example, "isolation_requirement": "iso-zuribeans"}, "ERP assignment with an isolation requirement outside the canonical enum")
     rejects(schema, "ErpAssignment", {**example, "plan_digest": "abc123"}, "ERP assignment with an unqualified digest")
+    rejects(schema, "ErpAssignment", {**example, "plan_version": 0}, "ERP assignment with plan_version 0")
+    rejects(schema, "ErpAssignment", {**example, "plan_id": "plan-1"}, "ERP assignment with a plan id outside the canonical grammar")
+    # The assignment and the ERP request name the same approval-binding tuple, so ERP can compare them member by member.
+    erp_request = json.loads((CONTRACTS / "erp" / "v1" / "provisioning-request.schema.json").read_text())
+    authority = erp_request["properties"]["control_plane_authority"]["properties"]
+    for member in ("tenant_provisioning_id", "plan_id", "plan_version", "plan_digest"):
+        if member not in example or member not in authority:
+            fail(f"ErpAssignment and the ERP request's control_plane_authority must both carry {member}")
 
     # The read is workload-only, narrowly scoped, and authority comes from the tenant context, not the scope.
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())

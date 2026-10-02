@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab ERP Boundary API
-  version: 1.0.1
+  version: 1.0.2
   description: Vendor-neutral synchronous provisioning and query contract. Business state propagation uses the ERP AsyncAPI contract.
   license:
     name: Apache-2.0
@@ -17,6 +17,14 @@ paths:
     post:
       operationId: requestErpProvisioning
       summary: Request configuration-driven ERP capability provisioning
+      description: >-
+        The request names the exact Control Plane plan that authorises it (control_plane_authority: tenant_provisioning_id,
+        plan_id, plan_version, plan_digest). ERP reads Control Plane's ERP assignment for each legal entity and provisions
+        only when the tenant, the provisioning, that exact plan id, version and digest, and the legal entity all agree;
+        otherwise it answers 409 with the problem code PLAN_AUTHORITY_MISMATCH and provisions nothing, so a replan between
+        approval and execution can never change what ERP executes. Requested countries and currencies are intent, not
+        authority. The accounting configuration comes from a Finance-approved baseline, never from the request or from
+        Control Plane. Replaying the same Idempotency-Key with the same request returns the prior operation.
       security:
         - workloadOidc: [erp:provision]
       parameters:
