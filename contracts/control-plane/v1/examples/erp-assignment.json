@@ -1,0 +1,40 @@
+{
+  "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+  "tenant_provisioning_id": "tp_0199a1b2c3d47e8f",
+  "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+  "legal_entity": {
+    "legal_entity_id": "ZURIBEANS-ZA",
+    "legal_name": "Zuribeans South Africa (Pty) Ltd",
+    "jurisdiction_code": "ZA",
+    "registration_identifiers": [
+      {
+        "type": "COMPANY_REGISTRATION",
+        "value": "2026/000000/07",
+        "issuing_jurisdiction": "ZA",
+        "verified": true
+      }
+    ],
+    "verification_state": "VERIFIED"
+  },
+  "markets": [
+    {
+      "market": "ZA",
+      "activities": [
+        "LEGAL_PRESENCE",
+        "SELLING",
+        "IMPORTING"
+      ]
+    }
+  ],
+  "engine_id": "baobab-erp",
+  "engine_instance_id": "ei_0199a1b2c3d47e8f",
+  "isolation_profile_id": "isolation-zuribeans-af-south-1",
+  "capability_bindings": [
+    {
+      "capability_key": "finance.order-consequence.process",
+      "capability_binding_id": "bind_0199a1b2c3d47e8f"
+    }
+  ],
+  "issued_at": "2026-10-02T09:00:00Z",
+  "expires_at": "2026-10-02T10:00:00Z"
+}

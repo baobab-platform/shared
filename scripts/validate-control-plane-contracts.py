@@ -98,6 +98,9 @@ RESPONSIBILITIES = {
         "marketId", "marketType", "market", "marketHierarchy", "marketValidationFinding",
         "MarketCreateRequest", "MarketUpdateRequest", "MarketActivationRequest",
     },
+    "erp-assignment.schema.json": {
+        "erpAssignmentMarket", "erpAssignmentBinding", "erpAssignmentLegalEntity", "ErpAssignment",
+    },
     "tenant-provisioning.schema.json": {
         "legacyProvisioningState", "blockingReason", "TenantProvisioning", "TenantProvisioningReplanRequest",
         "ProvisioningCommandRequest", "TenantProvisioningPage", "ProvisioningReadiness", "ProvisioningDrift",
@@ -548,6 +551,50 @@ def stateful_order_problems(plan: dict, sequence: list[str]) -> list[str]:
                 if not reaches(after, before):
                     problems.append(f"cohort {key}: {after} does not depend on {before}")
     return problems
+
+
+def check_erp_assignment() -> None:
+    schema = "erp-assignment.schema.json"
+    example = json.loads((CP / "examples" / "erp-assignment.json").read_text())
+    accepts(schema, "ErpAssignment", example, "ERP assignment")
+
+    # Native placement and accounting are ERP's (ADR-ERP-002 section 114, ADR-ERP-008, ADR-ERP-021), and
+    # per-market currencies, localisation and warehouses are not stored by Control Plane: none is projected.
+    for field in ("native_client_mode", "native_client_key", "ad_client", "ad_org", "functional_currency",
+                  "chart_of_accounts_template", "tax_profile", "currencies", "localisation_profile",
+                  "warehouse_codes", "legal_entity_code", "target_environment"):
+        rejects(schema, "ErpAssignment", {**example, field: "x"}, f"ERP assignment carrying {field}")
+    for field in ("tenant_id", "tenant_provisioning_id", "plan_digest", "legal_entity", "markets", "engine_id",
+                  "engine_instance_id", "isolation_profile_id", "capability_bindings", "issued_at", "expires_at"):
+        missing = copy.deepcopy(example)
+        del missing[field]
+        rejects(schema, "ErpAssignment", missing, f"ERP assignment without {field}")
+    rejects(schema, "ErpAssignment", {**example, "markets": []}, "ERP assignment without a market")
+    rejects(schema, "ErpAssignment", {**example, "capability_bindings": []}, "ERP assignment without a binding")
+    rejects(schema, "ErpAssignment", {**example, "plan_digest": "abc123"}, "ERP assignment with an unqualified digest")
+
+    # The read is workload-only, narrowly scoped, and authority comes from the tenant context, not the scope.
+    openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
+    route = "/tenants/{tenant_id}/provisioning/{tenant_provisioning_id}/erp-assignments/{legal_entity_id}"
+    operation = openapi["paths"].get(route, {}).get("get")
+    if not operation:
+        fail(f"openapi.yaml must declare GET {route}")
+        return
+    if operation.get("security") != [{"workloadOidc": ["erp-assignment:read"]}]:
+        fail("the ERP assignment read must be workloadOidc [erp-assignment:read] only")
+    scopes = {entry["name"]: entry for entry in yaml.safe_load(
+        (CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
+    scope = scopes.get("erp-assignment:read")
+    if not scope or scope.get("allowed_actors") != ["workload"] or scope.get("audience") != ["baobab-control-plane"] \
+            or scope.get("grants_authority") is not False or scope.get("privileged"):
+        fail("erp-assignment:read must be a non-privileged, workload-only scope for baobab-control-plane that grants no authority")
+    for status in ("401", "403", "404", "409"):
+        if status not in operation["responses"]:
+            fail(f"the ERP assignment read must declare {status}")
+    # Defined, not granted: no workload client may hold it until IAM decides (separate change).
+    registry = yaml.safe_load((CONTRACTS / "identity" / "v1" / "workload-registry.yaml").read_text())
+    if "erp-assignment:read" in json.dumps(registry):
+        fail("erp-assignment:read is defined but must not yet be granted to any workload client")
 
 
 def check_provider_migration() -> None:
@@ -1528,6 +1575,7 @@ def main() -> int:
     check_mapping_administration()
     check_mapping_resolution()
     check_tenant_provisioning()
+    check_erp_assignment()
     check_provider_migration()
     check_migration_execution()
     check_changeset()

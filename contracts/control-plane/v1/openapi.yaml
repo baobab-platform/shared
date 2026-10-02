@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab Control Plane API
-  version: 1.29.0
+  version: 1.30.0
   description: >-
     The Control Plane's runtime and administrative API (ADR-BCP-022).
     Implementations live in baobab-platform/baobab-cp. Every adminOidc
@@ -3826,6 +3826,46 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+  /tenants/{tenant_id}/provisioning/{tenant_provisioning_id}/erp-assignments/{legal_entity_id}:
+    parameters:
+      - $ref: "#/components/parameters/TenantId"
+      - $ref: "#/components/parameters/TenantProvisioningId"
+      - $ref: "#/components/parameters/LegalEntityId"
+      - $ref: "#/components/parameters/CorrelationId"
+    get:
+      tags: [Provisioning]
+      operationId: getTenantProvisioningErpAssignment
+      summary: Read the ERP assignment projection of one legal entity
+      description: >-
+        The narrow projection of an APPROVED provisioning plan that an ERP
+        workload needs to provision one legal entity (erp-assignment.schema.json):
+        the legal entity's verified profile, the tenant's markets and the
+        resolved topology (engine instance, isolation profile, capability
+        bindings). It carries no native ERP placement and no accounting
+        configuration. The erp-assignment:read scope grants no authority over a
+        resource: Control Plane requires the token's tenant_id to equal the path
+        tenant_id and the provisioning and legal entity to belong to it, and
+        answers 404 otherwise. A plan that is not approved, or a legal entity
+        that is not VERIFIED, is 409.
+      security:
+        - workloadOidc: [erp-assignment:read]
+      responses:
+        "200":
+          description: The ERP assignment projection
+          content:
+            application/json:
+              schema:
+                $ref: ./erp-assignment.schema.json#/$defs/ErpAssignment
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
   /tenants/{tenant_id}/provisioning/{tenant_provisioning_id}/plan:
     parameters:
       - $ref: "#/components/parameters/TenantId"
@@ -5829,6 +5869,12 @@ components:
       required: true
       schema:
         $ref: ./domain.schema.json#/$defs/externalReferenceId
+    LegalEntityId:
+      name: legal_entity_id
+      in: path
+      required: true
+      schema:
+        $ref: ./domain.schema.json#/$defs/canonicalLegalEntityId
     TenantProvisioningId:
       name: tenant_provisioning_id
       in: path

@@ -49,6 +49,12 @@ scopes:
     audience: ["baobab-control-plane"]
     allowed_actors: ["workload"]
 
+  - name: "erp-assignment:read"
+    description: "Allows an authorised ERP workload to read the Control Plane ERP assignment projection of one approved tenant provisioning and legal entity. It grants no authority: Control Plane additionally requires the token's tenant_id to equal the path tenant and the provisioning and legal entity to belong to it. It is not tenant:read (the administrative plan read), erp:read (the ERP data-plane reads) or erp:provision. Defined here; granted to no workload client."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
   - name: "mapping:write"
     description: "Record external references and propose, change, validate or retire canonical mappings (privileged; the actor is always the verified caller)."
     audience: ["baobab-control-plane"]
