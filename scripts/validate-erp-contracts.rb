@@ -217,8 +217,10 @@ declaring_503 = openapi.fetch("paths").flat_map do |path, item|
   item.select { |method, operation| operation.is_a?(Hash) && operation.fetch("responses", {}).key?("503") }
       .keys.map { |method| [method, path] }
 end
-unless declaring_503.sort == [["get", "/inventory-availability"], ["post", "/provisioning-operations"]]
-  fail_contract("only POST /provisioning-operations and GET /inventory-availability may declare 503; found #{declaring_503.inspect}")
+context_operations = [["post", "/provisioning-operations"], ["get", "/provisioning-operations/{operation_id}"],
+                      ["get", "/order-consequences/{commerce_order_id}"], ["get", "/inventory-availability"]]
+unless declaring_503.sort == context_operations.sort
+  fail_contract("exactly the four context-validated operations may declare 503; found #{declaring_503.inspect}")
 end
 unless openapi.dig("paths", "/provisioning-operations", "post", "responses", "503", "$ref") == "#/components/responses/ServiceUnavailable"
   fail_contract("POST /provisioning-operations must reference the reusable ServiceUnavailable response")
@@ -267,6 +269,58 @@ end
 holders = load_yaml(File.join(ROOT, "contracts/identity/v1/workload-registry.yaml")).fetch("workloads").select { |_, entry| (entry["allowed_scopes"] & required_scopes).any? }.keys
 fail_contract("only baobab-erp-workload may be allowed the ERP Boundary API scopes; found #{holders.inspect}") unless holders == ["baobab-erp-workload"]
 
+# ERP OpenAPI 1.1.0: tenant authority for the four tenant-scoped operations is a trusted Control Plane context
+# (docs/architecture/context-authority-for-workloads.md). context_id is required on every one of them, including the
+# provisioning state read: an operation must not be obtainable merely by knowing its operation_id.
+context_parameter = openapi.dig("components", "parameters", "ContextId")
+unless context_parameter && context_parameter["in"] == "query" && context_parameter["required"] == true &&
+       context_parameter.dig("schema", "$ref") == "../../control-plane/v1/domain.schema.json#/$defs/uuid"
+  fail_contract("components.parameters.ContextId must be a required uuid query parameter")
+end
+context_parameter_text = context_parameter.fetch("description").to_s.gsub(/\s+/, " ")
+["not a bearer credential", "actual caller", "subject evidence"].each do |phrase|
+  fail_contract("ContextId must state #{phrase.inspect}") unless context_parameter_text.include?(phrase)
+end
+using_context_parameter = openapi.fetch("paths").flat_map do |path, item|
+  item.select { |method, operation| operation.is_a?(Hash) && Array(operation["parameters"]).any? { |p| p["$ref"] == "#/components/parameters/ContextId" } }
+      .keys.map { |method| [method, path] }
+end
+expected_query_operations = context_operations - [["post", "/provisioning-operations"]]
+unless using_context_parameter.sort == expected_query_operations.sort
+  fail_contract("exactly the three read operations take the ContextId query parameter (the command carries it in the body); found #{using_context_parameter.inspect}")
+end
+context_operations.each do |method, path|
+  operation = openapi.dig("paths", path, method)
+  text = operation.fetch("description").to_s.gsub(/\s+/, " ")
+  fail_contract("#{method.upcase} #{path} must document ERP_CONTEXT_REJECTED") unless text.include?("ERP_CONTEXT_REJECTED")
+  fail_contract("#{method.upcase} #{path} must document that Control Plane being unreachable is 503") unless text.include?("503")
+  fail_contract("#{method.upcase} #{path} must declare 403") unless operation.dig("responses", "403")
+end
+unless openapi.dig("paths", "/order-consequences/{commerce_order_id}", "get", "responses", "400", "$ref") == "#/components/responses/BadRequest"
+  fail_contract("GET /order-consequences/{commerce_order_id} must declare 400 BadRequest for a missing or malformed context_id")
+end
+state_text = openapi.dig("paths", "/provisioning-operations/{operation_id}", "get", "description").to_s.gsub(/\s+/, " ")
+fail_contract("GET /provisioning-operations/{operation_id} must state that knowing operation_id is not enough") unless state_text.include?("merely by knowing its operation_id")
+post_context_text = openapi.dig("paths", "/provisioning-operations", "post", "description").to_s.gsub(/\s+/, " ")
+["context authority and plan authority are independent", "authorisation evidence, not part of the request's identity"].each do |phrase|
+  fail_contract("POST /provisioning-operations must document #{phrase.inspect}") unless post_context_text.include?(phrase)
+end
+provisioning_context = provisioning_request.dig("properties", "context_id")
+unless provisioning_request.fetch("required").include?("context_id") && provisioning_context &&
+       provisioning_context["$ref"] == "../../control-plane/v1/domain.schema.json#/$defs/uuid"
+  fail_contract("the provisioning request must require a uuid context_id")
+end
+["not a bearer credential", "independent of control_plane_authority", "excluded from idempotent replay"].each do |phrase|
+  fail_contract("provisioning request context_id must state #{phrase.inspect}") unless provisioning_context.fetch("description").include?(phrase)
+end
+scheme_text = openapi.dig("components", "securitySchemes", "workloadOidc", "description").to_s.gsub(/\s+/, " ")
+["trusted Control Plane context", "POST /v1/platform-context/validate", "subject evidence", "optional and, when present, must equal",
+ "never authority", "mapping reads (getErpMapping, findErpMappings) still take the tenant from the token"].each do |phrase|
+  fail_contract("the workloadOidc description must state #{phrase.inspect}") unless scheme_text.include?(phrase)
+end
+if scheme_text.include?("tenant claim is authoritative")
+  fail_contract("the workloadOidc description must no longer say the token's tenant claim is authoritative for the context operations")
+end
 idempotency = load_yaml(File.join(ROOT, "contracts/idempotency/v1/policy.yaml"))
 header = openapi.dig("components", "parameters", "IdempotencyKey", "schema")
 policy_key = idempotency.dig("http_commands", "key")

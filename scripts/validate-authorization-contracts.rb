@@ -87,6 +87,7 @@ workloads = load_yaml("contracts/identity/v1/workload-registry.yaml").fetch("wor
 fail_contract("workload-registry.yaml declares no workloads") if workloads.nil? || workloads.empty?
 known_statuses = %w[PROVISIONED ACTIVE SUSPENDED REVOKED RETIRED]
 known_credentials = %w[client_credentials federated_workload_token]
+validators_by_audience = {}
 workloads.each do |client_id, entry|
   %w[repository owner runtime environment allowed_audiences allowed_scopes credential_type rotation_owner status].each do |field|
     fail_contract("workload #{client_id} is missing #{field}") if entry[field].nil? || entry[field].to_s.strip.empty?
@@ -108,6 +109,24 @@ workloads.each do |client_id, entry|
   (audiences - used).each do |audience|
     fail_contract("workload #{client_id} allows audience #{audience} but no scope issued for it")
   end
+  # docs/architecture/context-authority-for-workloads.md: the validator-to-subject-audience relationship is explicit and
+  # registered, never inferred from allowed_audiences and never chosen by a request. Required of exactly the workloads that
+  # may hold context:validate, and nobody else.
+  validates = entry["validates_audiences"]
+  if entry.fetch("allowed_scopes").include?("context:validate")
+    unless validates.is_a?(Array) && !validates.empty? && validates.uniq.size == validates.size && validates.all? { |a| a.is_a?(String) && !a.strip.empty? }
+      fail_contract("workload #{client_id} allows context:validate, so it must list validates_audiences (distinct, non-empty)")
+    end
+    validates.each do |audience|
+      fail_contract("workload #{client_id} validates_audiences must not include baobab-control-plane") if audience == "baobab-control-plane"
+      unless scopes.values.any? { |scope| Array(scope["audience"]).include?(audience) }
+        fail_contract("workload #{client_id} validates audience #{audience}, which no registered scope is issued for")
+      end
+      (validators_by_audience[audience] ||= []) << client_id
+    end
+  elsif !validates.nil?
+    fail_contract("workload #{client_id} lists validates_audiences but does not allow context:validate")
+  end
   # ADR-BCP-025 section 2.9: a reporter is registered for the environments
   # and regions it may report on. Its environment is `environment`; its
   # regions are `deployment_regions`, required of exactly the workloads that
@@ -120,6 +139,10 @@ workloads.each do |client_id, entry|
   elsif !regions.nil?
     fail_contract("workload #{client_id} lists deployment_regions but does not allow deployment:observe")
   end
+end
+
+validators_by_audience.each do |audience, validators|
+  fail_contract("audience #{audience} may be validated by exactly one workload; found #{validators.inspect}") unless validators.size == 1
 end
 
 # 5. Every scope an OpenAPI operation requires is registered, and a

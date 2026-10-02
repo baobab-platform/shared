@@ -67,6 +67,12 @@ scopes:
     allowed_actors: ["workload"]
     grants_authority: false
 
+  - name: "context:validate"
+    description: "Allows a resource server to ask the Control Plane whether a stored context belongs to the actual caller it authenticated, presenting that caller's token as subject evidence. It grants no authority: the Control Plane judges the subject token's canonical principal against the context's owner, requires a bounded context, and only the audiences the validator is registered to validate (workload-registry validates_audiences) are accepted. It is not context:resolve (which creates a context) and creates nothing. Defined here; granted to no workload client."
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
   - name: "mapping:write"
     description: "Record external references and propose, change, validate or retire canonical mappings (privileged; the actor is always the verified caller)."
     audience: ["baobab-control-plane"]

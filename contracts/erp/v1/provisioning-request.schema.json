@@ -4,9 +4,13 @@
   "title": "ERP provisioning request",
   "type": "object",
   "additionalProperties": false,
-  "required": ["tenant_id", "control_plane_authority", "legal_entity_ids", "requested_countries", "functional_currencies"],
+  "required": ["tenant_id", "context_id", "control_plane_authority", "legal_entity_ids", "requested_countries", "functional_currencies"],
   "properties": {
-    "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+    "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId", "description": "Must equal the tenant of the validated context; it names the tenant, it does not establish it." },
+    "context_id": {
+      "$ref": "../../control-plane/v1/domain.schema.json#/$defs/uuid",
+      "description": "The Control Plane PlatformContext that carries the tenant authority of this request. It is not a bearer credential: ERP validates it for the actual caller through Control Plane and uses only the tenant returned. It is authorisation evidence, not part of the request's identity, so it is excluded from idempotent replay. It is independent of control_plane_authority: a valid context never replaces the plan tuple, nor the tuple a context."
+    },
     "control_plane_authority": {
       "type": "object",
       "additionalProperties": false,
