@@ -230,8 +230,6 @@ for level in assurance.get("levels", []):
         fail(f"assurance-policy.yaml level {name}: raw_acr_values must be listed exactly when IAM issues the level")
 if sorted(ladder.values()) != list(range(len(ladder))):
     fail("assurance-policy.yaml: ranks must be 0..n-1 without gaps or repeats")
-if not assurance.get("phishing_resistant_methods"):
-    fail("assurance-policy.yaml: phishing_resistant_methods is required")
 requirements = {r["risk_class"]: r for r in assurance.get("requirements", [])}
 if set(requirements) != set(RISK_ORDER):
     fail("assurance-policy.yaml: exactly one requirement for each risk class is required")
@@ -247,8 +245,11 @@ for risk in RISK_ORDER:
     age = req.get("max_authentication_age_seconds")
     if age is not None and (not isinstance(age, int) or age <= 0):
         fail(f"assurance-policy.yaml {risk}: max_authentication_age_seconds must be a positive integer")
-if assurance.get("phishing_resistant_methods") != ["webauthn"]:
-    fail("assurance-policy.yaml: phishing_resistant_methods is exactly webauthn (architecture owner, 2026-10-02)")
+evidence = assurance.get("phishing_resistant_evidence") or {}
+if evidence.get("accepted_raw_acr_values") != ["3"] or "webauthn" not in (evidence.get("accepted_amr_values") or []):
+    fail("assurance-policy.yaml: phishing_resistant_evidence accepts raw acr 3 or an amr naming webauthn (architecture owner, 2026-10-02)")
+if "phishing_resistant_methods" in assurance:
+    fail("assurance-policy.yaml: phishing_resistant_methods is replaced by phishing_resistant_evidence")
 step_up = next((l for l in assurance.get("levels", []) if l.get("name") == "urn:baobab:acr:step-up"), {})
 if step_up.get("raw_acr_values") != ["3"]:
     fail("assurance-policy.yaml: urn:baobab:acr:step-up is raw Keycloak LoA 3 (architecture owner, 2026-10-02)")
