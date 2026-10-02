@@ -160,9 +160,10 @@ Still open. None is a contract-pin defect; each needs its own work or a decision
 - **ERP delivers no events yet:** its domain recorders still produce legacy-shaped events carrying iDempiere native
   ids, for which Shared registers no equivalent. They are stored as `held`, never delivered. Producing the
   registered `erp.*` events needs an outcome projection (`order_version`, revisions, totals, `erp_` ids).
-- **Shared contract gaps found by the conformance suite:** the ERP OpenAPI declares no 400 on `GET /mappings/{mapping_id}`
-  and `GET /mappings`, and no 501 for operations whose backing capability is unavailable. ERP tracks them in
-  `KNOWN_UNDECLARED`; the list must shrink when Shared declares them.
+- **Shared contract gaps found by the conformance suite (closed):** the ERP OpenAPI declared no 400 on `GET /mappings/{mapping_id}`
+  and `GET /mappings`, and no 501 for operations whose backing capability is unavailable. OpenAPI 1.0.1 (shared#198, `92accac`)
+  declares both; ERP pinned it (erp#47, `a672a64`), deleted `KNOWN_UNDECLARED`, and its exact-pin conformance now fails on any
+  undeclared status. A 501 means the capability is absent from the engine release; it is not readiness.
 - **Grants outside this repository:** Baobab IAM grants ERP workloads only `erp:integrate`. The Boundary API needs
   `erp:read` and `erp:provision` and a `tenant_id` claim on ERP-bound tokens; the routes fail closed until the owner
   grants them.

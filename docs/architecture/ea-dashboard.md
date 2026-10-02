@@ -198,5 +198,5 @@ ADR-0021 are Accepted and due amendments under G-REG-NS step 2.
 | 6 | Reconcile this page and the historical sections of roles-to-grants-decision.md | DONE for the 2026-10-02 reconciliation; re-reconciled in this change for EA-01 |
 | 7 | ERP Boundary API: `POST`/`GET /provisioning-operations`, `GET /order-consequences/{id}`, `GET /inventory-availability` answer 501 | OPEN: needs a Control Plane assignment source and finance baseline, a consequence read model, an iDempiere stock query |
 | 8 | ERP delivers no events: domain recorders still emit legacy-shaped events with iDempiere native ids, stored `held` | OPEN: outcome projection to the registered `erp.*` events |
-| 9 | ERP OpenAPI declares no 400 on the two mapping reads and no 501; ERP tracks them in `KNOWN_UNDECLARED` | OPEN: Shared contract amendment |
+| 9 | ERP OpenAPI declared no 400 on the two mapping reads and no 501; ERP tracked them in `KNOWN_UNDECLARED` | CLOSED: OpenAPI 1.0.1 (shared#198, `92accac`) declares them; ERP pinned it (erp#47, `a672a64`), deleted `KNOWN_UNDECLARED`, and its exact-pin conformance fails on any undeclared status. The 501s remain a capability-absent signal, not readiness (row 7) |
 | 10 | Baobab IAM grants ERP workloads only `erp:integrate`; the Boundary API needs `erp:read`/`erp:provision` and a `tenant_id` claim | OPEN: owner grant (not made here) |
