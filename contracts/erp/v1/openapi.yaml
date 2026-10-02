@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab ERP Boundary API
-  version: 1.0.5
+  version: 1.1.0
   description: Vendor-neutral synchronous provisioning and query contract. Business state propagation uses the ERP AsyncAPI contract.
   license:
     name: Apache-2.0
@@ -25,6 +25,13 @@ paths:
         approval and execution can never change what ERP executes. Requested countries and currencies are intent, not
         authority. The accounting configuration comes from a Finance-approved baseline, never from the request or from
         Control Plane. Replaying the same Idempotency-Key with the same request returns the prior operation.
+        Tenant authority is a trusted Control Plane context (context_id, required): the tenant_id in the body must equal
+        the validated context's tenant, and context authority and plan authority are independent, so a valid context
+        never replaces the plan tuple nor the tuple a context. context_id is authorisation evidence, not part of the
+        request's identity: a replay with the same Idempotency-Key and request but a fresh context_id (contexts expire)
+        returns the prior operation. A context that cannot be validated for the caller is 403 ERP_CONTEXT_REJECTED
+        whatever the reason (the reasons are deliberately indistinguishable); a missing or malformed context_id is 400;
+        Control Plane being unreachable is 503 and nothing is provisioned.
       security:
         - workloadOidc: [erp:provision]
       parameters:
@@ -51,8 +58,14 @@ paths:
     get:
       operationId: getErpProvisioningOperation
       summary: Query current provisioning state
+      description: >-
+        An operation's state is tenant-scoped, so a caller must not obtain it merely by knowing its operation_id:
+        context_id is required, and the operation is returned only when it belongs to the tenant of the context
+        validated for the caller (otherwise 404). A context that cannot be validated for the caller is 403
+        ERP_CONTEXT_REJECTED; Control Plane being unreachable is 503.
       parameters:
         - $ref: "#/components/parameters/OperationId"
+        - $ref: "#/components/parameters/ContextId"
         - $ref: "#/components/parameters/CorrelationId"
         - $ref: "#/components/parameters/Traceparent"
       responses:
@@ -65,6 +78,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /mappings/{mapping_id}:
     get:
       operationId: getErpMapping
@@ -117,8 +131,13 @@ paths:
     get:
       operationId: getOrderConsequenceStatus
       summary: Query the latest ERP consequence status for a Trade order
+      description: >-
+        Tenant authority is a trusted Control Plane context: context_id is required and the order is read only within
+        the tenant of the context validated for the caller. A context that cannot be validated for the caller is 403
+        ERP_CONTEXT_REJECTED; a missing or malformed context_id is 400; Control Plane being unreachable is 503.
       parameters:
         - $ref: "#/components/parameters/CommerceOrderId"
+        - $ref: "#/components/parameters/ContextId"
         - $ref: "#/components/parameters/CorrelationId"
         - $ref: "#/components/parameters/Traceparent"
       responses:
@@ -127,9 +146,11 @@ paths:
           content:
             application/json:
               schema: { $ref: ./order-consequence-status.schema.json }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /inventory-availability:
     get:
       operationId: queryInventoryAvailability
@@ -139,8 +160,10 @@ paths:
         Query results respect warehouse-level granularity; Trade reservations remain Trade-owned (not included in availability).
         The figures are read from the engine's own physical inventory (ADR-ERP-015), never from a Baobab-side stock ledger and
         never from Trade; erp_allocated is quantity the engine has committed, not a commerce reservation, and erp_available is
-        derived from them. An unmapped SKU or warehouse is 404. When the engine cannot be reached the answer is 503 and no
-        figure is returned: the read can be retried and no stale or estimated quantity is substituted.
+        derived from them. Tenant authority is a trusted Control Plane context: context_id is required, and a context that
+        cannot be validated for the caller is 403 ERP_CONTEXT_REJECTED. An unmapped SKU or warehouse is 404. When the engine
+        cannot be reached the answer is 503 and no figure is returned: the read can be retried and no stale or estimated
+        quantity is substituted.
       parameters:
         - name: sku_id
           in: query
@@ -152,6 +175,7 @@ paths:
           required: true
           schema: { $ref: ./domain.schema.json#/$defs/erpResourceId }
           description: ERP warehouse identifier (minted by Baobab ERP boundary, binds to iDempiere or ERPNext warehouse)
+        - $ref: "#/components/parameters/ContextId"
         - $ref: "#/components/parameters/CorrelationId"
         - $ref: "#/components/parameters/Traceparent"
       responses:
@@ -198,6 +222,15 @@ components:
       in: path
       required: true
       schema: { $ref: ./domain.schema.json#/$defs/mappingId }
+    ContextId:
+      name: context_id
+      in: query
+      required: true
+      description: >-
+        The Control Plane PlatformContext (POST /v1/platform-context/resolve) that carries the tenant authority of this call.
+        It is not a bearer credential: ERP asks Control Plane to validate it for the actual caller, presenting the caller's
+        token as subject evidence, and uses only the tenant Control Plane returns.
+      schema: { $ref: ../../control-plane/v1/domain.schema.json#/$defs/uuid }
     CommerceOrderId:
       name: commerce_order_id
       in: path
@@ -268,4 +301,12 @@ components:
     workloadOidc:
       type: openIdConnect
       openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
-      description: Short-lived workload or delegated identity token transported over the infrastructure-owned mTLS path. The resolved tenant claim is authoritative; any tenant_id in a request must match it.
+      description: >-
+        Short-lived workload or delegated identity token transported over the infrastructure-owned mTLS path. For the
+        four operations that take a context_id (provisioning command and state, order consequences, inventory
+        availability) the tenant authority is a trusted Control Plane context, never this token alone: ERP validates
+        the context for the actual caller through Control Plane (POST /v1/platform-context/validate, presenting this
+        token as subject evidence), a token tenant_id is optional and, when present, must equal the validated
+        context's tenant, and a tenant named in a request or by a scope is never authority. The mapping reads
+        (getErpMapping, findErpMappings) still take the tenant from the token's tenant_id claim until a separate
+        decision.

@@ -67,6 +67,24 @@
 #                             baobab-platform/infrastructure (ADR-0007 §§34-41,
 #                             §94, §99) and is not modelled here until
 #                             that repository defines how it registers.
+#   validates_audiences     -- optional; required of exactly the workloads that
+#                              may hold context:validate, and nobody else. The
+#                              resource-server audiences whose callers' tokens
+#                              this workload may present to
+#                              POST /platform-context/validate as subject
+#                              evidence (docs/architecture/
+#                              context-authority-for-workloads.md). This is an
+#                              explicit registered relationship: the Control
+#                              Plane never infers it from allowed_audiences
+#                              (which lists the audiences this workload's OWN
+#                              tokens carry and may hold baobab-control-plane
+#                              and a resource server together), and a request
+#                              cannot choose an audience. Each audience is a
+#                              resource-server audience that some registered
+#                              scope is issued for, is never
+#                              baobab-control-plane, and is validated by exactly
+#                              one workload. No workload holds
+#                              context:validate yet, so no entry declares it.
 #   rotation_owner          -- team/repository responsible for rotating
 #                              this workload's credential.
 #   status                  -- PROVISIONED | ACTIVE | SUSPENDED | REVOKED |

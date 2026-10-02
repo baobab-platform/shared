@@ -61,6 +61,7 @@ RESPONSIBILITIES = {
     },
     "platform-context.schema.json": {
         "organisationKind", "countryCode", "PlatformContextResolveRequest", "PlatformContext",
+        "PlatformContextValidateRequest", "PlatformContextValidation",
         "ComposedResolutionRequest", "ComposedResolution",
     },
     "provisioning-desired-state.schema.json": {
@@ -266,6 +267,112 @@ def check_platform_context() -> None:
             "retired binding mode")
     rejects(schema, "ComposedResolution", {**composed, "topology": {**composed["topology"], "id": "instance-1"}},
             "non-canonical engine instance id")
+
+
+def check_platform_context_validation() -> None:
+    """context:validate and POST /platform-context/validate (docs/architecture/context-authority-for-workloads.md).
+
+    A resource server asks whether a stored context belongs to the actual caller it authenticated. The request carries the
+    context and the caller's own token as cryptographic evidence and nothing the caller could assert; the response carries
+    only the trusted facts, with a mandatory bound and no legal entity; the scope is defined and granted to nobody."""
+    schema = "platform-context.schema.json"
+    example = json.loads((CP / "examples" / "platform-context.json").read_text())
+    request, validation = example["validate_request"], example["validation"]
+    accepts(schema, "PlatformContextValidateRequest", request, "platform-context validate request")
+    accepts(schema, "PlatformContextValidation", validation, "platform-context validation")
+
+    for field in ("context_id", "subject_token"):
+        missing = copy.deepcopy(request)
+        del missing[field]
+        rejects(schema, "PlatformContextValidateRequest", missing, f"validate request without {field}")
+    # The caller can never state who is being validated, which audience to accept, or the tenant.
+    for field in ("principal_id", "subject", "sub", "client_id", "azp", "actor_type", "expected_audience", "audience",
+                  "aud", "validates_audience", "tenant_id", "issuer"):
+        rejects(schema, "PlatformContextValidateRequest", {**request, field: "x"}, f"validate request carrying caller-controlled {field}")
+    rejects(schema, "PlatformContextValidateRequest", {**request, "context_id": "ctx-1"}, "validate request with a non-uuid context")
+    for token in ("", "not-a-jwt", "a.b", "a b.c.d", "bearer a.b.c"):
+        rejects(schema, "PlatformContextValidateRequest", {**request, "subject_token": token}, f"validate request with subject_token {token!r}")
+    token_schema = json.loads((CP / schema).read_text())["$defs"]["PlatformContextValidateRequest"]["properties"]["subject_token"]
+    if token_schema.get("writeOnly") is not True:
+        fail("subject_token must be writeOnly: it is sent to the Control Plane and never returned")
+    token_text = " ".join(token_schema.get("description", "").split())
+    for phrase in ("only in this POST body", "independently", "never persisted", "never logged",
+                   "never placed in a trace, an error or an audit payload"):
+        if phrase not in token_text:
+            fail(f"subject_token must document {phrase!r}")
+
+    for field in ("context_id", "tenant_id", "resolved_at", "expires_at"):
+        missing = copy.deepcopy(validation)
+        del missing[field]
+        rejects(schema, "PlatformContextValidation", missing, f"validation without {field}")
+    # Valid-looking values, so a field is refused because the response is closed, not because "x" is malformed.
+    probes = {"legal_entity_id": "ZURIBEANS", "principal_id": "prn_0199a1b2c3d47e8f", "country_code": "UG",
+              "currency_code": "UGX", "organisation_type": "BUYER_ORGANISATION", "subject_token": "a.b.c"}
+    for field, value in probes.items():
+        rejects(schema, "PlatformContextValidation", {**validation, field: value}, f"validation carrying {field}")
+    validation_properties = json.loads((CP / schema).read_text())["$defs"]["PlatformContextValidation"]["properties"]
+    if set(validation_properties) != {"context_id", "tenant_id", "resolved_at", "expires_at", "market_id", "organisation_id"}:
+        fail("PlatformContextValidation must carry exactly context_id, tenant_id, resolved_at, expires_at, market_id and "
+             f"organisation_id (no legal_entity_id); found {sorted(validation_properties)}")
+    request_properties = json.loads((CP / schema).read_text())["$defs"]["PlatformContextValidateRequest"]["properties"]
+    if set(request_properties) != {"context_id", "subject_token"}:
+        fail(f"PlatformContextValidateRequest must carry exactly context_id and subject_token; found {sorted(request_properties)}")
+
+    openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
+    operation = openapi["paths"].get("/platform-context/validate", {}).get("post")
+    if not operation:
+        fail("openapi.yaml must declare POST /platform-context/validate")
+        return
+    if operation.get("security") != [{"workloadOidc": ["context:validate"]}]:
+        fail("POST /platform-context/validate must be workloadOidc [context:validate] only")
+    refs = (operation["requestBody"]["content"]["application/json"]["schema"]["$ref"],
+            operation["responses"]["200"]["content"]["application/json"]["schema"]["$ref"])
+    if refs != ("./platform-context.schema.json#/$defs/PlatformContextValidateRequest",
+                "./platform-context.schema.json#/$defs/PlatformContextValidation"):
+        fail("POST /platform-context/validate must use PlatformContextValidateRequest and PlatformContextValidation")
+    if set(operation["responses"]) != {"200", "400", "401", "403", "404", "503"}:
+        fail("POST /platform-context/validate must declare exactly 200, 400, 401, 403, 404 and 503")
+    prose = " ".join(operation.get("description", "").split())
+    for phrase in ("independently of the validator", "validates_audiences", "the request cannot choose the audience",
+                   "canonical principal and requires it to equal Context.PrincipalID", "The caller never states a principal",
+                   "an unbounded context is never cross-service authority", "indistinguishable", "TENANT_CONTEXT_MISMATCH",
+                   "TENANT_NOT_ACTIVE", "This is not token exchange: no token is issued", "never persisted", "never logged",
+                   "never placed in a trace, an error or an audit payload", "the validator principal, the resolved subject principal"):
+        if phrase not in prose:
+            fail(f"POST /platform-context/validate must document {phrase!r}")
+
+    # Every consumer of a stored context judges the actual caller; none lets a context be a bearer credential.
+    for path in ("/capabilities/resolve", "/resolution/mappings"):
+        text = " ".join(openapi["paths"][path]["post"]["description"].split())
+        for phrase in ("bound to the principal that resolved it", "canonical principal must equal the context's",
+                       "indistinguishable from an unknown or expired one", "CONTEXT_NOT_FOUND, 404"):
+            if phrase not in text:
+                fail(f"POST {path} must document {phrase!r} (every consumer of a stored context enforces ownership)")
+        if "another tenant's context" in text:
+            fail(f"POST {path} must not describe a tenant-only context binding")
+    context_text = json.loads((CP / schema).read_text())["$defs"]["PlatformContext"]["properties"]["context_id"]["description"]
+    if "not a bearer credential" not in context_text:
+        fail("PlatformContext.context_id must state that it is not a bearer credential")
+    # capabilities/explain is unchanged: platform-level diagnostics for a human platform administrator, no ownership rule.
+    explain = openapi["paths"]["/capabilities/explain"]["post"]
+    if explain.get("security") != [{"adminOidc": ["capabilities:explain"]}]:
+        fail("POST /capabilities/explain must stay adminOidc [capabilities:explain]")
+    explain_text = " ".join(explain.get("description", "").split())
+    if "platform-administrator authority" not in explain_text or "Not restricted to the caller's own tenant" not in explain_text:
+        fail("POST /capabilities/explain must stay platform-level diagnostics requiring platform-administrator authority")
+
+    scopes = {entry["name"]: entry for entry in yaml.safe_load(
+        (CONTRACTS / "authorization" / "v1" / "scope-registry.yaml").read_text())["scopes"]}
+    scope = scopes.get("context:validate")
+    if not scope or scope.get("allowed_actors") != ["workload"] or scope.get("audience") != ["baobab-control-plane"] \
+            or scope.get("grants_authority") is not False or scope.get("privileged"):
+        fail("context:validate must be a non-privileged, workload-only scope for baobab-control-plane that grants no authority")
+    for name in ("context:resolve", "context:validate"):
+        if name not in scopes:
+            fail(f"{name} must be registered")
+    registry = yaml.safe_load((CONTRACTS / "identity" / "v1" / "workload-registry.yaml").read_text())
+    if "context:validate" in json.dumps(registry["workloads"]) or "validates_audiences" in json.dumps(registry["workloads"]):
+        fail("context:validate is defined but must not yet be granted to any workload client (nor any validates_audiences declared)")
 
 
 def check_capability_resolution() -> None:
@@ -1588,6 +1695,7 @@ def main() -> int:
     check_canonical_entity()
     check_capability_explanation()
     check_platform_context()
+    check_platform_context_validation()
     check_capability_resolution()
     check_mapping_administration()
     check_mapping_resolution()

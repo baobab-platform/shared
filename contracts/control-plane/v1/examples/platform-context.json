@@ -45,5 +45,17 @@
       "id": "ei_0199a1b2c3d47e8f9a0b1c2d3e4f5a74",
       "environment": "production"
     }
+  },
+  "validate_request": {
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a70",
+    "subject_token": "example-header.example-payload.example-signature"
+  },
+  "validation": {
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a70",
+    "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "resolved_at": "2026-09-29T09:00:00Z",
+    "expires_at": "2026-09-29T09:15:00Z",
+    "market_id": "mkt_0199a1b2c3d47e8f",
+    "organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c"
   }
 }
