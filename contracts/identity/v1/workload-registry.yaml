@@ -117,9 +117,10 @@ workloads:
     # workload's own iDempiere OSGi bundles (org.baobab-platform.baobab.erp.context/
     # mapping) can authenticate to baobab-app's HTTP boundary, which
     # previously trusted network location alone. erp:read and erp:provision
-    # (the Boundary API) are allowed here and to no other workload; the
-    # tenant_id claim they require is a separate decision, so until it exists
-    # the Boundary API answers 403 and these scopes reach no tenant's data.
+    # (the Boundary API) are allowed here and to no other workload. The
+    # client stays tenant-neutral: no tenant_id is stamped on it, because
+    # tenant entitlement is a Control Plane decision (ADR-0007 sections
+    # 88-91); a call operates in the tenant of a trusted Control Plane context.
     allowed_audiences: ["baobab-control-plane", "baobab-erp"]
     allowed_scopes: ["context:resolve", "erp:integrate", "erp:read", "erp:provision", "provider-migration:task"]
     credential_type: client_credentials
