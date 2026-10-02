@@ -154,9 +154,42 @@ problem_ref = "../../errors/v1/problem-details.schema.json"
 unless openapi.dig("components", "schemas", "ProblemDetails", "$ref") == problem_ref
   fail_contract("ERP OpenAPI does not consume canonical problem details")
 end
-%w[BadRequest Unauthorized Forbidden NotFound Conflict].each do |response|
+%w[BadRequest Unauthorized Forbidden NotFound Conflict NotImplemented].each do |response|
   ref = openapi.dig("components", "responses", response, "content", "application/problem+json", "schema", "$ref")
   fail_contract("#{response} does not use canonical problem details") unless ref == "#/components/schemas/ProblemDetails"
+end
+# 501 is a narrow, transitional response (ERP OpenAPI 1.0.1): the provider recognises the canonical operation but
+# the backing capability is absent in this engine release. Exactly these operations may declare it; it is never a
+# readiness outcome and is distinct from 503 (an implemented capability temporarily unavailable).
+not_implemented_operations = [
+  ["post", "/provisioning-operations"],
+  ["get", "/provisioning-operations/{operation_id}"],
+  ["get", "/order-consequences/{commerce_order_id}"],
+  ["get", "/inventory-availability"]
+]
+declaring_501 = openapi.fetch("paths").flat_map do |path, item|
+  item.select { |method, operation| operation.is_a?(Hash) && operation.fetch("responses", {}).key?("501") }
+      .keys.map { |method| [method, path] }
+end
+unless declaring_501.sort == not_implemented_operations.sort
+  fail_contract("only #{not_implemented_operations.inspect} may declare 501; found #{declaring_501.inspect}")
+end
+not_implemented_operations.each do |method, path|
+  unless openapi.dig("paths", path, method, "responses", "501", "$ref") == "#/components/responses/NotImplemented"
+    fail_contract("#{method.upcase} #{path} must reference the reusable NotImplemented response")
+  end
+end
+not_implemented_text = openapi.dig("components", "responses", "NotImplemented", "description").to_s.gsub(/\s+/, " ")
+unless not_implemented_text.include?("not implemented in this engine release") &&
+       not_implemented_text.include?("not a transient outage") &&
+       not_implemented_text.include?("503") &&
+       not_implemented_text.include?("must not be certified")
+  fail_contract("NotImplemented must state that 501 is an absent capability, not an outage or a readiness outcome")
+end
+[["get", "/mappings/{mapping_id}"], ["get", "/mappings"]].each do |method, path|
+  unless openapi.dig("paths", path, method, "responses", "400", "$ref") == "#/components/responses/BadRequest"
+    fail_contract("#{method.upcase} #{path} must declare 400 BadRequest for malformed identifiers and query parameters")
+  end
 end
 idempotency = load_yaml(File.join(ROOT, "contracts/idempotency/v1/policy.yaml"))
 header = openapi.dig("components", "parameters", "IdempotencyKey", "schema")
