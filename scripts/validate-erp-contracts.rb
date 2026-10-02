@@ -154,7 +154,7 @@ problem_ref = "../../errors/v1/problem-details.schema.json"
 unless openapi.dig("components", "schemas", "ProblemDetails", "$ref") == problem_ref
   fail_contract("ERP OpenAPI does not consume canonical problem details")
 end
-%w[BadRequest Unauthorized Forbidden NotFound Conflict NotImplemented].each do |response|
+%w[BadRequest Unauthorized Forbidden NotFound Conflict ServiceUnavailable NotImplemented].each do |response|
   ref = openapi.dig("components", "responses", response, "content", "application/problem+json", "schema", "$ref")
   fail_contract("#{response} does not use canonical problem details") unless ref == "#/components/schemas/ProblemDetails"
 end
@@ -212,6 +212,30 @@ end
 post_text = openapi.dig("paths", "/provisioning-operations", "post", "description").to_s.gsub(/\s+/, " ")
 ["control_plane_authority", "PLAN_AUTHORITY_MISMATCH", "provisions nothing", "intent, not authority", "Finance-approved baseline"].each do |phrase|
   fail_contract("POST /provisioning-operations must document #{phrase.inspect}") unless post_text.include?(phrase)
+end
+# 503 (ERP OpenAPI 1.0.3) is the implemented-but-temporarily-unavailable counterpart of 501: provisioning needs
+# Control Plane's ERP assignment and the Finance baseline store, and a retry with the same Idempotency-Key is safe.
+# Only the provisioning command declares it, and the by-id read declares 400 for a malformed operation id.
+declaring_503 = openapi.fetch("paths").flat_map do |path, item|
+  item.select { |method, operation| operation.is_a?(Hash) && operation.fetch("responses", {}).key?("503") }
+      .keys.map { |method| [method, path] }
+end
+unless declaring_503 == [["post", "/provisioning-operations"]]
+  fail_contract("only POST /provisioning-operations may declare 503; found #{declaring_503.inspect}")
+end
+unless openapi.dig("paths", "/provisioning-operations", "post", "responses", "503", "$ref") == "#/components/responses/ServiceUnavailable"
+  fail_contract("POST /provisioning-operations must reference the reusable ServiceUnavailable response")
+end
+unless openapi.dig("paths", "/provisioning-operations/{operation_id}", "get", "responses", "400", "$ref") == "#/components/responses/BadRequest"
+  fail_contract("GET /provisioning-operations/{operation_id} must declare 400 BadRequest for a malformed operation id")
+end
+unavailable = openapi.dig("components", "responses", "ServiceUnavailable")
+unavailable_text = unavailable.fetch("description").to_s.gsub(/\s+/, " ")
+["temporarily unavailable", "nothing was provisioned", "same Idempotency-Key", "distinct from 501"].each do |phrase|
+  fail_contract("ServiceUnavailable must state #{phrase.inspect}") unless unavailable_text.include?(phrase)
+end
+unless unavailable.dig("headers", "Retry-After", "schema", "type") == "integer"
+  fail_contract("ServiceUnavailable must carry an integer Retry-After header")
 end
 idempotency = load_yaml(File.join(ROOT, "contracts/idempotency/v1/policy.yaml"))
 header = openapi.dig("components", "parameters", "IdempotencyKey", "schema")
