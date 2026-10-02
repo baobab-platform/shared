@@ -117,6 +117,23 @@ EA-05 Administrative Authority      MIGRATION DECISION ACCEPTED, implementation 
 | HIGH maker-checker | May become usable once IAM issues the scope. |
 | CRITICAL | Grants may be prepared under the controlled workflow while roles remain authoritative. CRITICAL AdministrativeGrant **enforcement stays disabled** until the assurance/step-up path is implemented and proven. |
 
+### Evidence-phase rulings (architecture owner, 2026-10-02)
+
+| Item | Decision |
+|---|---|
+| Shadow exit criteria | **Approved as proposed**, status `APPROVED`: 14 observed UTC days (days on which decisions were actually observed, not calendar days since deployment), 100 decisions per permission, `grants_narrower` 0, `not_evaluated` 0, `unresolved_or_error` 0. `grants_broader` is always 0 and not tunable. |
+| Low-volume waiver | **None.** A permission that cannot reach 100 decisions stays role-authoritative longer. |
+| `grants_narrower` = 0 | Deliberately stricter than ADR-BCP-020's "equal or narrower justified authority": there is no contract yet for an individually reviewed, intentional narrowing. Introduce one only if real evidence shows the need. |
+| First enforcement wave | LOW-risk permissions only, one at a time, each chosen for the strongest clean evidence (traffic, zero anomalies, population complete), not for looking harmless. Tenant/environment scoping may precede global enforcement. |
+| Before the first flip | Rehearse `ADMINISTRATIVE_ENFORCEMENT_ROLLBACK=<permission>`: it must restore role authority immediately without a deployment. |
+| CRITICAL enforcement | **Remains PROHIBITED.** Lifting it is a separate reviewed policy change after the full chain is proven (WebAuthn step-up, acr, amr, freshness, assurance evaluation, HIGH/CRITICAL grant, independent approval, authoritative decision), not an automatic consequence of IAM issuing `acr` 3. |
+| Population ownership | IAM role holders are evidence only; Platform Security and Control Plane Governance jointly review. `approved_by` in the artifact is a real, accountable canonical human principal: never the architecture-owner role, an assistant, an agent name or an automation principal. |
+| Canonical phishing-resistant ACR | `urn:baobab:acr:step-up`; normative raw Keycloak LoA **3** (an alias such as `platinum` is optional and nothing depends on it). |
+| Phishing-resistant evidence | Issuer-authenticated, either form: trusted `acr` 3, or a trusted `amr` naming `webauthn`/`hwk`. LoA 3 must have exactly one meaning: a flow requiring WebAuthn with user verification and no OTP-only or password-only alternative, proven by IAM CI (password, TOTP, ordinary MFA and SSO reuse never yield 3; asking for 3 without WebAuthn fails rather than falling back). |
+| Custom Keycloak SPI for `amr` | **No** (ADR-0002 extension hierarchy; avoid new Keycloak-specific Java debt while IAM moves toward provider neutrality). No Keycloak fork. The native `oidc-amr-mapper` is tested first but the programme does not depend on it. |
+| Step-up freshness | 300 seconds. |
+| Raw mapping | `0`/`1` → `urn:baobab:acr:basic`; `2`/`gold` → `urn:baobab:acr:mfa`; `3` → `urn:baobab:acr:step-up`. An enrolled but unused passkey never meets a CRITICAL requirement; the person must have performed the phishing-resistant authentication for the current fresh step-up. |
+
 ### Remaining sequence (implemented as mechanism, owner decisions open)
 
 | Item | State |

@@ -83,7 +83,7 @@ EA-05 Governance                       ADVANCED
     administrator:read/write issuance  APPROVED (iam#50)
     ADA-07 step-up / assurance         IMPLEMENTED (shared#192, cp#249); IAM issues no phishing-resistant level, so CRITICAL stays disabled
     shadow blind spots                 operations routes closed (cp); organisation ancestry via TenantOrganisationMapping
-    shadow evidence / readiness        IMPLEMENTED (read model); criteria PROPOSED, owner approval pending
+    shadow evidence / readiness        IMPLEMENTED (read model); exit criteria APPROVED 2026-10-02 (14 days / 100 decisions / 0 narrower, not-evaluated, errors)
     grant population                   tooling only: the reviewed list is Platform Security / CP Governance's to supply
     per-permission enforcement         MECHANISM IN PLACE, EMPTY: no permission enforced, NOT AUTHORISED YET
     realm-role retirement              NOT AUTHORISED
