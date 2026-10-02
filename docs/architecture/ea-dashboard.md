@@ -29,20 +29,20 @@ Verified against each repository's `main` on 2026-10-02. Evidence-level baseline
 ## Readiness
 
 ```text
-BAOBAB EA READINESS                                   2026-10-01
+BAOBAB EA READINESS                                   2026-10-02
 ─────────────────────────────────────────────────────────────────
 
-EA-01 Contract Convergence             IN PROGRESS (open: ERP; IAM pin vs issued scopes; identity assurance schemas)
-  CP Shared pin                        CURRENT (a503649, cp#252), canonical lock
-  IAM Shared pin                       BEHIND (1bb1c94): issues administrator:read/write/approve, absent from the pinned scope registry; canonical lock (iam#47)
-  Subscriptions Shared pin             RE-PINNED (3a8230e, subscriptions#21)
-  Payments Shared pin                  RE-PINNED (3a8230e, payments#16)
-  Trade Shared pin                     CURRENT (b063f8a, trade#114); T-COMPAT-04…07 DONE with an exact-pin conformance suite
-  ERP Shared pin                       HELD at 2da1a42, canonical lock; semantic reconciliation NOT STARTED (the principal EA-01 blocker)
-  Pulse Shared pin                     CURRENT at merge, canonical lock (pulse#28)
-  CMS contract lock                    CURRENT at merge, canonical lock (cms#19)
+EA-01 Contract Convergence             CONVERGED for locks, pins and ERP semantic compatibility (proven); open: EA-01B nabhold references, EA-01E, ERP operational gaps (record: ea-01-contract-convergence.md)
+  CP Shared pin                        a503649 (cp#252): 1 behind, no consumed contract changed (BEHIND_UNCHANGED), canonical lock
+  IAM Shared pin                       a503649 (iam#52): 1 behind, no consumed contract changed; the lock covers the scopes IAM issues and check-issued-scopes.sh asserts every Baobab-defined issued scope exists in the exact pinned registry
+  Subscriptions Shared pin             3a8230e (subscriptions#21): 66 behind, BEHIND_CHANGED (control-plane domain, capabilities.json)
+  Payments Shared pin                  3a8230e (payments#16): 66 behind, BEHIND_CHANGED (control-plane domain, capabilities.json)
+  Trade Shared pin                     b063f8a (trade#114): 34 behind, BEHIND_CHANGED (control-plane openapi, workload-registry); T-COMPAT-04…07 DONE with an exact-pin conformance suite
+  ERP Shared pin                       CURRENT (739f0ca, erp#46): ERP-COMPAT-01…07 DONE; exact-pin conformance suite (28 tests, CI shared-conformance); lock 19 to 36 contracts. Not done: 4 boundary operations (501), domain events held (none delivered), see record
+  Pulse Shared pin                     b63ce52 (pulse#28): 85 behind, BEHIND_CHANGED (control-plane domain), canonical lock
+  CMS contract lock                    b63ce52 (cms#19): 85 behind, BEHIND_UNCHANGED, canonical lock
   Lock schema in Shared (EA-01A)       READY (shared#157)
-  Foundation lock validation (EA-01C)  ENFORCING in Shared and on all 8 consumers (Foundation `06c49e8`)
+  Foundation lock validation (EA-01C)  ENFORCING in Shared and on all 8 consumers (Foundation `06c49e8`); all 8 locks pass `check --mode auto` against Shared 739f0ca (2026-10-02)
   Drift report (EA-01D)                READY (Foundation job summary)
 
 EA-02 Capability Governance            02A–02E IMPLEMENTED; G-FCI-1 ENFORCED FLEET-WIDE; PLATFORM CONFORMANCE GATE CLOSED (not certification)
@@ -50,7 +50,7 @@ EA-02 Capability Governance            02A–02E IMPLEMENTED; G-FCI-1 ENFORCED F
   Provider declarations                PARTIAL (see table)
   Foundation enforcement (G-FCI-1)     ENFORCING on all 8 consumers, all on Foundation `06c49e8`: CP (cp#238), IAM (iam#48), CMS (cms#20), Payments (payments#17), Subscriptions (subscriptions#23), Pulse (pulse#29), Trade (trade#113), ERP (erp#42)
   Control Plane classification         DONE: control-plane trait (shared#174); CP classified control-plane, no declaration, Foundation `06c49e8` (cp#238)
-  ERP container scan (erp#42)          FIXED: jackson-databind 2.15.4 CVE-2026-91776/91777 in the upstream idempiere:13-release image replaced by Jackson 2.18.11 (ADR-ERP-004 s5 emergency mitigation, in the Dockerfile with owner, removal condition and build guards). jackson-datatype-joda stays 2.15.4 (needs joda-time 2.12, image has 2.10.14). Not boot-tested: no CI job starts iDempiere. Upstream issue not yet filed
+  ERP container scan (erp#42)          FIXED: jackson-databind 2.15.4 CVE-2026-91776/91777 in the upstream idempiere:13-release image replaced by Jackson 2.18.11 (ADR-ERP-004 s5 emergency mitigation, in the Dockerfile with owner, removal condition and build guards). jackson-datatype-joda stays 2.15.4 (needs joda-time 2.12, image has 2.10.14). CVE-2026-89425 (jackson-core 2.15.2 shaded inside Hazelcast 5.3.7 in the Hazelcast bundle, in neither 13-release nor 13-daily fixed) cleared in erp#43 by removing the unused Hazelcast bundle (ADR-ERP-004 s5, build guard; no scan exception). Not boot-tested: no CI job starts iDempiere. Upstream issue not yet filed
   Gate closed because                  every consumer pins an enforcing Foundation and passes it in CI. It proves structure, catalogue references and contract locks only; it never certifies (EA-09) or activates (Control Plane) anything
   Provider registration DRAFT (02C)    READY (shared#167, cp#231)
   Provider activation Changeset (02D)  READY (shared#167, #168, cp#232; ENGINE_RELEASE check cp#233)
@@ -137,7 +137,7 @@ provides no resolvable capability, and may not carry a declaration
 | # | Gate | State | Evidence |
 |---:|---|---|---|
 | 1 | EA plan v2 committed; prior sequence superseded | Done | Plan in `docs/adr`; this dashboard (#155); v1 assessment marked Historical and plan registered Accepted (#156) |
-| 2 | Contract convergence audit and lock remediation | In progress | CP #227, IAM #46 re-pinned; lock schema, check and drift report shared#157; CP, IAM, CMS and Pulse canonical locks merged (cp#229, iam#47, cms#19, pulse#28); Trade and ERP locks canonical but pinned to `2da1a42` pending semantic compatibility; Subscriptions, Payments re-pinned ([EA-01 record](ea-01-contract-convergence.md)) |
+| 2 | Contract convergence audit and lock remediation | Done | Lock schema, check and drift report shared#157; canonical locks on all 8 consumers (cp#229, iam#47, cms#19, pulse#28, trade#114, erp#46, subscriptions#21, payments#16); all 8 pass the enforced check at Shared 739f0ca; ERP semantic convergence proven by an exact-pin suite (erp#43 to erp#46); remaining BEHIND_CHANGED pins re-pin by explicit PR with each engine's compatibility tests ([EA-01 record](ea-01-contract-convergence.md)) |
 | 3 | `identity.workload-token.issue` provider neutrality | Done | shared#151 |
 | 4 | Complete IAM #42 | Done | iam#42 |
 | 5 | Shared #148 lifecycle semantics | Done | shared#148 |
@@ -192,7 +192,11 @@ ADR-0021 are Accepted and due amendments under G-REG-NS step 2.
 |---:|---|---|
 | 1 | Provider-neutral identity assurance contracts must not force `amr` (ACR-or-AMR, no SPI) | This change: `AuthenticationAssurance.amr` optional, `AssuranceRequirement.accepted_acr_values` added, `accepted_methods` optional, behaviour validated |
 | 2 | CP consumes shared#195 | DONE (cp#252, pin `a503649`) |
-| 3 | IAM consumer lock must cover the scopes IAM issues; every Baobab-defined scope IAM issues must exist in the exact pinned scope registry | OPEN: re-pin IAM and add the assertion |
-| 4 | iam#52 (passkey step-up) is blocked by the Foundation container scan: Keycloak 26.7.4 ships jackson-core 2.21.5 (CVE-2026-89407, CVE-2026-89425, fixed in 2.21.7). Not weakened, not merged. `main` fails the same scan | OPEN: a supported Keycloak patch or a governed, reviewed override; `upstream.lock.yaml` digest also still UNRESOLVED |
-| 5 | ERP semantic convergence (Trade-style census, reconciliation, exact-pin suite, re-pin) | OPEN, largest EA-01 blocker |
-| 6 | Reconcile this page and the historical sections of roles-to-grants-decision.md | This change |
+| 3 | IAM consumer lock must cover the scopes IAM issues; every Baobab-defined scope IAM issues must exist in the exact pinned scope registry | DONE (iam#52: pin `a503649`, `check-issued-scopes.sh`, integration sections 9b, 19, 19b) |
+| 4 | iam#52 (passkey step-up) is blocked by the Foundation container scan: Keycloak 26.7.4 ships jackson-core 2.21.5 (CVE-2026-89407, CVE-2026-89425, fixed in 2.21.7). Not weakened, not merged. `main` fails the same scan | DONE: upstream Keycloak 26.7.5 (iam#53) pinned by digest `sha256:37dbaf6f…475a85` (R-1 closed); the Bouncy Castle, FreeMarker and Jackson overrides were removed after CI showed the image vendors 1.86, 2.3.35 and 2.21.7 (server and admin CLI); container scan green; iam#52 then merged with no waiver |
+| 5 | ERP semantic convergence (Trade-style census, reconciliation, exact-pin suite, re-pin) | DONE (erp#43 to erp#46; evidence in the EA-01 record). Residual ERP operational items are rows 7 to 10 |
+| 6 | Reconcile this page and the historical sections of roles-to-grants-decision.md | DONE for the 2026-10-02 reconciliation; re-reconciled in this change for EA-01 |
+| 7 | ERP Boundary API: `POST`/`GET /provisioning-operations`, `GET /order-consequences/{id}`, `GET /inventory-availability` answer 501 | OPEN: needs a Control Plane assignment source and finance baseline, a consequence read model, an iDempiere stock query |
+| 8 | ERP delivers no events: domain recorders still emit legacy-shaped events with iDempiere native ids, stored `held` | OPEN: outcome projection to the registered `erp.*` events |
+| 9 | ERP OpenAPI declares no 400 on the two mapping reads and no 501; ERP tracks them in `KNOWN_UNDECLARED` | OPEN: Shared contract amendment |
+| 10 | Baobab IAM grants ERP workloads only `erp:integrate`; the Boundary API needs `erp:read`/`erp:provision` and a `tenant_id` claim | OPEN: owner grant (not made here) |
