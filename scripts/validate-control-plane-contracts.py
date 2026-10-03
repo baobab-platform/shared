@@ -350,6 +350,17 @@ def check_platform_context_validation() -> None:
         if phrase not in prose:
             fail(f"POST /platform-context/validate must document {phrase!r}")
 
+    # Independent validation applies to both token profiles; a local signature is
+    # meaningful only for a self-contained signed token (ADR-IAM-0020/0021).
+    for phrase in ("For self-contained signed tokens", "issuer, signature and expiry",
+                   "for opaque tokens", "trusted introspection result",
+                   "configured issuer/provider authority", "active and unexpired",
+                   "Both profiles require workload actor"):
+        if phrase not in prose:
+            fail(f"POST /platform-context/validate must document {phrase!r}")
+    if "independently of the validator (issuer, signature, expiry" in prose:
+        fail("POST /platform-context/validate must not require local signatures for opaque tokens")
+
     # Every consumer of a stored context judges the actual caller; none lets a context be a bearer credential.
     for path in ("/capabilities/resolve", "/capabilities/resolve-batch", "/resolution/mappings"):
         text = " ".join(openapi["paths"][path]["post"]["description"].split())

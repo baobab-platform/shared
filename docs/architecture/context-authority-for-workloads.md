@@ -75,7 +75,7 @@ Security: `workloadOidc: [context:validate]`, actor `workload`.
 
 Two pieces of authenticated evidence are required:
 1. **The validator** (`baobab-erp-workload`, or whichever workload is the resource server), authenticated by the bearer token and holding `context:validate`.
-2. **The subject** (the actual caller), proved by `subject_token`, which Control Plane verifies **independently of the validator**: issuer, signature, expiry, `actor_type` workload, and an audience equal to the validator's own resource-server audience (a validator may validate only tokens issued for its own audience). Control Plane does not trust the validator's description of the token.
+2. **The subject** (the actual caller), proved by `subject_token`, which Control Plane verifies **independently of the validator** using the configured token-validation profile. For self-contained signed tokens it verifies issuer, signature and expiry. For opaque tokens it requires a trusted introspection result from the configured issuer/provider authority confirming the token is active and unexpired. Both profiles require `actor_type` workload and an audience equal to one explicitly registered in the validator's `validates_audiences`. Independent trustworthy validation is mandatory; local signature verification is conditional on a self-contained signed token. Control Plane does not trust the validator's description of the token.
 
 Control Plane then:
 1. verifies the subject token and resolves its `(issuer, subject, actor_type)` to a canonical principal;

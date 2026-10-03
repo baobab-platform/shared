@@ -71,7 +71,6 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
-* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 - **`control-plane` Foundation repository trait (ADR-0020 Amendment 1).**
   - `.baobab/repository.schema.json` and the classifier accept `control-plane`. It is not an engine: G-FCI-1 `check-declaration-policy` requires no `.baobab/capability-provider.yaml` for it, rejects one if present, and rejects combining it with `engine`.
@@ -390,7 +389,6 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
-* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 - **Breaking: admission verifies legal identity only through a VerificationCase (ADR-BCP-023 §191-193; control-plane `openapi.yaml` 1.15.0).**
   - `OrganisationAdmissionRequest` drops `legal_verification`, the reviewer's one-call evidence and reason, and its `legalVerification` definition.
@@ -639,7 +637,6 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
-* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 - Foundation CI **`v2.3.0` is promoted** at `31de2bc` (see
   `docs/governance/foundation-ci-promotion-v2.3.0.md`): security scopes,
@@ -760,7 +757,6 @@ Examples:
 
 ## Changed
 
-* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 Changes to existing functionality that are not breaking.
 
@@ -926,7 +922,6 @@ Example:
 ```markdown
 ### Changed
 
-* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 - **BREAKING:** Renamed the `python-version` input to `runtime-version`.
   Consumers using v1 must migrate to the new input before adopting v2.
@@ -970,7 +965,6 @@ For example:
 ```markdown
 ### Changed
 
-* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 - Updated the deployment workflow to require the `pages: write`
   permission.
