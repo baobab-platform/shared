@@ -33,6 +33,11 @@
 #   disabled → needs an approved exceptions.sast. advanced_security_enabled is a
 #   deprecated input kept for one minor version; do not pass it in new callers.
 #
+# Private Shared checkout requires a separate read-only credential. Organisation
+# Actions reuse access does not grant github.token cross-repository checkout access.
+# Provision SHARED_READ_TOKEN with contents:read on Shared and pass it explicitly.
+# It may be omitted by Shared's own caller; checkout then uses github.token.
+#
 # Minimum caller permissions:
 #   contents: read, packages: read, actions: read, security-events: write
 #
@@ -64,6 +69,8 @@ jobs:
     # Verify live: git ls-remote --tags https://github.com/baobab-platform/shared.git
     # and git cat-file -e <sha>:.github/workflows/foundation-repository-gates.yml
     uses: baobab-platform/shared/.github/workflows/foundation-repository-gates.yml@REPLACE_WITH_FULL_SHARED_COMMIT_SHA
+    secrets:
+      SHARED_READ_TOKEN: ${{ secrets.SHARED_READ_TOKEN }}
     with:
       foundation_ref: "REPLACE_WITH_FULL_SHARED_COMMIT_SHA"
       # full = compatibility (all families). On schedule, prefer security-deep
