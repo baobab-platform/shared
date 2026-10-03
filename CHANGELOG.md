@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
+
 * Context authority for tenant-neutral workloads (control-plane/v1 OpenAPI 1.33.0, erp/v1 OpenAPI 1.1.0), as approved in `docs/architecture/context-authority-for-workloads.md`.
   * **Control Plane.** New `POST /platform-context/validate` (`validatePlatformContext`, scope `context:validate`). A resource server presents `context_id` and the caller's own access token as `subject_token`; Control Plane verifies that token independently, resolves its canonical principal, requires it to equal `Context.PrincipalID`, requires a bounded context (`expires_at` is required in the response; an unbounded one is never cross-service authority) and re-checks that the tenant is ACTIVE. The request carries no principal, subject, client, audience or tenant assertion, and the response carries no `legal_entity_id`. A context that is unknown, expired, unbounded or owned by another principal is the same `404 CONTEXT_NOT_FOUND`; `403 TENANT_CONTEXT_MISMATCH` and `TENANT_NOT_ACTIVE` remain. This is not token exchange. `subject_token` is `writeOnly`, accepted only in the POST body, never persisted, never logged and never placed in a trace, an error or an audit payload; audit records the validator principal, the resolved subject principal, `context_id`, `tenant_id`, the decision and reason, and the correlation id.
   * **Every consumer of a stored context judges the actual caller.** `POST /capabilities/resolve` and `POST /resolution/mappings` now document that a context is bound to the principal that resolved it (the authenticated caller's canonical principal must equal the context's) and that another principal's context is indistinguishable from an unknown or expired one (`404 CONTEXT_NOT_FOUND`); `403 TENANT_CONTEXT_MISMATCH` is only a token `tenant_id` that differs from the context's tenant. This closes the defect that a tenant-neutral workload could redeem any stored `context_id`. `POST /capabilities/explain` is unchanged: platform-level diagnostics for a human platform administrator, to which ownership does not apply.
@@ -68,6 +70,8 @@ Changes that have been merged but have not yet been included in a released versi
 * ADA-05 grant administration contract (control-plane OpenAPI 1.26.0; 1.26.1 corrects the delegation wording: HIGH and CRITICAL delegation awaits approval, it is not forbidden): `/admin/grants` (issue, list), `/admin/grants/{grant_id}` (inspect), `/transitions` (suspend, resume, revoke, withdraw) and `/delegations`, the `grant-administration.schema.json` request and page shapes, human-only scopes `administrator:read` and `administrator:write` (the latter privileged) and reason code `GRANT_TRANSITION_INVALID`. HIGH and CRITICAL authority is refused with `APPROVAL_REQUIRED` until the ADA-06 maker-checker path exists. Shape only: it changes no enforcement.
 
 ## Changed
+
+* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 - **`control-plane` Foundation repository trait (ADR-0020 Amendment 1).**
   - `.baobab/repository.schema.json` and the classifier accept `control-plane`. It is not an engine: G-FCI-1 `check-declaration-policy` requires no `.baobab/capability-provider.yaml` for it, rejects one if present, and rejects combining it with `engine`.
@@ -386,6 +390,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
+
 - **Breaking: admission verifies legal identity only through a VerificationCase (ADR-BCP-023 §191-193; control-plane `openapi.yaml` 1.15.0).**
   - `OrganisationAdmissionRequest` drops `legal_verification`, the reviewer's one-call evidence and reason, and its `legalVerification` definition.
   - It gains `verification_case_id`. The case must be VERIFIED, for `ORGANISATION_ADMISSION`, about the admitted organisation or one of its legal entities, with VERIFIED REGISTRATION_IDENTIFIER and LEGAL_NAME claims.
@@ -633,6 +639,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
+
 - Foundation CI **`v2.3.0` is promoted** at `31de2bc` (see
   `docs/governance/foundation-ci-promotion-v2.3.0.md`): security scopes,
   `security.sast_provider`, the organisation drift guard, and removal of
@@ -751,6 +759,8 @@ Examples:
 ---
 
 ## Changed
+
+* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 Changes to existing functionality that are not breaking.
 
@@ -916,6 +926,8 @@ Example:
 ```markdown
 ### Changed
 
+* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
+
 - **BREAKING:** Renamed the `python-version` input to `runtime-version`.
   Consumers using v1 must migrate to the new input before adopting v2.
 ```
@@ -957,6 +969,8 @@ For example:
 
 ```markdown
 ### Changed
+
+* Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 - Updated the deployment workflow to require the `pages: write`
   permission.

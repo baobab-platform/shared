@@ -87,7 +87,6 @@ workloads = load_yaml("contracts/identity/v1/workload-registry.yaml").fetch("wor
 fail_contract("workload-registry.yaml declares no workloads") if workloads.nil? || workloads.empty?
 known_statuses = %w[PROVISIONED ACTIVE SUSPENDED REVOKED RETIRED]
 known_credentials = %w[client_credentials federated_workload_token]
-validators_by_audience = {}
 workloads.each do |client_id, entry|
   %w[repository owner runtime environment allowed_audiences allowed_scopes credential_type rotation_owner status].each do |field|
     fail_contract("workload #{client_id} is missing #{field}") if entry[field].nil? || entry[field].to_s.strip.empty?
@@ -122,7 +121,6 @@ workloads.each do |client_id, entry|
       unless scopes.values.any? { |scope| Array(scope["audience"]).include?(audience) }
         fail_contract("workload #{client_id} validates audience #{audience}, which no registered scope is issued for")
       end
-      (validators_by_audience[audience] ||= []) << client_id
     end
   elsif !validates.nil?
     fail_contract("workload #{client_id} lists validates_audiences but does not allow context:validate")
@@ -139,10 +137,6 @@ workloads.each do |client_id, entry|
   elsif !regions.nil?
     fail_contract("workload #{client_id} lists deployment_regions but does not allow deployment:observe")
   end
-end
-
-validators_by_audience.each do |audience, validators|
-  fail_contract("audience #{audience} may be validated by exactly one workload; found #{validators.inspect}") unless validators.size == 1
 end
 
 # 5. Every scope an OpenAPI operation requires is registered, and a
