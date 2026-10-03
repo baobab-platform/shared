@@ -23,6 +23,9 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* Remove the vulnerable `braces` dependency chain from TypeScript contract generation by using GraphQL Codegen's programmatic API for local SDL; generated types retain deterministic, identical output.
+* Allow Foundation consumers to pass a read-only `SHARED_READ_TOKEN` for private canonical-policy and contract-history checkouts; report a missing credential before attempting checkout.
+
 * Control Plane OpenAPI 1.33.1 corrects the context validation amendment from #208: subject_token is a bounded, write-only OAuth access-token value without a JWT serialization constraint (ADR-IAM-0020/0021); batch capability resolution explicitly requires caller ownership and pins the 404/403 semantics; several independently revocable validators may register the same subject audience. Explicit per-validator validates_audiences, distinct entries within each list, and all existing scope/audience checks remain required. No scope allocation changes.
 
 * Context authority for tenant-neutral workloads (control-plane/v1 OpenAPI 1.33.0, erp/v1 OpenAPI 1.1.0), as approved in `docs/architecture/context-authority-for-workloads.md`.
