@@ -65,7 +65,7 @@ jobs:
       # before Maven Central, and Central rate-limits shared runner IPs (429 with
       # a 30-minute block). Resolving through the project's committed wrapper
       # first means the audit reads a warm ~/.m2 instead of Central.
-      - uses: actions/setup-java@1aa87b638dacaa70f1c903fa9ec9cbd91058e2ff # v6.0.1+1 (main, 2026-09-10)
+      - uses: actions/setup-java@97c5a5e13aa773f277f72c1287dda3c789f1366c # v6.0.1+1 (main, 2026-09-10)
         if: ${{ inputs.java && fromJSON(inputs.exceptions)['dependency-audit'] == null }}
         with:
           distribution: temurin
