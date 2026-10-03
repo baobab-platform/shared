@@ -61,6 +61,16 @@ jobs:
     steps:
       - name: Checkout caller
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Require read-only Shared checkout credential
+        if: github.repository != 'baobab-platform/shared'
+        env:
+          SHARED_READ_TOKEN: ${{ secrets.SHARED_READ_TOKEN }}
+        shell: bash
+        run: |
+          if [[ -z "$SHARED_READ_TOKEN" ]]; then
+            echo "::error::Provision SHARED_READ_TOKEN with contents:read on baobab-platform/shared and pass it to the Foundation caller."
+            exit 1
+          fi
       - name: Checkout canonical Foundation policy
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
