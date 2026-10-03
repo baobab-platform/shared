@@ -1,6 +1,10 @@
 name: Reusable — Foundation Repository Gates
 on:
   workflow_call:
+    secrets:
+      SHARED_READ_TOKEN:
+        description: Read-only credential for the private baobab-platform/shared repository; defaults to github.token for Shared itself.
+        required: false
     inputs:
       foundation_ref:
         description: Exact shared commit used by the caller; policy files are loaded from this ref.
@@ -46,6 +50,8 @@ permissions:
 jobs:
   classify:
     uses: ./.github/workflows/reusable-foundation-classify.yml
+    secrets:
+      SHARED_READ_TOKEN: "${{ secrets.SHARED_READ_TOKEN }}"
     with:
       foundation_ref: "${{ inputs.foundation_ref }}"
       advanced_security_enabled: "${{ inputs.advanced_security_enabled }}"
@@ -85,6 +91,8 @@ jobs:
     if: ${{ inputs.profile == 'full' || inputs.profile == 'contract' }}
     needs: classify
     uses: ./.github/workflows/reusable-foundation-environment.yml
+    secrets:
+      SHARED_READ_TOKEN: "${{ secrets.SHARED_READ_TOKEN }}"
     with:
       foundation_ref: "${{ inputs.foundation_ref }}"
       required: "${{ needs.classify.outputs.environment_required == 'true' }}"

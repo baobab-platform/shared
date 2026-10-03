@@ -4,6 +4,10 @@ name: "Reusable — Foundation Product: Container"
 # Defaults release_require_zero_exceptions so active waivers cannot ship unnoticed.
 on:
   workflow_call:
+    secrets:
+      SHARED_READ_TOKEN:
+        description: Read-only credential for the private baobab-platform/shared repository; defaults to github.token for Shared itself.
+        required: false
     inputs:
       foundation_ref:
         description: Exact shared commit used by the caller; policy files are loaded from this ref.
@@ -19,6 +23,8 @@ permissions:
 jobs:
   foundation:
     uses: ./.github/workflows/foundation-repository-gates.yml
+    secrets:
+      SHARED_READ_TOKEN: "${{ secrets.SHARED_READ_TOKEN }}"
     with:
       foundation_ref: "${{ inputs.foundation_ref }}"
       profile: container

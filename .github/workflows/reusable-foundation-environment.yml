@@ -1,6 +1,10 @@
 name: Reusable — Foundation Development Environment
 on:
   workflow_call:
+    secrets:
+      SHARED_READ_TOKEN:
+        description: Read-only credential for the private baobab-platform/shared repository; defaults to github.token for Shared itself.
+        required: false
     inputs:
       foundation_ref:
         description: Immutable shared commit containing the environment catalogue.
@@ -20,6 +24,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: baobab-platform/shared
+          token: ${{ secrets.SHARED_READ_TOKEN || github.token }}
           ref: "${{ inputs.foundation_ref }}"
           path: .foundation
           persist-credentials: false
@@ -108,6 +113,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: baobab-platform/shared
+          token: ${{ secrets.SHARED_READ_TOKEN || github.token }}
           ref: main
           path: .shared-history
           fetch-depth: 0

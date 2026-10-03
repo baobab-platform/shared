@@ -290,9 +290,18 @@ def check_platform_context_validation() -> None:
                   "aud", "validates_audience", "tenant_id", "issuer"):
         rejects(schema, "PlatformContextValidateRequest", {**request, field: "x"}, f"validate request carrying caller-controlled {field}")
     rejects(schema, "PlatformContextValidateRequest", {**request, "context_id": "ctx-1"}, "validate request with a non-uuid context")
-    for token in ("", "not-a-jwt", "a.b", "a b.c.d", "bearer a.b.c"):
+    for token in ("", "a.b", "x" * 15, "x" * 8193):
         rejects(schema, "PlatformContextValidateRequest", {**request, "subject_token": token}, f"validate request with subject_token {token!r}")
     token_schema = json.loads((CP / schema).read_text())["$defs"]["PlatformContextValidateRequest"]["properties"]["subject_token"]
+    # Serialization is not authority: opaque access tokens reach runtime verification.
+    for token in ("opaque_access_token_0123456789", "a" * 16, "a" * 8192,
+                  "token+with/slash=0123456789"):
+        accepts(schema, "PlatformContextValidateRequest", {**request, "subject_token": token},
+                "format-neutral access token")
+    if "pattern" in token_schema or "compact JWT" in token_schema.get("description", ""):
+        fail("subject_token must not constrain access-token serialization to JWT")
+    if token_schema.get("minLength") != 16 or token_schema.get("maxLength") != 8192:
+        fail("subject_token must retain the 16..8192 character bounds")
     if token_schema.get("writeOnly") is not True:
         fail("subject_token must be writeOnly: it is sent to the Control Plane and never returned")
     token_text = " ".join(token_schema.get("description", "").split())
@@ -341,11 +350,22 @@ def check_platform_context_validation() -> None:
         if phrase not in prose:
             fail(f"POST /platform-context/validate must document {phrase!r}")
 
+    # Independent validation applies to both token profiles; a local signature is
+    # meaningful only for a self-contained signed token (ADR-IAM-0020/0021).
+    for phrase in ("For self-contained signed tokens", "issuer, signature and expiry",
+                   "for opaque tokens", "trusted introspection result",
+                   "configured issuer/provider authority", "active and unexpired",
+                   "Both profiles require workload actor"):
+        if phrase not in prose:
+            fail(f"POST /platform-context/validate must document {phrase!r}")
+    if "independently of the validator (issuer, signature, expiry" in prose:
+        fail("POST /platform-context/validate must not require local signatures for opaque tokens")
+
     # Every consumer of a stored context judges the actual caller; none lets a context be a bearer credential.
-    for path in ("/capabilities/resolve", "/resolution/mappings"):
+    for path in ("/capabilities/resolve", "/capabilities/resolve-batch", "/resolution/mappings"):
         text = " ".join(openapi["paths"][path]["post"]["description"].split())
         for phrase in ("bound to the principal that resolved it", "canonical principal must equal the context's",
-                       "indistinguishable from an unknown or expired one", "CONTEXT_NOT_FOUND, 404"):
+                       "indistinguishable from an unknown or expired one", "CONTEXT_NOT_FOUND, 404", "TENANT_CONTEXT_MISMATCH (403)"):
             if phrase not in text:
                 fail(f"POST {path} must document {phrase!r} (every consumer of a stored context enforces ownership)")
         if "another tenant's context" in text:

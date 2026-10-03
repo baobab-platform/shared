@@ -271,3 +271,29 @@ for path in WORKFLOWS.glob("*.y*ml"):
             assert re.search(r"#\s*v\d", match.group(2)), f"{path.name}: pin without a version comment: {match.group(1)}"
 
 print("Foundation workflow wiring fixtures passed")
+
+# A private policy checkout needs an explicitly passed read-only credential.
+# Only policy-loading children receive it; scans of the caller keep github.token.
+for name in (
+    "foundation-repository-gates.yml",
+    "foundation-product-contract.yml",
+    "foundation-product-security.yml",
+    "foundation-product-container.yml",
+    "reusable-foundation-classify.yml",
+    "reusable-foundation-environment.yml",
+):
+    document, _ = load(name)
+    call = document.get(True, document.get("on"))["workflow_call"]
+    assert call["secrets"]["SHARED_READ_TOKEN"]["required"] is False
+for name in ("classify", "environment"):
+    assert entry["jobs"][name]["secrets"]["SHARED_READ_TOKEN"] == "${{ secrets.SHARED_READ_TOKEN }}"
+for product in ("contract", "security", "container"):
+    document, _ = load(f"foundation-product-{product}.yml")
+    assert document["jobs"]["foundation"]["secrets"]["SHARED_READ_TOKEN"] == "${{ secrets.SHARED_READ_TOKEN }}"
+for document in (classifier, environment):
+    for job in document["jobs"].values():
+        for step in job.get("steps", []):
+            options = step.get("with", {})
+            if options.get("repository") == "baobab-platform/shared":
+                assert options["token"] == "${{ secrets.SHARED_READ_TOKEN || github.token }}"
+                assert options["persist-credentials"] is False

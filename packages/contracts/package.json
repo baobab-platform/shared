@@ -12,7 +12,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "generate:proto": "buf generate",
-    "generate:graphql": "graphql-codegen --config codegen.ts",
+    "generate:graphql": "node scripts/generate-graphql.mjs",
     "generate": "pnpm generate:proto && pnpm generate:graphql",
     "build": "pnpm generate && tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly",
     "lint": "buf lint"
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@bufbuild/buf": "1.72.0",
-    "@graphql-codegen/cli": "7.3.1",
+    "@graphql-codegen/core": "6.2.0",
     "@graphql-codegen/typescript": "6.1.0",
     "tsup": "8.5.1",
     "typescript": "7.0.2"

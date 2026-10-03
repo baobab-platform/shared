@@ -1,6 +1,6 @@
 # Context authority for tenant-neutral workloads: design
 
-**Status:** REVISED after owner review of 2026-10-02 (decisions 3 and 4 approved; 1 and 2 revised; lifetime corrected). Awaiting final approval. **Nothing is implemented and no contract changes in this PR.** Contract amendments, Control Plane code and ERP code follow only after approval.
+**Status:** APPROVED in shared#207; contracts implemented by shared#208 (control-plane/v1 1.33.0, erp/v1 1.1.0). The implementation review clarification below corrects the Control Plane contract to 1.33.1. Runtime rollout and workload scope allocation remain separate steps.
 **Date:** 2026-10-02
 **Authority:** ADR-0007 sections 88-91 (workload identity: scope plus Control Plane context; "Scope is not tenant access") and its principle that independently deployable workloads have independently revocable identities, ADR-BCP-004 (context resolution and lifetime, sections 52 and 70-72), ADR-BCP-007 (signed or delegated assertions deliberately deferred), owner rulings of 2026-10-02.
 **Repositories touched later:** `shared` (contracts), `baobab-cp` (redemption and validation), `baobab-erp` (consumption). `baobab-iam` issues no tenant claim; any further scope allocation follows the caller audit in section 8.
@@ -75,7 +75,7 @@ Security: `workloadOidc: [context:validate]`, actor `workload`.
 
 Two pieces of authenticated evidence are required:
 1. **The validator** (`baobab-erp-workload`, or whichever workload is the resource server), authenticated by the bearer token and holding `context:validate`.
-2. **The subject** (the actual caller), proved by `subject_token`, which Control Plane verifies **independently of the validator**: issuer, signature, expiry, `actor_type` workload, and an audience equal to the validator's own resource-server audience (a validator may validate only tokens issued for its own audience). Control Plane does not trust the validator's description of the token.
+2. **The subject** (the actual caller), proved by `subject_token`, which Control Plane verifies **independently of the validator** using the configured token-validation profile. For self-contained signed tokens it verifies issuer, signature and expiry. For opaque tokens it requires a trusted introspection result from the configured issuer/provider authority confirming the token is active and unexpired. Both profiles require `actor_type` workload and an audience equal to one explicitly registered in the validator's `validates_audiences`. Independent trustworthy validation is mandatory; local signature verification is conditional on a self-contained signed token. Control Plane does not trust the validator's description of the token.
 
 Control Plane then:
 1. verifies the subject token and resolves its `(issuer, subject, actor_type)` to a canonical principal;
@@ -207,7 +207,17 @@ context:validate -> the resource server doing the validating (baobab-erp-workloa
 3. Audit the ERP caller matrix (section 8) and make the resulting scope allocations as separate, explicit decisions.
 4. ERP: re-pin; `context_id` on reads and provisioning; validate through Control Plane forwarding the inbound token as subject evidence; tests from section 7.
 
-## 11. Decisions recorded
+## 11. Contract clarification after implementation review (2026-10-03)
+
+The subject_token contract carries an OAuth access-token value, bounded to 16–8192 characters and write-only. It does not require compact JWT serialization. Missing, undersized or oversized values fail schema validation; token authenticity and validity are runtime verification decisions. Local JWT validation is the initial CP adapter capability; trusted token introspection remains permitted by ADR-IAM-0020/0021.
+
+The validates_audiences field explicitly registers each validator-to-subject-audience relationship. Multiple independently revocable validators may register the same resource-server audience. Each validator's list remains distinct and non-empty, must exclude the Control Plane audience, and requires context:validate. No scope is allocated by this clarification.
+
+Batch capability resolution explicitly enforces the same ownership and tenant-binding invariants as single resolution and mapping resolution.
+
+Provisioning retries validate the fresh context before returning an idempotent replay. The context_id stays outside the request fingerprint; validated canonical principal stays in the fingerprint and validated tenant stays in the idempotency scope. An old key grants no authority.
+
+## 12. Decisions recorded
 
 | Question | Decision |
 |---|---|
