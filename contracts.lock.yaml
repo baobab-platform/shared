@@ -14,6 +14,8 @@ contracts:
       - session.schema.json
       - authentication-assurance.schema.json
       - assurance-requirement.schema.json
+      - runtime-capability.schema.json
+      - provider-runtime-profile.schema.json
   - domain: authorization
     version: v1
     schemas:
@@ -128,3 +130,4 @@ contracts:
       - deployment-observation.schema.json
       - events.schema.json
       - release-policy.yaml
+
