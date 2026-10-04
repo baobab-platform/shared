@@ -221,6 +221,22 @@ workloads:
     rotation_owner: baobab-platform/baobab-subscriptions
     status: PROVISIONED
 
+  # MP2-C staging IAM authority consumer. It is distinct from browser,
+  # administrator and provider-native identities and may call only the private
+  # Control Plane federation authority surface. PROVISIONED until Hydra issues
+  # the federated workload token and CP accepts the exact audience/scope end to
+  # end; registration alone is not activation evidence.
+  baobab-iam-staging:
+    repository: baobab-platform/baobab-iam
+    owner: baobab-platform/baobab-iam
+    runtime: "staging IAM federation authority service"
+    environment: staging
+    allowed_audiences: ["baobab-control-plane"]
+    allowed_scopes: ["federation-authority:read"]
+    credential_type: federated_workload_token
+    rotation_owner: baobab-platform/baobab-iam
+    status: PROVISIONED
+
   # MP2-C staging reporter. Separate workload identity is deliberate:
   # staging evidence must never reuse production credentials or claim production
   # activation. It may read staging desired releases, submit deployment
