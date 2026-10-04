@@ -42,7 +42,7 @@ ERP now implements the new caller-bound CP context boundary in its reconciliatio
 PR, retaining independent approved-plan and Finance requirements. Production
 validator registration/grant and deployed acceptance remain outstanding.
 Subscriptions/Payments provider metadata is DRAFT, simulated and non-production.
-CMS/Trade security failures remain merge blockers; contract compatibility alone
+CMS/Trade dependency and ERP/Trade image security failures remain merge blockers; contract compatibility alone
 does not override them. This record supersedes older pin and ERP 501 statements
 within its audit scope. EA-04, certification, activation and deployment remain held.
 

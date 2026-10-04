@@ -84,11 +84,13 @@ contract suite never waives an unrelated required security gate.
   tests, vendored byte conformance, exact Shared HEAD and Foundation.
 - Payments: all four applicable workflows passed, including Rust tests, vendored
   byte conformance, exact Shared HEAD and Foundation.
-- ERP: initial repository CI (six jobs), security and action pinning passed.
-  Final-head rerun and Foundation are pending at this checkpoint.
-- Trade: initial exact-pin Shared conformance, release readiness and
-  infrastructure integration passed. Formatting of the added cases was corrected;
-  full final-head CI is pending.
+- ERP: final-head repository CI (six jobs), security and action pinning passed.
+  Foundation container scan fails on critical CVE-2026-49875 in upstream
+  org.apache.cxf:cxf-core 3.6.5. Reported fixed versions are 4.2.2/4.1.7, a major
+  OSGi runtime compatibility change, not a contract adaptation.
+- Trade: final-head exact-pin Shared conformance, verify (format/lint/typecheck/
+  tests/build) and production infrastructure integration passed. Full core-module
+  integration and release readiness are pending. Foundation security remains failed.
 - CMS: repository CI passed. Foundation dependency audits fail with 21 findings
   (8 high, 13 moderate) in its unchanged dependency graph.
 - Trade Foundation dependency audit: 96 findings (81 high, 15 moderate).
@@ -96,7 +98,7 @@ contract suite never waives an unrelated required security gate.
   reported. The PR changes no package manifest, dependency lock or image.
 
 No scanner exclusions, audit-level changes, waivers or ignore-unfixed settings
-are added. Resolving these dependency/image findings requires a separately
+are added. Resolving the CMS/Trade dependency and ERP/Trade image findings requires a separately
 reviewed remediation; the reconciliation PRs remain blocked until required
 security checks pass. Advisory counts are this run's observations, not unique
 vulnerability counts or a permanent baseline.
