@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/external-principal.schema.json",
+  "title": "FederatedExternalPrincipal",
+  "description": "Verified adapter evidence for one human federation event, not a canonical Principal or business grant. Issuer and stable subject are exact, never normalized or auto-linked by email. SAML adapters must establish persistent scoped subject semantics. UNRESOLVED cannot fabricate canonical IDs; RESOLVED requires authoritative issuer+subject mapping. Authentication evidence must be verified before this record is emitted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "authentication_event_id",
+    "trust_id",
+    "provider_id",
+    "engine_instance_id",
+    "protocol",
+    "issuer",
+    "subject",
+    "actor_type",
+    "observed_at",
+    "expires_at",
+    "resolution"
+  ],
+  "properties": {
+    "authentication_event_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "trust_id": {
+      "$ref": "federation-domain.schema.json#/$defs/federationTrustId"
+    },
+    "provider_id": {
+      "$ref": "https://contracts.baobab-platform.com/capability/v1/domain.schema.json#/$defs/capabilityProviderId"
+    },
+    "engine_instance_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/engineInstanceId"
+    },
+    "protocol": {
+      "$ref": "federation-domain.schema.json#/$defs/protocol"
+    },
+    "issuer": {
+      "$ref": "federation-domain.schema.json#/$defs/upstreamIssuer"
+    },
+    "subject": {
+      "$ref": "federation-domain.schema.json#/$defs/externalSubject"
+    },
+    "actor_type": {
+      "const": "human"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "UNRESOLVED",
+            "RESOLVED"
+          ]
+        },
+        "principal_id": {
+          "$ref": "https://schemas.baobab-platform.com/contracts/identity/v1/principal.schema.json#/properties/id"
+        },
+        "external_identity_id": {
+          "$ref": "https://schemas.baobab-platform.com/contracts/identity/v1/external-identity.schema.json#/properties/id"
+        },
+        "mapping_reference": {
+          "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+        },
+        "mapping_basis": {
+          "const": "ISSUER_SUBJECT"
+        },
+        "resolved_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "RESOLVED"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "principal_id",
+              "external_identity_id",
+              "mapping_reference",
+              "mapping_basis",
+              "resolved_at"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "principal_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "external_identity_id"
+                  ]
+                },
+                {
+                  "required": [
+                    "mapping_reference"
+                  ]
+                },
+                {
+                  "required": [
+                    "mapping_basis"
+                  ]
+                },
+                {
+                  "required": [
+                    "resolved_at"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

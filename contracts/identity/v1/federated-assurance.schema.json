@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/federated-assurance.schema.json",
+  "title": "FederatedAuthenticationAssurance",
+  "description": "Protocol-neutral assurance provenance for the exact federation event. OIDC reuses AuthenticationAssurance; SAML retains verified AuthnContext without inventing OIDC acr/amr. UNKNOWN has no assigned level. MAPPED requires approved trust-scoped policy and decision evidence. Consumer must independently establish mapping authenticity/coverage and freshness; enterprise branding or SSO alone never proves MFA or A3. This is not authorization and never creates A4.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "authentication_event_id",
+    "trust_id",
+    "provider_id",
+    "engine_instance_id",
+    "protocol",
+    "issuer",
+    "subject",
+    "upstream_evidence",
+    "mapping_status",
+    "assurance_policy_reference",
+    "evaluated_at",
+    "expires_at"
+  ],
+  "properties": {
+    "authentication_event_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "trust_id": {
+      "$ref": "federation-domain.schema.json#/$defs/federationTrustId"
+    },
+    "provider_id": {
+      "$ref": "https://contracts.baobab-platform.com/capability/v1/domain.schema.json#/$defs/capabilityProviderId"
+    },
+    "engine_instance_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/engineInstanceId"
+    },
+    "protocol": {
+      "$ref": "federation-domain.schema.json#/$defs/protocol"
+    },
+    "issuer": {
+      "$ref": "federation-domain.schema.json#/$defs/upstreamIssuer"
+    },
+    "subject": {
+      "$ref": "federation-domain.schema.json#/$defs/externalSubject"
+    },
+    "upstream_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "oidc": {
+          "$ref": "https://schemas.baobab-platform.com/contracts/identity/v1/authentication-assurance.schema.json"
+        },
+        "saml": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authn_context_class_ref",
+            "authenticated_at",
+            "session_expires_at"
+          ],
+          "properties": {
+            "authn_context_class_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+            },
+            "authenticated_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "session_expires_at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "oidc"
+          ],
+          "not": {
+            "required": [
+              "saml"
+            ]
+          }
+        },
+        {
+          "required": [
+            "saml"
+          ],
+          "not": {
+            "required": [
+              "oidc"
+            ]
+          }
+        }
+      ]
+    },
+    "mapping_status": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "MAPPED"
+      ]
+    },
+    "level": {
+      "$ref": "federation-domain.schema.json#/$defs/assuranceLevel"
+    },
+    "assurance_policy_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+    },
+    "mapping_evidence_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mapping_status": {
+            "const": "MAPPED"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "level",
+          "mapping_evidence_reference"
+        ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "level"
+              ]
+            },
+            {
+              "required": [
+                "mapping_evidence_reference"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "protocol": {
+            "const": "OIDC"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "upstream_evidence": {
+            "required": [
+              "oidc"
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "upstream_evidence": {
+            "required": [
+              "saml"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/federation-domain.schema.json",
+  "title": "Federation vocabulary",
+  "description": "Canonical trust IDs and protocol-neutral evidence vocabulary. A4 requires privileged Baobab context/risk/session policy and cannot be asserted by upstream authentication alone.",
+  "$defs": {
+    "federationTrustId": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": [
+        "OIDC",
+        "SAML2"
+      ]
+    },
+    "trustStatus": {
+      "type": "string",
+      "enum": [
+        "REQUESTED",
+        "CONFIGURING",
+        "VERIFYING",
+        "ACTIVE",
+        "SUSPENDED",
+        "ROTATING",
+        "REVOKED"
+      ]
+    },
+    "assuranceLevel": {
+      "type": "string",
+      "enum": [
+        "BAOBAB-A1",
+        "BAOBAB-A2",
+        "BAOBAB-A3"
+      ]
+    },
+    "externalSubject": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+    },
+    "upstreamIssuer": {
+      "type": "string",
+      "format": "uri",
+      "minLength": 1,
+      "maxLength": 2048
+    }
+  }
+}

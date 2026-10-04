@@ -109,6 +109,7 @@ on:
       - "scripts/validate-control-plane-contracts.py"
       - "scripts/validate-topology-contracts.py"
       - "scripts/validate-identity-runtime-contracts.py"
+      - "scripts/validate-federation-contracts.py"
       - "scripts/capability_catalogue.py"
       - "scripts/contract_lock.py"
       - "scripts/event_contexts.py"
@@ -139,6 +140,7 @@ on:
       - "scripts/validate-control-plane-contracts.py"
       - "scripts/validate-topology-contracts.py"
       - "scripts/validate-identity-runtime-contracts.py"
+      - "scripts/validate-federation-contracts.py"
       - "scripts/capability_catalogue.py"
       - "scripts/contract_lock.py"
       - "scripts/event_contexts.py"
@@ -182,6 +184,12 @@ jobs:
         run: python scripts/validate-identity-runtime-contracts.py
       - name: Test identity runtime profile invariants
         run: python scripts/tests/test_identity_runtime_contracts.py
+      - name: Validate federation trust and evidence contracts (MP2-B)
+        run: python scripts/validate-federation-contracts.py
+      - name: Test federation trust and evidence invariants
+        run: python scripts/tests/test_federation_contracts.py
+      - name: Test offline schema reference resolution
+        run: python scripts/tests/test_schema_reference_resolution.py
       - name: Validate the platform event registry (ADR-SHARED-008)
         run: python scripts/validate-event-registry.py
       - name: Validate organisation contracts and examples (Draft 2020-12)

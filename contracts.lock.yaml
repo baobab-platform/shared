@@ -16,6 +16,11 @@ contracts:
       - assurance-requirement.schema.json
       - runtime-capability.schema.json
       - provider-runtime-profile.schema.json
+      - federation-domain.schema.json
+      - federation-trust.schema.json
+      - external-principal.schema.json
+      - federated-assurance.schema.json
+      - federation-lifecycle.yaml
   - domain: authorization
     version: v1
     schemas:

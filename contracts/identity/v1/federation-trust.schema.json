@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/federation-trust.schema.json",
+  "title": "FederationTrust",
+  "description": "Canonical scoped trust policy, not provider configuration or entitlement. Only ACTIVE permits new federation authentication; every other state fails closed, including ROTATING. ACTIVE requires independent organisation/administrator and technical verification; a reference alone proves none of those facts. REVOKED is terminal. CP owns canonical organisation/estate context; IAM administers trust mechanics under approved governance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "protocol",
+    "upstream_issuer",
+    "organisation_ids",
+    "estate_ids",
+    "provider_binding",
+    "status",
+    "assurance_policy_reference",
+    "attribute_mapping_reference",
+    "provisioning_policy_reference",
+    "revision",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "federation-domain.schema.json#/$defs/federationTrustId"
+    },
+    "protocol": {
+      "$ref": "federation-domain.schema.json#/$defs/protocol"
+    },
+    "upstream_issuer": {
+      "$ref": "federation-domain.schema.json#/$defs/upstreamIssuer"
+    },
+    "organisation_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+      }
+    },
+    "estate_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/estateId"
+      }
+    },
+    "provider_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider_id",
+        "engine_instance_id",
+        "configuration_reference",
+        "trust_material_reference"
+      ],
+      "properties": {
+        "provider_id": {
+          "$ref": "https://contracts.baobab-platform.com/capability/v1/domain.schema.json#/$defs/capabilityProviderId"
+        },
+        "engine_instance_id": {
+          "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/engineInstanceId"
+        },
+        "configuration_reference": {
+          "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+        },
+        "trust_material_reference": {
+          "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+        }
+      },
+      "description": "References to approved non-secret configuration and public trust material. Private credentials are managed outside this contract. Native IdP aliases and realms are not canonical identifiers."
+    },
+    "status": {
+      "$ref": "federation-domain.schema.json#/$defs/trustStatus"
+    },
+    "assurance_policy_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+    },
+    "attribute_mapping_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+    },
+    "provisioning_policy_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "activation_evidence_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+    },
+    "activated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revoked_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "ACTIVE"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "activation_evidence_reference",
+          "activated_at"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "REVOKED"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "revoked_at"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "revoked_at"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -29,6 +29,16 @@ end
 #    tree, not just identity-events: it's exactly the class of bug that shipped
 #    undetected here (identity-created/-disabled/membership-revoked all $ref'd
 #    a ../../common/event-envelope.schema.json that has never existed).
+# Resolve absolute references only through exact schema IDs present in this
+# checkout. No network retrieval and no arbitrary URL-to-path conversion.
+schema_ids = {}
+Dir.glob(File.join(ROOT, "contracts/**/*.schema.json")).each do |path|
+  id = JSON.parse(File.read(path))["$id"]
+  next unless id
+  fail_contract("duplicate schema $id") if schema_ids.key?(id)
+  schema_ids[id] = path
+end
+
 collect_refs = lambda do |node, refs|
   case node
   when Hash
@@ -48,8 +58,13 @@ Dir.glob(File.join(ROOT, "contracts/**/*.schema.json")).sort.each do |schema_pat
     file_part = ref.split("#").first
     next if file_part.nil? || file_part.empty? # in-document fragment only
 
-    resolved = File.expand_path(File.join(File.dirname(schema_path), file_part))
-    next if File.exist?(resolved)
+    uri = URI.parse(file_part)
+    resolved = if uri.absolute?
+                 schema_ids[file_part]
+               else
+                 File.expand_path(File.join(File.dirname(schema_path), file_part))
+               end
+    next if resolved && File.file?(resolved)
 
     fail_contract("#{relative(schema_path)}: $ref #{ref.inspect} does not resolve to a file on disk")
   end
