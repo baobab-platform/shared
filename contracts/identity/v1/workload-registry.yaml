@@ -221,6 +221,24 @@ workloads:
     rotation_owner: baobab-platform/baobab-subscriptions
     status: PROVISIONED
 
+  # MP2-C staging reporter. Separate workload identity is deliberate:
+  # staging evidence must never reuse production credentials or claim production
+  # activation. It may read staging desired releases, submit deployment
+  # observations and publish secret-free identity runtime profiles for
+  # af-south-1. PROVISIONED until the federated exchange and both CP write
+  # paths are proven end to end in staging.
+  baobab-deployment-controller-staging:
+    repository: baobab-platform/infrastructure
+    owner: baobab-platform/infrastructure
+    runtime: "staging deployment controller and runtime verifier"
+    environment: staging
+    deployment_regions: [af-south-1]
+    allowed_audiences: ["baobab-control-plane"]
+    allowed_scopes: ["desired-release:read", "deployment:observe", "identity-runtime:observe"]
+    credential_type: federated_workload_token
+    rotation_owner: baobab-platform/infrastructure
+    status: PROVISIONED
+
   # ADR-BCP-025 section 2.9 reporter for production. Owner ruling: the reporter
   # is infrastructure-owned deployment tooling, not an engine and not an
   # admission webhook (production is ECS/Fargate; EKS is deferred). It reads
