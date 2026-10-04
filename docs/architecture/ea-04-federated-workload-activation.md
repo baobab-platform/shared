@@ -146,3 +146,19 @@ ACTIVE
 ```
 
 Shared is the canonical record of that transition.
+
+## 8. Current provider evidence — 2026-10-04
+
+IAM #56–#60 are merged. The [EA v2 resumption checkpoint](ea-v2-resumption-2026-10-04.md)
+records isolated provider mechanics, governed M4-C token claims and compatibility
+with CP's explicitly pinned production verifier. These allow eligible EA source
+and integration work to continue, but do not satisfy the ten activation criteria
+above.
+
+Both federated resource profiles currently fail closed: pinned Hydra v26.2.0
+propagates the assertion endpoint audience into the access token and the governed
+policy rejects it. CP → Subscriptions and Subscriptions → Payments remain
+PROVISIONED. Required work includes compatible provider audience mechanics, real
+projected signer/key lifecycle and protected requests accepted by actual resource
+routes. A verifier-only test cannot replace route authorization, canonical
+context ownership or tenant-isolation evidence.
