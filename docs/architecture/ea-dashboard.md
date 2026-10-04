@@ -1,7 +1,7 @@
 # EA Implementation Dashboard
 
 **Governing plan:** [EA Implementation Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) (30 September 2026)
-**Last updated:** 2026-10-04 (focused IAM/EA-01 resumption audit; older stream assessments retain their original evidence dates)
+**Last updated:** 2026-10-04 (fleet consumed-contract reconciliation; historical stream assessments retain their evidence dates)
 **Maintained:** every EA gate PR updates this page (plan §48).
 
 This page is the single live status for each EA stream, gate and PR. The plan
@@ -30,6 +30,21 @@ The checkpoint takes precedence over conflicting historical IAM/pin statements
 below. The remaining streams have **not** been fully re-audited in this update;
 in particular the ERP lock has advanced and its old operational gaps must be
 checked against current runtime code before being treated as outstanding work.
+
+## Fleet consumed-contract reconciliation — 2026-10-04
+
+[Current fleet reconciliation](ea-v2-contract-drift-2026-10-04.md) records the
+six consumer PRs, consumed semantic deltas, exact reviewed Shared target and
+head-specific CI. IAM #62 and Shared #210 were merged by the owner; CP already
+pins the reviewed contract target. New consumer PRs remain draft proposals.
+
+ERP now implements the new caller-bound CP context boundary in its reconciliation
+PR, retaining independent approved-plan and Finance requirements. Production
+validator registration/grant and deployed acceptance remain outstanding.
+Subscriptions/Payments provider metadata is DRAFT, simulated and non-production.
+CMS/Trade dependency and ERP/Trade image security failures remain merge blockers; contract compatibility alone
+does not override them. This record supersedes older pin and ERP 501 statements
+within its audit scope. EA-04, certification, activation and deployment remain held.
 
 ## Baselines — historical 2026-10-02 assessment
 
