@@ -8,10 +8,15 @@ not certification, canonical activation or deployed acceptance.
 ## Exact baselines and review scope
 
 Reviewed contract target: Shared `6899a2d8f143bf23d36c4f4ac904e0a1e10c3cea`.
-Current Shared main `97e5691ecd0402c339338c0289495141e5799acc` merges #210;
+The census Shared main `97e5691ecd0402c339338c0289495141e5799acc` merges #210;
 the three changed paths are architecture documentation. Every consumed contract
 is byte-identical to the reviewed target. Documentation-only head drift does
 not require runtime changes or another fleet-wide re-pin.
+
+The owner subsequently merged the initial fleet evidence record in Shared #211
+at `47106f3bc8ec935cc47efebab246018234e31420`. This follow-up completes the
+final-head run evidence after Trade's full regression suite finished. This
+additional Shared main advance also changes documentation only.
 
 CP main `c84063cb07dce76e1ffac4b12fa29c5e4e5ec855` already pins the target.
 IAM #62 was merged by the owner at `14373271d0e4d824671f8e451dff8d6bbf519147`;
@@ -20,10 +25,11 @@ four applicable workflows, including exact-pin live Ory/CP verifier proof.
 No duplicate CP/IAM pin PR is necessary.
 
 The six new consumer PRs reconcile the old pins below to the reviewed target.
-They are drafts, not main baselines. No merge, deployment or permission grant
+They were created as drafts; the owner has marked ERP #56 and Trade #115 ready for review.
+All six remain unmerged and are not main baselines. No merge, deployment or permission grant
 is performed by this task.
 
-| Consumer | Audited main | Old Shared pin | Draft PR | Proposed head |
+| Consumer | Audited main | Old Shared pin | Reconciliation PR | Proposed head |
 |---|---|---|---|---|
 | baobab-cms | `19deac119b3232ccbf29f1889b62cfabb43ceeb1` | `b63ce52a20d1b6f8acc41d085913c6025d6c859c` | [#21](https://github.com/baobab-platform/baobab-cms/pull/21) | `676770ba2aeccf795d1a1dceff8f2257252e3a13` |
 | baobab-pulse | `0cece91cc7c82bb4eaa49695a8a35ecab0de21cd` | `b63ce52a20d1b6f8acc41d085913c6025d6c859c` | [#30](https://github.com/baobab-platform/baobab-pulse/pull/30) | `bdc3f9b1c97abf47c176441dca1327efb2ed9c22` |
@@ -75,7 +81,7 @@ validator prove boundary behavior only.
 
 ## Validation and remaining merge blockers
 
-Head-specific evidence is updated below after the final runs. A successful
+The final consumer runs are complete at the proposed heads in the table. A successful
 contract suite never waives an unrelated required security gate.
 
 - Pulse: all six applicable final-head workflows passed, including exact Shared
@@ -84,18 +90,34 @@ contract suite never waives an unrelated required security gate.
   tests, vendored byte conformance, exact Shared HEAD and Foundation.
 - Payments: all four applicable workflows passed, including Rust tests, vendored
   byte conformance, exact Shared HEAD and Foundation.
-- ERP: final-head repository CI (six jobs), security and action pinning passed.
+- ERP: final-head repository CI (six jobs), security and action pinning passed;
+  137 integration tests and 42 exact-pin conformance tests passed.
   Foundation container scan fails on critical CVE-2026-49875 in upstream
   org.apache.cxf:cxf-core 3.6.5. Reported fixed versions are 4.2.2/4.1.7, a major
   OSGi runtime compatibility change, not a contract adaptation.
-- Trade: final-head exact-pin Shared conformance, verify (format/lint/typecheck/
-  tests/build) and production infrastructure integration passed. Full core-module
-  integration and release readiness are pending. Foundation security remains failed.
+- Trade: all repository CI jobs passed, including exact-pin Shared conformance,
+  verify (format/lint/typecheck/tests/build), production infrastructure integration
+  and the full core-module regression suite. Release readiness and security
+  workflows passed. Foundation dependency/container security remains failed.
 - CMS: repository CI passed. Foundation dependency audits fail with 21 findings
   (8 high, 13 moderate) in its unchanged dependency graph.
 - Trade Foundation dependency audit: 96 findings (81 high, 15 moderate).
   Container scan finds high CVE-2026-93687 in braces 3.0.3; no fixed version is
   reported. The PR changes no package manifest, dependency lock or image.
+
+### Final-head workflow evidence
+
+Each run below belongs to the exact proposed consumer head in the baseline table.
+Successful source compatibility does not establish a passing merged main baseline.
+
+| Consumer | Applicable workflow conclusions |
+|---|---|
+| baobab-cms | [CI](https://github.com/baobab-platform/baobab-cms/actions/runs/37178024248): success; [Foundation Repository Gates](https://github.com/baobab-platform/baobab-cms/actions/runs/37178024681): failure |
+| baobab-pulse | [Security — Python (Bandit + pip-audit)](https://github.com/baobab-platform/baobab-pulse/actions/runs/37178245983): success; [Foundation Repository Gates](https://github.com/baobab-platform/baobab-pulse/actions/runs/37178246197): success; [Enforce Action Pinning](https://github.com/baobab-platform/baobab-pulse/actions/runs/37178245907): success; [Security — Secret Scanning](https://github.com/baobab-platform/baobab-pulse/actions/runs/37178245923): success; [Pulse CI](https://github.com/baobab-platform/baobab-pulse/actions/runs/37178245705): success; [Security — CodeQL](https://github.com/baobab-platform/baobab-pulse/actions/runs/37178245941): success |
+| baobab-trade | [Foundation Repository Gates](https://github.com/baobab-platform/baobab-trade/actions/runs/37178489058): failure; [Security](https://github.com/baobab-platform/baobab-trade/actions/runs/37178488572): success; [Release Readiness](https://github.com/baobab-platform/baobab-trade/actions/runs/37178488302): success; [CI](https://github.com/baobab-platform/baobab-trade/actions/runs/37178488274): success |
+| baobab-erp | [Enforce Action Pinning](https://github.com/baobab-platform/baobab-erp/actions/runs/37178545608): success; [Security](https://github.com/baobab-platform/baobab-erp/actions/runs/37178545708): success; [Foundation Repository Gates](https://github.com/baobab-platform/baobab-erp/actions/runs/37178545904): failure; [CI](https://github.com/baobab-platform/baobab-erp/actions/runs/37178545436): success |
+| baobab-subscriptions | [Enforce Action Pinning](https://github.com/baobab-platform/baobab-subscriptions/actions/runs/37178027939): success; [Security — Secret Scanning](https://github.com/baobab-platform/baobab-subscriptions/actions/runs/37178027889): success; [Foundation Repository Gates](https://github.com/baobab-platform/baobab-subscriptions/actions/runs/37178028207): success; [Java CI](https://github.com/baobab-platform/baobab-subscriptions/actions/runs/37178027718): success |
+| baobab-payments | [Foundation Repository Gates](https://github.com/baobab-platform/baobab-payments/actions/runs/37178028668): success; [Security — Secret Scanning](https://github.com/baobab-platform/baobab-payments/actions/runs/37178028434): success; [Enforce Action Pinning](https://github.com/baobab-platform/baobab-payments/actions/runs/37178028435): success; [Rust CI](https://github.com/baobab-platform/baobab-payments/actions/runs/37178028168): success |
 
 No scanner exclusions, audit-level changes, waivers or ignore-unfixed settings
 are added. Resolving the CMS/Trade dependency and ERP/Trade image findings requires a separately
