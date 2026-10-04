@@ -1,0 +1,16 @@
+# Canonical trust policy; provider availability cannot override these states.
+version: 1
+initial_status: REQUESTED
+new_authentication_statuses: [ACTIVE]
+terminal_statuses: [REVOKED]
+transitions:
+  REQUESTED: [CONFIGURING, REVOKED]
+  CONFIGURING: [VERIFYING, REVOKED]
+  VERIFYING: [CONFIGURING, ACTIVE, REVOKED]
+  ACTIVE: [SUSPENDED, ROTATING, REVOKED]
+  SUSPENDED: [VERIFYING, REVOKED]
+  ROTATING: [VERIFYING, REVOKED]
+  REVOKED: []
+# ACTIVE entry still requires approved organisation/admin and technical evidence.
+# Suspension/rotation re-entry goes through VERIFYING; no direct reactivation.
+# Existing sessions and domain grants require independent revocation policy.
