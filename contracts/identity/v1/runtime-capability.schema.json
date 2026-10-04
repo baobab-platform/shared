@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/runtime-capability.schema.json",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/runtime-capability.schema.json",
   "title": "Identity runtime capability verification vocabulary",
   "description": "ADR-IAM-0033 runtime facets and verification evidence. These labels qualify identity implementation mechanics; they are not platform capability keys and never create catalogue entries, grants, lifecycle or health.",
   "$defs": {
@@ -61,7 +61,7 @@
           "format": "date-time"
         },
         "evidence_reference": {
-          "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
+          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
         }
       },
       "description": "Opaque ExternalReference to approved immutable conformance evidence, not an organisation EvidenceRecord. Never embeds tokens, keys, logs or credentials. Consumers must verify reference target type, ownership, authenticity, subject/capability coverage and current eligibility. Expires_at must be strictly later than observed_at."

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.baobab-platform.com/contracts/identity/v1/provider-runtime-profile.schema.json",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/provider-runtime-profile.schema.json",
   "title": "IdentityProviderRuntimeProfile",
   "description": "Secret-free identity-runtime verification profile attached to an existing CapabilityProvider and EngineInstance. It is not a replacement provider, binding, topology, health or entitlement model. CP owns platform provider lifecycle/bindings/placement; approved IAM security/configuration references supply additional identity policy. A profile never establishes ACTIVE, HEALTHY, entitlement or canonical workload activation.",
   "type": "object",
@@ -17,17 +17,17 @@
   ],
   "properties": {
     "provider_id": {
-      "$ref": "https://contracts.baobab-platform.com/capability/v1/domain.schema.json#/$defs/capabilityProviderId"
+      "$ref": "../../capability/v1/domain.schema.json#/$defs/capabilityProviderId"
     },
     "engine_instance_id": {
-      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/engineInstanceId"
+      "$ref": "../../control-plane/v1/domain.schema.json#/$defs/engineInstanceId"
     },
     "configuration_reference": {
-      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId",
+      "$ref": "../../control-plane/v1/domain.schema.json#/$defs/externalReferenceId",
       "description": "CP ExternalReference for versioned, approved non-secret runtime configuration; must not resolve to credential values. Provider-native details remain outside this profile."
     },
     "security_domain_reference": {
-      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/externalReferenceId",
+      "$ref": "../../control-plane/v1/domain.schema.json#/$defs/externalReferenceId",
       "description": "CP ExternalReference to approved IAM IdentitySecurityDomain policy configuration. Target type and ownership must be verified by the consumer. A realm, tenant, organisation, email domain or region does not imply this relationship."
     },
     "artifact_digest": {

@@ -12,7 +12,7 @@ from referencing import Registry, Resource
 ROOT = Path(__file__).resolve().parents[1]
 IDENTITY = ROOT / 'contracts/identity/v1'
 SCHEMAS = ('runtime-capability.schema.json', 'provider-runtime-profile.schema.json')
-BASE = 'https://schemas.baobab-platform.com/contracts/'
+BASE = 'https://contracts.baobab-platform.com/'
 
 
 def validator():
