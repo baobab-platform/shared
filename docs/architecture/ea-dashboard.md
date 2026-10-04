@@ -1,7 +1,7 @@
 # EA Implementation Dashboard
 
 **Governing plan:** [EA Implementation Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) (30 September 2026)
-**Last updated:** 2026-10-02 (reconciled against `main`; every row below states its evidence, and a row older than its evidence is a defect)
+**Last updated:** 2026-10-04 (focused IAM/EA-01 resumption audit; older stream assessments retain their original evidence dates)
 **Maintained:** every EA gate PR updates this page (plan §48).
 
 This page is the single live status for each EA stream, gate and PR. The plan
@@ -12,7 +12,26 @@ Status words mean what they mean in the plan: *implemented* is not *proven*,
 *proven* is not *certified*, and nothing here is *production-permitted*
 unless it says so.
 
-## Baselines
+## Current resumption checkpoint — 2026-10-04
+
+[EA v2 resumption checkpoint](ea-v2-resumption-2026-10-04.md) records the current
+Shared/IAM/CP baselines, all eight observed consumer pins and the next bounded
+execution sequence. IAM #56–#60 are merged and their isolated live evidence is
+sufficient to resume eligible source/integration tasks. **EA-04 remains partial**:
+federated resource audiences, real signer lifecycle, deployed consumer routes
+and activation evidence remain open. Provider declarations remain planned-only.
+
+IAM [#62](https://github.com/baobab-platform/baobab-iam/pull/62) reconciles its
+five consumed contracts from `10810e2` to reviewed Shared `6899a2d`; final-head
+compatibility CI is required before merge. No scope grant, canonical activation,
+Digital Estate unfreeze or infrastructure deployment is implied.
+
+The checkpoint takes precedence over conflicting historical IAM/pin statements
+below. The remaining streams have **not** been fully re-audited in this update;
+in particular the ERP lock has advanced and its old operational gaps must be
+checked against current runtime code before being treated as outstanding work.
+
+## Baselines — historical 2026-10-02 assessment
 
 Verified against each repository's `main` on 2026-10-02. Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin.
 
