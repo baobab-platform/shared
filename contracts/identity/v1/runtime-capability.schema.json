@@ -64,7 +64,7 @@
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/externalReferenceId"
         }
       },
-      "description": "Opaque ExternalReference to approved immutable conformance evidence, not an organisation EvidenceRecord. Never embeds tokens, keys, logs or credentials. Consumers must verify reference target type, ownership, authenticity, subject/capability coverage and current eligibility. Expires_at must be strictly later than observed_at."
+      "description": "Opaque ExternalReference to approved immutable conformance evidence, not an organisation EvidenceRecord. Sensitive data is prohibited. Consumers must independently check evidence authority, ownership, authenticity, provider and facet coverage, and current eligibility. Expires_at must be strictly later than observed_at."
     },
     "capabilityObservation": {
       "type": "object",
