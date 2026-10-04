@@ -383,6 +383,20 @@ scopes:
     audience: ["baobab-control-plane"]
     allowed_actors: ["workload"]
 
+  - name: "identity-runtime:observe"
+    description: >-
+      Infrastructure-owned runtime verification tooling publishes secret-free
+      IdentityProviderRuntimeProfile evidence for the exact CapabilityProvider,
+      EngineInstance and deployed artifact it independently observed. The
+      Control Plane revalidates provider/instance ownership, registered
+      environment and region, runtime-facet evidence and deployed-artifact
+      identity. This scope never activates a provider, creates a capability,
+      grants tenancy/business authority or lets an identity engine attest to
+      itself.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
   - name: "verification:read"
     description: >-
       Read verification cases, their claims, checks, results and
