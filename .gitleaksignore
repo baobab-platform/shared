@@ -3,3 +3,6 @@
 # (trade-order-order_01k4n6w5-v1), not a credential.
 d28cbdeb77f2c2eab7c20439f908a7c7a8fa4110:contracts/erp/v1/examples/commerce-order-placed.json:generic-api-key:13
 d28cbdeb77f2c2eab7c20439f908a7c7a8fa4110:contracts/erp/v1/examples/order-consequence-changed.json:generic-api-key:14
+
+# Reviewed schema prose false positive: subject/capability coverage is not a credential.
+c44051eb3b06e2d2364116ea1d4b33f77563079d:contracts/identity/v1/runtime-capability.schema.json:generic-api-key:67

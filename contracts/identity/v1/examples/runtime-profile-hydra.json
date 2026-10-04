@@ -1,0 +1,23 @@
+{
+  "provider_id": "provider_cihydra",
+  "engine_instance_id": "ei_cihydra",
+  "configuration_reference": "ref_cihydraconfig",
+  "security_domain_reference": "ref_ciidentitypolicy",
+  "artifact_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "capability_observations": [
+    {
+      "capability": "OAUTH_AUTHORIZATION_SERVER",
+      "verification_status": "UNVERIFIED"
+    },
+    {
+      "capability": "OIDC_PROVIDER",
+      "verification_status": "UNVERIFIED"
+    },
+    {
+      "capability": "WORKLOAD_TOKEN_ISSUANCE",
+      "verification_status": "UNVERIFIED"
+    }
+  ],
+  "revision": 1,
+  "published_at": "2026-10-04T09:15:00Z"
+}

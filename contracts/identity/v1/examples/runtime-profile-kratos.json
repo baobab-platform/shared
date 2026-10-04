@@ -1,0 +1,39 @@
+{
+  "provider_id": "provider_cikratos",
+  "engine_instance_id": "ei_cikratos",
+  "configuration_reference": "ref_cikratosconfig",
+  "security_domain_reference": "ref_ciidentitypolicy",
+  "artifact_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "capability_observations": [
+    {
+      "capability": "HUMAN_AUTHENTICATION",
+      "verification_status": "UNVERIFIED"
+    },
+    {
+      "capability": "CREDENTIAL_MANAGEMENT",
+      "verification_status": "UNVERIFIED"
+    },
+    {
+      "capability": "SESSION_MANAGEMENT",
+      "verification_status": "UNVERIFIED"
+    },
+    {
+      "capability": "ACCOUNT_VERIFICATION",
+      "verification_status": "UNVERIFIED"
+    },
+    {
+      "capability": "ACCOUNT_RECOVERY",
+      "verification_status": "UNVERIFIED"
+    },
+    {
+      "capability": "MFA",
+      "verification_status": "UNVERIFIED"
+    },
+    {
+      "capability": "PASSKEY",
+      "verification_status": "UNVERIFIED"
+    }
+  ],
+  "revision": 1,
+  "published_at": "2026-10-04T09:15:00Z"
+}
