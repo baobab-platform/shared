@@ -36,7 +36,7 @@ checked against current runtime code before being treated as outstanding work.
 [Current fleet reconciliation](ea-v2-contract-drift-2026-10-04.md) records the
 six consumer PRs, consumed semantic deltas, exact reviewed Shared target and
 head-specific CI. IAM #62 and Shared #210 were merged by the owner; CP already
-pins the reviewed contract target. New consumer PRs remain draft proposals.
+pins the reviewed contract target. New consumer PRs remain unmerged proposals; ERP #56 and Trade #115 are marked ready for review.
 
 ERP now implements the new caller-bound CP context boundary in its reconciliation
 PR, retaining independent approved-plan and Finance requirements. Production
