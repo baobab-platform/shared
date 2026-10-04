@@ -12,6 +12,31 @@ spec.loader.exec_module(m)
 
 
 class FederationContracts(unittest.TestCase):
+    def test_federation_governance_rejects_authority_shortcuts(self):
+        policy = m.yaml.safe_load((m.IDENTITY / 'federation-authority-policy.yaml').read_text())
+        self.assertEqual([], m.validate_authority_policy(policy))
+        attacks = [('approval', 'require_distinct_canonical_maker_checker', False),
+                   ('approval', 'allow_shared_service_account', True),
+                   ('approval', 'allow_secret_targets', True),
+                   ('approval', 'allow_manual_import_as_approval', True),
+                   ('scope', 'allow_implicit_corporate_group_expansion', True),
+                   ('target_requirements', 'reference_existence_is_approval', True),
+                   ('target_requirements', 'identity_mapping_approval_creates_identity_relationship', True)]
+        for section, key, value in attacks:
+            with self.subTest(key=key):
+                altered = copy.deepcopy(policy)
+                altered[section][key] = value
+                self.assertTrue(m.validate_authority_policy(altered))
+        altered = copy.deepcopy(policy)
+        altered['targets']['canonical_identity_mapping']['engine_id'] = 'baobab-iam'
+        self.assertTrue(m.validate_authority_policy(altered))
+        altered = copy.deepcopy(policy)
+        altered['transport']['governance']['allow_role_fallback'] = True
+        self.assertTrue(m.validate_authority_policy(altered))
+        altered = copy.deepcopy(policy)
+        del altered['targets']['identity_security_domain']
+        self.assertTrue(m.validate_authority_policy(altered))
+
     def fixture(self, protocol='oidc'):
         return json.loads((m.IDENTITY / 'examples' / f'federation-{protocol}.json').read_text())
 
