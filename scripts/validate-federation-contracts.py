@@ -123,6 +123,69 @@ def validate_transition(previous, current):
     return []
 
 
+def validate_authority_policy(policy):
+    """Reject transport-as-authority, unregistered targets and weak approvals."""
+    errors = []
+    permissions = {p['key']: p for p in yaml.safe_load(
+        (ROOT / 'contracts/administration/v1/permission-registry.yaml').read_text())['permissions']}
+    scopes = {s['name']: s for s in yaml.safe_load(
+        (ROOT / 'contracts/authorization/v1/scope-registry.yaml').read_text())['scopes']}
+    systems = {s['system_namespace']: s['engine_ids'] for s in yaml.safe_load(
+        (ROOT / 'contracts/control-plane/v1/external-systems.yaml').read_text())['systems']}
+    expected_actions = {a.upper(): 'security.federation.' + a for a in ('view', 'propose', 'decide', 'revoke')}
+    if policy.get('version') != 1 or policy.get('actions') != expected_actions:
+        errors.append('unrecognised federation action vocabulary')
+    for action, risk in [('view', 'LOW'), ('propose', 'HIGH'), ('decide', 'CRITICAL'), ('revoke', 'HIGH')]:
+        p = permissions.get('security.federation.' + action, {})
+        if p.get('domain') != 'SECURITY' or p.get('risk_class') != risk or p.get('delegable') is not False or p.get('read_only') != (action == 'view') or p.get('scope_levels') != ['PLATFORM', 'ORGANISATION', 'DIGITAL_ESTATE']:
+            errors.append('invalid federation permission: ' + action)
+    constraints = {
+        'approval': {'require_distinct_canonical_maker_checker': True, 'require_exact_target_digest': True,
+                     'require_current_permission_at_use': True, 'revocation_terminal_for_snapshot': True,
+                     'allow_shared_service_account': False, 'allow_secret_targets': False,
+                     'allow_manual_import_as_approval': False},
+        'scope': {'levels': ['PLATFORM', 'ORGANISATION', 'DIGITAL_ESTATE'],
+                  'require_canonical_organisation_estate_relationship': True,
+                  'allow_email_or_provider_organisation_as_scope': False,
+                  'allow_implicit_corporate_group_expansion': False},
+        'target_requirements': {'require_registered_cp_external_reference': True,
+                                'require_non_secret_immutable_native_target': True,
+                                'require_exact_engine_instance_environment': True,
+                                'require_trust_revision_snapshot_scope_binding': True,
+                                'require_current_independent_approval': True,
+                                'reference_existence_is_approval': False,
+                                'identity_mapping_approval_creates_identity_relationship': False}}
+    for key, expected in constraints.items():
+        if policy.get(key) != expected:
+            errors.append('invalid mandatory restrictions: ' + key)
+    transport = policy.get('transport', {})
+    for kind, scope_name, actor in [('authority_reads', 'federation-authority:read', 'workload'),
+                                    ('governance', 'federation-governance:manage', 'human')]:
+        spec, scope = transport.get(kind, {}), scopes.get(scope_name, {})
+        if spec.get('scope') != scope_name or spec.get('actors') != [actor] or spec.get('audiences') != ['baobab-control-plane', 'baobab-iam'] or spec.get('require_current_active_principal') is not True:
+            errors.append('invalid transport admission: ' + kind)
+        if scope.get('allowed_actors') != [actor] or scope.get('audience') != spec.get('audiences') or scope.get('grants_authority') is not False:
+            errors.append('scope must not confer authority: ' + kind)
+    reads, governance = transport.get('authority_reads', {}), transport.get('governance', {})
+    if reads.get('require_current_active_workload') is not True or reads.get('require_exact_caller_target_association') is not True:
+        errors.append('workload lifecycle and target association required')
+    if governance.get('require_canonical_administrative_decision') is not True or governance.get('allow_role_fallback') is not False or governance.get('allow_effective_authority_display') is not False:
+        errors.append('canonical administrative decision required')
+    cp_targets = {'canonical_identity_mapping', 'identity_runtime_profile', 'identity_runtime_support'}
+    iam_targets = {'federation_configuration', 'federation_trust_material', 'assurance_policy',
+                   'attribute_mapping', 'provisioning_policy', 'federation_activation',
+                   'assurance_mapping_decision', 'identity_security_domain'}
+    targets = policy.get('targets', {})
+    if set(targets) != cp_targets | iam_targets:
+        errors.append('missing or unknown target purpose')
+    for purpose, target in targets.items():
+        engine = 'baobab-cp' if purpose in cp_targets else 'baobab-iam'
+        namespace = engine.replace('-', '_')
+        if target != {'system_namespace': namespace, 'engine_id': engine, 'native_entity_type': purpose} or engine not in systems.get(namespace, []):
+            errors.append('unregistered or wrong-owner target: ' + purpose)
+    return errors
+
+
 def main():
     for name in SCHEMAS:
         schema = json.loads((IDENTITY / name).read_text())
@@ -132,6 +195,10 @@ def main():
     entry = next(x for x in lock['contracts'] if x['domain'] == 'identity' and x['version'] == 'v1')
     assert all(entry['schemas'].count(name) == 1 for name in SCHEMAS)
     assert entry['schemas'].count('federation-lifecycle.yaml') == 1
+    assert entry['schemas'].count('federation-authority-policy.yaml') == 1
+    policy = yaml.safe_load((IDENTITY / 'federation-authority-policy.yaml').read_text())
+    errors = validate_authority_policy(policy)
+    assert not errors, errors
     policy = yaml.safe_load((IDENTITY / 'federation-lifecycle.yaml').read_text())
     statuses = json.loads((IDENTITY / SCHEMAS[0]).read_text())['$defs']['trustStatus']['enum']
     assert set(policy['transitions']) == set(statuses)

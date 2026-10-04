@@ -525,3 +525,25 @@ scopes:
     description: "Read payment intents, payments and refunds (baobab-payments)."
     audience: ["baobab-payments"]
     allowed_actors: ["workload"]
+
+  - name: "federation-authority:read"
+    description: >-
+      Transport admission for private federation authority reads. Source must
+      independently verify current ACTIVE canonical workload, service audience,
+      exact trust/provider/organisation/estate target and authorised caller
+      association. No administrative permission, target approval or identity
+      linking authority; granted to no workload by this contract change.
+    audience: ["baobab-control-plane", "baobab-iam"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
+  - name: "federation-governance:manage"
+    description: >-
+      Transport admission for private federation governance operations by a
+      currently ACTIVE canonical human. Every action additionally requires its
+      exact security.federation permission, canonical resource scope, verified
+      assurance and independent maker/checker where applicable. A shared service
+      account cannot approve; this scope alone grants no authority.
+    audience: ["baobab-control-plane", "baobab-iam"]
+    allowed_actors: ["human"]
+    grants_authority: false

@@ -21,6 +21,7 @@ contracts:
       - external-principal.schema.json
       - federated-assurance.schema.json
       - federation-lifecycle.yaml
+      - federation-authority-policy.yaml
   - domain: authorization
     version: v1
     schemas:
