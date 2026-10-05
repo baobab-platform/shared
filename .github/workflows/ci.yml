@@ -133,6 +133,7 @@ on:
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
       - "scripts/validate-trade-contracts.rb"
+      - "scripts/validate-trade-document-contracts.py"
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
