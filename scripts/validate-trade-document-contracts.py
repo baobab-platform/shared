@@ -104,11 +104,21 @@ if "digest_value" not in artifact.get("required", []):
 version = defs.get("documentVersion", {})
 for required in (
     "document_version_id", "trade_document_id", "version_sequence",
-    "lifecycle_snapshot", "verification_state", "temporal_validity_state",
-    "content_artifacts", "provenance",
+    "lifecycle_snapshot", "content_artifacts", "provenance",
 ):
     if required not in version.get("required", []):
         fail(f"DocumentVersion must require {required}")
+for forbidden in ("verification_state", "temporal_validity_state"):
+    if forbidden in version.get("properties", {}):
+        fail(f"DocumentVersion must remain immutable; mutable projection {forbidden} is embedded")
+
+for projection_name, state_field in (
+    ("documentVerificationProjection", "verification_state"),
+    ("documentTemporalValidityProjection", "temporal_validity_state"),
+):
+    projection = defs.get(projection_name, {})
+    if state_field not in projection.get("required", []):
+        fail(f"{projection_name} must require {state_field}")
 
 relations = defs.get("relationshipType", {}).get("enum", [])
 if "FULFILS_REQUIREMENT" in relations:
@@ -124,6 +134,8 @@ if "storage_reference" not in v1_domain.get("$defs", {}).get("tradeDocument", {}
 for file_name, def_name in (
     ("trade-document.json", "tradeDocument"),
     ("document-version.json", "documentVersion"),
+    ("document-verification.json", "documentVerificationProjection"),
+    ("document-temporal-validity.json", "documentTemporalValidityProjection"),
 ):
     instance = load_json(V2 / "examples" / file_name)
     schema = {"$ref": domain["$id"] + f"#/$defs/{def_name}"}
@@ -149,6 +161,7 @@ expected_types = {
     "com.baobab-platform.documents.document-relationship.created.v2",
     "com.baobab-platform.documents.document-version.created.v2",
     "com.baobab-platform.documents.document-version.issued.v2",
+    "com.baobab-platform.documents.document-version.validity-changed.v2",
     "com.baobab-platform.documents.document-version.verification-changed.v2",
     "com.baobab-platform.documents.trade-document.created.v2",
     "com.baobab-platform.documents.trade-document.issued.v2",
