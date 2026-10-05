@@ -3,9 +3,11 @@ info:
   title: Baobab TradeDocument v2 events
   version: 2.0.0
   description: >
-    RTD-04 reconciled TradeDocument lifecycle, version, content-artifact,
-    relationship and verification facts. All types remain PROPOSED until
-    producer activation is separately approved under ADR-SHARED-018.
+    Canonical TradeDocument v2 fact events. RTD-04 reconciled lifecycle,
+    version, content-artifact, relationship and verification semantics;
+    ADR-SHARED-023 / RTD-07 assigns baobab-trade-docs as the canonical
+    documents-context producer for these v2 types. Contract activation does
+    not claim that a runtime broker/outbox implementation already exists.
 defaultContentType: application/json
 channels:
   tradeDocumentEvents:
