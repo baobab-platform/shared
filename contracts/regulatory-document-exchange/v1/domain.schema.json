@@ -421,6 +421,7 @@
         "verification",
         "temporal_validity",
         "subject_references",
+        "documentary_assertions",
         "content_artifact_references",
         "facts_observed_at"
       ],
@@ -483,6 +484,13 @@
         "facts_observed_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "documentary_assertions": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "$ref": "#/$defs/documentaryAssertion"
+          }
         }
       },
       "description": "Trade Docs-owned documentary facts supplied to Regulations for legal sufficiency assessment. This is a bounded projection, not a copy of the full TradeDocument aggregate and not a regulatory conclusion."
@@ -678,6 +686,88 @@
     "contextId": {
       "$ref": "../../control-plane/v1/domain.schema.json#/$defs/uuid",
       "description": "Persisted Control Plane PlatformContext identifier. The receiving resource server must validate/redeem it against the authenticated caller; it is not a bearer credential."
+    },
+    "assertionOrigin": {
+      "type": "string",
+      "enum": [
+        "ISSUER_ASSERTED",
+        "BAOBAB_EXTRACTED",
+        "BAOBAB_GENERATED",
+        "EXTERNAL_NORMALIZED"
+      ],
+      "description": "How the documentary assertion entered the Trade Docs projection. Extraction/normalization does not silently become an issuer assertion."
+    },
+    "documentaryAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "element_code",
+        "origin",
+        "value",
+        "observed_at"
+      ],
+      "properties": {
+        "element_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_.-]{1,127}$"
+        },
+        "origin": {
+          "$ref": "#/$defs/assertionOrigin"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string",
+              "maxLength": 2048
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z]{3}$"
+        },
+        "source_artifact_reference": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/contentArtifactReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "field_verification_state": {
+          "oneOf": [
+            {
+              "$ref": "../../trade-document/v2/domain.schema.json#/$defs/verificationState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "One bounded documentary assertion projected by Trade Docs. It preserves whether the value was issuer-asserted, extracted, generated or normalized; Regulations decides whether it is acceptable evidence."
     }
   }
 }
