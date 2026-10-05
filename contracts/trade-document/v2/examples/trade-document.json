@@ -8,7 +8,6 @@
     "issuer_role": "COMPETENT_AUTHORITY",
     "source_identity": "Uganda NPPO"
   },
-  "issuer_verification_state": "VERIFIED",
   "lifecycle_state": "ISSUED",
   "current_version_id": "tdocv_01k7rtd4001v1",
   "business_identifiers": [
