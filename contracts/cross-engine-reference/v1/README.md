@@ -122,6 +122,10 @@ Platform-scoped objects prohibit `tenant_id`.
 A reference is not an authorisation token. Possessing a reference never grants
 access to the object or another tenant.
 
+When a tenant-scoped reference appears inside an ordinary tenant-scoped event
+or contract, its `tenant_id` must match the enclosing tenant unless a specific
+governed cross-tenant contract explicitly says otherwise.
+
 ## Owner identity
 
 `owner_engine_id` uses the canonical Shared Control Plane `engineId`
@@ -136,6 +140,10 @@ baobab-cp
 
 It deliberately excludes `engine_instance_id`: a durable reference must not
 break merely because a deployment is replaced.
+
+The schema validates the canonical engine ID grammar. Runtime use must also
+establish that `owner_engine_id` is an actually registered engine; a
+syntactically valid unknown slug has no authority.
 
 ## Object type
 
