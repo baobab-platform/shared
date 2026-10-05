@@ -1,0 +1,23 @@
+{
+  "specversion": "1.0",
+  "id": "9d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f13",
+  "type": "com.baobab-platform.documents.document-version.validity-changed.v2",
+  "source": "urn:baobab-platform:service:baobab-trade-docs",
+  "subject": "document-version:tdocv_01k7rtd4001v1",
+  "time": "2026-11-06T00:00:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/trade-document/v2/events.schema.json#/$defs/documentVersionValidityChangedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "7d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f11",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "trade_document_id": "tdoc_01k7rtd4001",
+    "document_version_id": "tdocv_01k7rtd4001v1",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "previous_temporal_validity_state": "CURRENTLY_VALID",
+    "temporal_validity_state": "EXPIRED",
+    "authority_reference": "org_ug_nppo",
+    "basis_reference": "urn:external:nppo:UG-PHYTO-2026-004188",
+    "changed_at": "2026-11-06T00:00:00Z"
+  }
+}
