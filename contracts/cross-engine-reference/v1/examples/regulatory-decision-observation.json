@@ -1,0 +1,12 @@
+{
+  "reference": {
+    "owner_engine_id": "baobab-regulations",
+    "object_type": "REGULATORY_DECISION",
+    "object_id": "regdec_01k7rtd5decision01",
+    "reference_mode": "IDENTITY_PINNED",
+    "scope": "tenant",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+  },
+  "observed_at": "2026-10-05T20:15:00Z",
+  "resolved_at": "2026-10-05T20:15:01Z"
+}
