@@ -32,6 +32,7 @@ Trade Docs
   document relationships
   document lifecycle
   documentary verification projection
+  temporal-validity projection
   provenance
 
 Regulations
@@ -68,7 +69,8 @@ TradeDocument ID != Control Plane CanonicalEntity ID
 
 - `domain.schema.json` defines TradeDocument identity, immutable versions,
   content artifacts, business identifiers, issuer claims, typed subject
-  associations and document-to-document relationships.
+  associations, document-to-document relationships, and separate mutable
+  verification/temporal-validity projections.
 - `events.schema.json` defines minimal fact payloads.
 - `asyncapi.yaml` proposes `documents.*.v2` events. RTD-04 does **not**
   activate a producer; that remains a later event-governance step.
