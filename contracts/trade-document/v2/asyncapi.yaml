@@ -1,0 +1,100 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab TradeDocument v2 events
+  version: 2.0.0
+  description: >
+    RTD-04 reconciled TradeDocument lifecycle, version, content-artifact,
+    relationship and verification facts. All types remain PROPOSED until
+    producer activation is separately approved under ADR-SHARED-018.
+defaultContentType: application/json
+channels:
+  tradeDocumentEvents:
+    address: baobab-platform.documents.events.v2
+    messages:
+      contentArtifactRegistered: { $ref: "#/components/messages/ContentArtifactRegistered" }
+      documentRelationshipCreated: { $ref: "#/components/messages/DocumentRelationshipCreated" }
+      documentVersionCreated: { $ref: "#/components/messages/DocumentVersionCreated" }
+      documentVersionIssued: { $ref: "#/components/messages/DocumentVersionIssued" }
+      documentVersionVerificationChanged: { $ref: "#/components/messages/DocumentVersionVerificationChanged" }
+      tradeDocumentCreated: { $ref: "#/components/messages/TradeDocumentCreated" }
+      tradeDocumentIssued: { $ref: "#/components/messages/TradeDocumentIssued" }
+      tradeDocumentSuperseded: { $ref: "#/components/messages/TradeDocumentSuperseded" }
+      tradeDocumentVoided: { $ref: "#/components/messages/TradeDocumentVoided" }
+operations:
+  publishTradeDocumentEvents:
+    action: send
+    channel: { $ref: "#/channels/tradeDocumentEvents" }
+components:
+  messages:
+    ContentArtifactRegistered:
+      name: com.baobab-platform.documents.content-artifact.registered.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/contentArtifactRegisteredEventData }
+    DocumentRelationshipCreated:
+      name: com.baobab-platform.documents.document-relationship.created.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/documentRelationshipCreatedEventData }
+    DocumentVersionCreated:
+      name: com.baobab-platform.documents.document-version.created.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/documentVersionCreatedEventData }
+    DocumentVersionIssued:
+      name: com.baobab-platform.documents.document-version.issued.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/documentVersionIssuedEventData }
+    DocumentVersionVerificationChanged:
+      name: com.baobab-platform.documents.document-version.verification-changed.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/documentVersionVerificationChangedEventData }
+    TradeDocumentCreated:
+      name: com.baobab-platform.documents.trade-document.created.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/tradeDocumentCreatedEventData }
+    TradeDocumentIssued:
+      name: com.baobab-platform.documents.trade-document.issued.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/tradeDocumentIssuedEventData }
+    TradeDocumentSuperseded:
+      name: com.baobab-platform.documents.trade-document.superseded.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/tradeDocumentSupersededEventData }
+    TradeDocumentVoided:
+      name: com.baobab-platform.documents.trade-document.voided.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/tradeDocumentVoidedEventData }
