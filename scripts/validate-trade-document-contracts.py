@@ -61,8 +61,11 @@ defs = domain.get("$defs", {})
 
 # Identity authority: Trade Docs, not Control Plane.
 tdoc_id = defs.get("tradeDocumentId", {})
-if "Control Plane" in tdoc_id.get("description", ""):
+id_description = tdoc_id.get("description", "")
+if "Control Plane-minted" in id_description or "Control Plane minted" in id_description:
     fail("v2 tradeDocumentId still claims Control Plane minting")
+if "Trade Docs-minted" not in id_description:
+    fail("v2 tradeDocumentId must state Trade Docs domain minting authority")
 if not tdoc_id.get("pattern", "").startswith("^tdoc_"):
     fail("v2 tradeDocumentId must keep opaque tdoc_ domain identity")
 
