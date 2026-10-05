@@ -299,6 +299,9 @@ events:
   - type: com.baobab-platform.documents.document-version.issued.v2
     asyncapi: contracts/trade-document/v2/asyncapi.yaml
     lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.document-version.validity-changed.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
   - type: com.baobab-platform.documents.document-version.verification-changed.v2
     asyncapi: contracts/trade-document/v2/asyncapi.yaml
     lifecycle: PROPOSED
