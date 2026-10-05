@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  title: Baobab Regulations documentary exchange API
+  version: 1.0.0
+  description: >
+    RTD-06 provider-neutral API contract implemented by baobab-regulations for
+    resolving exact documentary requirements and assessing Trade Docs facts.
+    The API preserves Regulations as the legal/normative authority and does not
+    transfer document ownership.
+  license:
+    name: Apache-2.0
+    identifier: Apache-2.0
+servers:
+  - url: https://regulations.baobab-platform.com/v1
+    description: Placeholder logical endpoint; runtime routing remains Control Plane/capability governed.
+security:
+  - workloadOidc: []
+paths:
+  /documentary-requirements/resolve:
+    post:
+      operationId: resolveDocumentaryRequirement
+      summary: Resolve the exact pinned Regulations requirement projection
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ./domain.schema.json#/$defs/requirementResolveRequest }
+      responses:
+        "200":
+          description: Exact Regulations-owned requirement projection
+          content:
+            application/json:
+              schema: { $ref: ./domain.schema.json#/$defs/requirementResolveResponse }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+
+  /documentary-evidence/assessments:
+    post:
+      operationId: assessDocumentaryEvidence
+      summary: Assess Trade Docs documentary facts against one pinned Regulations requirement
+      description: >
+        This is a command. It may create a Regulations-owned evidence assessment
+        and may cause a new/superseding RegulatoryDecision. It never mutates the
+        referenced TradeDocument/DocumentVersion and never performs an operational
+        shipment release/hold transition.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ./domain.schema.json#/$defs/documentEvidenceAssessmentRequest }
+      responses:
+        "200":
+          description: Idempotent replay of an existing assessment or assessment completed synchronously
+          content:
+            application/json:
+              schema: { $ref: ./domain.schema.json#/$defs/documentEvidenceAssessmentResult }
+        "201":
+          description: New assessment created
+          content:
+            application/json:
+              schema: { $ref: ./domain.schema.json#/$defs/documentEvidenceAssessmentResult }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+
+components:
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        minLength: 16
+        maxLength: 128
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      schema:
+        type: string
+        pattern: "^00-(?!00000000000000000000000000000000)[0-9a-f]{32}-(?!0000000000000000)[0-9a-f]{16}-[0-9a-f]{2}$"
+  schemas:
+    ProblemDetails: { $ref: ../../errors/v1/problem-details.schema.json }
+  responses:
+    BadRequest:
+      description: Malformed or semantically invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Forbidden:
+      description: Caller is not authorised, tenant context mismatches, or referenced content is not visible
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Exact pinned requirement/decision was not found
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Conflict:
+      description: Reference/version relationship is stale, superseded or conflicts with current governed state
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unavailable:
+      description: Required authority/provider is unavailable; this must not be interpreted as requirement absence
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+  securitySchemes:
+    workloadOidc:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
+      description: >
+        Short-lived workload/delegated identity. Runtime authorisation must bind
+        the caller to the redeemed context tenant. A request body cannot choose
+        another tenant merely by carrying a reference.
