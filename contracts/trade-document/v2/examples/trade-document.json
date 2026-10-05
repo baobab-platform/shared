@@ -1,0 +1,32 @@
+{
+  "trade_document_id": "tdoc_01k7rtd4001",
+  "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "document_type": "PHYTOSANITARY_CERTIFICATE",
+  "document_family": "REGULATORY",
+  "issuer_claim": {
+    "party_reference": "org_ug_nppo",
+    "issuer_role": "COMPETENT_AUTHORITY",
+    "source_identity": "Uganda NPPO"
+  },
+  "issuer_verification_state": "VERIFIED",
+  "lifecycle_state": "ISSUED",
+  "current_version_id": "tdocv_01k7rtd4001v1",
+  "business_identifiers": [
+    {
+      "value": "UG-PHYTO-2026-004188",
+      "scheme": "ISSUER_DOCUMENT_NUMBER",
+      "issuer_reference": "org_ug_nppo"
+    }
+  ],
+  "subject_associations": [
+    {
+      "subject_context": "trade",
+      "subject_type": "SHIPMENT",
+      "subject_reference": "ship_01k4zsh001",
+      "role": "COVERS"
+    }
+  ],
+  "aggregate_version": 2,
+  "created_at": "2026-10-05T18:00:00Z",
+  "updated_at": "2026-10-05T18:05:00Z"
+}
