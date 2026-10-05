@@ -16,6 +16,7 @@ channels:
       documentVersionCreated: { $ref: "#/components/messages/DocumentVersionCreated" }
       documentVersionIssued: { $ref: "#/components/messages/DocumentVersionIssued" }
       documentVersionVerificationChanged: { $ref: "#/components/messages/DocumentVersionVerificationChanged" }
+      documentVersionValidityChanged: { $ref: "#/components/messages/DocumentVersionValidityChanged" }
       tradeDocumentCreated: { $ref: "#/components/messages/TradeDocumentCreated" }
       tradeDocumentIssued: { $ref: "#/components/messages/TradeDocumentIssued" }
       tradeDocumentSuperseded: { $ref: "#/components/messages/TradeDocumentSuperseded" }
@@ -66,6 +67,14 @@ components:
           - type: object
             properties:
               data: { $ref: ./events.schema.json#/$defs/documentVersionVerificationChangedEventData }
+    DocumentVersionValidityChanged:
+      name: com.baobab-platform.documents.document-version.validity-changed.v2
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: ./events.schema.json#/$defs/documentVersionValidityChangedEventData }
     TradeDocumentCreated:
       name: com.baobab-platform.documents.trade-document.created.v2
       payload:
