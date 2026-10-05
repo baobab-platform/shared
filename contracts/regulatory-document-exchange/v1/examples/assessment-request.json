@@ -1,0 +1,73 @@
+{
+  "context_id": "6d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f10",
+  "regulatory_decision_reference": {
+    "owner_engine_id": "baobab-regulations",
+    "object_type": "REGULATORY_DECISION",
+    "object_id": "regdec_01k7rtd6decision01",
+    "reference_mode": "IDENTITY_PINNED",
+    "scope": "tenant",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+  },
+  "requirement_reference": {
+    "owner_engine_id": "baobab-regulations",
+    "object_type": "DOCUMENT_REQUIREMENT",
+    "object_id": "regreq_01k7rtd6phyto01",
+    "reference_mode": "IDENTITY_PINNED",
+    "scope": "tenant",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+  },
+  "assessment_reason": "INITIAL_EVIDENCE",
+  "evidence": [
+    {
+      "document_version_reference": {
+        "owner_engine_id": "baobab-trade-docs",
+        "object_type": "DOCUMENT_VERSION",
+        "object_id": "tdocv_01k7rtd4001v1",
+        "reference_mode": "IDENTITY_PINNED",
+        "scope": "tenant",
+        "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+      },
+      "document_type": "PHYTOSANITARY_CERTIFICATE",
+      "document_family": "REGULATORY",
+      "issuer_claim": {
+        "party_reference": "org_ug_nppo",
+        "issuer_role": "COMPETENT_AUTHORITY",
+        "source_identity": "Uganda NPPO",
+        "authority_context": "UG"
+      },
+      "issued_at": "2026-10-05T18:04:00Z",
+      "effective_from": "2026-10-05T18:04:00Z",
+      "effective_to": "2026-11-05T23:59:59Z",
+      "verification": {
+        "verification_state": "VERIFIED",
+        "reason_code": "ISSUER_AND_SIGNATURE_VERIFIED",
+        "observed_at": "2026-10-05T20:31:00Z"
+      },
+      "temporal_validity": {
+        "temporal_validity_state": "CURRENTLY_VALID",
+        "observed_at": "2026-10-05T20:31:00Z"
+      },
+      "subject_references": [
+        {
+          "owner_engine_id": "baobab-trade",
+          "object_type": "SHIPMENT",
+          "object_id": "ship_01k4zsh001",
+          "reference_mode": "CURRENT",
+          "scope": "tenant",
+          "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+        }
+      ],
+      "content_artifact_references": [
+        {
+          "owner_engine_id": "baobab-trade-docs",
+          "object_type": "CONTENT_ARTIFACT",
+          "object_id": "tdoca_01k7rtd4001pdf",
+          "reference_mode": "IDENTITY_PINNED",
+          "scope": "tenant",
+          "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+        }
+      ],
+      "facts_observed_at": "2026-10-05T20:31:00Z"
+    }
+  ]
+}
