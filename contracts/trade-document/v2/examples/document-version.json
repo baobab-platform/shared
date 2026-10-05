@@ -5,8 +5,6 @@
   "external_revision_label": null,
   "lifecycle_snapshot": "ISSUED",
   "medium_classification": "NATIVE_DIGITAL",
-  "verification_state": "VERIFIED",
-  "temporal_validity_state": "CURRENTLY_VALID",
   "semantic_payload_reference": "urn:baobab:trade-docs:semantic-payload:tdocv_01k7rtd4001v1",
   "source_snapshot_reference": "urn:baobab:trade-docs:source-snapshot:01k7rtd4001",
   "content_artifacts": [
