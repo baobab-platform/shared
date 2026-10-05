@@ -1,0 +1,30 @@
+name: Shared Library - Staging CI/CD
+
+on:
+  push:
+    branches: [ staging ]
+
+jobs:
+  test-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Environment
+        uses: actions/setup-node@v4 # Or setup-python / setup-go depending on stack
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+
+      - name: Install & Run Unit Tests
+        run: |
+          npm ci
+          npm test
+
+      - name: Publish Staging Package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Bumps version with a -beta pre-release flag and publishes to GitHub Packages
+          npm version prepatch --preid=beta --no-git-tag-version
+          npm publish --tag staging
