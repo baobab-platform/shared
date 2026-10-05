@@ -77,7 +77,7 @@
       "properties": {
         "owner_engine_id": {
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/engineId",
-          "description": "Engine that owns canonical domain authority for the referenced object. This is the stable engine/service identity, not a deployment/engine_instance_id and not an external system namespace."
+          "description": "Registered engine that owns canonical domain authority for the referenced object. This is the stable engine/service identity, not a deployment/engine_instance_id and not an external system namespace. Schema validates the canonical engineId grammar; runtime use must also establish that the engine is registered."
         },
         "object_type": {
           "$ref": "#/$defs/objectType"
