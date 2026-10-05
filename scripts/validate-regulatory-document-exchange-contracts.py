@@ -169,41 +169,73 @@ if req.get("requirement_reference") != res.get("requirement_reference"):
 if req.get("regulatory_decision_reference") != res.get("regulatory_decision_reference"):
     fail("assessment request/result fixture decision reference mismatch")
 
-# Planned events are deliberately NOT activated yet.
+# RTD-07 activates only the document-side surface; Regulations stays deferred.
 surface_items = surfaces.get("events", [])
 expected_surfaces = {
-    "com.baobab-platform.documents.regulatory-evidence.offered.v1": ("documents", "baobab-trade-docs", "RTD-07"),
-    "com.baobab-platform.regulations.document-requirements.determined.v1": ("regulations", "baobab-regulations", "RTD-08"),
-    "com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1": ("regulations", "baobab-regulations", "RTD-08"),
+    "com.baobab-platform.documents.regulatory-evidence.offered.v1": {
+        "context": "documents",
+        "producer": "baobab-trade-docs",
+        "step": "RTD-07",
+        "status": "ACTIVE",
+    },
+    "com.baobab-platform.regulations.document-requirements.determined.v1": {
+        "context": "regulations",
+        "producer": "baobab-regulations",
+        "step": "RTD-08",
+        "status": "DEFINED_NOT_ACTIVATED",
+    },
+    "com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1": {
+        "context": "regulations",
+        "producer": "baobab-regulations",
+        "step": "RTD-08",
+        "status": "DEFINED_NOT_ACTIVATED",
+    },
 }
 actual = {item.get("type"): item for item in surface_items}
 if set(actual) != set(expected_surfaces):
     fail(f"event surface set mismatch: {sorted(set(actual) ^ set(expected_surfaces))}")
-for event_type, (context, producer, step) in expected_surfaces.items():
+for event_type, expected in expected_surfaces.items():
     item = actual.get(event_type, {})
-    if item.get("context") != context:
-        fail(f"{event_type}: expected context {context}")
-    if item.get("target_producer") != producer:
-        fail(f"{event_type}: expected target producer {producer}")
-    if item.get("activation_step") != step:
-        fail(f"{event_type}: expected activation step {step}")
-    if item.get("status") != "DEFINED_NOT_ACTIVATED":
-        fail(f"{event_type}: RTD-06 must leave event DEFINED_NOT_ACTIVATED")
+    if item.get("context") != expected["context"]:
+        fail(f"{event_type}: expected context {expected['context']}")
+    if item.get("target_producer") != expected["producer"]:
+        fail(f"{event_type}: expected target producer {expected['producer']}")
+    if item.get("activation_step") != expected["step"]:
+        fail(f"{event_type}: expected activation step {expected['step']}")
+    if item.get("status") != expected["status"]:
+        fail(f"{event_type}: expected status {expected['status']}")
     if not str(item.get("payload_ref", "")).startswith("./events.schema.json#/$defs/"):
         fail(f"{event_type}: payload_ref must target RTD-06 events.schema.json")
 
 global_registry = yaml.safe_load(EVENT_REGISTRY.read_text())
-registered_types = {
-    item.get("type")
+registry_entries = {
+    item.get("type"): item
     for item in (global_registry.get("events") or [])
     if isinstance(item, dict)
 }
-for event_type in expected_surfaces:
-    if event_type in registered_types:
-        fail(f"{event_type} is prematurely registered; activation belongs to RTD-07/RTD-08")
 
+document_type = "com.baobab-platform.documents.regulatory-evidence.offered.v1"
+document_entry = registry_entries.get(document_type)
+if not document_entry:
+    fail(f"{document_type} must be registered by RTD-07")
+else:
+    if document_entry.get("producer") != "baobab-trade-docs":
+        fail(f"{document_type}: producer must be baobab-trade-docs")
+    if document_entry.get("lifecycle") != "ACTIVE":
+        fail(f"{document_type}: lifecycle must be ACTIVE")
+
+for event_type in (
+    "com.baobab-platform.regulations.document-requirements.determined.v1",
+    "com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1",
+):
+    if event_type in registry_entries:
+        fail(f"{event_type} is prematurely registered; activation belongs to RTD-08")
+
+# The RTD-06 package remains payload/API authority. AsyncAPI activation lives in
+# a dedicated document-side package under RTD-07 and later Regulations package
+# under RTD-08, rather than overloading one mixed-owner AsyncAPI document.
 if (PACKAGE / "asyncapi.yaml").exists():
-    fail("RTD-06 must not add AsyncAPI before event activation governance")
+    fail("mixed-owner RTD-06 package must not gain a single asyncapi.yaml")
 
 # OpenAPI semantic checks.
 for filename, expected_ops in {
