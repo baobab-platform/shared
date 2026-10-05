@@ -72,8 +72,7 @@ TradeDocument ID != Control Plane CanonicalEntity ID
   associations, document-to-document relationships, and separate mutable
   verification/temporal-validity projections.
 - `events.schema.json` defines minimal fact payloads.
-- `asyncapi.yaml` proposes `documents.*.v2` events. RTD-04 does **not**
-  activate a producer; that remains a later event-governance step.
+- `asyncapi.yaml` defines the canonical `documents.*.v2` fact events. ADR-SHARED-023 / RTD-07 activates `baobab-trade-docs` as producer for these reconciled v2 types.
 - `examples/` contains both resource fixtures and event envelopes validated
   by Shared CI.
 
@@ -83,7 +82,6 @@ RTD-04 does not define:
 
 - the generic cross-engine canonical object-reference contract (RTD-05);
 - Regulations ↔ Trade Docs requirement/evidence APIs and events (RTD-06);
-- producer activation for the `documents` event context;
 - DocumentDossier;
 - CustomsCase / CustomsDeclaration workflow contracts;
 - authority adapters/responses;
@@ -116,3 +114,23 @@ RTD-05 is now defined by `contracts/cross-engine-reference/v1`
 identity must use that contract. This RTD-05 change does not silently mutate
 the already-published v2 subject-association wire shape; a later compatible
 TradeDocument contract evolution may embed the Shared reference where needed.
+
+## RTD-07 producer activation
+
+ADR-SHARED-023 assigns:
+
+```text
+context  = documents
+steward  = baobab-trade-docs
+producer = baobab-trade-docs
+```
+
+for the reconciled TradeDocument v2 fact events in this package.
+
+The legacy v1 events remain PROPOSED and producerless because their
+`verified/rejected` semantics conflate verification/workflow outcomes with
+document lifecycle.
+
+ACTIVE contract status grants canonical producer authority. It does not claim
+that a Trade Docs runtime, transactional outbox or broker transport has already
+been deployed.
