@@ -459,8 +459,6 @@
         "version_sequence",
         "lifecycle_snapshot",
         "medium_classification",
-        "verification_state",
-        "temporal_validity_state",
         "content_artifacts",
         "created_at",
         "created_by",
@@ -489,12 +487,6 @@
         },
         "medium_classification": {
           "$ref": "#/$defs/mediumClassification"
-        },
-        "verification_state": {
-          "$ref": "#/$defs/verificationState"
-        },
-        "temporal_validity_state": {
-          "$ref": "#/$defs/temporalValidityState"
         },
         "semantic_payload_reference": {
           "type": [
@@ -682,9 +674,6 @@
         "issuer_claim": {
           "$ref": "#/$defs/issuerClaim"
         },
-        "issuer_verification_state": {
-          "$ref": "#/$defs/verificationState"
-        },
         "lifecycle_state": {
           "$ref": "#/$defs/documentLifecycleState"
         },
@@ -749,6 +738,86 @@
           }
         }
       ]
+    },
+    "documentVerificationProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trade_document_id",
+        "document_version_id",
+        "verification_state",
+        "observed_at"
+      ],
+      "properties": {
+        "trade_document_id": {
+          "$ref": "#/$defs/tradeDocumentId"
+        },
+        "document_version_id": {
+          "$ref": "#/$defs/documentVersionId"
+        },
+        "verification_state": {
+          "$ref": "#/$defs/verificationState"
+        },
+        "reason_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z][A-Z0-9_]{2,127}$"
+        },
+        "verifier_reference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Current documentary verification projection for one immutable DocumentVersion. It is not part of the version's semantic content and does not imply regulatory sufficiency."
+    },
+    "documentTemporalValidityProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trade_document_id",
+        "document_version_id",
+        "temporal_validity_state",
+        "observed_at"
+      ],
+      "properties": {
+        "trade_document_id": {
+          "$ref": "#/$defs/tradeDocumentId"
+        },
+        "document_version_id": {
+          "$ref": "#/$defs/documentVersionId"
+        },
+        "temporal_validity_state": {
+          "$ref": "#/$defs/temporalValidityState"
+        },
+        "authority_reference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        },
+        "basis_reference": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Current issuer/authority-relative temporal-validity projection for one immutable DocumentVersion. Expiry or revocation changes this projection without mutating historical content."
     }
   }
 }
