@@ -49,7 +49,60 @@
           "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
         }
       ],
-      "facts_observed_at": "2026-10-05T20:31:00Z"
+      "facts_observed_at": "2026-10-05T20:31:00Z",
+      "documentary_assertions": [
+        {
+          "element_code": "CONSIGNMENT_REFERENCE",
+          "origin": "ISSUER_ASSERTED",
+          "value": "SHIP-UG-ZA-2026-0001",
+          "unit": null,
+          "currency": null,
+          "source_artifact_reference": {
+            "owner_engine_id": "baobab-trade-docs",
+            "object_type": "CONTENT_ARTIFACT",
+            "object_id": "tdoca_01k7rtd4001pdf",
+            "reference_mode": "IDENTITY_PINNED",
+            "scope": "tenant",
+            "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+          },
+          "field_verification_state": "VERIFIED",
+          "observed_at": "2026-10-05T20:31:00Z"
+        },
+        {
+          "element_code": "ORIGIN_COUNTRY",
+          "origin": "ISSUER_ASSERTED",
+          "value": "UG",
+          "unit": null,
+          "currency": null,
+          "source_artifact_reference": {
+            "owner_engine_id": "baobab-trade-docs",
+            "object_type": "CONTENT_ARTIFACT",
+            "object_id": "tdoca_01k7rtd4001pdf",
+            "reference_mode": "IDENTITY_PINNED",
+            "scope": "tenant",
+            "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+          },
+          "field_verification_state": "VERIFIED",
+          "observed_at": "2026-10-05T20:31:00Z"
+        },
+        {
+          "element_code": "COMMODITY_DESCRIPTION",
+          "origin": "BAOBAB_EXTRACTED",
+          "value": "Green coffee beans",
+          "unit": null,
+          "currency": null,
+          "source_artifact_reference": {
+            "owner_engine_id": "baobab-trade-docs",
+            "object_type": "CONTENT_ARTIFACT",
+            "object_id": "tdoca_01k7rtd4001pdf",
+            "reference_mode": "IDENTITY_PINNED",
+            "scope": "tenant",
+            "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+          },
+          "field_verification_state": "VERIFIED",
+          "observed_at": "2026-10-05T20:31:00Z"
+        }
+      ]
     }
   ]
 }
