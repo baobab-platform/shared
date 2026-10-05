@@ -496,7 +496,7 @@
       ],
       "properties": {
         "context_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/contextId"
+          "$ref": "#/$defs/contextId"
         },
         "requirement_reference": {
           "$ref": "#/$defs/regulatoryRequirementReference"
@@ -524,7 +524,7 @@
       ],
       "properties": {
         "context_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/contextId"
+          "$ref": "#/$defs/contextId"
         },
         "document_version_references": {
           "type": "array",
@@ -565,7 +565,7 @@
       ],
       "properties": {
         "context_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/contextId"
+          "$ref": "#/$defs/contextId"
         },
         "regulatory_decision_reference": {
           "$ref": "#/$defs/regulatoryDecisionReference"
@@ -674,6 +674,10 @@
         }
       },
       "description": "Regulations-owned legal sufficiency result. It does not mutate the TradeDocument or operational shipment state."
+    },
+    "contextId": {
+      "$ref": "../../control-plane/v1/domain.schema.json#/$defs/uuid",
+      "description": "Persisted Control Plane PlatformContext identifier. The receiving resource server must validate/redeem it against the authenticated caller; it is not a bearer credential."
     }
   }
 }
