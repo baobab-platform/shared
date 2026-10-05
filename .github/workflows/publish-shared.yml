@@ -83,6 +83,7 @@ jobs:
   # job is granted any write capabilities.
   # ============================================================================
   verify:
+    if: "!endsWith(github.ref_name, '-staging')"
     name: Verify publishable packages
     runs-on: ubuntu-26.04
 

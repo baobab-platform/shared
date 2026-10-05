@@ -1,0 +1,119 @@
+name: Reusable Staging Image
+on:
+  workflow_call:
+    inputs:
+      dockerfile:
+        type: string
+        required: true
+      image:
+        type: string
+        required: true
+      go-tests:
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 35
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate staging tag, source and successful Foundation gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF_TYPE" == tag ]]
+          [[ "$GITHUB_REF_NAME" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-staging$ ]]
+          git merge-base --is-ancestor HEAD origin/main
+          gh run list --repo "$GITHUB_REPOSITORY" --workflow foundation.yml --commit "$GITHUB_SHA" --event push --status success --json headSha,conclusion > foundation.json
+          python - <<'CHECK'
+          import json,os
+          if not any(x['headSha']==os.environ['GITHUB_SHA'] and x['conclusion']=='success' for x in json.load(open('foundation.json'))):
+              raise SystemExit('Tagged source requires successful main Foundation CI')
+          CHECK
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5
+        if: inputs.go-tests
+        with:
+          go-version-file: go.mod
+      - name: Verify Go source
+        if: inputs.go-tests
+        run: |
+          set -euo pipefail
+          test -z "$(gofmt -l cmd internal)"
+          go test -race ./...
+          go vet ./...
+      - name: Build the single-platform release image once
+        env:
+          IMAGE: ${{ inputs.image }}
+          DOCKERFILE: ${{ inputs.dockerfile }}
+        run: |
+          set -euo pipefail
+          [[ "$IMAGE" =~ ^ghcr\.io/baobab-platform/[a-z0-9-]+$ ]]
+          docker build --platform linux/amd64 -f "$DOCKERFILE" --build-arg VERSION="${GITHUB_REF_NAME#v}" --build-arg REVISION="$GITHUB_SHA" -t "$IMAGE:$GITHUB_REF_NAME" .
+      - name: Scan image before publication
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8
+        with:
+          image-ref: ${{ inputs.image }}:${{ github.ref_name }}
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+          ignore-unfixed: false
+      - name: Generate SPDX SBOM
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8
+        with:
+          image-ref: ${{ inputs.image }}:${{ github.ref_name }}
+          format: spdx-json
+          output: staging-sbom.spdx.json
+          exit-code: '0'
+      - name: Publish tested bytes and record the platform digest
+        id: image
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IMAGE: ${{ inputs.image }}
+        run: |
+          set -euo pipefail
+          echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          # Existing versions must not be overwritten. Registry failures deny too.
+          python - <<'CHECK'
+          import json,os,subprocess
+          image=os.environ['IMAGE']; repo=image.removeprefix('ghcr.io/')
+          result=subprocess.run(['docker','manifest','inspect',image+':'+os.environ['GITHUB_REF_NAME']],capture_output=True,text=True)
+          if result.returncode==0: raise SystemExit('Staging version already exists; cut a new version')
+          if 'manifest unknown' not in result.stderr.lower() and 'no such manifest' not in result.stderr.lower():
+              raise SystemExit('Cannot establish registry version absence')
+          CHECK
+          docker push "$IMAGE:$GITHUB_REF_NAME"
+          docker image inspect "$IMAGE:$GITHUB_REF_NAME" --format '{{json .RepoDigests}}' > digests.json
+          python - <<'CHECK'
+          import json,os,re
+          image=os.environ['IMAGE']
+          refs=[x for x in json.load(open('digests.json')) if x.startswith(image+'@sha256:')]
+          if len(refs)!=1 or not re.fullmatch(re.escape(image)+r'@sha256:[0-9a-f]{64}',refs[0]): raise SystemExit('No exact platform digest')
+          digest=refs[0].split('@')[1]
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f: f.write('digest='+digest+'\n')
+          json.dump({'release_tag':os.environ['GITHUB_REF_NAME'],'repository':os.environ['GITHUB_REPOSITORY'],'source_revision':os.environ['GITHUB_SHA'],'image':refs[0],'run_url':'https://github.com/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/'+os.environ['GITHUB_RUN_ID'],'operational_acceptance':False},open('staging-image.json','w'),indent=2)
+          CHECK
+      - name: Attest published image provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6
+        with:
+          subject-name: ${{ inputs.image }}
+          subject-digest: ${{ steps.image.outputs.digest }}
+          push-to-registry: true
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: staging-${{ github.ref_name }}-${{ inputs.image == 'ghcr.io/baobab-platform/baobab-iam' && 'keycloak' || inputs.image == 'ghcr.io/baobab-platform/baobab-iam-federation-authority' && 'iam' || inputs.image == 'ghcr.io/baobab-platform/baobab-cp' && 'cp' || 'contracts' }}
+          path: |
+            staging-image.json
+            staging-sbom.spdx.json
+          if-no-files-found: error
+          retention-days: 30
