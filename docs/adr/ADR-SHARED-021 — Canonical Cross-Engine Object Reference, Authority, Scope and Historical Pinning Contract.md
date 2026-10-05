@@ -232,6 +232,14 @@ must remain valid if the Control Plane changes:
 
 Runtime routing is resolved separately through the Control Plane/capability architecture.
 
+### Registered owner rule
+
+The JSON Schema validates the canonical engineId grammar.
+
+Runtime use SHALL additionally establish that owner_engine_id identifies a registered Baobab engine.
+
+A syntactically valid but unknown engine slug SHALL NOT become authoritative merely because it matches the pattern.
+
 ---
 
 ## 9. Why Engine Instance Is Excluded
@@ -561,6 +569,22 @@ DENY / explicit governed cross-tenant workflow
 ~~~
 
 Ordinary resolution never silently crosses tenants.
+
+### Enclosing tenant consistency
+
+When a tenant-scoped reference appears inside another tenant-scoped contract or event, its tenant_id SHALL match the enclosing tenant unless an explicit cross-tenant contract authorises otherwise.
+
+For example:
+
+~~~text
+event tenantid = tn_A
+reference scope = tenant
+reference tenant_id = tn_B
+~~~
+
+is invalid for an ordinary tenant-scoped event.
+
+This rule prevents a structurally valid reference from smuggling a foreign tenant identifier into a trusted enclosing context.
 
 ---
 
@@ -1406,6 +1430,12 @@ Cross-tenant resolution requires explicit governed authority; it is never inferr
 
 INV-XREF-030
 RTD-06 must compose Regulations and Trade Docs through references rather than copied aggregates.
+
+INV-XREF-031
+A syntactically valid owner_engine_id is not authoritative unless the engine is registered.
+
+INV-XREF-032
+A tenant-scoped reference embedded in an ordinary tenant-scoped contract/event matches the enclosing tenant.
 ~~~
 
 ---
