@@ -112,17 +112,30 @@ Callers cannot select legal time or knowledge time in the evidence-assessment
 request. Those remain Regulations-owned semantics derived from the pinned
 RegulatoryDecision/Requirement context.
 
-## Planned events are not activated
+## Event activation state
 
-RTD-06 deliberately does **not** add an AsyncAPI file or event-registry entries.
+RTD-07 has activated the document-side fact:
 
-That is intentional:
+```text
+com.baobab-platform.documents.regulatory-evidence.offered.v1
+```
 
-- RTD-07 activates the `documents` producer/steward path.
-- RTD-08 activates the `regulations` context/platform event contracts.
+with `baobab-trade-docs` as producer under ADR-SHARED-023. Its AsyncAPI
+publication surface lives separately in:
 
-Until those steps land, the event names in `event-surfaces.yaml` are defined
-contract candidates, not publishable platform events.
+```text
+contracts/regulatory-document-evidence/v1/asyncapi.yaml
+```
+
+The two Regulations-owned facts remain `DEFINED_NOT_ACTIVATED` until RTD-08:
+
+```text
+com.baobab-platform.regulations.document-requirements.determined.v1
+com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1
+```
+
+The split is intentional because one mixed-owner AsyncAPI document would blur
+producer authority.
 
 ## Existing document events
 
@@ -146,7 +159,6 @@ RTD-06 does not define:
 - Customs authority-response contracts;
 - detailed document semantic-data extraction;
 - document generation;
-- event producer activation;
 - the `regulations` capability namespace decision.
 
 Those remain later TDOC/RTD architecture.
