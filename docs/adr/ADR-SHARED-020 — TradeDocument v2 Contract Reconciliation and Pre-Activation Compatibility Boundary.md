@@ -834,6 +834,7 @@ content artifact registered
 document relationship created
 document version created
 document version issued
+document version temporal-validity changed
 document version verification changed
 TradeDocument created
 TradeDocument issued
