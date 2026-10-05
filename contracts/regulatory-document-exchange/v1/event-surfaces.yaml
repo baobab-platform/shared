@@ -2,15 +2,17 @@ schema:
   name: regulatory-document-exchange-event-surfaces
   version: "1.0"
 
-# RTD-06 defines semantics only. Registration/producer activation is deliberately
-# deferred so RTD-07 and RTD-08 remain real governance gates.
+# RTD-06 defined semantics before producer activation. RTD-07 activates only
+# the documents-side event; the Regulations events remain deferred to RTD-08.
 events:
   - type: com.baobab-platform.documents.regulatory-evidence.offered.v1
     context: documents
     target_producer: baobab-trade-docs
     payload_ref: ./events.schema.json#/$defs/documentRegulatoryEvidenceOfferedEventData
     activation_step: RTD-07
-    status: DEFINED_NOT_ACTIVATED
+    status: ACTIVE
+    activation_authority: ADR-SHARED-023
+    asyncapi: ../../regulatory-document-evidence/v1/asyncapi.yaml
 
   - type: com.baobab-platform.regulations.document-requirements.determined.v1
     context: regulations
