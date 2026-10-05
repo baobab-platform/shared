@@ -109,5 +109,10 @@ storage locations.
 ## Cross-engine references
 
 The v2 subject-association fields remain intentionally bounded and opaque.
-They are not the RTD-05 `CrossEngineObjectReference`. New APIs/events that
-need portable cross-engine object identity must adopt RTD-05 once it exists.
+They are not the RTD-05 `CrossEngineObjectReference`.
+
+RTD-05 is now defined by `contracts/cross-engine-reference/v1`
+(ADR-SHARED-021). New APIs/events that need portable cross-engine object
+identity must use that contract. This RTD-05 change does not silently mutate
+the already-published v2 subject-association wire shape; a later compatible
+TradeDocument contract evolution may embed the Shared reference where needed.
