@@ -1,0 +1,8 @@
+{
+  "trade_document_id": "tdoc_01k7rtd4001",
+  "document_version_id": "tdocv_01k7rtd4001v1",
+  "verification_state": "VERIFIED",
+  "reason_code": "ISSUER_AND_SIGNATURE_VERIFIED",
+  "verifier_reference": "urn:baobab-platform:service:baobab-trade-docs",
+  "observed_at": "2026-10-05T18:05:00Z"
+}
