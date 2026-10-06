@@ -1,0 +1,7 @@
+{
+  "owner_engine_id": "baobab-cp",
+  "object_type": "CAPABILITY",
+  "object_id": "documents.trade-document.manage",
+  "reference_mode": "CURRENT",
+  "scope": "platform"
+}

@@ -109,10 +109,14 @@ contexts:
   - key: documents
     status: ACTIVE
     stewards: []
+    authority: [ADR-SHARED-019, ADR-SHARED-020, baobab-trade-docs:ADR-TDOC-0001, baobab-trade-docs:ADR-TDOC-0002]
     capability_domains: [documents]
     description: >
-      Trade-document lifecycle facts. Producer authority is not yet
-      assigned.
+      Trade-document identity, lifecycle, version, content-artifact,
+      relationship and documentary-verification facts. ADR-SHARED-019 and
+      ADR-SHARED-020 identify baobab-trade-docs as the target authority, but
+      producer activation remains deliberately deferred; proposed event types
+      carry no producer until that governance step is completed.
 
   - key: entitlement
     status: ACTIVE

@@ -287,14 +287,44 @@ events:
     asyncapi: contracts/buyer-organisation/v1/asyncapi.yaml
     producer: baobab-trade
     lifecycle: ACTIVE
+  - type: com.baobab-platform.documents.content-artifact.registered.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.document-relationship.created.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.document-version.created.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.document-version.issued.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.document-version.validity-changed.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.document-version.verification-changed.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.trade-document.created.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
   - type: com.baobab-platform.documents.trade-document.issued.v1
     asyncapi: contracts/trade-document/v1/asyncapi.yaml
+    lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.trade-document.issued.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
     lifecycle: PROPOSED
   - type: com.baobab-platform.documents.trade-document.rejected.v1
     asyncapi: contracts/trade-document/v1/asyncapi.yaml
     lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.trade-document.superseded.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
+    lifecycle: PROPOSED
   - type: com.baobab-platform.documents.trade-document.verified.v1
     asyncapi: contracts/trade-document/v1/asyncapi.yaml
+    lifecycle: PROPOSED
+  - type: com.baobab-platform.documents.trade-document.voided.v2
+    asyncapi: contracts/trade-document/v2/asyncapi.yaml
     lifecycle: PROPOSED
   - type: com.baobab-platform.entitlement.revoked.v1
     asyncapi: contracts/identity-events/v1/asyncapi.yaml

@@ -1,0 +1,67 @@
+{
+  "document_version_id": "tdocv_01k7rtd4001v1",
+  "trade_document_id": "tdoc_01k7rtd4001",
+  "version_sequence": 1,
+  "external_revision_label": null,
+  "lifecycle_snapshot": "ISSUED",
+  "medium_classification": "NATIVE_DIGITAL",
+  "semantic_payload_reference": "urn:baobab:trade-docs:semantic-payload:tdocv_01k7rtd4001v1",
+  "source_snapshot_reference": "urn:baobab:trade-docs:source-snapshot:01k7rtd4001",
+  "content_artifacts": [
+    {
+      "artifact_id": "tdoca_01k7rtd4001json",
+      "document_version_id": "tdocv_01k7rtd4001v1",
+      "artifact_role": "CANONICAL_STRUCTURED_CONTENT",
+      "media_type": "application/json",
+      "syntax": "JSON",
+      "schema_reference": "urn:example:nppo:phytosanitary:v1",
+      "semantic_context_reference": null,
+      "language": "en",
+      "character_encoding": "UTF-8",
+      "storage_reference": "s3://trade-docs-example/tdoc_01k7rtd4001/v1/canonical.json",
+      "byte_length": 2048,
+      "digest_algorithm": "SHA-256",
+      "digest_value": "4a2b4c2f51078ad3026c2f9c97f79a17227eb9cf5d15fb94e3356b7ad66f83e2",
+      "generated_at": "2026-10-05T18:04:00Z",
+      "generated_by": "urn:baobab-platform:service:baobab-trade-docs",
+      "renderer_version": null,
+      "source_artifact_id": null
+    },
+    {
+      "artifact_id": "tdoca_01k7rtd4001pdf",
+      "document_version_id": "tdocv_01k7rtd4001v1",
+      "artifact_role": "SOURCE_ORIGINAL",
+      "media_type": "application/pdf",
+      "syntax": "PDF",
+      "schema_reference": null,
+      "semantic_context_reference": null,
+      "language": "en",
+      "character_encoding": null,
+      "storage_reference": "s3://trade-docs-example/tdoc_01k7rtd4001/v1/source.pdf",
+      "byte_length": 48211,
+      "digest_algorithm": "SHA-256",
+      "digest_value": "9a4bcc9e648ffeb714c623e333fd10e9df2ef8b39c09d3aa48bf9f0b44e5f232",
+      "generated_at": null,
+      "generated_by": null,
+      "renderer_version": null,
+      "source_artifact_id": null
+    }
+  ],
+  "signature_references": [
+    "urn:baobab:trade-docs:signature:sig_01k7rtd4"
+  ],
+  "issued_at": "2026-10-05T18:04:00Z",
+  "effective_from": "2026-10-05T18:04:00Z",
+  "effective_to": "2026-11-05T23:59:59Z",
+  "change_reason": null,
+  "supersedes_version_id": null,
+  "created_at": "2026-10-05T18:03:00Z",
+  "created_by": "principal_01k7rtd4",
+  "provenance": {
+    "source_kind": "EXTERNAL_INGESTED",
+    "source_reference": "urn:external:nppo:UG-PHYTO-2026-004188",
+    "supplied_by_reference": "org_ug_nppo",
+    "source_system": "UG_NPPO",
+    "recorded_at": "2026-10-05T18:03:00Z"
+  }
+}

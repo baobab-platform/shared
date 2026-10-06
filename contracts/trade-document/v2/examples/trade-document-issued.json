@@ -1,0 +1,22 @@
+{
+  "specversion": "1.0",
+  "id": "6d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f10",
+  "type": "com.baobab-platform.documents.trade-document.issued.v2",
+  "source": "urn:baobab-platform:service:baobab-trade-docs",
+  "subject": "trade-document:tdoc_01k7rtd4001",
+  "time": "2026-10-05T18:04:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/trade-document/v2/events.schema.json#/$defs/tradeDocumentIssuedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "7d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f11",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "trade_document_id": "tdoc_01k7rtd4001",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "document_type": "PHYTOSANITARY_CERTIFICATE",
+    "document_family": "REGULATORY",
+    "current_version_id": "tdocv_01k7rtd4001v1",
+    "issued_at": "2026-10-05T18:04:00Z",
+    "aggregate_version": 2
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "owner_engine_id": "baobab-pulse",
+  "object_type": "EVIDENCE_SET",
+  "object_id": "evset_01k7rpulse01",
+  "reference_mode": "VERSION_PINNED",
+  "object_version": {
+    "kind": "VERSION",
+    "value": "4"
+  },
+  "scope": "tenant",
+  "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+}
