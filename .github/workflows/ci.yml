@@ -110,6 +110,8 @@ on:
       - "scripts/validate-trade-document-contracts.py"
       - "scripts/validate-cross-engine-reference-contracts.py"
       - "scripts/validate-regulatory-document-exchange-contracts.py"
+      - "scripts/validate-regulatory-decision-contracts.py"
+      - "scripts/validate-regulatory-decision-contracts.py"
       - "scripts/validate-documents-event-activation.py"
       - "scripts/validate-regulations-event-activation.py"
       - "scripts/validate-intelligence-namespace-boundary.py"
@@ -207,6 +209,8 @@ jobs:
         run: python scripts/validate-cross-engine-reference-contracts.py
       - name: Validate Regulations Trade Docs exchange (ADR-SHARED-022 / RTD-06)
         run: python scripts/validate-regulatory-document-exchange-contracts.py
+      - name: Validate regulatory decision evaluation contract (ADR-SHARED-028 / R-CAP-08)
+        run: python scripts/validate-regulatory-decision-contracts.py
       - name: Validate documents event activation (ADR-SHARED-023 / RTD-07)
         run: python scripts/validate-documents-event-activation.py
       - name: Validate Regulations event activation (ADR-SHARED-024 / RTD-08)
