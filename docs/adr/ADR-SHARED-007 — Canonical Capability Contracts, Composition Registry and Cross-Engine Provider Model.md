@@ -2,7 +2,7 @@
 
 **Status:** Accepted — Normative Platform Contract, amended in part and refined  
 **Amended By:** ADR-SHARED-008 (§9 capability naming convention, §11 domain namespace governance, §42 event vocabulary: event types are `com.baobab-platform.<context>.<...>.v<N>`)  
-**Refined By:** ADR-SHARED-012 (one grammar for engine, engine-instance and provider identifiers, and the external system registry); ADR-SHARED-024 (`regulations` capability-domain registration under §11 namespace governance)  
+**Refined By:** ADR-SHARED-012 (one grammar for engine, engine-instance and provider identifiers, and the external system registry); ADR-SHARED-024 (`regulations` capability-domain registration under §11 namespace governance); ADR-SHARED-025 (`intelligence` capability-domain scope and non-promotion boundary)  
 **Date:** 2026-09-10  
 **Decision Owners:** BAOBAB-PLATFORM / Baobab Platform Architecture  
 **Repository:** `baobab-platform/shared`  
