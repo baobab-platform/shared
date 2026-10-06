@@ -169,7 +169,7 @@ if req.get("requirement_reference") != res.get("requirement_reference"):
 if req.get("regulatory_decision_reference") != res.get("regulatory_decision_reference"):
     fail("assessment request/result fixture decision reference mismatch")
 
-# RTD-07 activates only the document-side surface; Regulations stays deferred.
+# RTD-07 activated the document-side surface; RTD-08 activates the two Regulations-owned surfaces.
 surface_items = surfaces.get("events", [])
 expected_surfaces = {
     "com.baobab-platform.documents.regulatory-evidence.offered.v1": {
@@ -182,13 +182,13 @@ expected_surfaces = {
         "context": "regulations",
         "producer": "baobab-regulations",
         "step": "RTD-08",
-        "status": "DEFINED_NOT_ACTIVATED",
+        "status": "ACTIVE",
     },
     "com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1": {
         "context": "regulations",
         "producer": "baobab-regulations",
         "step": "RTD-08",
-        "status": "DEFINED_NOT_ACTIVATED",
+        "status": "ACTIVE",
     },
 }
 actual = {item.get("type"): item for item in surface_items}
@@ -228,12 +228,20 @@ for event_type in (
     "com.baobab-platform.regulations.document-requirements.determined.v1",
     "com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1",
 ):
-    if event_type in registry_entries:
-        fail(f"{event_type} is prematurely registered; activation belongs to RTD-08")
+    entry = registry_entries.get(event_type)
+    if not entry:
+        fail(f"{event_type} must be registered by RTD-08")
+        continue
+    if entry.get("producer") != "baobab-regulations":
+        fail(f"{event_type}: producer must be baobab-regulations")
+    if entry.get("lifecycle") != "ACTIVE":
+        fail(f"{event_type}: lifecycle must be ACTIVE")
+    if entry.get("asyncapi") != "contracts/regulatory-document-assessment/v1/asyncapi.yaml":
+        fail(f"{event_type}: incorrect RTD-08 AsyncAPI path")
 
 # The RTD-06 package remains payload/API authority. AsyncAPI activation lives in
-# a dedicated document-side package under RTD-07 and later Regulations package
-# under RTD-08, rather than overloading one mixed-owner AsyncAPI document.
+# separate owner-specific packages under RTD-07 and RTD-08, rather than one
+# mixed-owner AsyncAPI document.
 if (PACKAGE / "asyncapi.yaml").exists():
     fail("mixed-owner RTD-06 package must not gain a single asyncapi.yaml")
 
