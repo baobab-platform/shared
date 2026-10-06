@@ -2,8 +2,9 @@ schema:
   name: regulatory-document-exchange-event-surfaces
   version: "1.0"
 
-# RTD-06 defined semantics before producer activation. RTD-07 activates only
-# the documents-side event; the Regulations events remain deferred to RTD-08.
+# RTD-06 defined semantics before producer activation. RTD-07 activated the
+# documents-side event; ADR-SHARED-024 / RTD-08 activates the two
+# Regulations-owned event surfaces.
 events:
   - type: com.baobab-platform.documents.regulatory-evidence.offered.v1
     context: documents
@@ -19,11 +20,15 @@ events:
     target_producer: baobab-regulations
     payload_ref: ./events.schema.json#/$defs/documentRequirementsDeterminedEventData
     activation_step: RTD-08
-    status: DEFINED_NOT_ACTIVATED
+    status: ACTIVE
+    activation_authority: ADR-SHARED-024
+    asyncapi: ../../regulatory-document-assessment/v1/asyncapi.yaml
 
   - type: com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1
     context: regulations
     target_producer: baobab-regulations
     payload_ref: ./events.schema.json#/$defs/requirementSatisfactionEvaluatedEventData
     activation_step: RTD-08
-    status: DEFINED_NOT_ACTIVATED
+    status: ACTIVE
+    activation_authority: ADR-SHARED-024
+    asyncapi: ../../regulatory-document-assessment/v1/asyncapi.yaml
