@@ -184,6 +184,18 @@ contexts:
       Cross-engine integration facts that no single business context owns,
       such as a detected synchronisation discrepancy.
 
+  - key: intelligence
+    status: RESERVED
+    stewards: [baobab-pulse]
+    authority: [ADR-SHARED-018, ADR-SHARED-019, ADR-SHARED-025]
+    capability_domains: [intelligence]
+    description: >
+      Future Pulse-owned intelligence facts such as published observations,
+      analyses, insights, risks, opportunities, forecasts and recommendations.
+      RTD-09 reserves the domain-oriented context but activates no event type;
+      baobab-pulse remains a consumer of Regulations and Trade Docs facts in
+      this increment. Repository-named 'pulse' is not a canonical event context.
+
   - key: internal-trade
     status: ACTIVE
     stewards: []
