@@ -67,3 +67,10 @@ for forbidden in (
     assert forbidden not in catalogued
 
 print("ADR-SHARED-027 Regulations capability census invariants passed")
+
+
+# RTD-10 must now pin the capability vocabulary it uses for Regulations.
+from scripts import rtd_conformance as rtd  # type: ignore  # noqa: E402
+
+assert "contracts/capability/v1/catalogue.yaml" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
+assert "contracts/regulations/v1/capabilities.yaml" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
