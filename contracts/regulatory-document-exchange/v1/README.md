@@ -165,7 +165,10 @@ RTD-06 does not define:
 - CustomsDeclaration/submission workflow;
 - Customs authority-response contracts;
 - detailed document semantic-data extraction;
-- document generation;
-- the `regulations` capability namespace decision.
+- document generation.
 
 Those remain later TDOC/RTD architecture.
+
+The `regulations` capability namespace is no longer deferred: ADR-SHARED-024 /
+RTD-08 resolves G-REG-NS and registers the canonical domain without promoting
+any proposed capability into the catalogue.
