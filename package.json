@@ -16,11 +16,5 @@
     "@changesets/cli": "3.0.1",
     "turbo": "2.10.12",
     "typescript": "7.0.2"
-  },
-  "pnpm": {
-    "overrides": {
-      "@graphql-tools/utils": "12.0.1",
-      "source-map-js": "1.2.2"
-    }
   }
 }
