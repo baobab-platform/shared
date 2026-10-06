@@ -1,0 +1,76 @@
+{
+  "context_id": "6d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f10",
+  "question": "MAY_TRANSACTION_PROCEED",
+  "assessment_purpose": "TRANSACTION_DECISION",
+  "decision_stage": "PRE_SHIPMENT",
+  "subject_references": [
+    {
+      "owner_engine_id": "baobab-trade",
+      "object_type": "SHIPMENT",
+      "object_id": "ship_ugza_coffee_0001",
+      "reference_mode": "IDENTITY_PINNED",
+      "scope": "tenant",
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+    }
+  ],
+  "regulated_activities": [
+    "CROSS_BORDER_EXPORT",
+    "CROSS_BORDER_IMPORT"
+  ],
+  "facts": [
+    {
+      "fact_code": "HS_CODE",
+      "value": "0901.11.10",
+      "observed_at": "2026-10-06T10:00:00Z",
+      "unit": null,
+      "currency": null,
+      "source_reference": null
+    },
+    {
+      "fact_code": "PHYTOSANITARY_CERTIFICATE_PRESENT",
+      "value": true,
+      "observed_at": "2026-10-06T10:00:00Z",
+      "source_reference": {
+        "owner_engine_id": "baobab-trade-docs",
+        "object_type": "DOCUMENT_VERSION",
+        "object_id": "tdocv_01k7rtd4001v1",
+        "reference_mode": "IDENTITY_PINNED",
+        "scope": "tenant",
+        "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+      },
+      "unit": null,
+      "currency": null
+    },
+    {
+      "fact_code": "ORIGIN_CERTIFICATE_PRESENT",
+      "value": true,
+      "observed_at": "2026-10-06T10:00:00Z",
+      "unit": null,
+      "currency": null,
+      "source_reference": null
+    }
+  ],
+  "evidence_references": [
+    {
+      "owner_engine_id": "baobab-trade-docs",
+      "object_type": "DOCUMENT_VERSION",
+      "object_id": "tdocv_01k7rtd4001v1",
+      "reference_mode": "IDENTITY_PINNED",
+      "scope": "tenant",
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+    }
+  ],
+  "rule_set_reference": {
+    "owner_engine_id": "baobab-regulations",
+    "object_type": "REGULATORY_RULE_SET",
+    "object_id": "ruleset_ug_za_coffee_2026_10",
+    "reference_mode": "IDENTITY_PINNED",
+    "scope": "platform"
+  },
+  "legal_time": "2026-10-06T10:00:00Z",
+  "knowledge_time": "2026-10-06T10:00:00Z",
+  "evaluation_profile": "STANDARD",
+  "requested_assurance": "STANDARD",
+  "requested_enforcement_class_ceiling": "E2",
+  "replay_key": "replay-ug-za-coffee-0001"
+}

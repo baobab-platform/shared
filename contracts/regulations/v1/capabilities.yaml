@@ -6,21 +6,47 @@
 #   ADR-SHARED-017 — canonical capability governance
 #   ADR-SHARED-022 — Regulations ↔ Trade Docs documentary exchange
 #   ADR-SHARED-027 — Regulations capability census and first canonical tranche
+#   ADR-SHARED-028 — Canonical regulatory decision evaluation contract
 #
 # These definitions describe WHAT the platform can request from a Regulations
 # provider. Provider implementation state is governed by the engine declaration;
 # certification and activation remain separate authorities.
 #
 # RTD-06 established complete Shared request/response schemas for these two
-# operations. ADR-SHARED-027 catalogued the vocabulary. R-CAP-07 later permits
-# evidence-backed PARTIAL provider implementation without changing capability
-# lifecycle, certification or runtime activation.
+# operations. ADR-SHARED-027 catalogued the first documentary vocabulary.
+# ADR-SHARED-028 / R-CAP-08 contracts the broader deterministic decision
+# evaluation surface. Provider implementation, certification and activation
+# remain separate governance facts.
 
 schema:
   name: baobab-capability-definitions
   version: "1.0"
 
 capabilities:
+  - capability_key: regulations.decision.evaluate
+    name: Evaluate regulatory decision
+    description: >-
+      Evaluate a declared regulatory question against an authorised caller-bound
+      PlatformContext, pinned Regulations rule-set, explicit legal/knowledge time,
+      bounded typed facts and pinned evidence references, producing a
+      Regulations-owned deterministic RegulatoryDecision with structured reasons,
+      legal/evidence provenance and replay identity. The capability is
+      provider-neutral and never performs operational business-state enforcement.
+    domain: regulations
+    owner: baobab-regulations
+    lifecycle: DRAFT
+    maturity: EXPERIMENTAL
+    contracts:
+      - major: 1
+        request_schema: ../../regulatory-decision/v1/domain.schema.json#/$defs/decisionEvaluateRequest
+        response_schema: ../../regulatory-decision/v1/domain.schema.json#/$defs/decisionEvaluateResponse
+        error_schema: ../../errors/v1/problem-details.schema.json
+    data_classification: TENANT_CONFIDENTIAL
+    metadata:
+      authority: ADR-SHARED-028
+      openapi_operation: evaluateRegulatoryDecision
+      provider_implementation: governed-by-engine-declaration
+
   - capability_key: regulations.evidence.assess
     name: Assess regulatory documentary evidence
     description: >-

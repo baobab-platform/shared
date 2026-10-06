@@ -1,0 +1,164 @@
+openapi: 3.1.0
+info:
+  title: Baobab Regulations decision evaluation API
+  version: 1.0.0
+  description: >
+    R-CAP-08 provider-neutral contract for deterministic regulatory decision
+    evaluation. The contract defines Regulations-owned decision semantics,
+    temporal/replay identity, legal/evidence provenance and consequence classes.
+    It deliberately does not expose OPA, Rego, compiler, bundle or other
+    evaluator implementation details.
+  license:
+    name: Apache-2.0
+    identifier: Apache-2.0
+servers:
+  - url: https://regulations.baobab-platform.com/v1
+    description: Placeholder logical endpoint; runtime routing remains Control Plane/capability governed.
+security:
+  - workloadOidc: []
+paths:
+  /decisions/evaluate:
+    post:
+      operationId: evaluateRegulatoryDecision
+      summary: Evaluate one deterministic regulatory decision
+      description: >
+        Evaluate the declared regulatory question against a caller-bound
+        PlatformContext, pinned rule-set identity, explicit legal/knowledge
+        time, bounded facts and pinned evidence references. A successful
+        response contains a regulatory conclusion. Evaluator/readiness/protocol
+        failures are technical ProblemDetails responses and MUST NOT be encoded
+        as regulatory outcomes.
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./domain.schema.json#/$defs/decisionEvaluateRequest
+      responses:
+        "200":
+          description: Idempotent replay of an existing decision or synchronous decision result
+          content:
+            application/json:
+              schema:
+                $ref: ./domain.schema.json#/$defs/decisionEvaluateResponse
+        "201":
+          description: New RegulatoryDecision created
+          content:
+            application/json:
+              schema:
+                $ref: ./domain.schema.json#/$defs/decisionEvaluateResponse
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "503":
+          $ref: "#/components/responses/Unavailable"
+
+components:
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: >
+        Command-level idempotency identity. It is distinct from the body
+        replay_key, which identifies the deterministic semantic input set used
+        for historical replay/reproducibility.
+      schema:
+        type: string
+        pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        minLength: 16
+        maxLength: 128
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      schema:
+        type: string
+        pattern: "^00-(?!00000000000000000000000000000000)[0-9a-f]{32}-(?!0000000000000000)[0-9a-f]{16}-[0-9a-f]{2}$"
+
+  schemas:
+    ProblemDetails:
+      $ref: ../../errors/v1/problem-details.schema.json
+
+  responses:
+    BadRequest:
+      description: >
+        Malformed/semantically invalid input, unsupported assessment purpose,
+        invalid temporal relationship, incomplete deterministic facts or an
+        invalid replay/idempotency key. This is not a regulatory outcome.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    Unauthorized:
+      description: Authentication required or caller token could not be verified
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    Forbidden:
+      description: >
+        Caller/context/reference authority denied, capability invocation not
+        authorised, or a tenant-scoped reference does not belong to the trusted
+        context tenant.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    NotFound:
+      description: >
+        Exact pinned rule-set/evidence/subject authority could not resolve the
+        requested object. Unknown/expired/not-owned PlatformContext remains
+        indistinguishable according to Control Plane context-authority rules.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    Conflict:
+      description: >
+        Pinned version/fingerprint/replay identity conflicts with governed
+        state, or the Idempotency-Key is already committed for a different
+        deterministic request.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+    Unavailable:
+      description: >
+        Required authority, verified rule-set, evaluator or deterministic
+        runtime is unavailable/not ready. EVALUATOR_UNDEFINED,
+        EVALUATOR_PROTOCOL_ERROR, EVALUATOR_RUNTIME_ERROR and
+        EVALUATOR_NOT_READY are technical failures and must never be converted
+        to FALSE, UNSATISFIED or INDETERMINATE.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+
+  securitySchemes:
+    workloadOidc:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
+      description: >
+        Short-lived workload/delegated identity. Runtime authorisation must bind
+        the caller to the redeemed Control Plane context and actual resolved
+        capability authority; request fields do not grant tenant/capability
+        entitlement.

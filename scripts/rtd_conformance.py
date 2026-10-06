@@ -40,6 +40,8 @@ ROLE_CONTRACTS = {
         "contracts/cross-engine-reference/v1/domain.schema.json",
         "contracts/events/v1/envelope.schema.json",
         "contracts/regulations/v1/capabilities.yaml",
+        "contracts/regulatory-decision/v1/domain.schema.json",
+        "contracts/regulatory-decision/v1/regulations.openapi.yaml",
         "contracts/regulatory-document-exchange/v1/domain.schema.json",
         "contracts/regulatory-document-exchange/v1/events.schema.json",
     },
