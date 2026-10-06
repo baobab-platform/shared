@@ -127,15 +127,22 @@ publication surface lives separately in:
 contracts/regulatory-document-evidence/v1/asyncapi.yaml
 ```
 
-The two Regulations-owned facts remain `DEFINED_NOT_ACTIVATED` until RTD-08:
+RTD-08 now also activates the two Regulations-owned facts:
 
 ```text
 com.baobab-platform.regulations.document-requirements.determined.v1
 com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1
 ```
 
-The split is intentional because one mixed-owner AsyncAPI document would blur
-producer authority.
+with `baobab-regulations` as producer under ADR-SHARED-024. Their AsyncAPI
+publication surface lives in:
+
+```text
+contracts/regulatory-document-assessment/v1/asyncapi.yaml
+```
+
+The owner-specific split remains intentional: a mixed-owner AsyncAPI document
+would blur producer authority.
 
 ## Existing document events
 
