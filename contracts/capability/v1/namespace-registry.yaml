@@ -75,7 +75,7 @@ domains:
   - key: content
     description: "Content publishing and management capabilities (e.g. baobab-cms/Payload)."
   - key: intelligence
-    description: "Market, FX, commodity and risk intelligence capabilities (e.g. baobab-pulse/Haystack)."
+    description: "Evidence, research, observation, analysis, signals, trends, anomalies, risk, opportunity, forecasting, recommendation and intelligence-product capabilities. ADR-SHARED-025 establishes baobab-pulse as the intended initial provider while keeping capability keys uncatalogued until implementation evidence exists. Provider technology such as Haystack is not part of the namespace semantics."
   - key: audit
     description: "Cross-cutting audit and evidence capabilities."
   - key: integration
