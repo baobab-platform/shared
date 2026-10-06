@@ -35,9 +35,11 @@ ROLE_MATURITY = {
 }
 ROLE_CONTRACTS = {
     "REGULATIONS_AUTHORITY": {
+        "contracts/capability/v1/catalogue.yaml",
         "contracts/control-plane/v1/domain.schema.json",
         "contracts/cross-engine-reference/v1/domain.schema.json",
         "contracts/events/v1/envelope.schema.json",
+        "contracts/regulations/v1/capabilities.yaml",
         "contracts/regulatory-document-exchange/v1/domain.schema.json",
         "contracts/regulatory-document-exchange/v1/events.schema.json",
     },
