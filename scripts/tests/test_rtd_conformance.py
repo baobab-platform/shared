@@ -45,4 +45,66 @@ assert "contracts/cross-engine-reference/v1/domain.schema.json" in rtd.ROLE_CONT
 assert "contracts/trade-document/v2/domain.schema.json" in rtd.ROLE_CONTRACTS["TRADE_DOCUMENT_AUTHORITY"]
 assert "contracts/regulatory-document-exchange/v1/events.schema.json" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
 
+canonical_regulations = {
+    "regulations.evidence.assess",
+    "regulations.requirement.resolve",
+}
+partial = {
+    "providers": [
+        {
+            "provider_key": "baobab-regulations.core",
+            "support": [
+                {
+                    "capability_key": "regulations.evidence.assess",
+                    "implementation_status": "PARTIAL",
+                    "implementation_evidence": [{"path": "scripts/rtd_conformance.py"}],
+                }
+            ],
+        }
+    ],
+    "planned_capabilities": [],
+}
+assert not rtd.validate_regulations_provider_support(ROOT, partial, canonical_regulations)
+
+implemented = copy.deepcopy(partial)
+implemented["providers"][0]["support"][0]["implementation_status"] = "IMPLEMENTED"
+assert any(
+    "must remain PARTIAL during R-CAP-07" in finding
+    for finding in rtd.validate_regulations_provider_support(
+        ROOT, implemented, canonical_regulations
+    )
+)
+
+missing_evidence = copy.deepcopy(partial)
+missing_evidence["providers"][0]["support"][0]["implementation_evidence"] = []
+assert any(
+    "requires implementation evidence" in finding
+    for finding in rtd.validate_regulations_provider_support(
+        ROOT, missing_evidence, canonical_regulations
+    )
+)
+
+noncanonical = copy.deepcopy(partial)
+noncanonical["providers"][0]["support"][0]["capability_key"] = "regulations.fake.execute"
+assert any(
+    "not a canonical Shared capability" in finding
+    for finding in rtd.validate_regulations_provider_support(
+        ROOT, noncanonical, canonical_regulations
+    )
+)
+
+duplicated = copy.deepcopy(partial)
+duplicated["planned_capabilities"] = [
+    {
+        "capability_key": "regulations.evidence.assess",
+        "proposal_status": "CONTRACTED",
+    }
+]
+assert any(
+    "both planned and provider support" in finding
+    for finding in rtd.validate_regulations_provider_support(
+        ROOT, duplicated, canonical_regulations
+    )
+)
+
 print("RTD-10 conformance profile self-tests passed")

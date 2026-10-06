@@ -217,6 +217,99 @@ def validate_common(
     return findings
 
 
+def validate_regulations_provider_support(
+    root: Path,
+    declaration: dict,
+    canonical_keys: set[object],
+) -> list[str]:
+    """R-CAP-07 Regulations provider support rules layered on Shared schema validation.
+
+    RTD-10 permits evidence-backed PARTIAL support for canonical Regulations
+    capabilities after the first implementation tranche. IMPLEMENTED remains a
+    later governed promotion so this cross-repository profile cannot silently
+    jump from repository implementation evidence to runtime-registerable support.
+    """
+
+    findings: list[str] = []
+    supported: set[object] = set()
+
+    providers = declaration.get("providers") or []
+    if not isinstance(providers, list):
+        return ["Regulations providers must be a list"]
+
+    for provider in providers:
+        if not isinstance(provider, dict):
+            findings.append("Regulations provider entry must be a mapping")
+            continue
+        provider_key = provider.get("provider_key")
+        if not isinstance(provider_key, str) or not provider_key.startswith(
+            "baobab-regulations."
+        ):
+            findings.append(
+                f"Regulations provider key must belong to baobab-regulations: {provider_key!r}"
+            )
+
+        support_entries = provider.get("support") or []
+        if not isinstance(support_entries, list):
+            findings.append(f"{provider_key}: provider support must be a list")
+            continue
+
+        for support in support_entries:
+            if not isinstance(support, dict):
+                findings.append(f"{provider_key}: support entry must be a mapping")
+                continue
+
+            capability_key = support.get("capability_key")
+            supported.add(capability_key)
+            if capability_key not in canonical_keys:
+                findings.append(
+                    f"{provider_key}: {capability_key!r} is not a canonical Shared capability"
+                )
+            if not isinstance(capability_key, str) or not capability_key.startswith(
+                "regulations."
+            ):
+                findings.append(
+                    f"{provider_key}: support escapes regulations namespace: {capability_key!r}"
+                )
+
+            status = support.get("implementation_status")
+            if status != "PARTIAL":
+                findings.append(
+                    f"{provider_key}: {capability_key} must remain PARTIAL during R-CAP-07; "
+                    "IMPLEMENTED requires the later governed promotion increment"
+                )
+
+            evidence = support.get("implementation_evidence")
+            if not isinstance(evidence, list) or not evidence:
+                findings.append(
+                    f"{provider_key}: {capability_key} PARTIAL support requires implementation evidence"
+                )
+                continue
+
+            for item in evidence:
+                if not isinstance(item, dict) or not isinstance(item.get("path"), str):
+                    findings.append(
+                        f"{provider_key}: {capability_key} has malformed implementation evidence"
+                    )
+                    continue
+                evidence_path = root / item["path"]
+                if not evidence_path.exists():
+                    findings.append(
+                        f"{provider_key}: {capability_key} evidence does not exist: {item['path']}"
+                    )
+
+    for item in declaration.get("planned_capabilities") or []:
+        if not isinstance(item, dict):
+            continue
+        capability_key = item.get("capability_key")
+        if capability_key in supported:
+            findings.append(
+                f"{capability_key}: capability cannot be both planned and provider support"
+            )
+
+    return findings
+
+
 def validate_regulations(root: Path, shared_root: Path, profile: dict) -> list[str]:
     findings: list[str] = []
     domain_root = root / "src/baobab_regulations/domain"
@@ -243,18 +336,16 @@ def validate_regulations(root: Path, shared_root: Path, profile: dict) -> list[s
         if not isinstance(provider, dict):
             findings.append("Regulations capability-provider declaration is not a mapping")
         else:
-            if provider.get("providers"):
-                findings.append(
-                    "Regulations provider support remains forbidden until a separate implementation increment "
-                    "proves a canonical capability contract"
-                )
-
             catalogue = load_yaml(shared_root / "contracts/capability/v1/catalogue.yaml")
             canonical_keys = {
                 item.get("capability_key")
                 for item in (catalogue.get("capabilities") or [])
                 if isinstance(item, dict)
             } if isinstance(catalogue, dict) else set()
+
+            findings.extend(
+                validate_regulations_provider_support(root, provider, canonical_keys)
+            )
 
             for item in provider.get("planned_capabilities") or []:
                 if not isinstance(item, dict):

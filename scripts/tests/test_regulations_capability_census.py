@@ -38,7 +38,8 @@ for key, item in defined.items():
     assert item["lifecycle"] == "DRAFT"
     assert item["maturity"] == "EXPERIMENTAL"
     assert item["data_classification"] == "TENANT_CONFIDENTIAL"
-    assert item["metadata"]["implementation_status"] == "no-provider-support-yet"
+    assert item["metadata"]["provider_implementation"] == "governed-by-engine-declaration"
+    assert "implementation_status" not in item["metadata"]
     assert catalogued[key]["source"] == "../../regulations/v1/capabilities.yaml"
 
 assert (

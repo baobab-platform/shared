@@ -8,13 +8,13 @@
 #   ADR-SHARED-027 — Regulations capability census and first canonical tranche
 #
 # These definitions describe WHAT the platform can request from a Regulations
-# provider. They do not assert that baobab-regulations currently implements a
-# provider, that support is ACTIVE, or that any tenant is entitled to invoke it.
+# provider. Provider implementation state is governed by the engine declaration;
+# certification and activation remain separate authorities.
 #
-# RTD-06 already established complete Shared request/response schemas for these
-# two operations. The capability census therefore promotes the vocabulary to
-# canonical CONTRACTED capability definitions while provider implementation
-# remains outstanding.
+# RTD-06 established complete Shared request/response schemas for these two
+# operations. ADR-SHARED-027 catalogued the vocabulary. R-CAP-07 later permits
+# evidence-backed PARTIAL provider implementation without changing capability
+# lifecycle, certification or runtime activation.
 
 schema:
   name: baobab-capability-definitions
@@ -44,7 +44,7 @@ capabilities:
     metadata:
       authority: ADR-SHARED-022
       openapi_operation: assessDocumentaryEvidence
-      implementation_status: no-provider-support-yet
+      provider_implementation: governed-by-engine-declaration
 
   - capability_key: regulations.requirement.resolve
     name: Resolve regulatory documentary requirement
@@ -67,4 +67,4 @@ capabilities:
     metadata:
       authority: ADR-SHARED-022
       openapi_operation: resolveDocumentaryRequirement
-      implementation_status: no-provider-support-yet
+      provider_implementation: governed-by-engine-declaration
