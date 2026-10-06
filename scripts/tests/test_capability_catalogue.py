@@ -143,11 +143,11 @@ class CatalogueTest(unittest.TestCase):
 
     def test_unknown_domain_rejected(self):
         def rename(document):
-            document["capabilities"][0].update(capability_key="regulations.rule.query", domain="regulations")
+            document["capabilities"][0].update(capability_key="unknown-domain.rule.query", domain="unknown-domain")
         self.edit_yaml("trade/v1/capabilities.yaml", rename)
         self.edit_yaml(cc.CATALOGUE, lambda c: c["capabilities"].__setitem__(
-            2, {"capability_key": "regulations.rule.query", "owner": "baobab-trade", "source": "../../trade/v1/capabilities.yaml"}))
-        self.assertFails("regulations")
+            2, {"capability_key": "unknown-domain.rule.query", "owner": "baobab-trade", "source": "../../trade/v1/capabilities.yaml"}))
+        self.assertFails("unknown-domain")
 
     def test_domain_enum_and_namespace_registry_must_agree(self):
         self.edit_yaml("capability/v1/namespace-registry.yaml", lambda r: r["domains"].pop())

@@ -61,6 +61,9 @@
 #   ClientApplication, AdmissionDecision, lifecycle and events).
 # * Added scripts/validate-trade-document-contracts.py to enforce RTD-04 TradeDocument v2 identity, lifecycle, versioning, artifact and compatibility invariants.
 # * Added scripts/validate-cross-engine-reference-contracts.py for RTD-05 owner, scope, pinning and identity-separation invariants.
+# * Added scripts/validate-regulatory-document-exchange-contracts.py for RTD-06 requirement/evidence choreography and deferred event activation.
+# * Added scripts/validate-documents-event-activation.py for RTD-07 documents stewardship, producer activation and legacy-v1 quarantine.
+# * Added scripts/validate-regulations-event-activation.py for RTD-08 namespace registration, Regulations stewardship and producer activation.
 # * Added scripts/validate-event-registry.py to the governance-contracts job:
 #   every event type in every asyncapi.yaml is canonical com.baobab-platform.*
 #   and registered once platform-wide, its payload resolves, every example
@@ -104,6 +107,9 @@ on:
       - "scripts/validate-trade-contracts.rb"
       - "scripts/validate-trade-document-contracts.py"
       - "scripts/validate-cross-engine-reference-contracts.py"
+      - "scripts/validate-regulatory-document-exchange-contracts.py"
+      - "scripts/validate-documents-event-activation.py"
+      - "scripts/validate-regulations-event-activation.py"
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
@@ -137,6 +143,9 @@ on:
       - "scripts/validate-trade-contracts.rb"
       - "scripts/validate-trade-document-contracts.py"
       - "scripts/validate-cross-engine-reference-contracts.py"
+      - "scripts/validate-regulatory-document-exchange-contracts.py"
+      - "scripts/validate-documents-event-activation.py"
+      - "scripts/validate-regulations-event-activation.py"
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
@@ -190,6 +199,12 @@ jobs:
         run: python scripts/validate-trade-document-contracts.py
       - name: Validate cross-engine object references (ADR-SHARED-021 / RTD-05)
         run: python scripts/validate-cross-engine-reference-contracts.py
+      - name: Validate Regulations Trade Docs exchange (ADR-SHARED-022 / RTD-06)
+        run: python scripts/validate-regulatory-document-exchange-contracts.py
+      - name: Validate documents event activation (ADR-SHARED-023 / RTD-07)
+        run: python scripts/validate-documents-event-activation.py
+      - name: Validate Regulations event activation (ADR-SHARED-024 / RTD-08)
+        run: python scripts/validate-regulations-event-activation.py
       - name: Validate identity runtime profiles (MP2-A)
         run: python scripts/validate-identity-runtime-contracts.py
       - name: Test identity runtime profile invariants

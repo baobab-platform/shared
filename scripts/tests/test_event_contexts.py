@@ -54,8 +54,10 @@ class ShippedRegistriesTest(RegistryTest):
     def test_shipped_registries_pass(self):
         self.assertEqual(self.run_validate(), [])
 
-    def test_regulations_is_reserved_and_erp_deprecated(self):
-        self.assertEqual(context(CONTEXTS, "regulations")["status"], "RESERVED")
+    def test_regulations_is_active_and_erp_deprecated(self):
+        self.assertEqual(context(CONTEXTS, "regulations")["status"], "ACTIVE")
+        self.assertEqual(context(CONTEXTS, "regulations")["stewards"], ["baobab-regulations"])
+        self.assertEqual(context(CONTEXTS, "regulations")["capability_domains"], ["regulations"])
         self.assertEqual(context(CONTEXTS, "erp")["status"], "DEPRECATED")
         self.assertEqual(context(CONTEXTS, "payments")["capability_domains"], ["payment"])
 

@@ -108,15 +108,15 @@ contexts:
 
   - key: documents
     status: ACTIVE
-    stewards: []
-    authority: [ADR-SHARED-019, ADR-SHARED-020, baobab-trade-docs:ADR-TDOC-0001, baobab-trade-docs:ADR-TDOC-0002]
+    stewards: [baobab-trade-docs]
+    authority: [ADR-SHARED-019, ADR-SHARED-020, ADR-SHARED-023, baobab-trade-docs:ADR-TDOC-0001, baobab-trade-docs:ADR-TDOC-0002]
     capability_domains: [documents]
     description: >
       Trade-document identity, lifecycle, version, content-artifact,
-      relationship and documentary-verification facts. ADR-SHARED-019 and
-      ADR-SHARED-020 identify baobab-trade-docs as the target authority, but
-      producer activation remains deliberately deferred; proposed event types
-      carry no producer until that governance step is completed.
+      relationship, documentary-verification and documentary-evidence-offer
+      facts. ADR-SHARED-023 activates baobab-trade-docs as the canonical
+      documents-context steward/producer. Regulatory sufficiency and
+      RegulatoryDecision remain outside this context.
 
   - key: entitlement
     status: ACTIVE
@@ -255,15 +255,17 @@ contexts:
       entitlement-projection facts (Control Plane data, product/v1).
 
   - key: regulations
-    status: RESERVED
+    status: ACTIVE
     stewards: [baobab-regulations]
-    authority: [G-REG-NS, ADR-SHARED-018]
-    capability_domains: []
+    authority: [ADR-SHARED-018, ADR-SHARED-019, ADR-SHARED-022, ADR-SHARED-024, G-REG-NS]
+    capability_domains: [regulations]
     description: >
-      Regulatory meaning and evaluation: product classification and
-      compliance-assessment decisions. Reserved until G-REG-NS step 3
-      registers the regulations domain. Until then no event type uses it,
-      and Trade publishes no substitute (ADR-SHARED-018 SS8.4).
+      Canonical regulatory meaning and evaluation facts: applicability,
+      requirements, evidence sufficiency and RegulatoryDecision-related
+      outcomes. ADR-SHARED-024 resolves G-REG-NS, registers the regulations
+      capability domain and activates baobab-regulations as the context
+      steward/producer. Trade-document facts remain in documents; Customs
+      workflow and tax execution namespaces are not migrated by this step.
 
   - key: session
     status: ACTIVE

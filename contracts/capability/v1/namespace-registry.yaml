@@ -50,6 +50,8 @@ domains:
     description: "Inventory and availability capabilities."
   - key: procurement
     description: "Purchasing and procurement capabilities."
+  - key: regulations
+    description: "Regulatory context, applicability, obligations, evidence-sufficiency and regulatory-decision capabilities. Registered by ADR-SHARED-024 / G-REG-NS. Distinct from the existing tax execution/calculation namespace and from Customs declaration/workflow execution."
   - key: trade
     description: "Cross-border trade execution capabilities."
   - key: customs

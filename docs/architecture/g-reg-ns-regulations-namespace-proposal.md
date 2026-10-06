@@ -1,14 +1,22 @@
 # G-REG-NS — Regulations Namespace Architecture Review
 
-**Decision Required:** ADR-SHARED-007 architecture review for a canonical `regulations` namespace
-
-**Gate:** Precedes Regulations engine survey and catalogue entries for tax/regulatory capabilities
+**Decision:** APPROVED / RESOLVED by ADR-SHARED-024 (RTD-08), 2026-10-06  
+**Result:** Canonical `regulations` capability domain registered; `tax` and `customs` namespaces remain unchanged  
+**Remaining Gate:** Regulations engine capability census and catalogue promotion remain separate work
 
 ---
 
-## Proposal
+## Original Proposal — Historical Context
 
-Register a `regulations` domain in `namespace-registry.yaml` and `capabilityDomain` enum to govern cross-border regulatory capabilities: tax registration, tax calculation, import/duty registration, compliance declarations and audit evidence.
+The original review proposed registering a `regulations` domain broadly enough
+to cover several cross-border regulatory concerns, including some tax and
+Customs-adjacent capabilities.
+
+That broad scope is **not** the final RTD-08 decision. ADR-SHARED-024 resolves
+the namespace more narrowly around regulatory context, applicability,
+obligations/requirements, evidence sufficiency, regulatory assessment and
+RegulatoryDecision-related capabilities. Existing `tax` and `customs`
+namespaces remain unchanged.
 
 ### Background
 
@@ -21,7 +29,7 @@ Register a `regulations` domain in `namespace-registry.yaml` and `capabilityDoma
 | Domain | Description | Authority | Governed Capabilities |
 |--------|-------------|-----------|----------------------|
 | `tax` | Tax registration, calculation, reconciliation, filings | baobab-trade (current) | tax registration, tax calculation, tax filing, tax audit trail |
-| `regulations` | Cross-border regulatory compliance (customs, import duty, sanctions, anti-fraud, audit evidence) | baobab-regulations (proposed) | customs declaration, duty calculation, sanctions screening, compliance proof-of-delivery, audit evidence collection |
+| `regulations` | Original candidate scope before RTD-08 resolution | baobab-regulations | Historical candidate included Customs/tax-adjacent concerns; final scope is narrowed by ADR-SHARED-024 |
 
 ### Decision Points
 
@@ -53,7 +61,7 @@ The candidate review deferred `tax-registrations` (Trade, ADR-0018) pending G-RE
 |-----------|---|---|
 | Tax registrations | Deferred | If `tax` stays Trade-owned: domain exists, evaluate for capability candidacy. If `tax` moves to Regulations: surveyed in Regulations engine census |
 
-### Next Steps (if approved)
+### Original Next Steps (superseded by ADR-SHARED-024)
 
 1. Update `namespace-registry.yaml` with `regulations` domain entry.
 2. Update `capabilityDomain` enum in capability schema.
@@ -65,4 +73,84 @@ The candidate review deferred `tax-registrations` (Trade, ADR-0018) pending G-RE
 
 **Stakeholders:** Architecture Review Board, baobab-trade, baobab-regulations, baobab-cp (for capability binding impact)
 
-**Timeline:** Parallel with ADR-REG family acceptance or serial gate thereafter
+**Timeline:** Resolved on 2026-10-06 by ADR-SHARED-024; remaining capability census/catalogue work continues separately
+
+
+---
+
+## Resolution — ADR-SHARED-024 / RTD-08
+
+The architecture review is resolved as follows.
+
+### 1. Canonical domain
+
+```text
+regulations
+```
+
+is approved as a canonical Shared capability domain.
+
+Its semantic scope is:
+
+```text
+regulatory context
+applicability
+obligations / requirements
+evidence sufficiency
+regulatory assessment
+RegulatoryDecision-related capabilities
+```
+
+### 2. Tax namespace
+
+The existing:
+
+```text
+tax
+```
+
+domain is **not migrated by this decision**.
+
+RTD-08 does not redefine existing tax registration/calculation/reconciliation
+contracts. Regulations may determine regulatory tax meaning under its own
+domain boundary, but migration or decomposition of established `tax.*`
+capabilities requires a separate architecture decision.
+
+### 3. Customs namespace
+
+The existing:
+
+```text
+customs
+```
+
+domain is **not migrated by this decision**.
+
+RTD-08 does not decide ownership of Customs declaration, submission, clearance
+or authority-response workflow capabilities. The Regulations/Trade Docs
+decomposition established by ADR-SHARED-019 remains authoritative.
+
+### 4. Namespace registration is not capability promotion
+
+Registering `regulations` permits canonical capability keys such as:
+
+```text
+regulations.context.resolve
+regulations.decision.evaluate
+regulations.change.subscribe
+```
+
+to be considered by the normal capability-governance process.
+
+It does not make those keys catalogued, ACTIVE, supported or bound.
+
+The baobab-regulations provider declaration may continue to use
+`proposed_key` until Shared catalogue contracts and implementation evidence
+justify promotion.
+
+### 5. Event-context consequence
+
+Because the namespace gate is now resolved, ADR-SHARED-024 also activates the
+Shared `regulations` event context with `baobab-regulations` as steward and
+producer for the two RTD-06 documentary-assessment facts.
+

@@ -1,0 +1,103 @@
+{
+  "specversion": "1.0",
+  "id": "4b2dcb8f-baae-4b2c-9f00-c4a2893e9f01",
+  "type": "com.baobab-platform.regulations.document-requirements.determined.v1",
+  "source": "urn:baobab-platform:service:baobab-regulations",
+  "subject": "regulatory-decision:regdec_01k7rtd6decision01",
+  "time": "2026-10-05T20:30:00Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/regulatory-document-exchange/v1/events.schema.json#/$defs/documentRequirementsDeterminedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "7d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f11",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "requirement_set": {
+      "regulatory_decision_reference": {
+        "owner_engine_id": "baobab-regulations",
+        "object_type": "REGULATORY_DECISION",
+        "object_id": "regdec_01k7rtd6decision01",
+        "reference_mode": "IDENTITY_PINNED",
+        "scope": "tenant",
+        "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+      },
+      "requirements": [
+        {
+          "requirement_reference": {
+            "owner_engine_id": "baobab-regulations",
+            "object_type": "DOCUMENT_REQUIREMENT",
+            "object_id": "regreq_01k7rtd6phyto01",
+            "reference_mode": "IDENTITY_PINNED",
+            "scope": "tenant",
+            "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+          },
+          "regulatory_decision_reference": {
+            "owner_engine_id": "baobab-regulations",
+            "object_type": "REGULATORY_DECISION",
+            "object_id": "regdec_01k7rtd6decision01",
+            "reference_mode": "IDENTITY_PINNED",
+            "scope": "tenant",
+            "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+          },
+          "requirement_kind": "DOCUMENT",
+          "requirement_code": "PHYTOSANITARY_CERTIFICATE_REQUIRED",
+          "purpose_code": "SPS",
+          "acceptable_document_types": [
+            "PHYTOSANITARY_CERTIFICATE"
+          ],
+          "required_issuer_roles": [
+            "COMPETENT_AUTHORITY"
+          ],
+          "required_data_elements": [
+            "CONSIGNMENT_REFERENCE",
+            "ORIGIN_COUNTRY",
+            "COMMODITY_DESCRIPTION"
+          ],
+          "unsatisfied_effect_code": "SPS_HOLD_REQUIRED",
+          "effective_from": "2026-10-05T00:00:00Z",
+          "effective_to": null,
+          "determined_at": "2026-10-05T20:30:00Z"
+        },
+        {
+          "requirement_reference": {
+            "owner_engine_id": "baobab-regulations",
+            "object_type": "PERMIT_REQUIREMENT",
+            "object_id": "regreq_01k7rtd6permit01",
+            "reference_mode": "IDENTITY_PINNED",
+            "scope": "tenant",
+            "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+          },
+          "regulatory_decision_reference": {
+            "owner_engine_id": "baobab-regulations",
+            "object_type": "REGULATORY_DECISION",
+            "object_id": "regdec_01k7rtd6decision01",
+            "reference_mode": "IDENTITY_PINNED",
+            "scope": "tenant",
+            "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+          },
+          "requirement_kind": "PERMIT",
+          "requirement_code": "IMPORT_PERMIT_REQUIRED",
+          "purpose_code": "IMPORT_CONTROL",
+          "acceptable_document_types": [
+            "IMPORT_PERMIT"
+          ],
+          "required_issuer_roles": [
+            "COMPETENT_AUTHORITY"
+          ],
+          "required_data_elements": [
+            "IMPORTER_REFERENCE",
+            "COMMODITY_DESCRIPTION",
+            "VALIDITY_PERIOD"
+          ],
+          "unsatisfied_effect_code": "IMPORT_REVIEW_REQUIRED",
+          "effective_from": "2026-10-05T00:00:00Z",
+          "effective_to": null,
+          "determined_at": "2026-10-05T20:30:00Z"
+        }
+      ],
+      "legal_time": "2026-10-05T12:00:00Z",
+      "knowledge_time": "2026-10-05T20:30:00Z",
+      "determined_at": "2026-10-05T20:30:00Z"
+    }
+  }
+}

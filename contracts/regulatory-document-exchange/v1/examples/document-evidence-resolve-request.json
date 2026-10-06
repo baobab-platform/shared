@@ -1,0 +1,13 @@
+{
+  "context_id": "6d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f10",
+  "document_version_references": [
+    {
+      "owner_engine_id": "baobab-trade-docs",
+      "object_type": "DOCUMENT_VERSION",
+      "object_id": "tdocv_01k7rtd4001v1",
+      "reference_mode": "IDENTITY_PINNED",
+      "scope": "tenant",
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+    }
+  ]
+}
