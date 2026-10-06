@@ -65,6 +65,7 @@
 # * Added scripts/validate-documents-event-activation.py for RTD-07 documents stewardship, producer activation and legacy-v1 quarantine.
 # * Added scripts/validate-regulations-event-activation.py for RTD-08 namespace registration, Regulations stewardship and producer activation.
 # * Added scripts/validate-intelligence-namespace-boundary.py for RTD-09 intelligence namespace reservation and no-premature-promotion invariants.
+# * Added scripts/rtd_conformance.py and the RTD-10 reusable workflow/profile contract for cross-repository authority and maturity conformance.
 # * Added scripts/validate-event-registry.py to the governance-contracts job:
 #   every event type in every asyncapi.yaml is canonical com.baobab-platform.*
 #   and registered once platform-wide, its payload resolves, every example
@@ -112,6 +113,7 @@ on:
       - "scripts/validate-documents-event-activation.py"
       - "scripts/validate-regulations-event-activation.py"
       - "scripts/validate-intelligence-namespace-boundary.py"
+      - "scripts/rtd_conformance.py"
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
@@ -149,6 +151,7 @@ on:
       - "scripts/validate-documents-event-activation.py"
       - "scripts/validate-regulations-event-activation.py"
       - "scripts/validate-intelligence-namespace-boundary.py"
+      - "scripts/rtd_conformance.py"
       - "scripts/validate-event-registry.py"
       - "scripts/validate-organisation-contracts.py"
       - "scripts/validate-admission-contracts.py"
@@ -210,6 +213,8 @@ jobs:
         run: python scripts/validate-regulations-event-activation.py
       - name: Validate intelligence namespace boundary (ADR-SHARED-025 / RTD-09)
         run: python scripts/validate-intelligence-namespace-boundary.py
+      - name: Test RTD-10 cross-repository conformance policy (ADR-SHARED-026)
+        run: python scripts/tests/test_rtd_conformance.py
       - name: Validate identity runtime profiles (MP2-A)
         run: python scripts/validate-identity-runtime-contracts.py
       - name: Test identity runtime profile invariants
