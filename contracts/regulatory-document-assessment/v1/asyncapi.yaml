@@ -1,0 +1,44 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab Regulations documentary requirement and satisfaction events
+  version: 1.0.0
+  description: >
+    Canonical Regulations-side RTD-06 exchange events activated by
+    ADR-SHARED-024 / RTD-08. baobab-regulations is the producer. These events
+    state committed Regulations facts about documentary requirements and
+    requirement-satisfaction assessment; they do not create TradeDocument
+    state and do not perform operational enforcement.
+defaultContentType: application/json
+channels:
+  regulatoryDocumentAssessmentEvents:
+    address: baobab-platform.regulations.documentary-assessment.v1
+    messages:
+      documentRequirementsDetermined:
+        $ref: "#/components/messages/DocumentRequirementsDetermined"
+      requirementSatisfactionEvaluated:
+        $ref: "#/components/messages/RequirementSatisfactionEvaluated"
+operations:
+  publishRegulatoryDocumentAssessmentEvents:
+    action: send
+    channel:
+      $ref: "#/channels/regulatoryDocumentAssessmentEvents"
+components:
+  messages:
+    DocumentRequirementsDetermined:
+      name: com.baobab-platform.regulations.document-requirements.determined.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data:
+                $ref: ../../regulatory-document-exchange/v1/events.schema.json#/$defs/documentRequirementsDeterminedEventData
+    RequirementSatisfactionEvaluated:
+      name: com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data:
+                $ref: ../../regulatory-document-exchange/v1/events.schema.json#/$defs/requirementSatisfactionEvaluatedEventData

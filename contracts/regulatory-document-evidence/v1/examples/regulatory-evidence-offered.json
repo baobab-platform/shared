@@ -1,0 +1,43 @@
+{
+  "specversion": "1.0",
+  "id": "2f42f495-315d-4ad5-8eb5-3b11c7e0e701",
+  "type": "com.baobab-platform.documents.regulatory-evidence.offered.v1",
+  "source": "urn:baobab-platform:service:baobab-trade-docs",
+  "subject": "document-version:tdocv_01k7rtd4001v1",
+  "time": "2026-10-05T20:31:30Z",
+  "datacontenttype": "application/json",
+  "dataschema": "https://contracts.baobab-platform.com/regulatory-document-exchange/v1/events.schema.json#/$defs/documentRegulatoryEvidenceOfferedEventData",
+  "baobabscope": "tenant",
+  "correlationid": "7d7e8f9a-0b1c-4d1e-8f2a-4b5c6d7e8f11",
+  "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+  "data": {
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
+    "regulatory_decision_reference": {
+      "owner_engine_id": "baobab-regulations",
+      "object_type": "REGULATORY_DECISION",
+      "object_id": "regdec_01k7rtd6decision01",
+      "reference_mode": "IDENTITY_PINNED",
+      "scope": "tenant",
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+    },
+    "requirement_reference": {
+      "owner_engine_id": "baobab-regulations",
+      "object_type": "DOCUMENT_REQUIREMENT",
+      "object_id": "regreq_01k7rtd6phyto01",
+      "reference_mode": "IDENTITY_PINNED",
+      "scope": "tenant",
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+    },
+    "document_version_references": [
+      {
+        "owner_engine_id": "baobab-trade-docs",
+        "object_type": "DOCUMENT_VERSION",
+        "object_id": "tdocv_01k7rtd4001v1",
+        "reference_mode": "IDENTITY_PINNED",
+        "scope": "tenant",
+        "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+      }
+    ],
+    "offered_at": "2026-10-05T20:31:30Z"
+  }
+}

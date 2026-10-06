@@ -1,0 +1,33 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab Trade Docs regulatory-document evidence events
+  version: 1.0.0
+  description: >
+    Canonical document-side RTD-06 exchange event activated by ADR-SHARED-023
+    / RTD-07. baobab-trade-docs is the producer. The event records that exact
+    pinned DocumentVersions were offered against a Regulations-owned
+    requirement; it does not request assessment and does not assert regulatory
+    sufficiency.
+defaultContentType: application/json
+channels:
+  regulatoryDocumentEvidenceEvents:
+    address: baobab-platform.documents.regulatory-evidence.v1
+    messages:
+      regulatoryEvidenceOffered:
+        $ref: "#/components/messages/RegulatoryEvidenceOffered"
+operations:
+  publishRegulatoryDocumentEvidenceEvents:
+    action: send
+    channel:
+      $ref: "#/channels/regulatoryDocumentEvidenceEvents"
+components:
+  messages:
+    RegulatoryEvidenceOffered:
+      name: com.baobab-platform.documents.regulatory-evidence.offered.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data:
+                $ref: ../../regulatory-document-exchange/v1/events.schema.json#/$defs/documentRegulatoryEvidenceOfferedEventData

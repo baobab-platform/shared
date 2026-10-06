@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.baobab-platform.com/trade-document/v2/events.schema.json",
   "title": "TradeDocument v2 cross-engine event payloads",
-  "description": "Minimal fact payloads for proposed documents.* v2 events. Commands and Customs workflow events are outside RTD-04.",
+  "description": "Minimal canonical fact payloads for ACTIVE documents.* v2 events produced under ADR-SHARED-023 by baobab-trade-docs. Commands, Regulations conclusions and Customs workflow events remain outside this contract.",
   "$defs": {
     "tradeDocumentCreatedEventData": {
       "type": "object",

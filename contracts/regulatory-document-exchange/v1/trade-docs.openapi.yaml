@@ -1,0 +1,103 @@
+openapi: 3.1.0
+info:
+  title: Baobab Trade Docs regulatory evidence facts API
+  version: 1.0.0
+  description: >
+    RTD-06 provider-neutral API contract implemented by baobab-trade-docs for
+    resolving bounded documentary facts for exact pinned DocumentVersions.
+    The response is documentary truth/projection only; Regulations remains the
+    authority that decides legal sufficiency.
+  license:
+    name: Apache-2.0
+    identifier: Apache-2.0
+servers:
+  - url: https://trade-docs.baobab-platform.com/v1
+    description: Placeholder logical endpoint; runtime routing remains Control Plane/capability governed.
+security:
+  - workloadOidc: []
+paths:
+  /regulatory-document-evidence/resolve:
+    post:
+      operationId: resolveRegulatoryDocumentEvidence
+      summary: Resolve current documentary facts for pinned DocumentVersions
+      description: >
+        Returns bounded documentary facts for exact immutable DocumentVersion
+        identities together with current verification/temporal-validity
+        projections observed by Trade Docs. A missing/expired verification fact
+        does not become a Regulations decision.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ./domain.schema.json#/$defs/documentEvidenceResolveRequest }
+      responses:
+        "200":
+          description: Documentary fact bundles corresponding to the requested exact versions
+          content:
+            application/json:
+              schema: { $ref: ./domain.schema.json#/$defs/documentEvidenceResolveResponse }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+
+components:
+  parameters:
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      schema:
+        type: string
+        pattern: "^00-(?!00000000000000000000000000000000)[0-9a-f]{32}-(?!0000000000000000)[0-9a-f]{16}-[0-9a-f]{2}$"
+  schemas:
+    ProblemDetails: { $ref: ../../errors/v1/problem-details.schema.json }
+  responses:
+    BadRequest:
+      description: Malformed or semantically invalid request
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Forbidden:
+      description: Caller is not authorised, tenant context mismatches, or documentary facts are not visible
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Exact DocumentVersion was not found
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Conflict:
+      description: Requested references conflict with the redeemed context or owner state
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unavailable:
+      description: Documentary provider/storage/verification dependency unavailable; this is not document absence
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+  securitySchemes:
+    workloadOidc:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
+      description: >
+        Short-lived workload/delegated identity. The Trade Docs provider must
+        authorise the caller against the redeemed context and document
+        classification before returning documentary facts.
