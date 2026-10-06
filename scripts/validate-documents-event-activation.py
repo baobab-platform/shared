@@ -135,15 +135,23 @@ if surface.get("target_producer") != "baobab-trade-docs":
 if surface.get("activation_step") != "RTD-07":
     fail(f"{evidence_type}: activation step must remain RTD-07")
 
+# RTD-08 may activate Regulations events, but RTD-07's document authority
+# invariants still require the Regulations producer/context to remain distinct.
 for reg_type in (
     "com.baobab-platform.regulations.document-requirements.determined.v1",
     "com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1",
 ):
-    if reg_type in entries:
-        fail(f"{reg_type}: must remain unregistered until RTD-08")
+    entry = entries.get(reg_type)
+    if not entry:
+        fail(f"{reg_type}: RTD-08 activation is now required")
+        continue
+    if entry.get("producer") != "baobab-regulations":
+        fail(f"{reg_type}: must be produced by baobab-regulations, never baobab-trade-docs")
+    if entry.get("lifecycle") != "ACTIVE":
+        fail(f"{reg_type}: must be ACTIVE after RTD-08")
     reg_surface = surface_items.get(reg_type, {})
-    if reg_surface.get("status") != "DEFINED_NOT_ACTIVATED":
-        fail(f"{reg_type}: RTD-07 must not activate Regulations event")
+    if reg_surface.get("status") != "ACTIVE":
+        fail(f"{reg_type}: event surface must be ACTIVE after RTD-08")
     if reg_surface.get("activation_step") != "RTD-08":
         fail(f"{reg_type}: activation step must remain RTD-08")
 
@@ -209,4 +217,4 @@ if failures:
     print(f"{len(failures)} RTD-07 activation failure(s)", file=sys.stderr)
     sys.exit(1)
 
-print("RTD-07 documents event activation passed stewardship, producer, legacy-v1 and RTD-08 separation invariants")
+print("RTD-07 documents event activation passed stewardship, producer, legacy-v1 and post-RTD-08 authority-separation invariants")
