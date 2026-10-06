@@ -1,0 +1,107 @@
+{
+  "decision_reference": {
+    "owner_engine_id": "baobab-regulations",
+    "object_type": "REGULATORY_DECISION",
+    "object_id": "regdec_01k8rcap08decision01",
+    "reference_mode": "IDENTITY_PINNED",
+    "scope": "tenant",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+  },
+  "assessment_reference": {
+    "owner_engine_id": "baobab-regulations",
+    "object_type": "REGULATORY_ASSESSMENT",
+    "object_id": "regassess_01k8rcap08assess01",
+    "reference_mode": "IDENTITY_PINNED",
+    "scope": "tenant",
+    "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+  },
+  "outcome": "SATISFIED",
+  "enforcement_class": "E1",
+  "reasons": [
+    {
+      "code": "MANDATORY_REQUIREMENTS_SATISFIED",
+      "message": "All mandatory requirements represented by the pinned rule set are satisfied for the declared question.",
+      "legal_basis_references": [
+        {
+          "owner_engine_id": "baobab-regulations",
+          "object_type": "REGULATORY_PROVISION_VERSION",
+          "object_id": "regprov_za_sps_2026_01",
+          "reference_mode": "IDENTITY_PINNED",
+          "scope": "platform"
+        }
+      ],
+      "rule_version_references": [
+        {
+          "owner_engine_id": "baobab-regulations",
+          "object_type": "REGULATORY_RULE_VERSION",
+          "object_id": "regrule_ugza_coffee_phyto_v3",
+          "reference_mode": "IDENTITY_PINNED",
+          "scope": "platform"
+        }
+      ],
+      "evidence_references": [
+        {
+          "owner_engine_id": "baobab-trade-docs",
+          "object_type": "DOCUMENT_VERSION",
+          "object_id": "tdocv_01k7rtd4001v1",
+          "reference_mode": "IDENTITY_PINNED",
+          "scope": "tenant",
+          "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+        }
+      ]
+    }
+  ],
+  "legal_basis_references": [
+    {
+      "owner_engine_id": "baobab-regulations",
+      "object_type": "REGULATORY_PROVISION_VERSION",
+      "object_id": "regprov_za_sps_2026_01",
+      "reference_mode": "IDENTITY_PINNED",
+      "scope": "platform"
+    }
+  ],
+  "evidence_references": [
+    {
+      "owner_engine_id": "baobab-trade-docs",
+      "object_type": "DOCUMENT_VERSION",
+      "object_id": "tdocv_01k7rtd4001v1",
+      "reference_mode": "IDENTITY_PINNED",
+      "scope": "tenant",
+      "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
+    }
+  ],
+  "recommended_disposition": {
+    "disposition_code": "ALLOW",
+    "rationale": "No blocking regulatory condition was identified for the declared pre-shipment question.",
+    "missing_requirement_references": []
+  },
+  "rule_set_reference": {
+    "owner_engine_id": "baobab-regulations",
+    "object_type": "REGULATORY_RULE_SET",
+    "object_id": "ruleset_ug_za_coffee_2026_10",
+    "reference_mode": "IDENTITY_PINNED",
+    "scope": "platform"
+  },
+  "rule_set_fingerprint": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "evaluated_at": "2026-10-06T10:00:01Z",
+  "legal_time": "2026-10-06T10:00:00Z",
+  "knowledge_time": "2026-10-06T10:00:00Z",
+  "provenance": {
+    "contract_major": 1,
+    "input_fingerprint": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "rule_set_reference": {
+      "owner_engine_id": "baobab-regulations",
+      "object_type": "REGULATORY_RULE_SET",
+      "object_id": "ruleset_ug_za_coffee_2026_10",
+      "reference_mode": "IDENTITY_PINNED",
+      "scope": "platform"
+    },
+    "rule_set_fingerprint": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "evaluation_profile": "STANDARD"
+  },
+  "replay_identity": {
+    "replay_key": "replay-ug-za-coffee-0001",
+    "input_fingerprint": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "rule_set_fingerprint": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+  }
+}
