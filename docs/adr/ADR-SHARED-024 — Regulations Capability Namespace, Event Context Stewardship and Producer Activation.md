@@ -49,9 +49,9 @@ producer = baobab-regulations
 lifecycle = ACTIVE
 ~~~
 
-RTD-08 does **not** migrate the existing \`tax\` or \`customs\` capability domains.
+RTD-08 does **not** migrate the existing `tax` or `customs` capability domains.
 
-RTD-08 does **not** promote any proposed \`regulations.*\` capability key into the capability catalogue.
+RTD-08 does **not** promote any proposed `regulations.*` capability key into the capability catalogue.
 
 RTD-08 does **not** activate the wider illustrative REG-0024 event vocabulary until canonical Shared payload contracts exist.
 
@@ -796,11 +796,11 @@ RTD-08 does not itself add a capability catalogue row.
 
 Shared CI SHALL prove at least:
 
-1. \`regulations\` exists in the namespace registry;
-2. \`regulations\` exists in capabilityDomain enum;
+1. `regulations` exists in the namespace registry;
+2. `regulations` exists in capabilityDomain enum;
 3. namespace registry and enum remain identical;
-4. \`tax\` remains registered;
-5. \`customs\` remains registered;
+4. `tax` remains registered;
+5. `customs` remains registered;
 6. Regulations event context is ACTIVE;
 7. baobab-regulations is its steward;
 8. its capability_domains contains regulations;
