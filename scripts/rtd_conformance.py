@@ -215,7 +215,7 @@ def validate_common(
     return findings
 
 
-def validate_regulations(root: Path, profile: dict) -> list[str]:
+def validate_regulations(root: Path, shared_root: Path, profile: dict) -> list[str]:
     findings: list[str] = []
     domain_root = root / "src/baobab_regulations/domain"
     names = class_names(domain_root.rglob("*.py") if domain_root.is_dir() else ())
@@ -242,13 +242,54 @@ def validate_regulations(root: Path, profile: dict) -> list[str]:
             findings.append("Regulations capability-provider declaration is not a mapping")
         else:
             if provider.get("providers"):
-                findings.append("RTD-10 forbids premature catalogued/implemented Regulations providers")
+                findings.append(
+                    "Regulations provider support remains forbidden until a separate implementation increment "
+                    "proves a canonical capability contract"
+                )
+
+            catalogue = load_yaml(shared_root / "contracts/capability/v1/catalogue.yaml")
+            canonical_keys = {
+                item.get("capability_key")
+                for item in (catalogue.get("capabilities") or [])
+                if isinstance(item, dict)
+            } if isinstance(catalogue, dict) else set()
+
             for item in provider.get("planned_capabilities") or []:
-                key = item.get("proposed_key", "") if isinstance(item, dict) else ""
-                if not key.startswith("regulations."):
-                    findings.append(f"Regulations planned capability escapes regulations namespace: {key!r}")
-                if isinstance(item, dict) and item.get("capability_key"):
-                    findings.append("Regulations planned capabilities must remain proposed_key until the capability census")
+                if not isinstance(item, dict):
+                    findings.append("Regulations planned capability entry must be a mapping")
+                    continue
+
+                proposed_key = item.get("proposed_key")
+                capability_key = item.get("capability_key")
+                status = item.get("proposal_status")
+
+                if proposed_key is not None:
+                    if not str(proposed_key).startswith("regulations."):
+                        findings.append(
+                            f"Regulations planned capability escapes regulations namespace: {proposed_key!r}"
+                        )
+                    if status == "CONTRACTED":
+                        findings.append(
+                            f"{proposed_key}: CONTRACTED capabilities must use canonical capability_key"
+                        )
+                    continue
+
+                if capability_key is not None:
+                    if not str(capability_key).startswith("regulations."):
+                        findings.append(
+                            f"Regulations contracted capability escapes regulations namespace: {capability_key!r}"
+                        )
+                    if status != "CONTRACTED":
+                        findings.append(
+                            f"{capability_key}: canonical capability_key is allowed only with proposal_status CONTRACTED"
+                        )
+                    if capability_key not in canonical_keys:
+                        findings.append(
+                            f"{capability_key}: contracted capability is not present in the Shared catalogue"
+                        )
+                    continue
+
+                findings.append("Regulations planned capability must name proposed_key or capability_key")
 
     local_events = root / "contracts/events"
     if local_events.is_dir():
@@ -416,7 +457,7 @@ def check(
     findings += validate_common(repository_root, shared_root, profile, repository_id)
     role = profile["repository"]["role"]
     if role == "REGULATIONS_AUTHORITY":
-        findings += validate_regulations(repository_root, profile)
+        findings += validate_regulations(repository_root, shared_root, profile)
     elif role == "TRADE_DOCUMENT_AUTHORITY":
         findings += validate_trade_docs(repository_root, profile)
     elif role == "INTELLIGENCE_CONSUMER":
