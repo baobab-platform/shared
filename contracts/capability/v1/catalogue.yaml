@@ -86,3 +86,9 @@ capabilities:
   - capability_key: payment.refund.create
     owner: baobab-payments
     source: ../../payments/v1/capabilities.yaml
+  - capability_key: regulations.evidence.assess
+    owner: baobab-regulations
+    source: ../../regulations/v1/capabilities.yaml
+  - capability_key: regulations.requirement.resolve
+    owner: baobab-regulations
+    source: ../../regulations/v1/capabilities.yaml
