@@ -124,7 +124,18 @@ class CatalogueTest(unittest.TestCase):
 
     def test_catalogue_indexes_its_owning_engines(self):
         owners = {d["owner"] for d, _ in cc.Contracts(self.root).definitions().values()}
-        self.assertEqual(owners, {"baobab-cms", "baobab-erp", "baobab-iam", "baobab-payments", "baobab-subscriptions", "baobab-trade"})
+        self.assertEqual(
+            owners,
+            {
+                "baobab-cms",
+                "baobab-erp",
+                "baobab-iam",
+                "baobab-payments",
+                "baobab-regulations",
+                "baobab-subscriptions",
+                "baobab-trade",
+            },
+        )
 
     def test_duplicate_catalogue_entry_rejected(self):
         self.edit_yaml(cc.CATALOGUE, lambda c: c["capabilities"].insert(0, copy.deepcopy(c["capabilities"][0])))
@@ -171,7 +182,16 @@ class CatalogueTest(unittest.TestCase):
         self.assertFails("is not a Baobab engine/service repository")
 
     def test_unindexed_definition_in_indexed_source_detected(self):
-        self.edit_yaml(cc.CATALOGUE, lambda c: c["capabilities"].pop())
+        self.edit_yaml(
+            cc.CATALOGUE,
+            lambda c: c.update(
+                capabilities=[
+                    item
+                    for item in c["capabilities"]
+                    if item["capability_key"] != "payment.refund.create"
+                ]
+            ),
+        )
         self.assertFails("payment.refund.create is defined in")
 
     def test_unindexed_definition_document_detected_whatever_its_name(self):
