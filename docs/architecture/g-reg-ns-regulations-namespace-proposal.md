@@ -6,9 +6,17 @@
 
 ---
 
-## Proposal
+## Original Proposal — Historical Context
 
-Register a `regulations` domain in `namespace-registry.yaml` and `capabilityDomain` enum to govern cross-border regulatory capabilities: tax registration, tax calculation, import/duty registration, compliance declarations and audit evidence.
+The original review proposed registering a `regulations` domain broadly enough
+to cover several cross-border regulatory concerns, including some tax and
+Customs-adjacent capabilities.
+
+That broad scope is **not** the final RTD-08 decision. ADR-SHARED-024 resolves
+the namespace more narrowly around regulatory context, applicability,
+obligations/requirements, evidence sufficiency, regulatory assessment and
+RegulatoryDecision-related capabilities. Existing `tax` and `customs`
+namespaces remain unchanged.
 
 ### Background
 
@@ -21,7 +29,7 @@ Register a `regulations` domain in `namespace-registry.yaml` and `capabilityDoma
 | Domain | Description | Authority | Governed Capabilities |
 |--------|-------------|-----------|----------------------|
 | `tax` | Tax registration, calculation, reconciliation, filings | baobab-trade (current) | tax registration, tax calculation, tax filing, tax audit trail |
-| `regulations` | Cross-border regulatory compliance (customs, import duty, sanctions, anti-fraud, audit evidence) | baobab-regulations (proposed) | customs declaration, duty calculation, sanctions screening, compliance proof-of-delivery, audit evidence collection |
+| `regulations` | Original candidate scope before RTD-08 resolution | baobab-regulations | Historical candidate included Customs/tax-adjacent concerns; final scope is narrowed by ADR-SHARED-024 |
 
 ### Decision Points
 
@@ -53,7 +61,7 @@ The candidate review deferred `tax-registrations` (Trade, ADR-0018) pending G-RE
 |-----------|---|---|
 | Tax registrations | Deferred | If `tax` stays Trade-owned: domain exists, evaluate for capability candidacy. If `tax` moves to Regulations: surveyed in Regulations engine census |
 
-### Next Steps (if approved)
+### Original Next Steps (superseded by ADR-SHARED-024)
 
 1. Update `namespace-registry.yaml` with `regulations` domain entry.
 2. Update `capabilityDomain` enum in capability schema.
@@ -65,7 +73,7 @@ The candidate review deferred `tax-registrations` (Trade, ADR-0018) pending G-RE
 
 **Stakeholders:** Architecture Review Board, baobab-trade, baobab-regulations, baobab-cp (for capability binding impact)
 
-**Timeline:** Parallel with ADR-REG family acceptance or serial gate thereafter
+**Timeline:** Resolved on 2026-10-06 by ADR-SHARED-024; remaining capability census/catalogue work continues separately
 
 
 ---
