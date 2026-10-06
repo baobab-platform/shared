@@ -21,7 +21,10 @@
     {
       "fact_code": "HS_CODE",
       "value": "0901.11.10",
-      "observed_at": "2026-10-06T10:00:00Z"
+      "observed_at": "2026-10-06T10:00:00Z",
+      "unit": null,
+      "currency": null,
+      "source_reference": null
     },
     {
       "fact_code": "PHYTOSANITARY_CERTIFICATE_PRESENT",
@@ -34,12 +37,17 @@
         "reference_mode": "IDENTITY_PINNED",
         "scope": "tenant",
         "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4"
-      }
+      },
+      "unit": null,
+      "currency": null
     },
     {
       "fact_code": "ORIGIN_CERTIFICATE_PRESENT",
       "value": true,
-      "observed_at": "2026-10-06T10:00:00Z"
+      "observed_at": "2026-10-06T10:00:00Z",
+      "unit": null,
+      "currency": null,
+      "source_reference": null
     }
   ],
   "evidence_references": [
