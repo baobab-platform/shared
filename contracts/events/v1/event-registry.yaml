@@ -488,6 +488,14 @@ events:
     asyncapi: contracts/product/v1/asyncapi.yaml
     producer: baobab-cp
     lifecycle: ACTIVE
+  - type: com.baobab-platform.regulations.document-requirements.determined.v1
+    asyncapi: contracts/regulatory-document-assessment/v1/asyncapi.yaml
+    producer: baobab-regulations
+    lifecycle: ACTIVE
+  - type: com.baobab-platform.regulations.requirement-satisfaction.evaluated.v1
+    asyncapi: contracts/regulatory-document-assessment/v1/asyncapi.yaml
+    producer: baobab-regulations
+    lifecycle: ACTIVE
   - type: com.baobab-platform.session.revoked.v1
     asyncapi: contracts/identity-events/v1/asyncapi.yaml
     producer: baobab-iam
