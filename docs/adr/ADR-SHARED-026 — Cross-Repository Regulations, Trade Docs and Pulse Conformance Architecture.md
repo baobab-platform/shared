@@ -8,6 +8,7 @@
 **Implements:** RTD-10 from ADR-SHARED-019  
 **Depends On:** ADR-SHARED-019, ADR-SHARED-020, ADR-SHARED-021, ADR-SHARED-022, ADR-SHARED-023, ADR-SHARED-024, ADR-SHARED-025  
 **Participants:** baobab-regulations, baobab-trade-docs, baobab-pulse
+**Refined By:** ADR-SHARED-027 §14 for post-census Regulations capability handling
 
 ---
 
