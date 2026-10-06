@@ -27,7 +27,7 @@ domain = json.loads((CAP / "domain.schema.json").read_text())
 context_doc = yaml.safe_load((EVENTS / "context-registry.yaml").read_text())
 event_registry = yaml.safe_load((EVENTS / "event-registry.yaml").read_text())
 
-namespaces = {item["key"]: item for item in namespace_doc.get("namespaces", [])}
+namespaces = {item["key"]: item for item in namespace_doc.get("domains", [])}
 if "intelligence" not in namespaces:
     fail("intelligence capability namespace must be registered")
 if "pulse" in namespaces:
