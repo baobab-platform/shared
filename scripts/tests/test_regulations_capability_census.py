@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
 import yaml
 
@@ -65,5 +66,12 @@ for forbidden in (
     "regulations.pack.compose",
 ):
     assert forbidden not in catalogued
+
+# RTD-10 must now pin the capability vocabulary it uses for Regulations.
+sys.path.insert(0, str(ROOT / "scripts"))
+import rtd_conformance as rtd  # noqa: E402
+
+assert "contracts/capability/v1/catalogue.yaml" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
+assert "contracts/regulations/v1/capabilities.yaml" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
 
 print("ADR-SHARED-027 Regulations capability census invariants passed")
