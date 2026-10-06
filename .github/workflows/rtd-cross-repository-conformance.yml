@@ -27,8 +27,8 @@ jobs:
         shell: bash
         run: |
           test -f .baobab/rtd-conformance.yaml
-          commit="$(awk '/^  commit: / {print $2; exit}' .baobab/rtd-conformance.yaml)"
-          test "${#commit}" -eq 40
+          commit="$(awk '/^  commit: / {print $2; exit}' .baobab/rtd-conformance.yaml | tr -d '"')"
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]]
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
 
       - name: Checkout pinned Shared conformance authority
