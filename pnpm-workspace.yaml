@@ -1,14 +1,5 @@
 packages:
   - "packages/*"
-
-overrides:
-  # Security patch: source-map-js <1.2.2 is affected by GHSA-68fv-2mgg-jv7q.
-  source-map-js: 1.2.2
-  # GraphQL Codegen still requests @graphql-tools/utils 11.x while the
-  # prototype-pollution fix is available only in >=12.0.1
-  # (GHSA-7mx3-vvmw-hjmv). This is build-time tooling; CI generation/build
-  # remains the compatibility proof until Codegen widens its own range.
-  '@graphql-tools/utils': 12.0.1
 allowBuilds:
   '@bufbuild/buf': true
   esbuild: true
