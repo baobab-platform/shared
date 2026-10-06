@@ -76,45 +76,45 @@ The architecture review is resolved as follows.
 
 ### 1. Canonical domain
 
-\`\`\`text
+```text
 regulations
-\`\`\`
+```
 
 is approved as a canonical Shared capability domain.
 
 Its semantic scope is:
 
-\`\`\`text
+```text
 regulatory context
 applicability
 obligations / requirements
 evidence sufficiency
 regulatory assessment
 RegulatoryDecision-related capabilities
-\`\`\`
+```
 
 ### 2. Tax namespace
 
 The existing:
 
-\`\`\`text
+```text
 tax
-\`\`\`
+```
 
 domain is **not migrated by this decision**.
 
 RTD-08 does not redefine existing tax registration/calculation/reconciliation
 contracts. Regulations may determine regulatory tax meaning under its own
-domain boundary, but migration or decomposition of established \`tax.*\`
+domain boundary, but migration or decomposition of established `tax.*`
 capabilities requires a separate architecture decision.
 
 ### 3. Customs namespace
 
 The existing:
 
-\`\`\`text
+```text
 customs
-\`\`\`
+```
 
 domain is **not migrated by this decision**.
 
@@ -124,25 +124,25 @@ decomposition established by ADR-SHARED-019 remains authoritative.
 
 ### 4. Namespace registration is not capability promotion
 
-Registering \`regulations\` permits canonical capability keys such as:
+Registering `regulations` permits canonical capability keys such as:
 
-\`\`\`text
+```text
 regulations.context.resolve
 regulations.decision.evaluate
 regulations.change.subscribe
-\`\`\`
+```
 
 to be considered by the normal capability-governance process.
 
 It does not make those keys catalogued, ACTIVE, supported or bound.
 
 The baobab-regulations provider declaration may continue to use
-\`proposed_key\` until Shared catalogue contracts and implementation evidence
+`proposed_key` until Shared catalogue contracts and implementation evidence
 justify promotion.
 
 ### 5. Event-context consequence
 
 Because the namespace gate is now resolved, ADR-SHARED-024 also activates the
-Shared \`regulations\` event context with \`baobab-regulations\` as steward and
+Shared `regulations` event context with `baobab-regulations` as steward and
 producer for the two RTD-06 documentary-assessment facts.
 
