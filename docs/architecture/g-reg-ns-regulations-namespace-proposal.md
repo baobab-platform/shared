@@ -1,8 +1,8 @@
 # G-REG-NS — Regulations Namespace Architecture Review
 
-**Decision Required:** ADR-SHARED-007 architecture review for a canonical `regulations` namespace
-
-**Gate:** Precedes Regulations engine survey and catalogue entries for tax/regulatory capabilities
+**Decision:** APPROVED / RESOLVED by ADR-SHARED-024 (RTD-08), 2026-10-06  
+**Result:** Canonical `regulations` capability domain registered; `tax` and `customs` namespaces remain unchanged  
+**Remaining Gate:** Regulations engine capability census and catalogue promotion remain separate work
 
 ---
 
@@ -66,3 +66,83 @@ The candidate review deferred `tax-registrations` (Trade, ADR-0018) pending G-RE
 **Stakeholders:** Architecture Review Board, baobab-trade, baobab-regulations, baobab-cp (for capability binding impact)
 
 **Timeline:** Parallel with ADR-REG family acceptance or serial gate thereafter
+
+
+---
+
+## Resolution — ADR-SHARED-024 / RTD-08
+
+The architecture review is resolved as follows.
+
+### 1. Canonical domain
+
+\`\`\`text
+regulations
+\`\`\`
+
+is approved as a canonical Shared capability domain.
+
+Its semantic scope is:
+
+\`\`\`text
+regulatory context
+applicability
+obligations / requirements
+evidence sufficiency
+regulatory assessment
+RegulatoryDecision-related capabilities
+\`\`\`
+
+### 2. Tax namespace
+
+The existing:
+
+\`\`\`text
+tax
+\`\`\`
+
+domain is **not migrated by this decision**.
+
+RTD-08 does not redefine existing tax registration/calculation/reconciliation
+contracts. Regulations may determine regulatory tax meaning under its own
+domain boundary, but migration or decomposition of established \`tax.*\`
+capabilities requires a separate architecture decision.
+
+### 3. Customs namespace
+
+The existing:
+
+\`\`\`text
+customs
+\`\`\`
+
+domain is **not migrated by this decision**.
+
+RTD-08 does not decide ownership of Customs declaration, submission, clearance
+or authority-response workflow capabilities. The Regulations/Trade Docs
+decomposition established by ADR-SHARED-019 remains authoritative.
+
+### 4. Namespace registration is not capability promotion
+
+Registering \`regulations\` permits canonical capability keys such as:
+
+\`\`\`text
+regulations.context.resolve
+regulations.decision.evaluate
+regulations.change.subscribe
+\`\`\`
+
+to be considered by the normal capability-governance process.
+
+It does not make those keys catalogued, ACTIVE, supported or bound.
+
+The baobab-regulations provider declaration may continue to use
+\`proposed_key\` until Shared catalogue contracts and implementation evidence
+justify promotion.
+
+### 5. Event-context consequence
+
+Because the namespace gate is now resolved, ADR-SHARED-024 also activates the
+Shared \`regulations\` event context with \`baobab-regulations\` as steward and
+producer for the two RTD-06 documentary-assessment facts.
+
