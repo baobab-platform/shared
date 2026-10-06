@@ -1,0 +1,567 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/regulatory-decision/v1/domain.schema.json",
+  "title": "Baobab Regulations decision evaluation v1",
+  "description": "Provider-neutral R-CAP-08 contract for deterministic regulatory decision evaluation. It defines Regulations-owned decision semantics and historical/replay identity without exposing OPA, Rego or any evaluator implementation.",
+  "$defs": {
+    "contextId": {
+      "$ref": "../../control-plane/v1/domain.schema.json#/$defs/uuid",
+      "description": "Persisted Control Plane PlatformContext identifier. The resource server validates it against the authenticated caller; it is not a bearer credential."
+    },
+    "reasonCode": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{2,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "decisionOutcome": {
+      "type": "string",
+      "enum": [
+        "SATISFIED",
+        "SATISFIED_WITH_REQUIREMENTS",
+        "UNSATISFIED",
+        "PROHIBITED",
+        "INDETERMINATE",
+        "NOT_APPLICABLE"
+      ],
+      "description": "Regulatory conclusion, never a transport/runtime status. Evaluator failures are RFC 9457 errors rather than values in this enum."
+    },
+    "enforcementClass": {
+      "type": "string",
+      "enum": [
+        "E0",
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ],
+      "description": "Regulations-owned consequence/assurance class. It does not execute operational enforcement; domain PEPs retain business-state authority."
+    },
+    "regulatoryQuestion": {
+      "type": "string",
+      "enum": [
+        "MAY_TRANSACTION_PROCEED",
+        "WHAT_OBLIGATIONS_APPLY",
+        "WHAT_REQUIREMENTS_REMAIN",
+        "WHAT_DOCUMENTS_ARE_REQUIRED",
+        "IS_REQUIREMENT_SATISFIED",
+        "IS_ACTION_PROHIBITED",
+        "IS_EXPLICIT_PERMISSION_AVAILABLE",
+        "WHAT_DUTY_OR_AMOUNT_APPLIES",
+        "WHAT_REGULATORY_GAPS_EXIST",
+        "WHAT_CHANGED",
+        "WHAT_WOULD_APPLY_AT_FUTURE_TIME"
+      ]
+    },
+    "assessmentPurpose": {
+      "type": "string",
+      "enum": [
+        "TRANSACTION_DECISION",
+        "COMPLIANCE_REVIEW",
+        "LEGAL_REVIEW",
+        "AUDIT",
+        "HISTORICAL_REPLAY",
+        "FUTURE_SIMULATION"
+      ]
+    },
+    "decisionStage": {
+      "type": "string",
+      "enum": [
+        "PLANNING",
+        "QUOTATION",
+        "ORDER",
+        "PRE_SHIPMENT",
+        "EXPORT",
+        "TRANSIT",
+        "IMPORT",
+        "CLEARANCE",
+        "DELIVERY",
+        "POST_TRANSACTION",
+        "PERIODIC_COMPLIANCE"
+      ]
+    },
+    "evaluationProfile": {
+      "type": "string",
+      "enum": [
+        "ADVISORY",
+        "STANDARD",
+        "HIGH_ASSURANCE",
+        "HISTORICAL_REPLAY",
+        "FUTURE_SIMULATION",
+        "SHADOW"
+      ]
+    },
+    "requestedAssurance": {
+      "type": "string",
+      "enum": [
+        "STANDARD",
+        "HIGH_ASSURANCE"
+      ]
+    },
+    "regulatoryDecisionReference": {
+      "allOf": [
+        {
+          "$ref": "../../cross-engine-reference/v1/domain.schema.json#/$defs/pinnedCrossEngineObjectReference"
+        },
+        {
+          "properties": {
+            "owner_engine_id": {
+              "const": "baobab-regulations"
+            },
+            "object_type": {
+              "const": "REGULATORY_DECISION"
+            }
+          }
+        }
+      ]
+    },
+    "regulatoryAssessmentReference": {
+      "allOf": [
+        {
+          "$ref": "../../cross-engine-reference/v1/domain.schema.json#/$defs/pinnedCrossEngineObjectReference"
+        },
+        {
+          "properties": {
+            "owner_engine_id": {
+              "const": "baobab-regulations"
+            },
+            "object_type": {
+              "const": "REGULATORY_ASSESSMENT"
+            }
+          }
+        }
+      ]
+    },
+    "ruleSetReference": {
+      "allOf": [
+        {
+          "$ref": "../../cross-engine-reference/v1/domain.schema.json#/$defs/pinnedCrossEngineObjectReference"
+        },
+        {
+          "properties": {
+            "owner_engine_id": {
+              "const": "baobab-regulations"
+            },
+            "object_type": {
+              "const": "REGULATORY_RULE_SET"
+            }
+          }
+        }
+      ],
+      "description": "Pinned Regulations-owned rule-set snapshot. A mutable/current rule-set reference is insufficient for consequential evaluation or replay."
+    },
+    "ruleVersionReference": {
+      "allOf": [
+        {
+          "$ref": "../../cross-engine-reference/v1/domain.schema.json#/$defs/pinnedCrossEngineObjectReference"
+        },
+        {
+          "properties": {
+            "owner_engine_id": {
+              "const": "baobab-regulations"
+            },
+            "object_type": {
+              "const": "REGULATORY_RULE_VERSION"
+            }
+          }
+        }
+      ]
+    },
+    "subjectReference": {
+      "$ref": "../../cross-engine-reference/v1/domain.schema.json#/$defs/pinnedCrossEngineObjectReference",
+      "description": "Pinned authority-preserving reference to a regulated subject owned by its canonical engine."
+    },
+    "evidenceReference": {
+      "$ref": "../../cross-engine-reference/v1/domain.schema.json#/$defs/pinnedCrossEngineObjectReference",
+      "description": "Pinned evidence identity. The reference preserves owner and historical pinning but does not transfer evidence authority to Regulations."
+    },
+    "legalBasisReference": {
+      "$ref": "../../cross-engine-reference/v1/domain.schema.json#/$defs/pinnedCrossEngineObjectReference",
+      "description": "Pinned reference to the canonical source/provision/rule artefact supporting the decision. The referenced owner remains authoritative."
+    },
+    "factValue": {
+      "oneOf": [
+        {
+          "type": "string",
+          "maxLength": 2048
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    "regulatoryFact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fact_code",
+        "value",
+        "observed_at"
+      ],
+      "properties": {
+        "fact_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_.-]{1,127}$"
+        },
+        "value": {
+          "$ref": "#/$defs/factValue"
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 64
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z]{3}$"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_reference": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/evidenceReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "description": "Bounded typed fact presented for evaluation. The fact is input evidence, not a legal conclusion."
+    },
+    "decisionReason": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "legal_basis_references",
+        "rule_version_references",
+        "evidence_references"
+      ],
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/reasonCode"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "legal_basis_references": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/legalBasisReference"
+          }
+        },
+        "rule_version_references": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ruleVersionReference"
+          }
+        },
+        "evidence_references": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidenceReference"
+          }
+        }
+      }
+    },
+    "recommendedDisposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "disposition_code",
+        "rationale",
+        "missing_requirement_references"
+      ],
+      "properties": {
+        "disposition_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "missing_requirement_references": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../regulatory-document-exchange/v1/domain.schema.json#/$defs/regulatoryRequirementReference"
+          }
+        }
+      },
+      "description": "Non-enforcing recommendation to the consuming PEP. It never authorises Regulations to mutate shipment/order/business state."
+    },
+    "decisionProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_major",
+        "input_fingerprint",
+        "rule_set_reference",
+        "rule_set_fingerprint",
+        "evaluation_profile"
+      ],
+      "properties": {
+        "contract_major": {
+          "const": 1
+        },
+        "input_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "rule_set_reference": {
+          "$ref": "#/$defs/ruleSetReference"
+        },
+        "rule_set_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "evaluation_profile": {
+          "$ref": "#/$defs/evaluationProfile"
+        }
+      },
+      "description": "Provider-neutral reproducibility metadata. Evaluator/vendor execution metadata belongs to implementation/audit provenance, not this canonical decision contract."
+    },
+    "replayIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "replay_key",
+        "input_fingerprint",
+        "rule_set_fingerprint"
+      ],
+      "properties": {
+        "replay_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "minLength": 16,
+          "maxLength": 128
+        },
+        "input_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "rule_set_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "decisionEvaluateRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_id",
+        "question",
+        "assessment_purpose",
+        "subject_references",
+        "regulated_activities",
+        "facts",
+        "evidence_references",
+        "rule_set_reference",
+        "legal_time",
+        "knowledge_time",
+        "evaluation_profile",
+        "requested_assurance",
+        "requested_enforcement_class_ceiling",
+        "replay_key"
+      ],
+      "properties": {
+        "context_id": {
+          "$ref": "#/$defs/contextId"
+        },
+        "question": {
+          "$ref": "#/$defs/regulatoryQuestion"
+        },
+        "assessment_purpose": {
+          "$ref": "#/$defs/assessmentPurpose"
+        },
+        "decision_stage": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/decisionStage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subject_references": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/subjectReference"
+          }
+        },
+        "regulated_activities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_.-]{1,127}$"
+          }
+        },
+        "facts": {
+          "type": "array",
+          "maxItems": 512,
+          "items": {
+            "$ref": "#/$defs/regulatoryFact"
+          }
+        },
+        "evidence_references": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidenceReference"
+          }
+        },
+        "rule_set_reference": {
+          "$ref": "#/$defs/ruleSetReference"
+        },
+        "legal_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "knowledge_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evaluation_profile": {
+          "$ref": "#/$defs/evaluationProfile"
+        },
+        "requested_assurance": {
+          "$ref": "#/$defs/requestedAssurance"
+        },
+        "requested_enforcement_class_ceiling": {
+          "$ref": "#/$defs/enforcementClass"
+        },
+        "replay_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "minLength": 16,
+          "maxLength": 128
+        }
+      },
+      "description": "Deterministic regulatory decision command. The body carries no tenant_id; tenant authority comes from caller-bound Control Plane context validation. Legal/knowledge time are explicit semantic inputs and must be governed by the selected assessment purpose/profile."
+    },
+    "decisionEvaluateResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_reference",
+        "assessment_reference",
+        "outcome",
+        "enforcement_class",
+        "reasons",
+        "legal_basis_references",
+        "evidence_references",
+        "recommended_disposition",
+        "rule_set_reference",
+        "rule_set_fingerprint",
+        "evaluated_at",
+        "legal_time",
+        "knowledge_time",
+        "provenance",
+        "replay_identity"
+      ],
+      "properties": {
+        "decision_reference": {
+          "$ref": "#/$defs/regulatoryDecisionReference"
+        },
+        "assessment_reference": {
+          "$ref": "#/$defs/regulatoryAssessmentReference"
+        },
+        "outcome": {
+          "$ref": "#/$defs/decisionOutcome"
+        },
+        "enforcement_class": {
+          "$ref": "#/$defs/enforcementClass"
+        },
+        "reasons": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "$ref": "#/$defs/decisionReason"
+          }
+        },
+        "legal_basis_references": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/legalBasisReference"
+          }
+        },
+        "evidence_references": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidenceReference"
+          }
+        },
+        "recommended_disposition": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/recommendedDisposition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rule_set_reference": {
+          "$ref": "#/$defs/ruleSetReference"
+        },
+        "rule_set_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "evaluated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "legal_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "knowledge_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "provenance": {
+          "$ref": "#/$defs/decisionProvenance"
+        },
+        "replay_identity": {
+          "$ref": "#/$defs/replayIdentity"
+        }
+      },
+      "description": "Regulations-owned decision result. INDETERMINATE is a regulatory conclusion; transport, evaluator protocol, readiness and authority failures are returned separately as ProblemDetails."
+    }
+  }
+}
