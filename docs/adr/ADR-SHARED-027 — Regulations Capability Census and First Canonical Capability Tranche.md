@@ -10,6 +10,14 @@
 **Semantic Owner:** baobab-regulations  
 **Contract Authority:** baobab-platform/shared
 
+> **R-CAP-07 follow-on — 2026-10-06:** The census-time prohibition in this ADR
+> applied before a canonical implementation increment existed. R-CAP-01 through
+> R-CAP-06 subsequently established the exact routes, contract proof, durable
+> assessment state and canonical event outbox. RTD-10 now permits
+> evidence-backed `PARTIAL` provider support for the two catalogued capability
+> keys. This does not change their DRAFT/EXPERIMENTAL capability lifecycle,
+> certify an implementation, or activate runtime support.
+
 ---
 
 ## 1. Decision
