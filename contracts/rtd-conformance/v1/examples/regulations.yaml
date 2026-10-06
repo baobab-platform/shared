@@ -1,0 +1,24 @@
+schema: baobab-rtd-conformance
+version: "1.0"
+programme: RTD-10
+repository:
+  id: baobab-regulations
+  role: REGULATIONS_AUTHORITY
+  maturity: DOMAIN_RUNTIME
+shared:
+  repository: baobab-platform/shared
+  commit: 0000000000000000000000000000000000000000
+  required_contracts:
+    - contracts/control-plane/v1/domain.schema.json
+    - contracts/cross-engine-reference/v1/domain.schema.json
+    - contracts/events/v1/envelope.schema.json
+    - contracts/regulatory-document-exchange/v1/domain.schema.json
+    - contracts/regulatory-document-exchange/v1/events.schema.json
+evidence:
+  adr_paths:
+    - docs/adr/ADR-REG-0026 — Baobab Platform Integration and Canonical Context Boundary.md
+    - docs/adr/ADR-REG-0027 — Cross-Border Trade Regulatory Profile.md
+  source_paths:
+    - src/baobab_regulations/domain/decisions/models.py
+  test_paths:
+    - tests/architecture/test_dependency_boundaries.py
