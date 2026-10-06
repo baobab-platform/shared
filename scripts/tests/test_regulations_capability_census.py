@@ -21,6 +21,7 @@ catalogued = {
     if isinstance(item, dict) and str(item.get("capability_key", "")).startswith("regulations.")
 }
 assert set(catalogued) == {
+    "regulations.decision.evaluate",
     "regulations.evidence.assess",
     "regulations.requirement.resolve",
 }
@@ -58,11 +59,20 @@ assert (
     defined["regulations.evidence.assess"]["contracts"][0]["response_schema"]
     == "../../regulatory-document-exchange/v1/domain.schema.json#/$defs/documentEvidenceAssessmentResult"
 )
+assert (
+    defined["regulations.decision.evaluate"]["contracts"][0]["request_schema"]
+    == "../../regulatory-decision/v1/domain.schema.json#/$defs/decisionEvaluateRequest"
+)
+assert (
+    defined["regulations.decision.evaluate"]["contracts"][0]["response_schema"]
+    == "../../regulatory-decision/v1/domain.schema.json#/$defs/decisionEvaluateResponse"
+)
+assert defined["regulations.decision.evaluate"]["metadata"]["authority"] == "ADR-SHARED-028"
 
-# The first census deliberately does not canonicalize the broader proposals.
+# R-CAP-08 contracts only decision.evaluate. The remaining broader proposals
+# stay outside the canonical catalogue.
 for forbidden in (
     "regulations.context.resolve",
-    "regulations.decision.evaluate",
     "regulations.change.subscribe",
     "regulations.pack.compose",
 ):
@@ -75,4 +85,4 @@ import rtd_conformance as rtd  # noqa: E402
 assert "contracts/capability/v1/catalogue.yaml" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
 assert "contracts/regulations/v1/capabilities.yaml" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
 
-print("ADR-SHARED-027 Regulations capability census invariants passed")
+print("ADR-SHARED-027/R-CAP-08 Regulations capability census invariants passed")
