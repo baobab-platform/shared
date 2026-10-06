@@ -57,23 +57,75 @@
   },
   "allOf": [
     {
-      "if": {"properties": {"repository": {"properties": {"role": {"const": "REGULATIONS_AUTHORITY"}}}}},
+      "if": {
+        "properties": {
+          "repository": {
+            "properties": {"role": {"const": "REGULATIONS_AUTHORITY"}},
+            "required": ["role"]
+          }
+        }
+      },
       "then": {
-        "properties": {"repository": {"properties": {"id": {"const": "baobab-regulations"}, "maturity": {"const": "DOMAIN_RUNTIME"}}}},
-        "properties": {"evidence": {"properties": {"source_paths": {"minItems": 1}, "test_paths": {"minItems": 1}}}}
+        "properties": {
+          "repository": {
+            "properties": {
+              "id": {"const": "baobab-regulations"},
+              "maturity": {"const": "DOMAIN_RUNTIME"}
+            }
+          },
+          "evidence": {
+            "properties": {
+              "source_paths": {"minItems": 1},
+              "test_paths": {"minItems": 1}
+            }
+          }
+        }
       }
     },
     {
-      "if": {"properties": {"repository": {"properties": {"role": {"const": "TRADE_DOCUMENT_AUTHORITY"}}}}},
+      "if": {
+        "properties": {
+          "repository": {
+            "properties": {"role": {"const": "TRADE_DOCUMENT_AUTHORITY"}},
+            "required": ["role"]
+          }
+        }
+      },
       "then": {
-        "properties": {"repository": {"properties": {"id": {"const": "baobab-trade-docs"}, "maturity": {"const": "ARCHITECTURE_ONLY"}}}}
+        "properties": {
+          "repository": {
+            "properties": {
+              "id": {"const": "baobab-trade-docs"},
+              "maturity": {"const": "ARCHITECTURE_ONLY"}
+            }
+          }
+        }
       }
     },
     {
-      "if": {"properties": {"repository": {"properties": {"role": {"const": "INTELLIGENCE_CONSUMER"}}}}},
+      "if": {
+        "properties": {
+          "repository": {
+            "properties": {"role": {"const": "INTELLIGENCE_CONSUMER"}},
+            "required": ["role"]
+          }
+        }
+      },
       "then": {
-        "properties": {"repository": {"properties": {"id": {"const": "baobab-pulse"}, "maturity": {"const": "IMPLEMENTED_CONSUMER"}}}},
-        "properties": {"evidence": {"properties": {"source_paths": {"minItems": 1}, "test_paths": {"minItems": 1}}}}
+        "properties": {
+          "repository": {
+            "properties": {
+              "id": {"const": "baobab-pulse"},
+              "maturity": {"const": "IMPLEMENTED_CONSUMER"}
+            }
+          },
+          "evidence": {
+            "properties": {
+              "source_paths": {"minItems": 1},
+              "test_paths": {"minItems": 1}
+            }
+          }
+        }
       }
     }
   ]
