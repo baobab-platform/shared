@@ -7,7 +7,7 @@ repository:
   maturity: ARCHITECTURE_ONLY
 shared:
   repository: baobab-platform/shared
-  commit: 0000000000000000000000000000000000000000
+  commit: "0000000000000000000000000000000000000000"
   required_contracts:
     - contracts/control-plane/v1/domain.schema.json
     - contracts/cross-engine-reference/v1/domain.schema.json
