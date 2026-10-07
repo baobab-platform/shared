@@ -37,11 +37,11 @@ assert set(defined) == set(catalogued)
 for key, item in defined.items():
     assert item["owner"] == "baobab-pulse"
     assert item["domain"] == "intelligence"
-    assert item["lifecycle"] == "DRAFT"
+    assert item["lifecycle"] == "ACTIVE"
     assert item["maturity"] == "EXPERIMENTAL"
     assert item["data_classification"] == "TENANT_CONFIDENTIAL"
-    assert item["metadata"]["authority"] == "ADR-SHARED-031"
-    assert item["metadata"]["provider_implementation"] == "p-cap-07-readiness-governed"
+    assert item["metadata"]["authority"] == "ADR-SHARED-032"
+    assert item["metadata"]["provider_implementation"] == "p-cap-08-certification-activation-governed"
     assert catalogued[key]["source"] == "../../intelligence/v1/capabilities.yaml"
 
 defs = domain["$defs"]
