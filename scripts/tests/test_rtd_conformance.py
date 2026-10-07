@@ -44,6 +44,9 @@ assert rtd.schema_findings(bad), "Pulse implemented consumer must provide test e
 assert "contracts/cross-engine-reference/v1/domain.schema.json" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
 assert "contracts/trade-document/v2/domain.schema.json" in rtd.ROLE_CONTRACTS["TRADE_DOCUMENT_AUTHORITY"]
 assert "contracts/regulatory-document-exchange/v1/events.schema.json" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
+assert "contracts/capability/v1/catalogue.yaml" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
+assert "contracts/intelligence/v1/capabilities.yaml" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
+assert "contracts/intelligence/v1/domain.schema.json" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
 assert "contracts/regulatory-decision/v1/domain.schema.json" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
 assert "contracts/regulatory-decision/v1/regulations.openapi.yaml" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
 
@@ -106,6 +109,52 @@ assert any(
     "both planned and provider support" in finding
     for finding in rtd.validate_regulations_provider_support(
         ROOT, duplicated, canonical_regulations
+    )
+)
+
+canonical_intelligence = {
+    "intelligence.evidence.search",
+    "intelligence.research-mission.manage",
+}
+valid_pulse = {
+    "planned_capabilities": [
+        {
+            "capability_key": "intelligence.evidence.search",
+            "proposal_status": "CONTRACTED",
+        },
+        {
+            "capability_key": "intelligence.research-mission.manage",
+            "proposal_status": "CONTRACTED",
+        },
+    ]
+}
+assert not rtd.validate_pulse_provider_declaration(valid_pulse, canonical_intelligence)
+
+premature_support = copy.deepcopy(valid_pulse)
+premature_support["providers"] = [
+    {
+        "provider_key": "baobab-pulse.core",
+        "support": [
+            {
+                "capability_key": "intelligence.evidence.search",
+                "implementation_status": "PARTIAL",
+            }
+        ],
+    }
+]
+assert any(
+    "must not declare providers[].support" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        premature_support, canonical_intelligence
+    )
+)
+
+noncanonical_pulse = copy.deepcopy(valid_pulse)
+noncanonical_pulse["planned_capabilities"][0]["capability_key"] = "intelligence.fake.execute"
+assert any(
+    "not present in the Shared catalogue" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        noncanonical_pulse, canonical_intelligence
     )
 )
 
