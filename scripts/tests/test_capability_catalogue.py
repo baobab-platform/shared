@@ -131,6 +131,7 @@ class CatalogueTest(unittest.TestCase):
                 "baobab-erp",
                 "baobab-iam",
                 "baobab-payments",
+                "baobab-pulse",
                 "baobab-regulations",
                 "baobab-subscriptions",
                 "baobab-trade",

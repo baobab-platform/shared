@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate ADR-SHARED-025 / RTD-09 intelligence namespace reservation."""
+"""Validate ADR-SHARED-025 / RTD-09 boundary as refined by ADR-SHARED-029."""
 
 from __future__ import annotations
 
@@ -44,9 +44,16 @@ catalogued = [
     for item in (catalogue_doc.get("capabilities") or [])
     if isinstance(item, dict)
 ]
-intelligence_caps = [key for key in catalogued if key.startswith("intelligence.")]
-if intelligence_caps:
-    fail(f"RTD-09 must not catalogue intelligence capabilities yet: {sorted(intelligence_caps)}")
+intelligence_caps = {key for key in catalogued if key.startswith("intelligence.")}
+expected_intelligence_caps = {
+    "intelligence.evidence.search",
+    "intelligence.research-mission.manage",
+}
+if intelligence_caps != expected_intelligence_caps:
+    fail(
+        "ADR-SHARED-029 permits exactly the first Pulse census tranche: "
+        f"expected {sorted(expected_intelligence_caps)}, got {sorted(intelligence_caps)}"
+    )
 pulse_caps = [key for key in catalogued if key.startswith("pulse.")]
 if pulse_caps:
     fail(f"pulse.* capability keys are forbidden: {sorted(pulse_caps)}")
@@ -96,4 +103,4 @@ if failures:
     print(f"{len(failures)} RTD-09 intelligence namespace failure(s)", file=sys.stderr)
     sys.exit(1)
 
-print("RTD-09 intelligence namespace reservation passed non-promotion, reserved-context and upstream-event invariants")
+print("RTD-09/ADR-SHARED-029 intelligence boundary passed census, reserved-context and upstream-event invariants")
