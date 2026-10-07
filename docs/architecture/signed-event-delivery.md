@@ -34,7 +34,7 @@ CP recovery sweep (second line): overdue non-terminal submissions are reconciled
 
 ## Event identity (ERP)
 
-One event per committed revision of a provisioning command. `id` is the version 5 UUID, URL namespace, of `urn:baobab-platform:event:erp-provisioning:{operation_id}:{revision}`; `idempotencykey` is `erp-provisioning-{operation_id}-r{revision}`. A redelivery, a re-publication after a dead letter is replayed, and a rebuilt outbox all produce the same event, so deduplicating by `id` is sound. A validator recomputes the example's id.
+One event per committed revision of a provisioning command. `id` is the version 5 UUID, URL namespace, of `urn:baobab-platform:event:erp-provisioning:{operation_id}:{revision}`; `idempotencykey` is `erp-provisioning-{operation_id}-r{revision}`. A redelivery, a re-publication after a dead letter is replayed, and a rebuilt outbox all produce the same event, so deduplicating by (`source`, `id`) is sound. A validator recomputes the example's id.
 
 ## Signed delivery (HTTPS binding)
 
@@ -65,20 +65,20 @@ This is deliberately a bounded first scheme. The shared secret is the weakest pa
 
 ## Receipt semantics
 
-At-least-once, deduplicated by envelope `id`. A **2xx means the event is durably recorded**, never that it has been acted on.
+At-least-once, deduplicated by the envelope's **(`source`, `id`)**, the delivery identity `envelope.schema.json` defines (two producers may legitimately reuse an id). A **2xx means the event is durably recorded**, never that it has been acted on.
 
 | Answer | Meaning | Sender |
 |---|---|---|
-| 202 `ACCEPTED` | first receipt of this id, recorded | delivered |
-| 200 `DUPLICATE` | this id already accepted with identical content | delivered |
+| 202 `ACCEPTED` | first receipt of this (source, id), recorded | delivered |
+| 200 `DUPLICATE` | this (source, id) already accepted with identical content | delivered |
 | 400 | malformed headers or envelope | dead-letter now |
 | 401 | unknown or revoked key, stale or future timestamp, signature mismatch | retry with backoff (each retry re-signs), then dead-letter |
-| 409 `EVENT_ID_CONFLICT` | this id already received with different content | dead-letter now, alert: the id is no longer a function of the change |
+| 409 `EVENT_ID_CONFLICT` | this (source, id) already received with different content | dead-letter now, alert: the id is no longer a function of the change |
 | 413 | body over 1 MiB | dead-letter now |
 | 422 | type or producer not accepted, `source` not the producer's, or `data` fails its payload schema | dead-letter now |
 | 503 | the consumer could not record it | retry with backoff |
 
-Receipts are kept at least **seven days**, longer than any sender retry horizon, so a late retry is a duplicate and never a second application. No failure answer, audit record or log carries the signature, key material or event data.
+Receipts are kept at least **seven days**, and a sender stops retrying and dead-letters an event at most **72 hours** after its first attempt, so a retry can never arrive after the consumer has forgotten the first acceptance. Re-publishing a dead letter later is a new delivery; applying an event is gated on its revision, so a late duplicate is harmless. The 200 and 202 answers each have their own schema, so `status` cannot contradict the HTTP status. No failure answer, audit record or log carries the signature, key material or event data.
 
 ## What the Control Plane accepts
 

@@ -436,9 +436,10 @@ paths:
 
         Only an event type and producer listed in event-ingress.yaml is accepted (422 otherwise), its data must validate
         against the payload schema its registry entry names (422 otherwise), and its source must be the producer's.
-        Delivery is at-least-once and the envelope id is the idempotency boundary: the first receipt is 202 ACCEPTED, a
-        redelivery with identical content is 200 DUPLICATE, and an id already received with different content is 409
-        EVENT_ID_CONFLICT. A 2xx means the event is durably recorded, never that it has been acted on: applying it
+        Delivery is at-least-once and the envelope's (source, id) is the idempotency boundary, as envelope.schema.json
+        defines delivery identity: the first receipt is 202 ACCEPTED, a redelivery with identical content is 200
+        DUPLICATE, and a (source, id) already received with different content is 409 EVENT_ID_CONFLICT. A sender stops
+        retrying within 72 hours, well inside the seven days receipts are kept. A 2xx means the event is durably recorded, never that it has been acted on: applying it
         happens after the response, and an event for something the Control Plane does not yet know stays recorded and
         pending. The event is a trigger to inspect authoritative state, not the state: acting on it never replaces the
         Control Plane's own checks. Receipts are retained at least seven days. No failure answer, audit record or log
@@ -475,13 +476,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: ../../events/v1/signed-delivery.schema.json#/$defs/DeliveryReceipt
+                $ref: ../../events/v1/signed-delivery.schema.json#/$defs/DeliveryReceiptDuplicate
         "202":
           description: The event is durably recorded. It has not necessarily been applied.
           content:
             application/json:
               schema:
-                $ref: ../../events/v1/signed-delivery.schema.json#/$defs/DeliveryReceipt
+                $ref: ../../events/v1/signed-delivery.schema.json#/$defs/DeliveryReceiptAccepted
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":

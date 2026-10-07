@@ -9,6 +9,9 @@ recipient: baobab-control-plane
 signing_algorithms: [hmac-sha256]
 replay_window_seconds: 300
 receipt_retention_days: 7
+max_retry_horizon_hours: 72
+# Receipts and conflicts are keyed by the envelope's (source, id), the delivery identity envelope.schema.json defines.
+identity: [source, id]
 accepted:
   - type: com.baobab-platform.erp.provisioning.changed.v1
     producer: baobab-erp

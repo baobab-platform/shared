@@ -30,8 +30,16 @@
         "Baobab-Signature": { "$ref": "#/$defs/signature" }
       }
     },
+    "DeliveryReceiptAccepted": {
+      "description": "The 202 answer: the first receipt of this (source, id), durably recorded.",
+      "allOf": [{ "$ref": "#/$defs/DeliveryReceipt" }, { "type": "object", "properties": { "status": { "const": "ACCEPTED" } } }]
+    },
+    "DeliveryReceiptDuplicate": {
+      "description": "The 200 answer: a redelivery of a (source, id) already accepted with identical content.",
+      "allOf": [{ "$ref": "#/$defs/DeliveryReceipt" }, { "type": "object", "properties": { "status": { "const": "DUPLICATE" } } }]
+    },
     "DeliveryReceipt": {
-      "description": "A 2xx answer means the event has been durably accepted (recorded), never that it has been acted on. ACCEPTED is the first receipt of this event id (202); DUPLICATE is a redelivery of an event already accepted with identical content (200). A sender treats both as delivered.",
+      "description": "A 2xx answer means the event has been durably accepted (recorded), never that it has been acted on. ACCEPTED is the first receipt of this (source, id) (202); DUPLICATE is a redelivery of an event already accepted with identical content (200). Each answer has its own schema below, so status cannot contradict the HTTP status. A sender treats both as delivered.",
       "type": "object",
       "additionalProperties": false,
       "required": ["event_id", "status", "received_at"],
@@ -42,13 +50,17 @@
       }
     },
     "SenderPolicy": {
-      "description": "Documented, machine-checked constants. Delivery is at-least-once: a sender retries until it receives a 2xx, a consumer deduplicates by envelope id. Replay window and retention are minimums a consumer must honour.",
+      "description": "Documented, machine-checked constants. Delivery is at-least-once: a sender retries until it receives a 2xx, a consumer deduplicates by the envelope's (source, id), the delivery identity envelope.schema.json defines. Replay window and retention are minimums a consumer must honour, and the retry horizon is a maximum a sender must honour.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["replay_window_seconds", "receipt_retention_days", "minimum_secret_bytes", "max_body_bytes", "permanent_failure_statuses"],
+      "required": ["replay_window_seconds", "receipt_retention_days", "max_retry_horizon_hours", "minimum_secret_bytes", "max_body_bytes", "permanent_failure_statuses"],
       "properties": {
         "replay_window_seconds": { "const": 300 },
         "receipt_retention_days": { "const": 7 },
+        "max_retry_horizon_hours": {
+          "description": "A sender stops retrying an event, and dead-letters it, at most this long after its first attempt. It must stay below receipt retention, so a retry can never arrive after the consumer has forgotten the first acceptance and be taken for a new event. Re-publishing a dead letter later is a new delivery; applying an event is gated on its revision, so a late duplicate is harmless.",
+          "const": 72
+        },
         "minimum_secret_bytes": { "const": 32 },
         "max_body_bytes": { "const": 1048576 },
         "permanent_failure_statuses": {

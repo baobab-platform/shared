@@ -102,7 +102,7 @@ components:
         function of the change, not of the delivery: id is the version 5 UUID, in the URL namespace, of
         urn:baobab-platform:event:erp-provisioning:{operation_id}:{revision}, and idempotencykey is
         erp-provisioning-{operation_id}-r{revision}, so every redelivery, replay or re-publication of the same revision
-        is the same event and a consumer deduplicates by id. Delivery is at-least-once and unordered: a consumer applies
+        is the same event and a consumer deduplicates by (source, id). Delivery is at-least-once and unordered: a consumer applies
         an event only if its revision is newer than the one it holds. The event is a trigger to inspect authoritative
         state; data carries the same fields as GET /provisioning-operations/{operation_id}. Over HTTPS the event travels
         by signed delivery (../../events/v1/signed-delivery.schema.json,

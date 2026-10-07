@@ -1669,6 +1669,17 @@ def check_event_ingress() -> None:
         if delivery("DeliveryReceipt").is_valid(bad):
             fail(f"negative fixture accepted: DeliveryReceipt with {label}")
 
+    for definition, good_status, bad_status in (("DeliveryReceiptAccepted", "ACCEPTED", "DUPLICATE"), ("DeliveryReceiptDuplicate", "DUPLICATE", "ACCEPTED")):
+        if not delivery(definition).is_valid({**receipt, "status": good_status}):
+            fail(f"{definition} rejected a valid receipt")
+        if delivery(definition).is_valid({**receipt, "status": bad_status}):
+            fail(f"negative fixture accepted: {definition} with status {bad_status}")
+    responses = yaml.safe_load((CP / "openapi.yaml").read_text())["paths"]["/integration/events"]["post"]["responses"]
+    for code, definition in (("200", "DeliveryReceiptDuplicate"), ("202", "DeliveryReceiptAccepted")):
+        ref = responses[code]["content"]["application/json"]["schema"].get("$ref", "")
+        if not ref.endswith(f"signed-delivery.schema.json#/$defs/{definition}"):
+            fail(f"receiveEngineEvent {code} must use {definition} so status cannot contradict the HTTP status")
+
     policy = delivery_schema["$defs"]["SenderPolicy"]["properties"]
     ingress = yaml.safe_load((CP / "event-ingress.yaml").read_text())
     if ingress.get("recipient") != "baobab-control-plane":
@@ -1676,6 +1687,11 @@ def check_event_ingress() -> None:
     if ingress.get("replay_window_seconds") != policy["replay_window_seconds"]["const"] or \
             ingress.get("receipt_retention_days") != policy["receipt_retention_days"]["const"]:
         fail("event-ingress.yaml replay window and receipt retention must equal signed-delivery.schema.json SenderPolicy")
+    horizon = policy["max_retry_horizon_hours"]["const"]
+    if ingress.get("max_retry_horizon_hours") != horizon or horizon >= ingress["receipt_retention_days"] * 24:
+        fail("the sender retry horizon must equal SenderPolicy and stay below receipt retention")
+    if ingress.get("identity") != ["source", "id"]:
+        fail("receipts and conflicts are keyed by the envelope's (source, id), the delivery identity envelope.schema.json defines")
     if ingress.get("signing_algorithms") != ["hmac-sha256"]:
         fail("only hmac-sha256 is a defined delivery signature algorithm")
 
@@ -1712,7 +1728,7 @@ def check_event_ingress() -> None:
     if openapi["components"]["securitySchemes"]["signedEventDelivery"].get("name") != "Baobab-Signature":
         fail("the signedEventDelivery scheme must be the Baobab-Signature header")
     text = " ".join(operation["description"].split())
-    for phrase in ("within 300 seconds", "at-least-once", "EVENT_ID_CONFLICT", "durably recorded, never that it has been acted on",
+    for phrase in ("within 300 seconds", "at-least-once", "EVENT_ID_CONFLICT", "(source, id)", "within 72 hours", "durably recorded, never that it has been acted on",
                    "A bearer token is neither required nor accepted", "No failure answer, audit record or log carries the signature",
                    "The event is a trigger to inspect authoritative state"):
         if phrase not in text:
