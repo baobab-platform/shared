@@ -276,7 +276,7 @@ allowed_holders = { "erp:read" => ["baobab-trade-workload"],
                    "erp:provision" => ["baobab-cp-provisioning-workload", "baobab-cp-provisioning-evidence-workload"] }
 required_scopes.each do |name|
   holders = workloads.select { |_, entry| entry["allowed_scopes"].include?(name) }.keys
-  fail_contract("#{name} may be allowed only to #{allowed_holders.fetch(name).inspect}; found #{holders.inspect}") unless holders == allowed_holders.fetch(name)
+  fail_contract("#{name} may be allowed only to #{allowed_holders.fetch(name).inspect}; found #{holders.inspect}") unless holders.sort == allowed_holders.fetch(name).sort
   holders.each do |client|
     fail_contract("#{client} is allowed #{name}, so it must be allowed the baobab-erp audience") unless workloads.fetch(client)["allowed_audiences"].include?("baobab-erp")
   end
