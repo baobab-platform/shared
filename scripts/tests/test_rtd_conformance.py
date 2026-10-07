@@ -47,6 +47,8 @@ assert "contracts/regulatory-document-exchange/v1/events.schema.json" in rtd.ROL
 assert "contracts/capability/v1/catalogue.yaml" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
 assert "contracts/intelligence/v1/capabilities.yaml" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
 assert "contracts/intelligence/v1/domain.schema.json" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
+assert "contracts/authorization/v1/scope-registry.yaml" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
+assert "contracts/identity/v1/workload-registry.yaml" in rtd.ROLE_CONTRACTS["INTELLIGENCE_CONSUMER"]
 assert "contracts/regulatory-decision/v1/domain.schema.json" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
 assert "contracts/regulatory-decision/v1/regulations.openapi.yaml" in rtd.ROLE_CONTRACTS["REGULATIONS_AUTHORITY"]
 
