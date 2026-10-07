@@ -11,6 +11,9 @@ on:
       go-tests:
         type: boolean
         default: false
+      artifact-suffix:
+        type: string
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -109,9 +112,30 @@ jobs:
           subject-name: ${{ inputs.image }}
           subject-digest: ${{ steps.image.outputs.digest }}
           push-to-registry: true
+      - name: Resolve staging artifact suffix
+        id: artifact
+        env:
+          REQUESTED_SUFFIX: ${{ inputs.artifact-suffix }}
+          IMAGE: ${{ inputs.image }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$REQUESTED_SUFFIX" ]]; then
+            suffix="$REQUESTED_SUFFIX"
+          elif [[ "$IMAGE" == "ghcr.io/baobab-platform/baobab-iam" ]]; then
+            suffix="keycloak"
+          elif [[ "$IMAGE" == "ghcr.io/baobab-platform/baobab-iam-federation-authority" ]]; then
+            suffix="iam"
+          elif [[ "$IMAGE" == "ghcr.io/baobab-platform/baobab-cp" ]]; then
+            suffix="cp"
+          else
+            suffix="contracts"
+          fi
+          [[ "$suffix" =~ ^[a-z0-9][a-z0-9-]{0,62}$ ]]
+          echo "suffix=$suffix" >> "$GITHUB_OUTPUT"
+
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: staging-${{ github.ref_name }}-${{ inputs.image == 'ghcr.io/baobab-platform/baobab-iam' && 'keycloak' || inputs.image == 'ghcr.io/baobab-platform/baobab-iam-federation-authority' && 'iam' || inputs.image == 'ghcr.io/baobab-platform/baobab-cp' && 'cp' || 'contracts' }}
+          name: staging-${{ github.ref_name }}-${{ steps.artifact.outputs.suffix }}
           path: |
             staging-image.json
             staging-sbom.spdx.json
