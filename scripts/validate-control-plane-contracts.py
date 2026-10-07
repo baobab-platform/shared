@@ -274,7 +274,7 @@ def check_platform_context_validation() -> None:
 
     A resource server asks whether a stored context belongs to the actual caller it authenticated. The request carries the
     context and the caller's own token as cryptographic evidence and nothing the caller could assert; the response carries
-    only the trusted facts, with a mandatory bound and no legal entity; the scope is defined and granted to nobody."""
+    only the trusted facts, with a mandatory bound and no legal entity; the scope is defined and granted only to the ERP validator."""
     schema = "platform-context.schema.json"
     example = json.loads((CP / "examples" / "platform-context.json").read_text())
     request, validation = example["validate_request"], example["validation"]
@@ -391,8 +391,14 @@ def check_platform_context_validation() -> None:
         if name not in scopes:
             fail(f"{name} must be registered")
     registry = yaml.safe_load((CONTRACTS / "identity" / "v1" / "workload-registry.yaml").read_text())
-    if "context:validate" in json.dumps(registry["workloads"]) or "validates_audiences" in json.dumps(registry["workloads"]):
-        fail("context:validate is defined but must not yet be granted to any workload client (nor any validates_audiences declared)")
+    # Audited allocation (owner decision): ERP is the validator of the baobab-erp audience and the only one. A workload
+    # that calls ERP is never a validator of it, and no other workload validates anything yet.
+    holders = sorted(client for client, entry in registry["workloads"].items() if "context:validate" in entry["allowed_scopes"])
+    if holders != ["baobab-erp-workload"]:
+        fail(f"context:validate may be allowed only to baobab-erp-workload; found {holders}")
+    declared = {client: entry["validates_audiences"] for client, entry in registry["workloads"].items() if "validates_audiences" in entry}
+    if declared != {"baobab-erp-workload": ["baobab-erp"]}:
+        fail(f"only baobab-erp-workload may declare validates_audiences, exactly [baobab-erp]; found {declared}")
 
 
 def check_capability_resolution() -> None:
