@@ -174,6 +174,6 @@ pipeline; that choice is part of the review.
    accepted `payment.intent.cancel` and `finance.order-consequence.process`
    into the catalogue, and reserved eight keys pending their Shared
    contracts.
-2. Survey Regulations once ADR-REG review and `regulations` namespace registration are done (G-REG-NS Option B, `g-reg-ns-resolution.md`).
+2. **Done:** Regulations and Pulse now both have first evidence-based capability censuses (ADR-SHARED-027/029); provider implementation remains separately governed.
 3. Until the active engines (Trade, ERP, CMS, Pulse, IAM) have
    declarations, Foundation enforcement (G-FCI-1) stays off.
