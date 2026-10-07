@@ -55,9 +55,12 @@ ROLE_CONTRACTS = {
         "contracts/regulatory-document-exchange/v1/events.schema.json",
     },
     "INTELLIGENCE_CONSUMER": {
+        "contracts/capability/v1/catalogue.yaml",
         "contracts/control-plane/v1/domain.schema.json",
         "contracts/cross-engine-reference/v1/domain.schema.json",
         "contracts/events/v1/envelope.schema.json",
+        "contracts/intelligence/v1/capabilities.yaml",
+        "contracts/intelligence/v1/domain.schema.json",
         "contracts/regulatory-document-exchange/v1/domain.schema.json",
         "contracts/regulatory-document-exchange/v1/events.schema.json",
         "contracts/trade-document/v2/domain.schema.json",
@@ -454,6 +457,70 @@ def validate_trade_docs(root: Path, profile: dict) -> list[str]:
     return findings
 
 
+def validate_pulse_provider_declaration(
+    declaration: dict,
+    canonical_keys: set[object],
+) -> list[str]:
+    """ADR-SHARED-029 / P-CAP-02 rules for Pulse's post-census declaration.
+
+    The first census permits canonical CONTRACTED intent, but deliberately does
+    not permit provider support. Support requires the later evidence-backed
+    P-CAP promotion increments.
+    """
+
+    findings: list[str] = []
+
+    providers = declaration.get("providers") or []
+    if providers:
+        findings.append(
+            "Pulse first capability census must not declare providers[].support; "
+            "provider support requires a later P-CAP promotion"
+        )
+
+    planned = declaration.get("planned_capabilities") or []
+    if not isinstance(planned, list):
+        return findings + ["Pulse planned_capabilities must be a list"]
+
+    for item in planned:
+        if not isinstance(item, dict):
+            findings.append("Pulse planned capability entry must be a mapping")
+            continue
+
+        proposed_key = item.get("proposed_key")
+        capability_key = item.get("capability_key")
+        status = item.get("proposal_status")
+
+        if proposed_key is not None:
+            if not str(proposed_key).startswith("intelligence."):
+                findings.append(
+                    f"Pulse proposed capability escapes intelligence namespace: {proposed_key!r}"
+                )
+            if status == "CONTRACTED":
+                findings.append(
+                    f"{proposed_key}: CONTRACTED capabilities must use canonical capability_key"
+                )
+            continue
+
+        if capability_key is not None:
+            if not str(capability_key).startswith("intelligence."):
+                findings.append(
+                    f"Pulse contracted capability escapes intelligence namespace: {capability_key!r}"
+                )
+            if status != "CONTRACTED":
+                findings.append(
+                    f"{capability_key}: canonical capability_key is allowed only with proposal_status CONTRACTED"
+                )
+            if capability_key not in canonical_keys:
+                findings.append(
+                    f"{capability_key}: contracted capability is not present in the Shared catalogue"
+                )
+            continue
+
+        findings.append("Pulse planned capability must name proposed_key or capability_key")
+
+    return findings
+
+
 def validate_pulse(root: Path, shared_root: Path, profile: dict) -> list[str]:
     findings: list[str] = []
     lock_path = root / "contracts.lock.yaml"
@@ -530,9 +597,18 @@ def validate_pulse(root: Path, shared_root: Path, profile: dict) -> list[str]:
     provider = root / ".baobab/capability-provider.yaml"
     if provider.exists():
         data = load_yaml(provider)
-        text = json.dumps(data)
-        if "intelligence." in text:
-            findings.append("RTD-10 forbids premature intelligence capability promotion before the capability census")
+        if not isinstance(data, dict):
+            findings.append("Pulse capability-provider declaration is not a mapping")
+        else:
+            catalogue = load_yaml(shared_root / "contracts/capability/v1/catalogue.yaml")
+            canonical_keys = {
+                item.get("capability_key")
+                for item in (catalogue.get("capabilities") or [])
+                if isinstance(item, dict)
+            } if isinstance(catalogue, dict) else set()
+            findings.extend(
+                validate_pulse_provider_declaration(data, canonical_keys)
+            )
     return findings
 
 
