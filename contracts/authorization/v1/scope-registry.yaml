@@ -68,10 +68,45 @@ scopes:
     grants_authority: false
 
   - name: "context:validate"
-    description: "Allows a resource server to ask the Control Plane whether a stored context belongs to the actual caller it authenticated, presenting that caller's token as subject evidence. It grants no authority: the Control Plane judges the subject token's canonical principal against the context's owner, requires a bounded context, and only the audiences the validator is registered to validate (workload-registry validates_audiences) are accepted. It is not context:resolve (which creates a context) and creates nothing. Granted to the ERP workload only, as validator of the baobab-erp audience."
+    description: "Allows a registered resource server to ask the Control Plane whether a stored context belongs to the actual caller it authenticated, presenting that caller's token as subject evidence. It grants no business authority: the Control Plane judges the subject token's canonical principal against the context's owner, requires a bounded context, and only the audiences the validator is registered to validate (workload-registry validates_audiences) are accepted. It is not context:resolve (which creates a context) and creates nothing. Currently allocated to ERP and Pulse resource-server validators for their own registered audiences."
     audience: ["baobab-control-plane"]
     allowed_actors: ["workload"]
     grants_authority: false
+
+  - name: "intelligence:evidence:search"
+    description: >-
+      Allows an authenticated workload to invoke
+      intelligence.evidence.search at the baobab-pulse resource-server
+      audience. It grants no tenant authority: Pulse must redeem the supplied
+      PlatformContext against the actual caller through the Control Plane.
+      With that validated tenant context this base scope authorises evidence
+      classifications through CONFIDENTIAL. RESTRICTED additionally requires
+      intelligence:restricted.
+    audience: ["baobab-pulse"]
+    allowed_actors: ["workload"]
+
+  - name: "intelligence:research-mission:manage"
+    description: >-
+      Allows an authenticated workload to invoke
+      intelligence.research-mission.manage at the baobab-pulse
+      resource-server audience. It grants no tenant authority: Pulse must
+      redeem the supplied PlatformContext against the actual caller through
+      the Control Plane. With that validated tenant context this base scope
+      authorises ResearchMission classifications through CONFIDENTIAL.
+      RESTRICTED additionally requires intelligence:restricted.
+    audience: ["baobab-pulse"]
+    allowed_actors: ["workload"]
+
+  - name: "intelligence:restricted"
+    description: >-
+      Supplemental Pulse data-classification clearance. It has no effect by
+      itself and authorises no operation or tenant. When the caller also holds
+      the exact intelligence capability scope and Pulse has validated the
+      caller-bound tenant PlatformContext, it raises that capability
+      invocation's maximum Intelligence classification from CONFIDENTIAL to
+      RESTRICTED.
+    audience: ["baobab-pulse"]
+    allowed_actors: ["workload"]
 
   - name: "mapping:write"
     description: "Record external references and propose, change, validate or retire canonical mappings (privileged; the actor is always the verified caller)."
