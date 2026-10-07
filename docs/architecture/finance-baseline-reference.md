@@ -50,12 +50,12 @@ Two read-only operations, both requiring `erp:provision` (the provisioner's one 
 
 | Condition | Answer |
 |---|---|
-| unknown baseline; another version or digest; another legal entity; a legal entity of another tenant; a baseline ERP does not own; functional currency incompatible with the requested markets | `409 FINANCE_BASELINE_MISMATCH` |
+| unknown baseline; another version or digest; another legal entity; a legal entity of another tenant; a legal entity outside the context's provisioning; a baseline ERP does not own; a set of references that is not exactly one per requested legal entity | `409 FINANCE_BASELINE_MISMATCH` |
 | the exact version is withdrawn, superseded or not yet effective | `409 FINANCE_BASELINE_NOT_USABLE` |
 | `functional_currencies` is not exactly the set of the referenced baselines' currencies | `409 PLAN_AUTHORITY_MISMATCH` |
 | Finance baseline store unavailable | `503` (retryable with the same `Idempotency-Key`) |
 
-None of the 409s is retried with the same request. Nothing is provisioned on any refusal.
+There is deliberately no check of the functional currency against the currencies of the requested markets: a functional currency is the legal entity's accounting fact (a USD-functional entity may trade in ZAR), so a market's currency neither establishes nor limits it. None of the 409s is retried with the same request. Nothing is provisioned on any refusal.
 
 ### Compatibility
 

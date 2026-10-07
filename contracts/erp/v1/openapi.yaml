@@ -40,8 +40,8 @@ paths:
         never carries: finance_baselines names, for every legal entity, the exact baseline version (baseline_id, version,
         digest) relied on, and ERP re-resolves each against its own authoritative store before provisioning anything. A
         reference ERP does not hold exactly (unknown baseline, another version or digest, another legal entity, a
-        legal entity of another tenant, a baseline ERP does not own, or a functional currency incompatible with the markets
-        requested) is 409 FINANCE_BASELINE_MISMATCH; an exact reference whose version is not EFFECTIVE (withdrawn,
+        legal entity of another tenant or outside this provisioning, or a baseline ERP does not own) is 409
+        FINANCE_BASELINE_MISMATCH; an exact reference whose version is not EFFECTIVE (withdrawn,
         superseded or not yet effective) is 409 FINANCE_BASELINE_NOT_USABLE; functional_currencies that differ from the
         referenced baselines' is 409 PLAN_AUTHORITY_MISMATCH. Each refusal provisions nothing and is not retried.
       security:
