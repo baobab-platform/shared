@@ -327,7 +327,7 @@ end
 fail_contract("erp:read must not cover provisioning state") if registry_scopes.fetch("erp:read").fetch("description").include?("provisioning state")
 fail_contract("erp:provision must cover observing the provisioning operation") unless registry_scopes.fetch("erp:provision").fetch("description").include?("observe the provisioning operation it created")
 
-# ERP OpenAPI 1.1.0: tenant authority for the four tenant-scoped operations is a trusted Control Plane context
+# ERP OpenAPI 1.1.0: tenant authority for the tenant-scoped operations (four in 1.1.0, six since 1.3.0) is a trusted Control Plane context
 # (docs/architecture/context-authority-for-workloads.md). context_id is required on every one of them, including the
 # provisioning state read: an operation must not be obtainable merely by knowing its operation_id.
 context_parameter = openapi.dig("components", "parameters", "ContextId")
@@ -373,6 +373,7 @@ end
 end
 scheme_text = openapi.dig("components", "securitySchemes", "workloadOidc", "description").to_s.gsub(/\s+/, " ")
 ["trusted Control Plane context", "POST /v1/platform-context/validate", "subject evidence", "optional and, when present, must equal",
+ "six operations that take a context_id", "getEffectiveFinanceBaseline and getFinanceBaseline",
  "never authority", "mapping reads (getErpMapping, findErpMappings) still take the tenant from the token"].each do |phrase|
   fail_contract("the workloadOidc description must state #{phrase.inspect}") unless scheme_text.include?(phrase)
 end

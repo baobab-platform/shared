@@ -419,8 +419,8 @@ components:
       openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
       description: >-
         Short-lived workload or delegated identity token transported over the infrastructure-owned mTLS path. For the
-        four operations that take a context_id (provisioning command and state, order consequences, inventory
-        availability) the tenant authority is a trusted Control Plane context, never this token alone: ERP validates
+        six operations that take a context_id (provisioning command and state, the two Finance baseline reads
+        getEffectiveFinanceBaseline and getFinanceBaseline, order consequences, inventory availability) the tenant authority is a trusted Control Plane context, never this token alone: ERP validates
         the context for the actual caller through Control Plane (POST /v1/platform-context/validate, presenting this
         token as subject evidence), a token tenant_id is optional and, when present, must equal the validated
         context's tenant, and a tenant named in a request or by a scope is never authority. The mapping reads
