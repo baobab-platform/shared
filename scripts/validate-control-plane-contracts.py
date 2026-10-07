@@ -384,8 +384,8 @@ def check_platform_context_validation() -> None:
                    "a TENANT_PROVISIONING context is never accepted as RUNTIME authority"):
         if phrase not in prose:
             fail(f"POST /platform-context/validate must document {phrase!r}")
-    if openapi["info"]["version"] != "1.35.0":
-        fail("control-plane OpenAPI must be 1.35.0 (EA-09 certification routes are a contract change)")
+    if openapi["info"]["version"] != "1.36.0":
+        fail("control-plane OpenAPI must be 1.36.0 (signed event ingress is a contract change)")
     resolve_text = " ".join(openapi["paths"]["/platform-context/resolve"]["post"]["description"].split())
     if "always authority_purpose RUNTIME" not in resolve_text:
         fail("POST /platform-context/resolve must state that its context is always RUNTIME")
@@ -1619,6 +1619,109 @@ def check_market() -> None:
         fail("market-lifecycle.yaml: only activate names an operation")
 
 
+def check_event_ingress() -> None:
+    """Signed delivery of engine events to the Control Plane (docs/architecture/signed-event-delivery.md).
+
+    The event stays the transport-neutral contract; this pins the HTTPS binding: closed headers, the replay window and
+    retention the schema, the allow-list and the doc agree on, one operation authenticated by the signature and by nothing
+    else, and an accepted list that is a subset of what the event registry says the producer publishes.
+    """
+    events_dir = CONTRACTS / "events" / "v1"
+    delivery_schema = json.loads((events_dir / "signed-delivery.schema.json").read_text())
+    registry = Registry().with_resource(delivery_schema["$id"], Resource.from_contents(delivery_schema))
+
+    def delivery(definition: str) -> Draft202012Validator:
+        return Draft202012Validator({"$ref": f"{delivery_schema['$id']}#/$defs/{definition}"}, registry=registry,
+                                    format_checker=FORMATS)
+
+    digest = "hmac-sha256=" + "0" * 64
+    good = {"Baobab-Key-Id": "erp-delivery-2026-10", "Baobab-Timestamp": "2026-10-07T17:30:00Z", "Baobab-Signature": digest}
+    if not delivery("DeliveryHeaders").is_valid(good):
+        fail("signed-delivery DeliveryHeaders rejected a valid header set")
+    for label, change in (
+        ("a missing key id", {"Baobab-Key-Id": None}),
+        ("a missing timestamp", {"Baobab-Timestamp": None}),
+        ("a missing signature", {"Baobab-Signature": None}),
+        ("an uppercase key id", {"Baobab-Key-Id": "ERP-KEY"}),
+        ("a key id with a path character", {"Baobab-Key-Id": "erp/key"}),
+        ("a non-UTC timestamp", {"Baobab-Timestamp": "2026-10-07T17:30:00+02:00"}),
+        ("a timestamp with fractions", {"Baobab-Timestamp": "2026-10-07T17:30:00.5Z"}),
+        ("a bare hex signature", {"Baobab-Signature": "0" * 64}),
+        ("an unknown algorithm", {"Baobab-Signature": "none=" + "0" * 64}),
+        ("an uppercase hex signature", {"Baobab-Signature": "hmac-sha256=" + "A" * 64}),
+        ("a truncated signature", {"Baobab-Signature": "hmac-sha256=" + "0" * 63}),
+        ("an extra header member", {"Baobab-Extra": "x"}),
+    ):
+        bad = dict(good)
+        for key, value in change.items():
+            if value is None:
+                bad.pop(key)
+            else:
+                bad[key] = value
+        if delivery("DeliveryHeaders").is_valid(bad):
+            fail(f"negative fixture accepted: DeliveryHeaders with {label}")
+
+    receipt = {"event_id": "78844bfb-4ad7-446a-b8bf-4dad336e6beb", "status": "ACCEPTED", "received_at": "2026-10-07T17:30:00Z"}
+    if not delivery("DeliveryReceipt").is_valid(receipt) or not delivery("DeliveryReceipt").is_valid({**receipt, "status": "DUPLICATE"}):
+        fail("signed-delivery DeliveryReceipt rejected a valid receipt")
+    for label, bad in (("an unknown status", {**receipt, "status": "APPLIED"}), ("a missing event id", {k: v for k, v in receipt.items() if k != "event_id"}),
+                       ("an extra member", {**receipt, "applied": True})):
+        if delivery("DeliveryReceipt").is_valid(bad):
+            fail(f"negative fixture accepted: DeliveryReceipt with {label}")
+
+    policy = delivery_schema["$defs"]["SenderPolicy"]["properties"]
+    ingress = yaml.safe_load((CP / "event-ingress.yaml").read_text())
+    if ingress.get("recipient") != "baobab-control-plane":
+        fail("event-ingress.yaml recipient must be baobab-control-plane (the signature is bound to it)")
+    if ingress.get("replay_window_seconds") != policy["replay_window_seconds"]["const"] or \
+            ingress.get("receipt_retention_days") != policy["receipt_retention_days"]["const"]:
+        fail("event-ingress.yaml replay window and receipt retention must equal signed-delivery.schema.json SenderPolicy")
+    if ingress.get("signing_algorithms") != ["hmac-sha256"]:
+        fail("only hmac-sha256 is a defined delivery signature algorithm")
+
+    registered = {entry["type"]: entry for entry in yaml.safe_load((events_dir / "event-registry.yaml").read_text())["events"]}
+    accepted = ingress.get("accepted") or []
+    if [entry.get("type") for entry in accepted] != ["com.baobab-platform.erp.provisioning.changed.v1"]:
+        fail("the Control Plane accepts exactly ERP provisioning.changed over signed delivery; any other type is a reviewed contract change")
+    for entry in accepted:
+        known = registered.get(entry["type"])
+        if known is None:
+            fail(f"event-ingress.yaml accepts unregistered type {entry['type']}")
+            continue
+        if known.get("lifecycle") != "ACTIVE" or known.get("producer") != entry.get("producer"):
+            fail(f"{entry['type']} must be an ACTIVE registry type produced by {entry.get('producer')}")
+        if entry.get("source") != f"urn:baobab-platform:service:{entry.get('producer')}":
+            fail(f"{entry['type']} source must be the producer's service URN")
+        if entry.get("scope") != "tenant" or not entry.get("pending_max_age_hours"):
+            fail(f"{entry['type']} must be tenant-scoped and bound how long an unmatched event stays pending")
+
+    openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
+    operations = [(path, method, op) for path, item in openapi["paths"].items() for method, op in item.items()
+                  if isinstance(op, dict) and "operationId" in op]
+    signed = [(p, m, o["operationId"]) for p, m, o in operations
+              if any("signedEventDelivery" in requirement for requirement in o.get("security", []))]
+    if signed != [("/integration/events", "post", "receiveEngineEvent")]:
+        fail(f"exactly POST /integration/events (receiveEngineEvent) may authenticate with signedEventDelivery, got {signed}")
+    operation = openapi["paths"]["/integration/events"]["post"]
+    if operation.get("security") != [{"signedEventDelivery": []}]:
+        fail("receiveEngineEvent must be authenticated by the delivery signature alone (no bearer token, no scope)")
+    if set(operation["responses"]) != {"200", "202", "400", "401", "409", "413", "422", "503"}:
+        fail("receiveEngineEvent must answer exactly 200, 202, 400, 401, 409, 413, 422 and 503")
+    if list(operation["requestBody"]["content"]) != ["application/cloudevents+json"]:
+        fail("receiveEngineEvent accepts only application/cloudevents+json")
+    if openapi["components"]["securitySchemes"]["signedEventDelivery"].get("name") != "Baobab-Signature":
+        fail("the signedEventDelivery scheme must be the Baobab-Signature header")
+    text = " ".join(operation["description"].split())
+    for phrase in ("within 300 seconds", "at-least-once", "EVENT_ID_CONFLICT", "durably recorded, never that it has been acted on",
+                   "A bearer token is neither required nor accepted", "No failure answer, audit record or log carries the signature",
+                   "The event is a trigger to inspect authoritative state"):
+        if phrase not in text:
+            fail(f"receiveEngineEvent must document {phrase!r}")
+    for param in operation["parameters"]:
+        if param.get("name", "").startswith("Baobab-") and not param.get("required"):
+            fail(f"delivery header {param['name']} must be required")
+
+
 def check_openapi_references() -> None:
     openapi = yaml.safe_load((CP / "openapi.yaml").read_text())
     pattern = re.compile(r"^\./(" + "|".join(re.escape(n) for n in RESPONSIBILITIES) + r")#/\$defs/(\w+)$")
@@ -1791,6 +1894,7 @@ def main() -> int:
     check_migration_execution()
     check_changeset()
     check_market()
+    check_event_ingress()
     check_openapi_references()
     check_topology_identifiers()
     check_external_systems()

@@ -510,3 +510,23 @@ end
 fail_contract("erp:provision must cover resolving (read-only) the Finance baseline references") unless registry_scopes.fetch("erp:provision").fetch("description").include?("resolve (read-only) the Finance baseline references")
 %w[erp:read].each { |name| fail_contract("#{name} must not cover Finance baseline resolution") if registry_scopes.fetch(name).fetch("description").include?("Finance baseline") }
 puts "ERP Finance baseline reference contract passed"
+
+# provisioning.changed identity (FB-04): one event per committed revision, its id and idempotency key functions of the change,
+# so a redelivery is the same event and a consumer deduplicates by id.
+require "digest"
+changed = JSON.parse(File.read(File.join(ERP_ROOT, "examples", "provisioning-changed.json")))
+data = changed.fetch("data")
+name = "urn:baobab-platform:event:erp-provisioning:#{data.fetch("operation_id")}:#{data.fetch("revision")}"
+namespace_url = ["6ba7b8119dad11d180b400c04fd430c8"].pack("H*")
+bytes = Digest::SHA1.digest(namespace_url + name)[0, 16].bytes
+bytes[6] = (bytes[6] & 0x0f) | 0x50
+bytes[8] = (bytes[8] & 0x3f) | 0x80
+expected_id = bytes.pack("C*").unpack1("H*").then { |hex| [hex[0, 8], hex[8, 4], hex[12, 4], hex[16, 4], hex[20, 12]].join("-") }
+fail_contract("the provisioning.changed example id must be the version 5 UUID of #{name} (#{expected_id}), got #{changed["id"]}") unless changed["id"] == expected_id
+fail_contract("the provisioning.changed idempotencykey must be erp-provisioning-{operation_id}-r{revision}") unless changed["idempotencykey"] == "erp-provisioning-#{data.fetch("operation_id")}-r#{data.fetch("revision")}"
+changed_message = asyncapi.dig("components", "messages", "ProvisioningChanged").to_h
+changed_text = changed_message.fetch("description", "").to_s.gsub(/\s+/, " ")
+["same database transaction as the change", "at-least-once and unordered", "applies an event only if its revision is newer", "trigger to inspect authoritative state", "does not depend on that transport"].each do |phrase|
+  fail_contract("ProvisioningChanged must document #{phrase.inspect}") unless changed_text.include?(phrase)
+end
+puts "ERP provisioning.changed event identity contract passed"
