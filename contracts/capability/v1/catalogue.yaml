@@ -71,6 +71,12 @@ capabilities:
   - capability_key: identity.workload-token.issue
     owner: baobab-iam
     source: ../../identity/v1/capabilities.yaml
+  - capability_key: intelligence.evidence.search
+    owner: baobab-pulse
+    source: ../../intelligence/v1/capabilities.yaml
+  - capability_key: intelligence.research-mission.manage
+    owner: baobab-pulse
+    source: ../../intelligence/v1/capabilities.yaml
   - capability_key: payment.intent.cancel
     owner: baobab-payments
     source: ../../payments/v1/capabilities.yaml
