@@ -5,7 +5,8 @@
 **Repository:** `baobab-platform/shared`  
 **Decision ID:** ADR-SHARED-030  
 **Depends On:** ADR-SHARED-017, ADR-SHARED-025, ADR-SHARED-026, ADR-SHARED-029  
-**Applies To:** `baobab-platform/baobab-pulse` P-CAP-06
+**Applies To:** `baobab-platform/baobab-pulse` P-CAP-06  
+**Refined By:** ADR-SHARED-031 (P-CAP-07 IMPLEMENTED readiness authority)
 
 ## 1. Decision
 
