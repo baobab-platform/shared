@@ -218,9 +218,10 @@ declaring_503 = openapi.fetch("paths").flat_map do |path, item|
       .keys.map { |method| [method, path] }
 end
 context_operations = [["post", "/provisioning-operations"], ["get", "/provisioning-operations/{operation_id}"],
+                      ["get", "/legal-entities/{legal_entity_id}/effective-finance-baseline"], ["get", "/finance-baselines/{baseline_id}"],
                       ["get", "/order-consequences/{commerce_order_id}"], ["get", "/inventory-availability"]]
 unless declaring_503.sort == context_operations.sort
-  fail_contract("exactly the four context-validated operations may declare 503; found #{declaring_503.inspect}")
+  fail_contract("exactly the six context-validated operations may declare 503; found #{declaring_503.inspect}")
 end
 unless openapi.dig("paths", "/provisioning-operations", "post", "responses", "503", "$ref") == "#/components/responses/ServiceUnavailable"
   fail_contract("POST /provisioning-operations must reference the reusable ServiceUnavailable response")
@@ -310,7 +311,8 @@ openapi.fetch("paths").each do |path, item|
     effective["#{method.upcase} #{path}"] = operation.key?("security") ? operation["security"] : default_security
   end
 end
-provisioning_operations = ["POST /provisioning-operations", "GET /provisioning-operations/{operation_id}"]
+provisioning_operations = ["POST /provisioning-operations", "GET /provisioning-operations/{operation_id}",
+                           "GET /legal-entities/{legal_entity_id}/effective-finance-baseline", "GET /finance-baselines/{baseline_id}"]
 provisioning_operations.each do |operation|
   fail_contract("#{operation} must require exactly [{workloadOidc: [erp:provision]}]; found #{effective[operation].inspect}") unless effective[operation] == [{ "workloadOidc" => ["erp:provision"] }]
 end
@@ -325,7 +327,7 @@ end
 fail_contract("erp:read must not cover provisioning state") if registry_scopes.fetch("erp:read").fetch("description").include?("provisioning state")
 fail_contract("erp:provision must cover observing the provisioning operation") unless registry_scopes.fetch("erp:provision").fetch("description").include?("observe the provisioning operation it created")
 
-# ERP OpenAPI 1.1.0: tenant authority for the four tenant-scoped operations is a trusted Control Plane context
+# ERP OpenAPI 1.1.0: tenant authority for the tenant-scoped operations (four in 1.1.0, six since 1.3.0) is a trusted Control Plane context
 # (docs/architecture/context-authority-for-workloads.md). context_id is required on every one of them, including the
 # provisioning state read: an operation must not be obtainable merely by knowing its operation_id.
 context_parameter = openapi.dig("components", "parameters", "ContextId")
@@ -343,7 +345,7 @@ using_context_parameter = openapi.fetch("paths").flat_map do |path, item|
 end
 expected_query_operations = context_operations - [["post", "/provisioning-operations"]]
 unless using_context_parameter.sort == expected_query_operations.sort
-  fail_contract("exactly the three read operations take the ContextId query parameter (the command carries it in the body); found #{using_context_parameter.inspect}")
+  fail_contract("exactly the five read operations take the ContextId query parameter (the command carries it in the body); found #{using_context_parameter.inspect}")
 end
 context_operations.each do |method, path|
   operation = openapi.dig("paths", path, method)
@@ -371,6 +373,7 @@ end
 end
 scheme_text = openapi.dig("components", "securitySchemes", "workloadOidc", "description").to_s.gsub(/\s+/, " ")
 ["trusted Control Plane context", "POST /v1/platform-context/validate", "subject evidence", "optional and, when present, must equal",
+ "six operations that take a context_id", "getEffectiveFinanceBaseline and getFinanceBaseline",
  "never authority", "mapping reads (getErpMapping, findErpMappings) still take the tenant from the token"].each do |phrase|
   fail_contract("the workloadOidc description must state #{phrase.inspect}") unless scheme_text.include?(phrase)
 end
@@ -416,13 +419,15 @@ puts "ERP API, event, mapping, internationalisation and system-of-record contrac
 # ERP OpenAPI 1.2.0: which Control Plane context purpose each operation accepts. Provisioning acts for a tenant that is not yet ACTIVE, so both
 # provisioning operations accept TENANT_PROVISIONING (bound to the approved plan tuple) and refuse RUNTIME; every business-data read is the
 # reverse. Refusals stay the one indistinguishable ERP_CONTEXT_REJECTED.
-fail_contract("ERP OpenAPI must be version 1.2.0 (context purposes are a contract change); found #{openapi.dig("info", "version").inspect}") unless openapi.dig("info", "version") == "1.2.0"
+fail_contract("ERP OpenAPI must be version 1.3.0 (the Finance baseline reference is a contract change); found #{openapi.dig("info", "version").inspect}") unless openapi.dig("info", "version") == "1.3.0"
 descriptions = openapi.fetch("paths").each_with_object({}) do |(path, item), found|
   item.each { |method, operation| found["#{method.upcase} #{path}"] = operation["description"].to_s.split.join(" ") if operation.is_a?(Hash) && operation["operationId"] }
 end
 provisioning_phrases = {
   "POST /provisioning-operations" => ["TENANT_PROVISIONING context", "provisioning_authority equals control_plane_authority member by member", "a RUNTIME context, or a provisioning context bound to any other plan, is refused as 403 ERP_CONTEXT_REJECTED"],
-  "GET /provisioning-operations/{operation_id}" => ["TENANT_PROVISIONING context", "provisioning_authority equals the control_plane_authority the operation was accepted under", "a RUNTIME context, or one bound to another provisioning or plan, is 403 ERP_CONTEXT_REJECTED"]
+  "GET /provisioning-operations/{operation_id}" => ["TENANT_PROVISIONING context", "provisioning_authority equals the control_plane_authority the operation was accepted under", "a RUNTIME context, or one bound to another provisioning or plan, is 403 ERP_CONTEXT_REJECTED"],
+  "GET /legal-entities/{legal_entity_id}/effective-finance-baseline" => ["TENANT_PROVISIONING context", "a RUNTIME context is 403 ERP_CONTEXT_REJECTED"],
+  "GET /finance-baselines/{baseline_id}" => ["TENANT_PROVISIONING context", "exactly as getEffectiveFinanceBaseline does"]
 }
 provisioning_phrases.each do |operation, phrases|
   phrases.each { |phrase| fail_contract("#{operation} must document #{phrase.inspect}") unless descriptions.fetch(operation).include?(phrase) }
@@ -432,3 +437,76 @@ end
 end
 request_context = JSON.parse(File.read(File.join(ROOT, "contracts/erp/v1/provisioning-request.schema.json"))).dig("properties", "context_id", "description").to_s
 fail_contract("provisioning-request context_id must be a TENANT_PROVISIONING context equal to control_plane_authority") unless request_context.include?("TENANT_PROVISIONING context") && request_context.include?("provisioning_authority equals control_plane_authority")
+
+# ERP OpenAPI 1.3.0 (FIN-CAP-01, docs/architecture/finance-baseline-reference.md): Control Plane REFERS to an ERP-owned, Finance-approved baseline
+# version and never authors accounting configuration. The reference is exact (baseline_id, version, digest), closed, owned by ERP, and holds no
+# accounting value; the provisioning request must carry one per legal entity; ERP resolves it from its own store and fails closed.
+finance = schemas.fetch(File.join(ERP_ROOT, "finance-baseline.schema.json"))
+finance_defs = finance.fetch("$defs")
+reference = finance_defs.fetch("FinanceBaselineReference")
+fail_contract("FinanceBaselineReference must be closed") unless reference["additionalProperties"] == false
+unless reference.fetch("required").sort == %w[authority baseline_id digest effective_from legal_entity_id version]
+  fail_contract("FinanceBaselineReference must require exactly baseline_id, legal_entity_id, version, digest, effective_from and authority")
+end
+unless reference.dig("properties", "authority") == { "type" => "object", "additionalProperties" => false, "required" => %w[engine_id system_of_record],
+                                                     "description" => reference.dig("properties", "authority", "description"),
+                                                     "properties" => { "engine_id" => { "const" => "baobab-erp" }, "system_of_record" => { "const" => "FINANCE_BASELINE" } } }
+  fail_contract("a Finance baseline reference must be owned by baobab-erp as the FINANCE_BASELINE system of record")
+end
+fail_contract("a reference must pin its digest to sha256") unless finance_defs.dig("financeBaselineDigest", "pattern") == "^sha256:[0-9a-f]{64}$"
+fail_contract("a reference version must reuse the ERP version definition") unless reference.dig("properties", "version", "$ref") == "./domain.schema.json#/$defs/version"
+fail_contract("a reference legal_entity_id must reuse the Control Plane legalEntityId") unless reference.dig("properties", "legal_entity_id", "$ref") == "../../control-plane/v1/domain.schema.json#/$defs/legalEntityId"
+fail_contract("FinanceBaselineStatus must be exactly EFFECTIVE, NOT_YET_EFFECTIVE, SUPERSEDED, WITHDRAWN") unless finance_defs.dig("FinanceBaselineStatus", "enum") == %w[EFFECTIVE NOT_YET_EFFECTIVE SUPERSEDED WITHDRAWN]
+resolution = finance_defs.fetch("FinanceBaselineResolution")
+fail_contract("FinanceBaselineResolution must be closed and disclose only functional_currency") unless resolution["additionalProperties"] == false &&
+  resolution.fetch("properties").keys.sort == %w[functional_currency reference resolved_at status] && resolution.fetch("required").sort == %w[functional_currency reference resolved_at status]
+finance_text = JSON.generate(finance).downcase
+%w[chart_of_accounts accounting_schema tax_profile costing_method fiscal_year approved_by evidence_reference].each do |field|
+  fail_contract("the Finance baseline contract must not carry accounting configuration or approver identity (#{field}); that stays ERP's") if finance_text.include?(field)
+end
+["never authors, stores or infers", "market fact", "ERP's representation"].each do |phrase|
+  fail_contract("the Finance baseline schema must state #{phrase.inspect}") unless finance.fetch("description").include?(phrase)
+end
+fail_contract("the digest must say it names immutable approved content") unless finance_defs.dig("financeBaselineDigest", "description").include?("immutable approved content")
+baselines_property = provisioning_request.dig("properties", "finance_baselines")
+unless provisioning_request.fetch("required").include?("finance_baselines") && baselines_property &&
+       baselines_property.dig("items", "$ref") == "./finance-baseline.schema.json#/$defs/FinanceBaselineReference" &&
+       baselines_property["minItems"] == 1 && baselines_property["uniqueItems"] == true
+  fail_contract("the provisioning request must require finance_baselines, a non-empty unique list of FinanceBaselineReference")
+end
+["exactly one reference per entry of legal_entity_ids", "FINANCE_BASELINE_MISMATCH", "FINANCE_BASELINE_NOT_USABLE", "never carries accounting configuration", "Control Plane never derives it"].each do |phrase|
+  fail_contract("provisioning request finance_baselines must state #{phrase.inspect}") unless baselines_property.fetch("description").include?(phrase)
+end
+fail_contract("a request must not carry accounting configuration") if (provisioning_request.fetch("properties").keys & %w[functional_currency chart_of_accounts_template accounting_schema tax_profile costing_method]).any?
+post_finance_text = openapi.dig("paths", "/provisioning-operations", "post", "description").to_s.gsub(/\s+/, " ")
+["finance_baselines", "FINANCE_BASELINE_MISMATCH", "FINANCE_BASELINE_NOT_USABLE", "re-resolves each against its own authoritative store", "never carries"].each do |phrase|
+  fail_contract("POST /provisioning-operations must document #{phrase.inspect}") unless post_finance_text.include?(phrase)
+end
+effective_baseline = openapi.dig("paths", "/legal-entities/{legal_entity_id}/effective-finance-baseline", "get")
+exact_baseline = openapi.dig("paths", "/finance-baselines/{baseline_id}", "get")
+fail_contract("getEffectiveFinanceBaseline is missing") unless effective_baseline && effective_baseline["operationId"] == "getEffectiveFinanceBaseline"
+fail_contract("getFinanceBaseline is missing") unless exact_baseline && exact_baseline["operationId"] == "getFinanceBaseline"
+[effective_baseline, exact_baseline].each do |operation|
+  fail_contract("#{operation["operationId"]} must return the resolution schema") unless operation.dig("responses", "200", "content", "application/json", "schema", "$ref") == "./finance-baseline.schema.json"
+  fail_contract("#{operation["operationId"]} is read-only") unless openapi.dig("paths").values.none? { |item| item.key?("post") && item.equal?(operation) }
+end
+fail_contract("getFinanceBaseline must declare 409 Conflict for a version or digest mismatch") unless exact_baseline.dig("responses", "409", "$ref") == "#/components/responses/Conflict"
+fail_contract("getEffectiveFinanceBaseline must not declare 409") if effective_baseline.dig("responses").key?("409")
+version_param = exact_baseline.fetch("parameters").find { |p| p["name"] == "version" }
+digest_param = exact_baseline.fetch("parameters").find { |p| p["name"] == "digest" }
+fail_contract("getFinanceBaseline must require both version and digest, so it can never mean 'the latest'") unless version_param && digest_param && version_param["required"] == true && digest_param["required"] == true
+exact_text = exact_baseline.fetch("description").to_s.gsub(/\s+/, " ")
+["never \"the latest\"", "FINANCE_BASELINE_MISMATCH", "SUPERSEDED or WITHDRAWN", "FINANCE_BASELINE_NOT_USABLE"].each do |phrase|
+  fail_contract("getFinanceBaseline must document #{phrase.inspect}") unless exact_text.include?(phrase)
+end
+effective_text = effective_baseline.fetch("description").to_s.gsub(/\s+/, " ")
+["never creates, approves or infers a baseline", "404"].each do |phrase|
+  fail_contract("getEffectiveFinanceBaseline must document #{phrase.inspect}") unless effective_text.include?(phrase)
+end
+conflict_text = openapi.dig("components", "responses", "Conflict", "description").to_s.gsub(/\s+/, " ")
+%w[PLAN_AUTHORITY_MISMATCH FINANCE_BASELINE_MISMATCH FINANCE_BASELINE_NOT_USABLE IDEMPOTENCY_KEY_REUSED].each do |code|
+  fail_contract("the Conflict response must list #{code}") unless conflict_text.include?(code)
+end
+fail_contract("erp:provision must cover resolving (read-only) the Finance baseline references") unless registry_scopes.fetch("erp:provision").fetch("description").include?("resolve (read-only) the Finance baseline references")
+%w[erp:read].each { |name| fail_contract("#{name} must not cover Finance baseline resolution") if registry_scopes.fetch(name).fetch("description").include?("Finance baseline") }
+puts "ERP Finance baseline reference contract passed"
