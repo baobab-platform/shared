@@ -86,8 +86,9 @@
 #                              baobab-control-plane. Several independently
 #                              revocable workloads may explicitly register the
 #                              same subject audience; registration for one
-#                              workload grants nothing to another. No workload holds
-#                              context:validate yet, so no entry declares it.
+#                              workload grants nothing to another. Only the ERP
+#                              workload holds context:validate today, so only
+#                              its entry declares it.
 #   rotation_owner          -- team/repository responsible for rotating
 #                              this workload's credential.
 #   status                  -- PROVISIONED | ACTIVE | SUSPENDED | REVOKED |
@@ -99,7 +100,16 @@
 #                              registry's audience/scope constraints.
 #                              PROVISIONED means registered but not yet proven
 #                              under that full path; baobab-cp rejects incoming
-#                              tokens for non-ACTIVE registry entries.
+#                              tokens for non-ACTIVE registry entries. ACTIVE
+#                              attests the entry's credential profile, not each
+#                              scope or audience it lists: allowed_scopes,
+#                              allowed_audiences and validates_audiences are
+#                              ceilings on what baobab-iam may issue, and
+#                              authorise nothing until baobab-iam issues them
+#                              (its CI rejects any issued scope the registry does
+#                              not allow). A newly allowed scope is therefore
+#                              added here first and proven afterwards, in the
+#                              baobab-iam and resource-server changes that follow.
 #
 # scripts/validate-authorization-contracts.rb checks every entry: its scopes
 # are registered, workload-usable and issued for one of its audiences; it
