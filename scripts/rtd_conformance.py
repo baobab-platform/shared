@@ -457,24 +457,93 @@ def validate_trade_docs(root: Path, profile: dict) -> list[str]:
     return findings
 
 
+PULSE_P_CAP_06_KEYS = {
+    "intelligence.evidence.search",
+    "intelligence.research-mission.manage",
+}
+
+
 def validate_pulse_provider_declaration(
+    root: Path,
     declaration: dict,
     canonical_keys: set[object],
 ) -> list[str]:
-    """ADR-SHARED-029 / P-CAP-02 rules for Pulse's post-census declaration.
+    """ADR-SHARED-029/030 rules for Pulse capability promotion.
 
-    The first census permits canonical CONTRACTED intent, but deliberately does
-    not permit provider support. Support requires the later evidence-backed
-    P-CAP promotion increments.
+    P-CAP-06 permits evidence-backed PARTIAL support for the two capabilities
+    accepted by the first Intelligence census. IMPLEMENTED remains a later
+    governed readiness decision and therefore cannot be claimed here.
     """
 
     findings: list[str] = []
+    supported: set[object] = set()
 
     providers = declaration.get("providers") or []
-    if providers:
+    if not isinstance(providers, list):
+        return ["Pulse providers must be a list"]
+
+    for provider in providers:
+        if not isinstance(provider, dict):
+            findings.append("Pulse provider entry must be a mapping")
+            continue
+        provider_key = provider.get("provider_key")
+        if not isinstance(provider_key, str) or not provider_key.startswith("baobab-pulse."):
+            findings.append(
+                f"Pulse provider key must belong to baobab-pulse: {provider_key!r}"
+            )
+
+        support_entries = provider.get("support") or []
+        if not isinstance(support_entries, list):
+            findings.append(f"{provider_key}: provider support must be a list")
+            continue
+
+        for support in support_entries:
+            if not isinstance(support, dict):
+                findings.append(f"{provider_key}: support entry must be a mapping")
+                continue
+
+            capability_key = support.get("capability_key")
+            supported.add(capability_key)
+            if capability_key not in canonical_keys:
+                findings.append(
+                    f"{provider_key}: {capability_key!r} is not a canonical Shared capability"
+                )
+            if capability_key not in PULSE_P_CAP_06_KEYS:
+                findings.append(
+                    f"{provider_key}: P-CAP-06 cannot promote uncensused Intelligence capability "
+                    f"{capability_key!r}"
+                )
+
+            status = support.get("implementation_status")
+            if status != "PARTIAL":
+                findings.append(
+                    f"{provider_key}: {capability_key} must remain PARTIAL during P-CAP-06; "
+                    "IMPLEMENTED requires the P-CAP-07 readiness decision"
+                )
+
+            evidence = support.get("implementation_evidence")
+            if not isinstance(evidence, list) or not evidence:
+                findings.append(
+                    f"{provider_key}: {capability_key} PARTIAL support requires implementation evidence"
+                )
+                continue
+
+            for item in evidence:
+                if not isinstance(item, dict) or not isinstance(item.get("path"), str):
+                    findings.append(
+                        f"{provider_key}: {capability_key} has malformed implementation evidence"
+                    )
+                    continue
+                evidence_path = root / item["path"]
+                if not evidence_path.exists():
+                    findings.append(
+                        f"{provider_key}: {capability_key} evidence does not exist: {item['path']}"
+                    )
+
+    if providers and supported != PULSE_P_CAP_06_KEYS:
         findings.append(
-            "Pulse first capability census must not declare providers[].support; "
-            "provider support requires a later P-CAP promotion"
+            "P-CAP-06 provider support must cover exactly the two first-census "
+            f"capabilities: {sorted(PULSE_P_CAP_06_KEYS)}"
         )
 
     planned = declaration.get("planned_capabilities") or []
@@ -489,6 +558,11 @@ def validate_pulse_provider_declaration(
         proposed_key = item.get("proposed_key")
         capability_key = item.get("capability_key")
         status = item.get("proposal_status")
+
+        if capability_key in supported:
+            findings.append(
+                f"{capability_key}: capability cannot be both planned and provider support"
+            )
 
         if proposed_key is not None:
             if not str(proposed_key).startswith("intelligence."):
@@ -607,7 +681,7 @@ def validate_pulse(root: Path, shared_root: Path, profile: dict) -> list[str]:
                 if isinstance(item, dict)
             } if isinstance(catalogue, dict) else set()
             findings.extend(
-                validate_pulse_provider_declaration(data, canonical_keys)
+                validate_pulse_provider_declaration(root, data, canonical_keys)
             )
     return findings
 

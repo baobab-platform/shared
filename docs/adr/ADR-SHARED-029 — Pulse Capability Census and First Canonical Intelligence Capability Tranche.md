@@ -7,7 +7,8 @@
 **Implements:** First post-RTD capability census for the `intelligence` namespace  
 **Depends On:** ADR-SHARED-017, ADR-SHARED-019, ADR-SHARED-021, ADR-SHARED-025, ADR-SHARED-026  
 **Semantic Owner:** `baobab-pulse`  
-**Contract Authority:** `baobab-platform/shared`
+**Contract Authority:** `baobab-platform/shared`  
+**Refined By:** ADR-SHARED-030 (P-CAP-06 provider-support promotion ceiling only)
 
 ---
 
