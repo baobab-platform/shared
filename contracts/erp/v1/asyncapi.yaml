@@ -1,7 +1,7 @@
 asyncapi: 3.1.0
 info:
   title: Baobab-Platform Baobab ERP boundary events
-  version: 1.0.0
+  version: 1.1.0
   description: Vendor-neutral, tenant-scoped ERP consequences using the canonical Baobab event envelope.
 defaultContentType: application/json
 channels:
@@ -95,6 +95,18 @@ components:
               data: { $ref: ./payment-outcome.schema.json }
     ProvisioningChanged:
       name: com.baobab-platform.erp.provisioning.changed.v1
+      summary: ERP's provisioning operation moved to a new revision
+      description: >-
+        One event per committed state change of a provisioning command, recorded in ERP's transactional outbox in the
+        same database transaction as the change, so a state ERP committed is never left unannounced. Its identity is a
+        function of the change, not of the delivery: id is the version 5 UUID, in the URL namespace, of
+        urn:baobab-platform:event:erp-provisioning:{operation_id}:{revision}, and idempotencykey is
+        erp-provisioning-{operation_id}-r{revision}, so every redelivery, replay or re-publication of the same revision
+        is the same event and a consumer deduplicates by (source, id). Delivery is at-least-once and unordered: a consumer applies
+        an event only if its revision is newer than the one it holds. The event is a trigger to inspect authoritative
+        state; data carries the same fields as GET /provisioning-operations/{operation_id}. Over HTTPS the event travels
+        by signed delivery (../../events/v1/signed-delivery.schema.json,
+        docs/architecture/signed-event-delivery.md); the event contract does not depend on that transport.
       payload:
         allOf:
           - $ref: ../../events/v1/envelope.schema.json
