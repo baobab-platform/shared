@@ -268,9 +268,9 @@ required_scopes.each do |name|
   fail_contract("#{name} must say it grants no tenant authority") unless scope.fetch("description").include?("grants no tenant authority")
 end
 workloads = load_yaml(File.join(ROOT, "contracts/identity/v1/workload-registry.yaml")).fetch("workloads")
-# The audited caller matrix (owner decision): baobab-trade-workload reads; erp:provision is allocated to no workload until the provisioning
-# orchestrator is registered as its own identity. baobab-erp-workload is the resource server and holds neither.
-allowed_holders = { "erp:read" => ["baobab-trade-workload"], "erp:provision" => [] }
+# The audited caller matrix (owner ruling): baobab-trade-workload reads; the Control Plane's provisioning execution worker, its own identity
+# and not the billing-projection baobab-cp-workload, provisions. baobab-erp-workload is the resource server and holds neither.
+allowed_holders = { "erp:read" => ["baobab-trade-workload"], "erp:provision" => ["baobab-cp-provisioning-workload"] }
 required_scopes.each do |name|
   holders = workloads.select { |_, entry| entry["allowed_scopes"].include?(name) }.keys
   fail_contract("#{name} may be allowed only to #{allowed_holders.fetch(name).inspect}; found #{holders.inspect}") unless holders == allowed_holders.fetch(name)
@@ -279,6 +279,17 @@ required_scopes.each do |name|
   end
 end
 fail_contract("baobab-erp-workload is the resource server of the Boundary API and must not hold its scopes") if (workloads.fetch("baobab-erp-workload")["allowed_scopes"] & required_scopes).any?
+erp_scopes = workloads.fetch("baobab-erp-workload")["allowed_scopes"]
+%w[erp:integrate context:validate].each { |name| fail_contract("baobab-erp-workload must keep #{name}") unless erp_scopes.include?(name) }
+# The provisioner is exactly the audited identity. It stays PROVISIONED until the end-to-end evidence listed in workload-registry.yaml exists:
+# allocation is not activation, so promoting it is a deliberate edit of this pin made with that evidence, never a side effect.
+provisioner = workloads.fetch("baobab-cp-provisioning-workload")
+{ "repository" => "baobab-platform/baobab-cp", "owner" => "baobab-platform/baobab-cp", "environment" => "production",
+  "allowed_audiences" => ["baobab-erp"], "allowed_scopes" => ["erp:provision"], "credential_type" => "federated_workload_token",
+  "rotation_owner" => "baobab-platform/baobab-cp", "status" => "PROVISIONED" }.each do |field, expected|
+  fail_contract("baobab-cp-provisioning-workload #{field} must be #{expected.inspect}; found #{provisioner[field].inspect}") unless provisioner[field] == expected
+end
+fail_contract("baobab-cp-workload (billing projection) must not be given Boundary API authority") if (workloads.fetch("baobab-cp-workload")["allowed_scopes"] & required_scopes).any?
 
 # ERP OpenAPI 1.1.0: tenant authority for the four tenant-scoped operations is a trusted Control Plane context
 # (docs/architecture/context-authority-for-workloads.md). context_id is required on every one of them, including the
