@@ -43,7 +43,7 @@ valid_request = {
     "provider_id": "provider_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
     "capability_key": "intelligence.evidence.search",
     "contract_version": 1,
-    "release_id": "release_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "release_id": "erl_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
     "qualification_profile": "ea-09/pulse-intelligence-v1",
     "evidence": [
         {
