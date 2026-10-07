@@ -291,6 +291,34 @@ provisioner = workloads.fetch("baobab-cp-provisioning-workload")
 end
 fail_contract("baobab-cp-workload (billing projection) must not be given Boundary API authority") if (workloads.fetch("baobab-cp-workload")["allowed_scopes"] & required_scopes).any?
 
+# ERP OpenAPI 1.1.1: the scope each operation effectively requires (its own security, else the document default). Following a provisioning
+# operation is part of provisioning, so both provisioning operations require erp:provision and every other operation erp:read: the identity
+# that provisions never needs erp:read, which is reserved for ERP's business-data reads.
+default_scopes = Array(openapi["security"]).flat_map { |requirement| requirement["workloadOidc"] || [] }.sort
+fail_contract("the document default must require exactly erp:read; found #{default_scopes.inspect}") unless default_scopes == %w[erp:read]
+effective = {}
+openapi.fetch("paths").each do |path, item|
+  item.each do |method, operation|
+    next unless operation.is_a?(Hash) && operation["operationId"]
+    own = operation.key?("security") ? Array(operation["security"]).flat_map { |requirement| requirement["workloadOidc"] || [] }.sort : default_scopes
+    effective["#{method.upcase} #{path}"] = own
+  end
+end
+provisioning_operations = ["POST /provisioning-operations", "GET /provisioning-operations/{operation_id}"]
+provisioning_operations.each do |operation|
+  fail_contract("#{operation} must require exactly erp:provision; found #{effective[operation].inspect}") unless effective[operation] == %w[erp:provision]
+end
+(effective.keys - provisioning_operations).each do |operation|
+  fail_contract("#{operation} must require exactly erp:read; found #{effective[operation].inspect}") unless effective[operation] == %w[erp:read]
+end
+state_operation = openapi.dig("paths", "/provisioning-operations/{operation_id}", "get", "description").to_s.gsub(/\s+/, " ")
+["requires erp:provision, not erp:read", "observing a provisioning operation is part of provisioning", "recovery and reconciliation fallback",
+ "com.baobab-platform.erp.provisioning.changed.v1"].each do |phrase|
+  fail_contract("GET /provisioning-operations/{operation_id} must document #{phrase.inspect}") unless state_operation.include?(phrase)
+end
+fail_contract("erp:read must not cover provisioning state") if registry_scopes.fetch("erp:read").fetch("description").include?("provisioning state")
+fail_contract("erp:provision must cover observing the provisioning operation") unless registry_scopes.fetch("erp:provision").fetch("description").include?("observe the provisioning operation it created")
+
 # ERP OpenAPI 1.1.0: tenant authority for the four tenant-scoped operations is a trusted Control Plane context
 # (docs/architecture/context-authority-for-workloads.md). context_id is required on every one of them, including the
 # provisioning state read: an operation must not be obtainable merely by knowing its operation_id.
