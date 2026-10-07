@@ -61,6 +61,7 @@ RESPONSIBILITIES = {
     },
     "platform-context.schema.json": {
         "organisationKind", "countryCode", "PlatformContextResolveRequest", "PlatformContext",
+        "ContextAuthorityPurpose", "ProvisioningContextAuthority",
         "PlatformContextValidateRequest", "PlatformContextValidation",
         "ComposedResolutionRequest", "ComposedResolution",
     },
@@ -310,7 +311,7 @@ def check_platform_context_validation() -> None:
         if phrase not in token_text:
             fail(f"subject_token must document {phrase!r}")
 
-    for field in ("context_id", "tenant_id", "resolved_at", "expires_at"):
+    for field in ("context_id", "tenant_id", "resolved_at", "expires_at", "authority_purpose"):
         missing = copy.deepcopy(validation)
         del missing[field]
         rejects(schema, "PlatformContextValidation", missing, f"validation without {field}")
@@ -320,9 +321,36 @@ def check_platform_context_validation() -> None:
     for field, value in probes.items():
         rejects(schema, "PlatformContextValidation", {**validation, field: value}, f"validation carrying {field}")
     validation_properties = json.loads((CP / schema).read_text())["$defs"]["PlatformContextValidation"]["properties"]
-    if set(validation_properties) != {"context_id", "tenant_id", "resolved_at", "expires_at", "market_id", "organisation_id"}:
-        fail("PlatformContextValidation must carry exactly context_id, tenant_id, resolved_at, expires_at, market_id and "
-             f"organisation_id (no legal_entity_id); found {sorted(validation_properties)}")
+    if set(validation_properties) != {"context_id", "tenant_id", "resolved_at", "expires_at", "market_id", "organisation_id",
+                                      "authority_purpose", "provisioning_authority"}:
+        fail("PlatformContextValidation must carry exactly context_id, tenant_id, resolved_at, expires_at, market_id, "
+             f"organisation_id, authority_purpose and provisioning_authority (no legal_entity_id); found {sorted(validation_properties)}")
+
+    # Pre-activation provisioning authority (docs/architecture/context-authority-for-workloads.md section 13): an explicit purpose
+    # that is always stated, with the approved-plan tuple exactly when it is TENANT_PROVISIONING and never otherwise.
+    defs = json.loads((CP / schema).read_text())["$defs"]
+    if defs["ContextAuthorityPurpose"].get("enum") != ["RUNTIME", "TENANT_PROVISIONING"]:
+        fail("ContextAuthorityPurpose must be exactly RUNTIME and TENANT_PROVISIONING")
+    provisioning = example["provisioning_validation"]
+    accepts(schema, "PlatformContextValidation", provisioning, "provisioning context validation")
+    accepts(schema, "ProvisioningContextAuthority", provisioning["provisioning_authority"], "provisioning authority")
+    rejects(schema, "PlatformContextValidation", {k: v for k, v in provisioning.items() if k != "provisioning_authority"},
+            "a TENANT_PROVISIONING validation without its plan tuple")
+    rejects(schema, "PlatformContextValidation", {**validation, "provisioning_authority": provisioning["provisioning_authority"]},
+            "a RUNTIME validation carrying a plan tuple")
+    rejects(schema, "PlatformContextValidation", {**validation, "authority_purpose": "PENDING_TENANT"}, "an unknown authority purpose")
+    rejects(schema, "PlatformContextValidation", {k: v for k, v in validation.items() if k != "authority_purpose"},
+            "a validation that leaves its purpose implied")
+    for member in ("tenant_provisioning_id", "plan_id", "plan_version", "plan_digest"):
+        incomplete = {k: v for k, v in provisioning["provisioning_authority"].items() if k != member}
+        rejects(schema, "ProvisioningContextAuthority", incomplete, f"provisioning authority without {member}")
+    rejects(schema, "ProvisioningContextAuthority", {**provisioning["provisioning_authority"], "approval_id": "apd_x1y2z3"},
+            "provisioning authority carrying an approval id (approval records are Control Plane's)")
+    purpose_text = " ".join(defs["ContextAuthorityPurpose"]["description"].split())
+    for phrase in ("created only by the Control Plane's own provisioning execution, never through any HTTP operation",
+                   "not redeemable as RUNTIME authority", "CONTEXT_NOT_FOUND (404)"):
+        if phrase not in purpose_text:
+            fail(f"ContextAuthorityPurpose must document {phrase!r}")
     request_properties = json.loads((CP / schema).read_text())["$defs"]["PlatformContextValidateRequest"]["properties"]
     if set(request_properties) != {"context_id", "subject_token"}:
         fail(f"PlatformContextValidateRequest must carry exactly context_id and subject_token; found {sorted(request_properties)}")
@@ -350,6 +378,18 @@ def check_platform_context_validation() -> None:
         if phrase not in prose:
             fail(f"POST /platform-context/validate must document {phrase!r}")
 
+    for phrase in ("authority_purpose", "TENANT_PROVISIONING", "context_purposes", "never through any HTTP operation",
+                   "at most 15 minutes", "PROVISIONING_PROVIDERS, VERIFYING_READINESS or REMEDIATING",
+                   "PROVISIONING_AUTHORITY_NOT_CURRENT", "The tenant ACTIVE rule is never relaxed for a RUNTIME context",
+                   "a TENANT_PROVISIONING context is never accepted as RUNTIME authority"):
+        if phrase not in prose:
+            fail(f"POST /platform-context/validate must document {phrase!r}")
+    if openapi["info"]["version"] != "1.34.0":
+        fail("control-plane OpenAPI must be 1.34.0 (authority_purpose is a contract change)")
+    resolve_text = " ".join(openapi["paths"]["/platform-context/resolve"]["post"]["description"].split())
+    if "always authority_purpose RUNTIME" not in resolve_text:
+        fail("POST /platform-context/resolve must state that its context is always RUNTIME")
+
     # Independent validation applies to both token profiles; a local signature is
     # meaningful only for a self-contained signed token (ADR-IAM-0020/0021).
     for phrase in ("For self-contained signed tokens", "issuer, signature and expiry",
@@ -365,7 +405,8 @@ def check_platform_context_validation() -> None:
     for path in ("/capabilities/resolve", "/capabilities/resolve-batch", "/resolution/mappings"):
         text = " ".join(openapi["paths"][path]["post"]["description"].split())
         for phrase in ("bound to the principal that resolved it", "canonical principal must equal the context's",
-                       "indistinguishable from an unknown or expired one", "CONTEXT_NOT_FOUND, 404", "TENANT_CONTEXT_MISMATCH (403)"):
+                       "indistinguishable from an unknown or expired one", "CONTEXT_NOT_FOUND, 404", "TENANT_CONTEXT_MISMATCH (403)",
+                       "a TENANT_PROVISIONING context, which is never RUNTIME authority"):
             if phrase not in text:
                 fail(f"POST {path} must document {phrase!r} (every consumer of a stored context enforces ownership)")
         if "another tenant's context" in text:

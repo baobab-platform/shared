@@ -1,6 +1,6 @@
 # Context authority for tenant-neutral workloads: design
 
-**Status:** APPROVED in shared#207; contracts implemented by shared#208 (control-plane/v1 1.33.0, erp/v1 1.1.0). The implementation review clarification below corrects the Control Plane contract to 1.33.1. Runtime rollout and workload scope allocation remain separate steps.
+**Status:** APPROVED in shared#207; contracts implemented by shared#208 (control-plane/v1 1.33.0, erp/v1 1.1.0). The implementation review clarification below corrects the Control Plane contract to 1.33.1. Section 13 adds the pre-activation provisioning context purpose (control-plane/v1 1.34.0, erp/v1 1.2.0; owner ruling 2026-10-07). Runtime rollout and workload scope allocation remain separate steps.
 **Date:** 2026-10-02
 **Authority:** ADR-0007 sections 88-91 (workload identity: scope plus Control Plane context; "Scope is not tenant access") and its principle that independently deployable workloads have independently revocable identities, ADR-BCP-004 (context resolution and lifetime, sections 52 and 70-72), ADR-BCP-007 (signed or delegated assertions deliberately deferred), owner rulings of 2026-10-02.
 **Repositories touched later:** `shared` (contracts), `baobab-cp` (redemption and validation), `baobab-erp` (consumption). `baobab-iam` issues no tenant claim; any further scope allocation follows the caller audit in section 8.
@@ -226,3 +226,83 @@ Provisioning retries validate the fresh context before returning an idempotent r
 | Rollout on existing consumers | Enforce ownership immediately; no shadow release (approved) |
 | Not-owned error | 404 `CONTEXT_NOT_FOUND`, indistinguishable from unknown and expired; 403 only for tenant mismatch or inactive tenant (approved) |
 | Lifetime | Contexts are not universally bounded; the paper no longer claims it; contexts used as cross-service authority must be bounded (added) |
+
+## 13. Provisioning contexts: authority before a tenant is ACTIVE (owner ruling 2026-10-07)
+
+### 13.1 The gap
+
+Section 4 requires the tenant to be ACTIVE at validation (`403 TENANT_NOT_ACTIVE`), and that stays the rule for every ordinary context. But the canonical lifecycle activates a tenant only after provisioning and readiness:
+
+```
+PENDING -> provisioning -> provider provisioning (including ERP) -> reconciliation -> readiness -> READY -> tenant activation -> ACTIVE
+```
+
+APPROVED, ONBOARDED, PROVISIONED, READY and ACTIVE are different facts, and the ERP provisioning that the Control Plane requests is itself part of the evidence that justifies READY and therefore activation. A context that is valid only for an ACTIVE tenant cannot carry the authority for that step, and activating the tenant first would make activation a prerequisite of its own justification. The lifecycle is therefore not reordered. Nor is the ACTIVE rule weakened into "ACTIVE or PENDING tenants may validate contexts", which would turn every ordinary context into authority over a tenant that was never approved for operation.
+
+### 13.2 The rule: an explicit authority purpose
+
+Every stored context has a purpose, stated and never implied (`ContextAuthorityPurpose`):
+
+| Purpose | Created by | Acts for | Tenant must be |
+|---|---|---|---|
+| `RUNTIME` | `POST /v1/platform-context/resolve` (the only HTTP issuance, and it cannot ask for another purpose) | ordinary runtime operations | ACTIVE |
+| `TENANT_PROVISIONING` | the Control Plane's own provisioning execution, internally; no HTTP operation creates one | exactly the operations one approved provisioning plan authorises | not suspended, decommissioning or decommissioned (a PENDING tenant is admissible) |
+
+**P1. Narrow, not generic.** The only relaxation is for a context whose purpose is `TENANT_PROVISIONING` and that satisfies every condition below. Nothing else about validation changes: the RUNTIME rule, ownership (I2), the bounded-lifetime rule (I10) and the validator relationship (I6) all still apply.
+
+**P2. Owned by the dedicated provisioner.** The context is owned by the canonical principal of the provisioner workload, and that workload's registry entry lists `TENANT_PROVISIONING` in `context_purposes`. Control Plane checks both: ownership by the existing caller-binding function (I4), and that the registry permits the owner's workload to hold that purpose. A workload that may provision tenants before activation holds no `context:resolve` and no `context:validate`, and uses a federated workload token, so the identity that acts before activation can never also be a runtime caller or a validator.
+
+**P3. Short and bounded.** At most 15 minutes (`PT15M`), always with `expires_at`.
+
+**P4. Bound to the approved plan.** The context carries `provisioning_authority` (`tenant_provisioning_id`, `plan_id`, `plan_version`, `plan_digest`), the same tuple an ERP provisioning request names in `control_plane_authority`. It means "this provisioner may perform the operations this exact approved plan authorises for this not-yet-active tenant", not merely "this workload has some context for this tenant". The resource server compares the tuple member by member; Control Plane validates that the tuple is still the current approved plan.
+
+**P5. Admissible provisioning only.** Validation holds only while the named TenantProvisioning exists for the context's tenant, is in `PROVISIONING_PROVIDERS`, `VERIFYING_READINESS` or `REMEDIATING`, and the tuple is its approved, current plan (approval binds id, version and digest, ADR-BCP-021). A provisioning that is stale, withdrawn, cancelled, failed, blocked or in any other state, or a plan that is no longer the approved current one, is `403 PROVISIONING_AUTHORITY_NOT_CURRENT`. The authority ends when the provisioning leaves the admissible states even though the context has not expired.
+
+**P6. Never runtime authority.** Capability resolution, batch resolution and mapping resolution accept `RUNTIME` contexts only and answer a `TENANT_PROVISIONING` context `CONTEXT_NOT_FOUND` (404), indistinguishable from an unknown one. A resource server accepts a provisioning context only for the operations the approved plan authorises: ERP accepts it for the two provisioning operations and refuses it (403 `ERP_CONTEXT_REJECTED`) for every business-data read, and refuses a `RUNTIME` context for provisioning.
+
+**P7. Stated in every answer.** `PlatformContextValidation` always carries `authority_purpose`, and `provisioning_authority` exactly when the purpose is `TENANT_PROVISIONING`. A resource server therefore never has to infer a purpose from the tenant's lifecycle.
+
+### 13.3 What the provisioning authority is not
+
+It is not a grant of tenant activation, of any other capability, or of any scope: scopes remain the invocation permission (ADR-0007) and the provisioner still needs `erp:provision`, which it holds only while its registry entry and IAM client allow it. It is not a way to read a pending tenant's business data. It does not replace the ERP plan-authority comparison (I7): context authority and plan authority are independent, and both must hold.
+
+### 13.4 Negative tests pinned before implementation
+
+Control Plane:
+```
+RUNTIME context, tenant PENDING                              -> 403 TENANT_NOT_ACTIVE (unchanged)
+TENANT_PROVISIONING context, tenant PENDING, admissible plan -> 200, authority_purpose and provisioning_authority present
+TENANT_PROVISIONING context owned by a workload without TENANT_PROVISIONING in context_purposes -> refused, as not found
+TENANT_PROVISIONING context presented with a subject token of another principal                 -> 404
+TENANT_PROVISIONING context unbounded or longer than 15 minutes                                 -> 404 (never issued: creation is refused)
+provisioning in VALIDATING, PLANNED, BLOCKED, FAILED, CANCELLED, READY, DEPROVISIONED            -> 403 PROVISIONING_AUTHORITY_NOT_CURRENT
+plan id, version or digest differs from the approved current plan                               -> 403 PROVISIONING_AUTHORITY_NOT_CURRENT
+tenant suspended, decommissioning or decommissioned                                             -> 403 TENANT_NOT_ACTIVE
+capability, batch or mapping resolution with a TENANT_PROVISIONING context                      -> 404 CONTEXT_NOT_FOUND
+no HTTP operation can create or request a TENANT_PROVISIONING context                           -> asserted
+```
+
+ERP:
+```
+provisioning POST with a RUNTIME context                                -> 403 ERP_CONTEXT_REJECTED, nothing provisioned
+provisioning POST, provisioning_authority != control_plane_authority    -> 403 ERP_CONTEXT_REJECTED, nothing provisioned
+provisioning GET with a context bound to another provisioning or plan   -> 403 ERP_CONTEXT_REJECTED
+mapping, order-consequence or inventory read with a TENANT_PROVISIONING context -> 403 ERP_CONTEXT_REJECTED
+PROVISIONING_AUTHORITY_NOT_CURRENT from Control Plane                   -> 403 ERP_CONTEXT_REJECTED (never told apart from other rejections)
+```
+
+### 13.5 Sequence
+
+1. Shared: this amendment (control-plane/v1 1.34.0, erp/v1 1.2.0, `context_purposes` in the workload registry, validators).
+2. Control Plane: persist the purpose and the tuple when the provisioning execution creates the context; apply the purpose-specific policy in `platform-context/validate`; keep every runtime path ACTIVE-only; the negative tests above.
+3. Re-pin consumers (ERP validates purpose and tuple; its caller-rejection set gains the new code), then wire the provisioning worker into the provider-provisioning phase.
+4. Activation of the provisioner workload remains separate and follows its own end-to-end evidence.
+
+### 13.6 Decisions recorded
+
+| Question | Decision |
+|---|---|
+| Tenant activation before ERP provisioning | Rejected: circular, since provisioning is evidence for activation (owner 2026-10-07) |
+| Weaken `validate` for PENDING tenants | Rejected: would undermine the ACTIVE invariant for every context |
+| Pre-activation authority | A distinct, first-class context purpose, `TENANT_PROVISIONING`, bound to the approved plan tuple, the provisioner principal and a short lifetime |
+

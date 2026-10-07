@@ -125,6 +125,22 @@ workloads.each do |client_id, entry|
   elsif !validates.nil?
     fail_contract("workload #{client_id} lists validates_audiences but does not allow context:validate")
   end
+  # docs/architecture/context-authority-for-workloads.md section 13: a context purpose other than the implicit RUNTIME is
+  # explicit, distinct and known. TENANT_PROVISIONING (pre-activation provisioning authority) belongs to a provisioner that
+  # can never also be a runtime resolver or a validator, and that has no client secret to leak.
+  purposes = entry["context_purposes"]
+  unless purposes.nil?
+    unless purposes.is_a?(Array) && !purposes.empty? && purposes.uniq.size == purposes.size && (purposes - %w[RUNTIME TENANT_PROVISIONING]).empty?
+      fail_contract("workload #{client_id} context_purposes must be a distinct, non-empty list of RUNTIME or TENANT_PROVISIONING")
+    end
+    if purposes.include?("TENANT_PROVISIONING")
+      %w[context:resolve context:validate].each do |held|
+        fail_contract("workload #{client_id} may provision tenants before activation, so it must not allow #{held}") if entry.fetch("allowed_scopes").include?(held)
+      end
+      fail_contract("workload #{client_id} may provision tenants before activation, so it must use federated_workload_token") unless entry["credential_type"] == "federated_workload_token"
+      fail_contract("workload #{client_id} may provision tenants before activation, so it must not also list RUNTIME") if purposes.include?("RUNTIME")
+    end
+  end
   # ADR-BCP-025 section 2.9: a reporter is registered for the environments
   # and regions it may report on. Its environment is `environment`; its
   # regions are `deployment_regions`, required of exactly the workloads that
