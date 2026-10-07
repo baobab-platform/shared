@@ -137,13 +137,19 @@ workloads:
     # Gate IAM-10 (ADR-0014 §111): added baobab-erp/erp:integrate so this
     # workload's own iDempiere OSGi bundles (org.baobab-platform.baobab.erp.context/
     # mapping) can authenticate to baobab-app's HTTP boundary, which
-    # previously trusted network location alone. erp:read and erp:provision
-    # (the Boundary API) are allowed here and to no other workload. The
-    # client stays tenant-neutral: no tenant_id is stamped on it, because
-    # tenant entitlement is a Control Plane decision (ADR-0007 sections
-    # 88-91); a call operates in the tenant of a trusted Control Plane context.
+    # previously trusted network location alone. The client stays
+    # tenant-neutral: no tenant_id is stamped on it, because tenant
+    # entitlement is a Control Plane decision (ADR-0007 sections 88-91).
+    # ERP is the resource server of the Boundary API, not a caller of it, so
+    # it holds neither erp:read nor erp:provision: those belong to the
+    # workloads that call it, each with credentials of its own. ERP is the
+    # validator of the baobab-erp audience: context:validate lets it ask the
+    # Control Plane whether a context belongs to the caller it authenticated,
+    # and validates_audiences registers the one subject audience it may
+    # validate (docs/architecture/context-authority-for-workloads.md).
     allowed_audiences: ["baobab-control-plane", "baobab-erp"]
-    allowed_scopes: ["context:resolve", "erp:integrate", "erp:read", "erp:provision", "provider-migration:task"]
+    allowed_scopes: ["context:resolve", "context:validate", "erp:integrate", "provider-migration:task"]
+    validates_audiences: ["baobab-erp"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-erp
     status: ACTIVE
@@ -164,8 +170,11 @@ workloads:
     owner: baobab-platform/baobab-trade
     runtime: "baobab-trade service"
     environment: production
-    allowed_audiences: ["baobab-control-plane"]
-    allowed_scopes: ["context:resolve", "provider-migration:task"]
+    # Trade reads ERP's order consequences and inventory availability
+    # (erp:read, audience baobab-erp). It acts in the tenant of a Control
+    # Plane context it resolved itself; the scope grants no tenant authority.
+    allowed_audiences: ["baobab-control-plane", "baobab-erp"]
+    allowed_scopes: ["context:resolve", "erp:read", "provider-migration:task"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-trade
     status: ACTIVE

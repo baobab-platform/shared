@@ -196,9 +196,9 @@ context:validate -> the resource server doing the validating (baobab-erp-workloa
 ## 9. Contract changes this design implies (made in later PRs, not here)
 
 - `control-plane/v1/openapi.yaml`: `POST /platform-context/validate` and its request (`context_id`, `subject_token`) and response schemas (`platform-context.schema.json`); the direct consumers document the ownership rule and the 404.
-- `authorization/v1/scope-registry.yaml`: `context:validate`; `workload-registry.yaml` unchanged (granted to nobody).
+- `authorization/v1/scope-registry.yaml`: `context:validate`; `workload-registry.yaml` unchanged in that amendment (granted to nobody); a later, audited allocation gives it to the ERP validator alone.
 - `erp/v1/openapi.yaml`: required `context_id` on the reads (query) and on the provisioning request; the access-token description changes from "the resolved tenant claim is authoritative" to "tenant authority is a trusted Control Plane context; a token tenant_id, when present, must equal it". `access-token-claims.schema.json` already has `tenant_id` optional.
-- Validators pin: the ownership wording on every consumer, `context:validate` registered and granted to no workload, `legal_entity_id` absent from the validate response, `expires_at` required in it, `subject_token` present in the request, `capabilities/explain` unchanged.
+- Validators pin: the ownership wording on every consumer, `context:validate` registered (first granted to nobody, later to the ERP validator alone), `legal_entity_id` absent from the validate response, `expires_at` required in it, `subject_token` present in the request, `capabilities/explain` unchanged.
 
 ## 10. Implementation sequence after approval
 
