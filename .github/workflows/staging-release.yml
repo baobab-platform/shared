@@ -2,6 +2,7 @@ name: Shared Tagged Staging Release
 on:
   push:
     tags: ['v*.*.*-staging']
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
