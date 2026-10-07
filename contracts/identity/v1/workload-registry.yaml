@@ -86,9 +86,9 @@
 #                              baobab-control-plane. Several independently
 #                              revocable workloads may explicitly register the
 #                              same subject audience; registration for one
-#                              workload grants nothing to another. Only the ERP
-#                              workload holds context:validate today, so only
-#                              its entry declares it.
+#                              workload grants nothing to another. ERP validates
+#                              baobab-erp and Pulse validates baobab-pulse; each
+#                              relationship is explicit on its own entry.
 #   rotation_owner          -- team/repository responsible for rotating
 #                              this workload's credential.
 #   status                  -- PROVISIONED | ACTIVE | SUSPENDED | REVOKED |
