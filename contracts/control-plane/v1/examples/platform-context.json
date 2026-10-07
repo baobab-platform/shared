@@ -56,6 +56,20 @@
     "resolved_at": "2026-09-29T09:00:00Z",
     "expires_at": "2026-09-29T09:15:00Z",
     "market_id": "mkt_0199a1b2c3d47e8f",
-    "organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c"
+    "organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c",
+    "authority_purpose": "RUNTIME"
+  },
+  "provisioning_validation": {
+    "context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a72",
+    "tenant_id": "tn_0199a1b2c3d47e8f9a0b1c2d3e4f5a6b",
+    "resolved_at": "2026-10-07T09:00:00Z",
+    "expires_at": "2026-10-07T09:15:00Z",
+    "authority_purpose": "TENANT_PROVISIONING",
+    "provisioning_authority": {
+      "tenant_provisioning_id": "tp_0199a1b2c3d47e8f9a0b1c2d3e4f5a75",
+      "plan_id": "plan_0199a1b2c3d47e8f9a0b1c2d3e4f5a76",
+      "plan_version": 2,
+      "plan_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000001"
+    }
   }
 }

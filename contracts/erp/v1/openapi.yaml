@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab ERP Boundary API
-  version: 1.1.1
+  version: 1.2.0
   description: Vendor-neutral synchronous provisioning and query contract. Business state propagation uses the ERP AsyncAPI contract.
   license:
     name: Apache-2.0
@@ -31,7 +31,11 @@ paths:
         request's identity: a replay with the same Idempotency-Key and request but a fresh context_id (contexts expire)
         returns the prior operation. A context that cannot be validated for the caller is 403 ERP_CONTEXT_REJECTED
         whatever the reason (the reasons are deliberately indistinguishable); a missing or malformed context_id is 400;
-        Control Plane being unreachable is 503 and nothing is provisioned.
+        Control Plane being unreachable is 503 and nothing is provisioned. Provisioning acts for a tenant that is not yet
+        ACTIVE, so the context must be a TENANT_PROVISIONING context (control-plane/v1 authority_purpose) whose
+        provisioning_authority equals control_plane_authority member by member (tenant_provisioning_id, plan_id,
+        plan_version, plan_digest); a RUNTIME context, or a provisioning context bound to any other plan, is refused as
+        403 ERP_CONTEXT_REJECTED and nothing is provisioned, and that refusal is as indistinguishable as every other.
       security:
         - workloadOidc: [erp:provision]
       parameters:
@@ -62,7 +66,10 @@ paths:
         An operation's state is tenant-scoped, so a caller must not obtain it merely by knowing its operation_id:
         context_id is required, and the operation is returned only when it belongs to the tenant of the context
         validated for the caller (otherwise 404). A context that cannot be validated for the caller is 403
-        ERP_CONTEXT_REJECTED; Control Plane being unreachable is 503. This operation requires erp:provision, not
+        ERP_CONTEXT_REJECTED; Control Plane being unreachable is 503. The context must be a TENANT_PROVISIONING
+        context (control-plane/v1 authority_purpose) whose provisioning_authority equals the control_plane_authority the
+        operation was accepted under; a RUNTIME context, or one bound to another provisioning or plan, is 403
+        ERP_CONTEXT_REJECTED. This operation requires erp:provision, not
         erp:read: observing a provisioning operation is part of provisioning, so the identity that submits one can
         follow it without holding the erp:read scope of ERP's business data reads (mappings, order consequences,
         inventory availability). ERP also publishes com.baobab-platform.erp.provisioning.changed.v1; observing that
@@ -140,7 +147,8 @@ paths:
       description: >-
         Tenant authority is a trusted Control Plane context: context_id is required and the order is read only within
         the tenant of the context validated for the caller. A context that cannot be validated for the caller is 403
-        ERP_CONTEXT_REJECTED; a missing or malformed context_id is 400; Control Plane being unreachable is 503.
+        ERP_CONTEXT_REJECTED; a missing or malformed context_id is 400; Control Plane being unreachable is 503. Business-data reads act only for an ACTIVE
+        tenant, so the context must be a RUNTIME context: a TENANT_PROVISIONING context is refused as 403 ERP_CONTEXT_REJECTED.
       parameters:
         - $ref: "#/components/parameters/CommerceOrderId"
         - $ref: "#/components/parameters/ContextId"
@@ -167,7 +175,8 @@ paths:
         The figures are read from the engine's own physical inventory (ADR-ERP-015), never from a Baobab-side stock ledger and
         never from Trade; erp_allocated is quantity the engine has committed, not a commerce reservation, and erp_available is
         derived from them. Tenant authority is a trusted Control Plane context: context_id is required, and a context that
-        cannot be validated for the caller is 403 ERP_CONTEXT_REJECTED. An unmapped SKU or warehouse is 404. When the engine
+        cannot be validated for the caller is 403 ERP_CONTEXT_REJECTED; as for every business-data read the context must
+        be a RUNTIME context, and a TENANT_PROVISIONING context is refused the same way. An unmapped SKU or warehouse is 404. When the engine
         cannot be reached the answer is 503 and no figure is returned: the read can be retried and no stale or estimated
         quantity is substituted.
       parameters:

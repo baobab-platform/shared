@@ -289,9 +289,14 @@ provisioner = workloads.fetch("baobab-cp-provisioning-workload")
   "rotation_owner" => "baobab-platform/baobab-cp", "status" => "PROVISIONED" }.each do |field, expected|
   fail_contract("baobab-cp-provisioning-workload #{field} must be #{expected.inspect}; found #{provisioner[field].inspect}") unless provisioner[field] == expected
 end
+# Pre-activation provisioning authority (docs/architecture/context-authority-for-workloads.md section 13): exactly this identity may hold
+# TENANT_PROVISIONING contexts, and no other workload may.
+fail_contract("baobab-cp-provisioning-workload context_purposes must be [\"TENANT_PROVISIONING\"]; found #{provisioner["context_purposes"].inspect}") unless provisioner["context_purposes"] == ["TENANT_PROVISIONING"]
+other_provisioning = workloads.select { |name, entry| name != "baobab-cp-provisioning-workload" && Array(entry["context_purposes"]).include?("TENANT_PROVISIONING") }.keys
+fail_contract("only baobab-cp-provisioning-workload may hold TENANT_PROVISIONING contexts; found #{other_provisioning.inspect}") unless other_provisioning.empty?
 fail_contract("baobab-cp-workload (billing projection) must not be given Boundary API authority") if (workloads.fetch("baobab-cp-workload")["allowed_scopes"] & required_scopes).any?
 
-# ERP OpenAPI 1.1.1: the scope each operation effectively requires (its own security, else the document default). Following a provisioning
+# ERP OpenAPI 1.2.0 (scope since 1.1.1): the scope each operation effectively requires (its own security, else the document default). Following a provisioning
 # operation is part of provisioning, so both provisioning operations require erp:provision and every other operation erp:read: the identity
 # that provisions never needs erp:read, which is reserved for ERP's business-data reads.
 # OpenAPI security requirements are alternatives, so they are compared whole, never flattened: an added empty alternative ({}) would make
@@ -407,3 +412,23 @@ unless legal_entity["canonical_owner"] == "control-plane"
 end
 
 puts "ERP API, event, mapping, internationalisation and system-of-record contracts passed"
+
+# ERP OpenAPI 1.2.0: which Control Plane context purpose each operation accepts. Provisioning acts for a tenant that is not yet ACTIVE, so both
+# provisioning operations accept TENANT_PROVISIONING (bound to the approved plan tuple) and refuse RUNTIME; every business-data read is the
+# reverse. Refusals stay the one indistinguishable ERP_CONTEXT_REJECTED.
+fail_contract("ERP OpenAPI must be version 1.2.0 (context purposes are a contract change); found #{openapi.dig("info", "version").inspect}") unless openapi.dig("info", "version") == "1.2.0"
+descriptions = openapi.fetch("paths").each_with_object({}) do |(path, item), found|
+  item.each { |method, operation| found["#{method.upcase} #{path}"] = operation["description"].to_s.split.join(" ") if operation.is_a?(Hash) && operation["operationId"] }
+end
+provisioning_phrases = {
+  "POST /provisioning-operations" => ["TENANT_PROVISIONING context", "provisioning_authority equals control_plane_authority member by member", "a RUNTIME context, or a provisioning context bound to any other plan, is refused as 403 ERP_CONTEXT_REJECTED"],
+  "GET /provisioning-operations/{operation_id}" => ["TENANT_PROVISIONING context", "provisioning_authority equals the control_plane_authority the operation was accepted under", "a RUNTIME context, or one bound to another provisioning or plan, is 403 ERP_CONTEXT_REJECTED"]
+}
+provisioning_phrases.each do |operation, phrases|
+  phrases.each { |phrase| fail_contract("#{operation} must document #{phrase.inspect}") unless descriptions.fetch(operation).include?(phrase) }
+end
+%w[GET\ /order-consequences/{commerce_order_id} GET\ /inventory-availability].each do |operation|
+  fail_contract("#{operation} must require a RUNTIME context and refuse TENANT_PROVISIONING") unless descriptions.fetch(operation).include?("RUNTIME context") && descriptions.fetch(operation).include?("TENANT_PROVISIONING context is refused")
+end
+request_context = JSON.parse(File.read(File.join(ROOT, "contracts/erp/v1/provisioning-request.schema.json"))).dig("properties", "context_id", "description").to_s
+fail_contract("provisioning-request context_id must be a TENANT_PROVISIONING context equal to control_plane_authority") unless request_context.include?("TENANT_PROVISIONING context") && request_context.include?("provisioning_authority equals control_plane_authority")
