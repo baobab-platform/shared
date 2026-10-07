@@ -7,7 +7,8 @@
 **Decision Type:** Capability Namespace / Event Context Reservation / Cross-Engine Consumer Boundary  
 **Implements:** Shared side of RTD-09 from ADR-SHARED-019  
 **Depends On:** ADR-SHARED-007, ADR-SHARED-018, ADR-SHARED-019, ADR-SHARED-021, ADR-SHARED-023, ADR-SHARED-024  
-**Initial Engine:** `baobab-pulse`
+**Initial Engine:** `baobab-pulse`  
+**Refined By:** ADR-SHARED-029 for post-census capability promotion
 
 ---
 
@@ -81,6 +82,8 @@ tenant entitled
 ```
 
 Capability discovery and promotion require a later implementation census.
+
+That census is now ADR-SHARED-029. Its two explicitly catalogued DRAFT/EXPERIMENTAL capabilities refine this pre-census prohibition without changing RTD-09's event-consumer or authority boundaries.
 
 Examples already appearing in earlier architecture prose such as:
 
