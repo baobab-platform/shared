@@ -5,7 +5,8 @@
 **Repository:** `baobab-platform/shared`  
 **Decision ID:** ADR-SHARED-031  
 **Depends On:** ADR-SHARED-017, ADR-SHARED-025, ADR-SHARED-026, ADR-SHARED-029, ADR-SHARED-030  
-**Applies To:** `baobab-platform/baobab-pulse` P-CAP-07
+**Applies To:** `baobab-platform/baobab-pulse` P-CAP-07  
+**Refined By:** ADR-SHARED-032 (EA-09 certification and P-CAP-08 activation admission)
 
 ## 1. Decision
 
