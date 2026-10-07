@@ -253,6 +253,8 @@ jobs:
         run: python scripts/tests/test_regulations_capability_census.py
       - name: Test Pulse intelligence capability census (ADR-SHARED-029)
         run: python scripts/tests/test_intelligence_capability_census.py
+      - name: Test EA-09 provider certification and P-CAP-08 activation
+        run: python scripts/tests/test_ea09_provider_certification.py
       - name: Test explicit validator audience registration
         run: python scripts/tests/test_authorization_contracts.py
       - name: Test contract consumer lock validation and drift reporting (EA-01)
