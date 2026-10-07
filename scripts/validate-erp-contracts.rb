@@ -294,22 +294,23 @@ fail_contract("baobab-cp-workload (billing projection) must not be given Boundar
 # ERP OpenAPI 1.1.1: the scope each operation effectively requires (its own security, else the document default). Following a provisioning
 # operation is part of provisioning, so both provisioning operations require erp:provision and every other operation erp:read: the identity
 # that provisions never needs erp:read, which is reserved for ERP's business-data reads.
-default_scopes = Array(openapi["security"]).flat_map { |requirement| requirement["workloadOidc"] || [] }.sort
-fail_contract("the document default must require exactly erp:read; found #{default_scopes.inspect}") unless default_scopes == %w[erp:read]
+# OpenAPI security requirements are alternatives, so they are compared whole, never flattened: an added empty alternative ({}) would make
+# authentication optional and another scheme would add a way in, and both must fail. A requirement list is exactly one workloadOidc requirement.
+default_security = openapi["security"]
+fail_contract("the document default must require exactly [{workloadOidc: [erp:read]}]; found #{default_security.inspect}") unless default_security == [{ "workloadOidc" => ["erp:read"] }]
 effective = {}
 openapi.fetch("paths").each do |path, item|
   item.each do |method, operation|
     next unless operation.is_a?(Hash) && operation["operationId"]
-    own = operation.key?("security") ? Array(operation["security"]).flat_map { |requirement| requirement["workloadOidc"] || [] }.sort : default_scopes
-    effective["#{method.upcase} #{path}"] = own
+    effective["#{method.upcase} #{path}"] = operation.key?("security") ? operation["security"] : default_security
   end
 end
 provisioning_operations = ["POST /provisioning-operations", "GET /provisioning-operations/{operation_id}"]
 provisioning_operations.each do |operation|
-  fail_contract("#{operation} must require exactly erp:provision; found #{effective[operation].inspect}") unless effective[operation] == %w[erp:provision]
+  fail_contract("#{operation} must require exactly [{workloadOidc: [erp:provision]}]; found #{effective[operation].inspect}") unless effective[operation] == [{ "workloadOidc" => ["erp:provision"] }]
 end
 (effective.keys - provisioning_operations).each do |operation|
-  fail_contract("#{operation} must require exactly erp:read; found #{effective[operation].inspect}") unless effective[operation] == %w[erp:read]
+  fail_contract("#{operation} must require exactly [{workloadOidc: [erp:read]}]; found #{effective[operation].inspect}") unless effective[operation] == [{ "workloadOidc" => ["erp:read"] }]
 end
 state_operation = openapi.dig("paths", "/provisioning-operations/{operation_id}", "get", "description").to_s.gsub(/\s+/, " ")
 ["requires erp:provision, not erp:read", "observing a provisioning operation is part of provisioning", "recovery and reconciliation fallback",
