@@ -133,11 +133,10 @@ ERP-owned physical stock. The capability is therefore catalogued under the
 already-accepted contract-first decision; this is not a new architecture
 decision.
 
-`erp/v1` already has the response
-(`inventory-availability.schema.json`) and the operation
-(`GET /inventory-availability`). Its query parameters have no request
-schema, so the contract needs an `InventoryAvailabilityQuery` schema. ERP
-has no route for it yet. This is the smallest contract gap in the review.
+At the original 2026-09-30 review, `erp/v1` already had the response
+(`inventory-availability.schema.json`) and the operation contract, but its
+query parameters had no request schema and ERP had not yet implemented the
+route. That historical gap is what the status update above closes.
 
 ### `customer.buyer-application.manage` and `customer.buyer-membership.manage` (Trade)
 
