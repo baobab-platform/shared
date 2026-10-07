@@ -271,10 +271,12 @@ end
 workloads = load_yaml(File.join(ROOT, "contracts/identity/v1/workload-registry.yaml")).fetch("workloads")
 # The audited caller matrix (owner ruling): baobab-trade-workload reads; the Control Plane's provisioning execution worker, its own identity
 # and not the billing-projection baobab-cp-workload, provisions. baobab-erp-workload is the resource server and holds neither.
-allowed_holders = { "erp:read" => ["baobab-trade-workload"], "erp:provision" => ["baobab-cp-provisioning-workload"] }
+# The staging evidence provisioner (FB-05) is the same worker in the evidence environment and holds exactly the same scope.
+allowed_holders = { "erp:read" => ["baobab-trade-workload"],
+                   "erp:provision" => ["baobab-cp-provisioning-workload", "baobab-cp-provisioning-evidence-workload"] }
 required_scopes.each do |name|
   holders = workloads.select { |_, entry| entry["allowed_scopes"].include?(name) }.keys
-  fail_contract("#{name} may be allowed only to #{allowed_holders.fetch(name).inspect}; found #{holders.inspect}") unless holders == allowed_holders.fetch(name)
+  fail_contract("#{name} may be allowed only to #{allowed_holders.fetch(name).inspect}; found #{holders.inspect}") unless holders.sort == allowed_holders.fetch(name).sort
   holders.each do |client|
     fail_contract("#{client} is allowed #{name}, so it must be allowed the baobab-erp audience") unless workloads.fetch(client)["allowed_audiences"].include?("baobab-erp")
   end
@@ -293,8 +295,18 @@ end
 # Pre-activation provisioning authority (docs/architecture/context-authority-for-workloads.md section 13): exactly this identity may hold
 # TENANT_PROVISIONING contexts, and no other workload may.
 fail_contract("baobab-cp-provisioning-workload context_purposes must be [\"TENANT_PROVISIONING\"]; found #{provisioner["context_purposes"].inspect}") unless provisioner["context_purposes"] == ["TENANT_PROVISIONING"]
-other_provisioning = workloads.select { |name, entry| name != "baobab-cp-provisioning-workload" && Array(entry["context_purposes"]).include?("TENANT_PROVISIONING") }.keys
-fail_contract("only baobab-cp-provisioning-workload may hold TENANT_PROVISIONING contexts; found #{other_provisioning.inspect}") unless other_provisioning.empty?
+other_provisioning = workloads.select { |name, entry| !%w[baobab-cp-provisioning-workload baobab-cp-provisioning-evidence-workload].include?(name) && Array(entry["context_purposes"]).include?("TENANT_PROVISIONING") }.keys
+fail_contract("only baobab-cp-provisioning-workload and its staging evidence identity may hold TENANT_PROVISIONING contexts; found #{other_provisioning.inspect}") unless other_provisioning.empty?
+# FB-05 evidence provisioner (owner ruling 2026-10-07): the same worker in the STAGING evidence environment, ACTIVE by ruling so the end-to-end
+# proof can be produced while the production identity stays PROVISIONED. It is pinned exactly, so it cannot drift into production, acquire a
+# second scope or purpose, or hold a stored secret, and the production identity above is not relaxed to make room for it.
+evidence = workloads.fetch("baobab-cp-provisioning-evidence-workload")
+{ "repository" => "baobab-platform/baobab-cp", "owner" => "baobab-platform/baobab-cp", "environment" => "staging",
+  "allowed_audiences" => ["baobab-erp"], "allowed_scopes" => ["erp:provision"], "context_purposes" => ["TENANT_PROVISIONING"],
+  "credential_type" => "federated_workload_token", "rotation_owner" => "baobab-platform/baobab-cp", "status" => "ACTIVE" }.each do |field, expected|
+  fail_contract("baobab-cp-provisioning-evidence-workload #{field} must be #{expected.inspect}; found #{evidence[field].inspect}") unless evidence[field] == expected
+end
+fail_contract("the evidence provisioner must not share the production provisioner's environment") if evidence["environment"] == provisioner["environment"]
 fail_contract("baobab-cp-workload (billing projection) must not be given Boundary API authority") if (workloads.fetch("baobab-cp-workload")["allowed_scopes"] & required_scopes).any?
 
 # ERP OpenAPI 1.2.0 (scope since 1.1.1): the scope each operation effectively requires (its own security, else the document default). Following a provisioning
