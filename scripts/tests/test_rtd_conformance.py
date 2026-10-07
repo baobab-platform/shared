@@ -116,7 +116,91 @@ canonical_intelligence = {
     "intelligence.evidence.search",
     "intelligence.research-mission.manage",
 }
-valid_pulse = {
+partial_pulse = {
+    "providers": [
+        {
+            "provider_key": "baobab-pulse.core",
+            "support": [
+                {
+                    "capability_key": "intelligence.evidence.search",
+                    "implementation_status": "PARTIAL",
+                    "implementation_evidence": [
+                        {"path": "scripts/rtd_conformance.py"}
+                    ],
+                },
+                {
+                    "capability_key": "intelligence.research-mission.manage",
+                    "implementation_status": "PARTIAL",
+                    "implementation_evidence": [
+                        {"path": "scripts/tests/test_rtd_conformance.py"}
+                    ],
+                },
+            ],
+        }
+    ],
+    "planned_capabilities": [],
+}
+assert not rtd.validate_pulse_provider_declaration(
+    ROOT, partial_pulse, canonical_intelligence
+)
+
+implemented_pulse = copy.deepcopy(partial_pulse)
+implemented_pulse["providers"][0]["support"][0]["implementation_status"] = "IMPLEMENTED"
+assert any(
+    "must remain PARTIAL during P-CAP-06" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        ROOT, implemented_pulse, canonical_intelligence
+    )
+)
+
+missing_pulse_evidence = copy.deepcopy(partial_pulse)
+missing_pulse_evidence["providers"][0]["support"][0]["implementation_evidence"] = []
+assert any(
+    "requires implementation evidence" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        ROOT, missing_pulse_evidence, canonical_intelligence
+    )
+)
+
+uncensused_pulse = copy.deepcopy(partial_pulse)
+uncensused_pulse["providers"][0]["support"][0]["capability_key"] = (
+    "intelligence.fake.execute"
+)
+assert any(
+    "cannot promote uncensused Intelligence capability" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        ROOT,
+        uncensused_pulse,
+        canonical_intelligence | {"intelligence.fake.execute"},
+    )
+)
+
+incomplete_pulse = copy.deepcopy(partial_pulse)
+incomplete_pulse["providers"][0]["support"] = incomplete_pulse["providers"][0][
+    "support"
+][:1]
+assert any(
+    "must cover exactly the two first-census capabilities" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        ROOT, incomplete_pulse, canonical_intelligence
+    )
+)
+
+duplicated_pulse = copy.deepcopy(partial_pulse)
+duplicated_pulse["planned_capabilities"] = [
+    {
+        "capability_key": "intelligence.evidence.search",
+        "proposal_status": "CONTRACTED",
+    }
+]
+assert any(
+    "both planned and provider support" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        ROOT, duplicated_pulse, canonical_intelligence
+    )
+)
+
+planned_pulse = {
     "planned_capabilities": [
         {
             "capability_key": "intelligence.evidence.search",
@@ -128,33 +212,16 @@ valid_pulse = {
         },
     ]
 }
-assert not rtd.validate_pulse_provider_declaration(valid_pulse, canonical_intelligence)
-
-premature_support = copy.deepcopy(valid_pulse)
-premature_support["providers"] = [
-    {
-        "provider_key": "baobab-pulse.core",
-        "support": [
-            {
-                "capability_key": "intelligence.evidence.search",
-                "implementation_status": "PARTIAL",
-            }
-        ],
-    }
-]
-assert any(
-    "must not declare providers[].support" in finding
-    for finding in rtd.validate_pulse_provider_declaration(
-        premature_support, canonical_intelligence
-    )
+assert not rtd.validate_pulse_provider_declaration(
+    ROOT, planned_pulse, canonical_intelligence
 )
 
-noncanonical_pulse = copy.deepcopy(valid_pulse)
+noncanonical_pulse = copy.deepcopy(planned_pulse)
 noncanonical_pulse["planned_capabilities"][0]["capability_key"] = "intelligence.fake.execute"
 assert any(
     "not present in the Shared catalogue" in finding
     for finding in rtd.validate_pulse_provider_declaration(
-        noncanonical_pulse, canonical_intelligence
+        ROOT, noncanonical_pulse, canonical_intelligence
     )
 )
 
