@@ -116,23 +116,45 @@ canonical_intelligence = {
     "intelligence.evidence.search",
     "intelligence.research-mission.manage",
 }
-partial_pulse = {
+implemented_pulse = {
     "providers": [
         {
             "provider_key": "baobab-pulse.core",
+            "simulated": False,
+            "production_permitted": True,
+            "invocation": {
+                "service_reference": "service://baobab-pulse/api",
+                "protocol": "http",
+            },
             "support": [
                 {
                     "capability_key": "intelligence.evidence.search",
-                    "implementation_status": "PARTIAL",
+                    "implementation_status": "IMPLEMENTED",
                     "implementation_evidence": [
-                        {"path": "scripts/rtd_conformance.py"}
+                        {"type": "source", "path": "scripts/rtd_conformance.py"},
+                        {
+                            "type": "contract-test",
+                            "path": "scripts/tests/test_rtd_conformance.py",
+                        },
+                        {
+                            "type": "integration-test",
+                            "path": "scripts/tests/test_rtd_conformance.py",
+                        },
                     ],
                 },
                 {
                     "capability_key": "intelligence.research-mission.manage",
-                    "implementation_status": "PARTIAL",
+                    "implementation_status": "IMPLEMENTED",
                     "implementation_evidence": [
-                        {"path": "scripts/tests/test_rtd_conformance.py"}
+                        {"type": "source", "path": "scripts/rtd_conformance.py"},
+                        {
+                            "type": "contract-test",
+                            "path": "scripts/tests/test_rtd_conformance.py",
+                        },
+                        {
+                            "type": "integration-test",
+                            "path": "scripts/tests/test_rtd_conformance.py",
+                        },
                     ],
                 },
             ],
@@ -141,19 +163,19 @@ partial_pulse = {
     "planned_capabilities": [],
 }
 assert not rtd.validate_pulse_provider_declaration(
-    ROOT, partial_pulse, canonical_intelligence
+    ROOT, implemented_pulse, canonical_intelligence
 )
 
-implemented_pulse = copy.deepcopy(partial_pulse)
-implemented_pulse["providers"][0]["support"][0]["implementation_status"] = "IMPLEMENTED"
+partial_pulse = copy.deepcopy(implemented_pulse)
+partial_pulse["providers"][0]["support"][0]["implementation_status"] = "PARTIAL"
 assert any(
-    "must remain PARTIAL during P-CAP-06" in finding
+    "must be IMPLEMENTED for P-CAP-07" in finding
     for finding in rtd.validate_pulse_provider_declaration(
-        ROOT, implemented_pulse, canonical_intelligence
+        ROOT, partial_pulse, canonical_intelligence
     )
 )
 
-missing_pulse_evidence = copy.deepcopy(partial_pulse)
+missing_pulse_evidence = copy.deepcopy(implemented_pulse)
 missing_pulse_evidence["providers"][0]["support"][0]["implementation_evidence"] = []
 assert any(
     "requires implementation evidence" in finding
@@ -162,7 +184,18 @@ assert any(
     )
 )
 
-uncensused_pulse = copy.deepcopy(partial_pulse)
+weak_pulse_evidence = copy.deepcopy(implemented_pulse)
+weak_pulse_evidence["providers"][0]["support"][0]["implementation_evidence"] = [
+    {"type": "source", "path": "scripts/rtd_conformance.py"}
+]
+assert any(
+    "readiness evidence is missing" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        ROOT, weak_pulse_evidence, canonical_intelligence
+    )
+)
+
+uncensused_pulse = copy.deepcopy(implemented_pulse)
 uncensused_pulse["providers"][0]["support"][0]["capability_key"] = (
     "intelligence.fake.execute"
 )
@@ -175,7 +208,7 @@ assert any(
     )
 )
 
-incomplete_pulse = copy.deepcopy(partial_pulse)
+incomplete_pulse = copy.deepcopy(implemented_pulse)
 incomplete_pulse["providers"][0]["support"] = incomplete_pulse["providers"][0][
     "support"
 ][:1]
@@ -186,7 +219,25 @@ assert any(
     )
 )
 
-duplicated_pulse = copy.deepcopy(partial_pulse)
+nonproduction_pulse = copy.deepcopy(implemented_pulse)
+nonproduction_pulse["providers"][0]["production_permitted"] = False
+assert any(
+    "must be production_permitted" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        ROOT, nonproduction_pulse, canonical_intelligence
+    )
+)
+
+missing_invocation = copy.deepcopy(implemented_pulse)
+missing_invocation["providers"][0].pop("invocation")
+assert any(
+    "requires logical invocation metadata" in finding
+    for finding in rtd.validate_pulse_provider_declaration(
+        ROOT, missing_invocation, canonical_intelligence
+    )
+)
+
+duplicated_pulse = copy.deepcopy(implemented_pulse)
 duplicated_pulse["planned_capabilities"] = [
     {
         "capability_key": "intelligence.evidence.search",
