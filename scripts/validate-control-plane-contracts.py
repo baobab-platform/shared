@@ -391,14 +391,33 @@ def check_platform_context_validation() -> None:
         if name not in scopes:
             fail(f"{name} must be registered")
     registry = yaml.safe_load((CONTRACTS / "identity" / "v1" / "workload-registry.yaml").read_text())
-    # Audited allocation (owner decision): ERP is the validator of the baobab-erp audience and the only one. A workload
-    # that calls ERP is never a validator of it, and no other workload validates anything yet.
-    holders = sorted(client for client, entry in registry["workloads"].items() if "context:validate" in entry["allowed_scopes"])
-    if holders != ["baobab-erp-workload"]:
-        fail(f"context:validate may be allowed only to baobab-erp-workload; found {holders}")
-    declared = {client: entry["validates_audiences"] for client, entry in registry["workloads"].items() if "validates_audiences" in entry}
-    if declared != {"baobab-erp-workload": ["baobab-erp"]}:
-        fail(f"only baobab-erp-workload may declare validates_audiences, exactly [baobab-erp]; found {declared}")
+    # Audited allocation (owner decisions): each resource-server validator is
+    # explicit and may validate only its own registered subject audience.
+    holders = sorted(
+        client
+        for client, entry in registry["workloads"].items()
+        if "context:validate" in entry["allowed_scopes"]
+    )
+    expected_holders = ["baobab-erp-workload", "baobab-pulse-workload"]
+    if holders != expected_holders:
+        fail(
+            "context:validate may be allowed only to the registered ERP and Pulse "
+            f"resource-server validators; found {holders}"
+        )
+    declared = {
+        client: entry["validates_audiences"]
+        for client, entry in registry["workloads"].items()
+        if "validates_audiences" in entry
+    }
+    expected_validators = {
+        "baobab-erp-workload": ["baobab-erp"],
+        "baobab-pulse-workload": ["baobab-pulse"],
+    }
+    if declared != expected_validators:
+        fail(
+            "validates_audiences must exactly bind each registered validator to "
+            f"its resource-server audience; found {declared}"
+        )
 
 
 def check_capability_resolution() -> None:

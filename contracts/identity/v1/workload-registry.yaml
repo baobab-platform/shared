@@ -86,9 +86,9 @@
 #                              baobab-control-plane. Several independently
 #                              revocable workloads may explicitly register the
 #                              same subject audience; registration for one
-#                              workload grants nothing to another. Only the ERP
-#                              workload holds context:validate today, so only
-#                              its entry declares it.
+#                              workload grants nothing to another. ERP validates
+#                              baobab-erp and Pulse validates baobab-pulse; each
+#                              relationship is explicit on its own entry.
 #   rotation_owner          -- team/repository responsible for rotating
 #                              this workload's credential.
 #   status                  -- PROVISIONED | ACTIVE | SUSPENDED | REVOKED |
@@ -177,10 +177,15 @@ workloads:
   baobab-pulse-workload:
     repository: baobab-platform/baobab-pulse
     owner: baobab-platform/baobab-pulse
-    runtime: "baobab-pulse service"
+    runtime: "baobab-pulse service and validator of the baobab-pulse resource-server audience"
     environment: production
+    # P-CAP-07: Pulse's own workload calls the Control Plane as the validator
+    # of subject tokens presented to the Pulse capability API. context:validate
+    # grants no tenant/business authority; validates_audiences binds this
+    # validator to the one subject audience it is permitted to present.
     allowed_audiences: ["baobab-control-plane"]
-    allowed_scopes: ["context:resolve", "provider-migration:task"]
+    allowed_scopes: ["context:resolve", "context:validate", "provider-migration:task"]
+    validates_audiences: ["baobab-pulse"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-pulse
     status: ACTIVE

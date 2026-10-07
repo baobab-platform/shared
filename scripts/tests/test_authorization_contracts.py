@@ -35,6 +35,25 @@ class ValidatorAudienceRegistrationTests(unittest.TestCase):
             capture_output=True, text=True, check=False,
         )
 
+    def test_pulse_is_registered_only_for_its_resource_server_audience(self):
+        pulse = self.registry["workloads"]["baobab-pulse-workload"]
+        self.assertEqual(pulse["status"], "ACTIVE")
+        self.assertIn("context:validate", pulse["allowed_scopes"])
+        self.assertEqual(pulse["validates_audiences"], ["baobab-pulse"])
+        self.assertNotIn("baobab-pulse", pulse["allowed_audiences"])
+
+        scopes = yaml.safe_load(
+            (self.root / "contracts/authorization/v1/scope-registry.yaml").read_text()
+        )["scopes"]
+        by_name = {scope["name"]: scope for scope in scopes}
+        for name in (
+            "intelligence:evidence:search",
+            "intelligence:research-mission:manage",
+            "intelligence:restricted",
+        ):
+            self.assertEqual(by_name[name]["audience"], ["baobab-pulse"])
+            self.assertIn("workload", by_name[name]["allowed_actors"])
+
     def test_two_validators_for_one_audience(self):
         result = self.validate()
         self.assertEqual(result.returncode, 0, result.stderr)

@@ -40,8 +40,8 @@ for key, item in defined.items():
     assert item["lifecycle"] == "DRAFT"
     assert item["maturity"] == "EXPERIMENTAL"
     assert item["data_classification"] == "TENANT_CONFIDENTIAL"
-    assert item["metadata"]["authority"] == "ADR-SHARED-029"
-    assert item["metadata"]["provider_implementation"] == "none-at-census"
+    assert item["metadata"]["authority"] == "ADR-SHARED-031"
+    assert item["metadata"]["provider_implementation"] == "p-cap-07-readiness-governed"
     assert catalogued[key]["source"] == "../../intelligence/v1/capabilities.yaml"
 
 defs = domain["$defs"]
