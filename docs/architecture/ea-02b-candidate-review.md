@@ -52,7 +52,7 @@ no vendor, and the resource and action words follow the catalogue
 |---|---|---|---|
 | Cancel a payment intent | `payment.intent.cancel` | baobab-payments | **Accept now** |
 | Account for a commerce order in ERP (order-to-cash) | `finance.order-consequence.process` | baobab-erp | **Accept now** |
-| ERP physical inventory availability | `inventory.availability.query` | baobab-erp | Accept, contract first |
+| ERP physical inventory availability | `inventory.availability.query` | baobab-erp | **Accepted/catalogued 2026-10-07** — contract-first condition fulfilled |
 | B2B buyer application, KYB evidence and decision | `customer.buyer-application.manage` | baobab-trade | Accept, contract first |
 | B2B buyer membership and invitations | `customer.buyer-membership.manage` | baobab-trade | Accept, contract first |
 | Human authentication | `identity.authentication.perform` | baobab-iam | Accept, contract first |
@@ -125,6 +125,13 @@ These keys are reserved: engines may already list them as `proposed_key`
 candidates.
 
 ### `inventory.availability.query` (ERP)
+
+**Status update — 2026-10-07:** fulfilled. Shared now has the explicit
+`inventory-availability-query.schema.json` request contract and Baobab ERP
+`main` serves the canonical `GET /inventory-availability` operation from
+ERP-owned physical stock. The capability is therefore catalogued under the
+already-accepted contract-first decision; this is not a new architecture
+decision.
 
 `erp/v1` already has the response
 (`inventory-availability.schema.json`) and the operation
@@ -238,7 +245,7 @@ candidates.
   path is the identity token profile, `content/v1` resolution, and Pulse's
   `intelligence/v1`.
 - **Proposed contract work, smallest first:**
-  1. `erp/v1` InventoryAvailabilityQuery.
+  1. ~~`erp/v1` InventoryAvailabilityQuery.~~ **Completed and catalogued 2026-10-07.**
   2. `buyer-organisation/v1` commands.
   3. The `identity/v1` authentication profile.
   4. `content/v1` resolution.
