@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab ERP Boundary API
-  version: 1.1.0
+  version: 1.1.1
   description: Vendor-neutral synchronous provisioning and query contract. Business state propagation uses the ERP AsyncAPI contract.
   license:
     name: Apache-2.0
@@ -62,7 +62,13 @@ paths:
         An operation's state is tenant-scoped, so a caller must not obtain it merely by knowing its operation_id:
         context_id is required, and the operation is returned only when it belongs to the tenant of the context
         validated for the caller (otherwise 404). A context that cannot be validated for the caller is 403
-        ERP_CONTEXT_REJECTED; Control Plane being unreachable is 503.
+        ERP_CONTEXT_REJECTED; Control Plane being unreachable is 503. This operation requires erp:provision, not
+        erp:read: observing a provisioning operation is part of provisioning, so the identity that submits one can
+        follow it without holding the erp:read scope of ERP's business data reads (mappings, order consequences,
+        inventory availability). ERP also publishes com.baobab-platform.erp.provisioning.changed.v1; observing that
+        event is the normal way to follow an operation, and this query is its recovery and reconciliation fallback.
+      security:
+        - workloadOidc: [erp:provision]
       parameters:
         - $ref: "#/components/parameters/OperationId"
         - $ref: "#/components/parameters/ContextId"
