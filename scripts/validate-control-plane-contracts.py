@@ -1714,6 +1714,8 @@ def check_event_ingress() -> None:
 
     registered = {entry["type"]: entry for entry in yaml.safe_load((events_dir / "event-registry.yaml").read_text())["events"]}
     accepted = ingress.get("accepted") or []
+    if ingress_defs["eventIngressEventType"]["enum"] != [entry.get("type") for entry in accepted]:
+        fail("signed-delivery.schema.json eventIngressEventType must be exactly the event types event-ingress.yaml accepts, so the event_type label stays bounded")
     if [entry.get("type") for entry in accepted] != ["com.baobab-platform.erp.provisioning.changed.v1"]:
         fail("the Control Plane accepts exactly ERP provisioning.changed over signed delivery; any other type is a reviewed contract change")
     for entry in accepted:

@@ -95,7 +95,7 @@ A consumer exposes a closed set of metrics (`signed-delivery.schema.json`, `even
 | `event_ingress_receipts_total` | counter | `result`: accepted, duplicate, conflict |
 | `event_ingress_rejections_total` | counter | `reason_code`: malformed, unauthenticated, too_large, not_accepted, payload_invalid, unavailable |
 | `event_processing_total` | counter | `outcome`: applied, retried, dead_lettered |
-| `event_pending_age_seconds` | gauge, age of the oldest pending event | `event_type` |
+| `event_pending_age_seconds` | gauge, age of the oldest pending event | `event_type`: the accepted event types (`event-ingress.yaml`) |
 | `event_delivery_key_reload_failures_total` | counter | none |
 
 Labels are bounded vocabularies. An event id, source, tenant, key id, signature, digest, operation id or secret is never a label, and no log or metric carries a signature or key material. Every authentication failure is the single `unauthenticated` value, as it is the single 401 answer.
