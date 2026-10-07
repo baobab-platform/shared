@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Baobab-Platform Baobab ERP Boundary API
-  version: 1.2.0
+  version: 1.3.0
   description: Vendor-neutral synchronous provisioning and query contract. Business state propagation uses the ERP AsyncAPI contract.
   license:
     name: Apache-2.0
@@ -36,6 +36,14 @@ paths:
         provisioning_authority equals control_plane_authority member by member (tenant_provisioning_id, plan_id,
         plan_version, plan_digest); a RUNTIME context, or a provisioning context bound to any other plan, is refused as
         403 ERP_CONTEXT_REJECTED and nothing is provisioned, and that refusal is as indistinguishable as every other.
+        The accounting configuration is the Finance-approved baseline of each legal entity, which this request REFERS to and
+        never carries: finance_baselines names, for every legal entity, the exact baseline version (baseline_id, version,
+        digest) relied on, and ERP re-resolves each against its own authoritative store before provisioning anything. A
+        reference ERP does not hold exactly (unknown baseline, another version or digest, another legal entity, a
+        legal entity of another tenant, a baseline ERP does not own, or a functional currency incompatible with the markets
+        requested) is 409 FINANCE_BASELINE_MISMATCH; an exact reference whose version is not EFFECTIVE (withdrawn,
+        superseded or not yet effective) is 409 FINANCE_BASELINE_NOT_USABLE; functional_currencies that differ from the
+        referenced baselines' is 409 PLAN_AUTHORITY_MISMATCH. Each refusal provisions nothing and is not retried.
       security:
         - workloadOidc: [erp:provision]
       parameters:
@@ -91,6 +99,84 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /legal-entities/{legal_entity_id}/effective-finance-baseline:
+    get:
+      operationId: getEffectiveFinanceBaseline
+      summary: Resolve the Finance baseline version in force for a legal entity
+      description: >-
+        Names the approved Finance baseline version that is EFFECTIVE for the legal entity on effective_on (default: today,
+        UTC), so a caller can reference it in a provisioning request. ERP is the authority: this operation reads, and
+        never creates, approves or infers a baseline, and a legal entity with no approved baseline in force is 404
+        (Control Plane must not provision it; Finance approves a baseline in ERP first). Like the provisioning operations
+        it requires erp:provision and a TENANT_PROVISIONING context (control-plane/v1 authority_purpose), because it
+        serves provisioning of a tenant that is not yet ACTIVE; a RUNTIME context is 403 ERP_CONTEXT_REJECTED, as is any
+        context that cannot be validated for the caller. The legal entity must belong to the tenant of the validated
+        context, and one that does not is indistinguishable from one that does not exist (404). Control Plane being
+        unreachable is 503. Only functional_currency of the accounting configuration is disclosed.
+      security:
+        - workloadOidc: [erp:provision]
+      parameters:
+        - $ref: "#/components/parameters/LegalEntityId"
+        - name: effective_on
+          in: query
+          required: false
+          description: The date on which the baseline must be in force (a calendar date, UTC). Defaults to today.
+          schema: { type: string, format: date }
+        - $ref: "#/components/parameters/ContextId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      responses:
+        "200":
+          description: The baseline version in force
+          content:
+            application/json:
+              schema: { $ref: ./finance-baseline.schema.json }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /finance-baselines/{baseline_id}:
+    get:
+      operationId: getFinanceBaseline
+      summary: Resolve one exact Finance baseline version
+      description: >-
+        Resolves exactly the version and digest named, never "the latest" and never whatever finance configuration ERP
+        holds now. An unknown baseline, or one that belongs to a legal entity outside the validated context's tenant, is
+        404 (indistinguishable). A known baseline whose version does not exist, or whose digest for that version differs, is
+        409 FINANCE_BASELINE_MISMATCH. A matching baseline is returned with its current status whatever that is, so a caller and
+        an auditor can see that a version was SUPERSEDED or WITHDRAWN; whether a version may be PROVISIONED against is
+        decided by POST /provisioning-operations (409 FINANCE_BASELINE_NOT_USABLE unless EFFECTIVE). It requires
+        erp:provision and a TENANT_PROVISIONING context exactly as getEffectiveFinanceBaseline does (a RUNTIME context, or
+        any context that cannot be validated for the caller, is 403 ERP_CONTEXT_REJECTED; Control Plane being unreachable is
+        503), and discloses only functional_currency of the accounting configuration.
+      security:
+        - workloadOidc: [erp:provision]
+      parameters:
+        - $ref: "#/components/parameters/FinanceBaselineId"
+        - name: version
+          in: query
+          required: true
+          schema: { $ref: ./domain.schema.json#/$defs/version }
+        - name: digest
+          in: query
+          required: true
+          schema: { $ref: ./finance-baseline.schema.json#/$defs/financeBaselineDigest }
+        - $ref: "#/components/parameters/ContextId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      responses:
+        "200":
+          description: The exact baseline version, with its current status
+          content:
+            application/json:
+              schema: { $ref: ./finance-baseline.schema.json }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
   /mappings/{mapping_id}:
     get:
@@ -246,6 +332,16 @@ components:
         It is not a bearer credential: ERP asks Control Plane to validate it for the actual caller, presenting the caller's
         token as subject evidence, and uses only the tenant Control Plane returns.
       schema: { $ref: ../../control-plane/v1/domain.schema.json#/$defs/uuid }
+    LegalEntityId:
+      name: legal_entity_id
+      in: path
+      required: true
+      schema: { $ref: ../../control-plane/v1/domain.schema.json#/$defs/legalEntityId }
+    FinanceBaselineId:
+      name: baseline_id
+      in: path
+      required: true
+      schema: { $ref: ./finance-baseline.schema.json#/$defs/financeBaselineId }
     CommerceOrderId:
       name: commerce_order_id
       in: path
@@ -284,7 +380,12 @@ components:
         application/problem+json:
           schema: { $ref: "#/components/schemas/ProblemDetails" }
     Conflict:
-      description: Incompatible state or idempotency replay
+      description: >-
+        Incompatible state or idempotency replay. Problem codes of the provisioning operations: PLAN_AUTHORITY_MISMATCH
+        (the request disagrees with the approved Control Plane plan or the Finance baselines' currencies),
+        FINANCE_BASELINE_MISMATCH (a Finance baseline reference is not what ERP holds), FINANCE_BASELINE_NOT_USABLE (the exact
+        baseline version is withdrawn, superseded or not yet effective) and IDEMPOTENCY_KEY_REUSED. None is retryable
+        with the same request.
       content:
         application/problem+json:
           schema: { $ref: "#/components/schemas/ProblemDetails" }
