@@ -1695,27 +1695,8 @@ def check_event_ingress() -> None:
     if ingress.get("signing_algorithms") != ["hmac-sha256"]:
         fail("only hmac-sha256 is a defined delivery signature algorithm")
 
-    # Observability: a closed metric catalogue whose labels are bounded vocabularies and never identify anything.
-    ingress_defs = delivery_schema["$defs"]
-    if ingress_defs["eventIngressMetric"]["enum"] != [
-            "event_ingress_receipts_total", "event_ingress_rejections_total", "event_processing_total",
-            "event_pending_age_seconds", "event_delivery_key_reload_failures_total"]:
-        fail("signed-delivery.schema.json eventIngressMetric must be exactly the signed delivery metric catalogue")
-    if ingress_defs["eventIngressMetricLabel"]["enum"] != ["result", "reason_code", "outcome", "event_type"]:
-        fail("signed-delivery.schema.json eventIngressMetricLabel must be exactly result, reason_code, outcome, event_type")
-    unbounded = {"event_id", "id", "source", "tenant_id", "key_id", "signature", "digest", "operation_id", "secret", "subject"}
-    if unbounded & set(ingress_defs["eventIngressMetricLabel"]["enum"]):
-        fail("signed delivery metric labels must stay bounded and anonymous")
-    for vocabulary, expected in (("eventIngressResult", ["accepted", "duplicate", "conflict"]),
-                                 ("eventProcessingOutcome", ["applied", "retried", "dead_lettered"]),
-                                 ("eventIngressReasonCode", ["malformed", "unauthenticated", "too_large", "not_accepted", "payload_invalid", "unavailable"])):
-        if ingress_defs[vocabulary]["enum"] != expected:
-            fail(f"signed-delivery.schema.json {vocabulary} must be {expected}")
-
     registered = {entry["type"]: entry for entry in yaml.safe_load((events_dir / "event-registry.yaml").read_text())["events"]}
     accepted = ingress.get("accepted") or []
-    if ingress_defs["eventIngressEventType"]["enum"] != [entry.get("type") for entry in accepted]:
-        fail("signed-delivery.schema.json eventIngressEventType must be exactly the event types event-ingress.yaml accepts, so the event_type label stays bounded")
     if [entry.get("type") for entry in accepted] != ["com.baobab-platform.erp.provisioning.changed.v1"]:
         fail("the Control Plane accepts exactly ERP provisioning.changed over signed delivery; any other type is a reviewed contract change")
     for entry in accepted:

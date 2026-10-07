@@ -86,20 +86,6 @@ Receipts are kept at least **seven days**, and a sender stops retrying and dead-
 
 An event can arrive before the Control Plane has recorded the submission it concerns (ERP accepts the request, then publishes, while the Control Plane is still recording its own answer). Such an event is **not dropped**: it stays accepted and pending in the inbox and is applied once the submission exists, or dead-lettered for operators after `pending_max_age_hours` (24).
 
-## Observability
-
-A consumer exposes a closed set of metrics (`signed-delivery.schema.json`, `eventIngressMetric`), so a backlog or a failed key rotation is visible before anything is lost:
-
-| Metric | Type | Labels |
-|---|---|---|
-| `event_ingress_receipts_total` | counter | `result`: accepted, duplicate, conflict |
-| `event_ingress_rejections_total` | counter | `reason_code`: malformed, unauthenticated, too_large, not_accepted, payload_invalid, unavailable |
-| `event_processing_total` | counter | `outcome`: applied, retried, dead_lettered |
-| `event_pending_age_seconds` | gauge, age of the oldest pending event | `event_type`: the accepted event types (`event-ingress.yaml`) |
-| `event_delivery_key_reload_failures_total` | counter | none |
-
-Labels are bounded vocabularies. An event id, source, tenant, key id, signature, digest, operation id or secret is never a label, and no log or metric carries a signature or key material. Every authentication failure is the single `unauthenticated` value, as it is the single 401 answer.
-
 ## Recovery is not the primary path
 
 A Control Plane sweep reconciles overdue non-terminal submissions against ERP's authoritative state. It repairs a delivery that never arrived, a long outage or a bug; it does not replace delivery, and `getProvisioningOperation` stays the recovery and reconciliation fallback.
