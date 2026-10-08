@@ -107,7 +107,7 @@ The existing `invoice-outcome` and `payment-outcome` contracts are keyed to a Tr
 | # | Decision | Needed from |
 |---|---|---|
 | 1 | Is ERP reconciliation of intercompany balances `finance.*` or `internal-trade.*`? | Shared stewards, ERP |
-| 2 | Hand-off of Subscriptions invoices to ERP: Control Plane is stated to own the hand-off. Control Plane resolves context, ERP assignment and bindings but must not carry financial payloads (ADR-BCP-007). Define exactly what "hand-off" means (routing and authority only, with the invoice itself moving Subscriptions to ERP as a canonical event) | `baobab-cp`, `baobab-subscriptions`, `baobab-erp` |
+| 2 | Hand-off of Subscriptions invoices to ERP. Direction from the programme sponsor (8 October 2026): `baobab-cp` owns the hand-off and ADR-BCP-007 is followed. Reading adopted here: Control Plane owns authority and routing (payer and issuer legal entity, ERP assignment, entitlement and classification, binding health, completeness and drift) and does not carry the invoice; Subscriptions emits it as a canonical event and ERP consumes it idempotently. Still open: the event contract (section 8) and how Control Plane learns an invoice was received | `baobab-cp`, `baobab-subscriptions`, `baobab-erp` |
 | 3 | Widen `invoice-outcome` or add a receivable outcome (section 8) | ERP, Subscriptions |
 | 4 | Which statements ERP can produce natively versus through a reporting layer | ERP |
 | 5 | Consolidation provider and accounting model | Finance, accountant sign-off |
