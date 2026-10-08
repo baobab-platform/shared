@@ -1,0 +1,10 @@
+{
+  "record": null,
+  "matched_scope": "NONE",
+  "provenance": {
+    "inheritance_mode": "INHERIT",
+    "trace": [
+      { "scope_level": { "digital_estate_id": "de_nabholdpublic01" }, "locale_attempted": null, "match_count": 0 }
+    ]
+  }
+}

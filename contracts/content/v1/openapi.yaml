@@ -1,0 +1,153 @@
+openapi: 3.1.0
+info:
+  title: Baobab-Platform Baobab CMS content resolution API
+  version: 1.0.0
+  description: >-
+    Synchronous contract for the canonical capability content.entry.resolve. baobab-platform/baobab-cms implements it.
+    The Control Plane resolves which provider serves the capability and returns an invocation descriptor
+    (service_reference, route_reference, contract_version); a caller then invokes this operation directly. The Control Plane
+    never carries the content request or response (ADR-BCP-007).
+
+    Content resolution is deterministic (ADR-0014): the most specific eligible published entry wins, a documented locale
+    fallback chain applies, and ambiguity is an error, never an arbitrary choice. A request that matches nothing is a
+    normal 200 with matched_scope NONE, not an error.
+
+    Tenant authority is a trusted Control Plane context, never the request body. The provider validates the context_id for
+    the actual caller through the Control Plane, presenting the caller's token as subject evidence, and uses only the tenant
+    the Control Plane returns. The body's tenant_id is a claim and must equal the validated context's tenant.
+  license:
+    name: Apache-2.0
+    identifier: Apache-2.0
+servers:
+  - url: https://cms.baobab-platform.com/v1
+    description: Production placeholder; activation requires an approved domain binding.
+security:
+  - workloadOidc: ["content:entry:resolve"]
+x-baobab-context-contract: ../../control-plane/v1/access-token-claims.schema.json
+paths:
+  /content/resolve:
+    post:
+      operationId: resolveContentEntry
+      summary: Resolve one content entry by key and context
+      description: >-
+        Implements content.entry.resolve (catalogue contract major 1). The route_reference a provider registers for this
+        capability is /v1/content/resolve.
+
+        Authority. context_id (query, required) names the Control Plane PlatformContext that carries the tenant authority of
+        this call. The provider asks the Control Plane to validate it for the actual caller. A context that cannot be
+        validated for the caller, and a body tenant_id that differs from the validated context's tenant, are both refused as
+        403 CONTENT_CONTEXT_REJECTED, and the reasons are deliberately indistinguishable, so the response never reveals which
+        tenant the context belongs to. A missing or malformed context_id is 400. The Control Plane being unreachable is 503
+        and nothing is returned.
+
+        Preview. preview_mode true includes DRAFT entries and additionally requires the content:entry:preview scope;
+        without it the operation answers 403 CONTENT_PREVIEW_NOT_PERMITTED. Responses that may carry draft content SHALL be
+        sent Cache-Control: no-store.
+
+        Resolution outcomes. EXACT: the requested level matched. FALLBACK: a broader level or a configured fallback locale
+        matched, and provenance.trace shows every level attempted. NONE: nothing eligible, record is null. A content key with
+        no resolution policy is 404 CONTENT_TYPE_UNKNOWN. Two equally specific eligible entries are 409 CONTENT_AMBIGUOUS
+        and indicate editorial data that needs correcting. A content type whose inheritance mode is COMPOSE cannot be
+        answered with a single record and is 422 CONTENT_COMPOSE_UNSUPPORTED in this contract version.
+
+        Error codes. CONTENT_REQUEST_INVALID (400), CONTENT_CONTEXT_REJECTED (403), CONTENT_PREVIEW_NOT_PERMITTED (403),
+        CONTENT_TYPE_UNKNOWN (404), CONTENT_AMBIGUOUS (409), CONTENT_COMPOSE_UNSUPPORTED (422), CONTENT_CONTEXT_UNAVAILABLE
+        (503). None is retryable except CONTENT_CONTEXT_UNAVAILABLE.
+      parameters:
+        - $ref: "#/components/parameters/ContextId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/Traceparent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ./content-resolve-request.schema.json }
+            example: { $ref: ./examples/resolve-request.json }
+      responses:
+        "200":
+          description: Resolution outcome (EXACT, FALLBACK or NONE)
+          headers:
+            Cache-Control:
+              description: no-store when preview_mode was requested; otherwise private.
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: ./content-resolve-response.schema.json }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+        "503": { $ref: "#/components/responses/Unavailable" }
+components:
+  parameters:
+    ContextId:
+      name: context_id
+      in: query
+      required: true
+      description: >-
+        The Control Plane PlatformContext (POST /v1/platform-context/resolve) that carries the tenant authority of this
+        call. It is not a bearer credential: the provider asks the Control Plane to validate it for the actual caller,
+        presenting the caller's token as subject evidence, and uses only the tenant the Control Plane returns. It SHALL be
+        a RUNTIME context.
+      schema: { $ref: ../../control-plane/v1/domain.schema.json#/$defs/uuid }
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+    Traceparent:
+      name: traceparent
+      in: header
+      required: false
+      schema:
+        type: string
+        pattern: "^00-(?!00000000000000000000000000000000)[0-9a-f]{32}-(?!0000000000000000)[0-9a-f]{16}-[0-9a-f]{2}$"
+  schemas:
+    ProblemDetails: { $ref: ../../errors/v1/problem-details.schema.json }
+  responses:
+    BadRequest:
+      description: Invalid request or missing or malformed context_id (CONTENT_REQUEST_INVALID)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Forbidden:
+      description: Context rejected or tenant mismatch (CONTENT_CONTEXT_REJECTED), or preview not permitted (CONTENT_PREVIEW_NOT_PERMITTED)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: No resolution policy for the content key (CONTENT_TYPE_UNKNOWN)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Conflict:
+      description: More than one equally specific entry is eligible (CONTENT_AMBIGUOUS)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unprocessable:
+      description: Content type uses COMPOSE inheritance, which this contract version cannot return (CONTENT_COMPOSE_UNSUPPORTED)
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unavailable:
+      description: The Control Plane could not be reached to validate the context (CONTENT_CONTEXT_UNAVAILABLE); retryable
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+  securitySchemes:
+    workloadOidc:
+      type: openIdConnect
+      openIdConnectUrl: https://identity.baobab-platform.com/.well-known/openid-configuration
+      description: >-
+        Short-lived workload or delegated identity token transported over the infrastructure-owned mTLS path, with the
+        baobab-cms audience. The token is subject evidence for context validation. Its tenant_id claim is optional and,
+        when present, must equal the validated context's tenant. A tenant named in the request or by a scope is never
+        authority.
