@@ -32,6 +32,7 @@ FILES = {
     "admission/v2/business-identity.schema.json",
     "control-plane/v2/tenant-registration.schema.json",
     "control-plane/v2/context-resolution.schema.json",
+    "control-plane/v2/platform-context.schema.json",
 }
 LOCKED = {
     ("organisation", "v2"): {
