@@ -25,6 +25,7 @@ SPONSORSHIP = "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6e"
 DATE = "2026-10-09T09:00:00Z"
 END = "2027-10-09T09:00:00Z"
 FILES = {
+    "organisation/v2/domain.schema.json",
     "organisation/v2/legal-actor-mandate.schema.json",
     "organisation/v2/pre-tenant-admission.schema.json",
     "organisation/v2/founding-admission.schema.json",
