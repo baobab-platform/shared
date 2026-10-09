@@ -30,6 +30,8 @@ FILES = {
     "organisation/v2/pre-tenant-admission.schema.json",
     "organisation/v2/founding-admission.schema.json",
     "admission/v2/business-identity.schema.json",
+    "admission/v2/application.schema.json",
+    "admission/v2/onboarding.schema.json",
     "control-plane/v2/tenant-registration.schema.json",
     "control-plane/v2/context-resolution.schema.json",
     "control-plane/v2/platform-context.schema.json",
