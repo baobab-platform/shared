@@ -24,6 +24,7 @@ MANDATE = "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6d"
 SPONSORSHIP = "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6e"
 DATE = "2026-10-09T09:00:00Z"
 END = "2027-10-09T09:00:00Z"
+END_24 = "2028-10-09T09:00:00Z"
 FILES = {
     "organisation/v2/domain.schema.json",
     "organisation/v2/legal-actor-mandate.schema.json",
@@ -347,11 +348,12 @@ defer = {
     "requirement_ids": ["platform-documentary-requirement-1"],
     "policy_reference": "policy/founding-grace-v1",
     "approved_by": "principal-independent-reviewer", "approved_at": DATE,
-    "effective_from": DATE, "expires_at": END,
-    "maximum_duration_months": 12, "status": "ACTIVE",
+    "effective_from": DATE, "expires_at": END_24,
+    "maximum_duration_months": 24, "status": "ACTIVE",
 }
 accepts(founding, "FoundingDocumentaryDeferral", defer, "bounded named documentary grace")
-rejects(founding, "FoundingDocumentaryDeferral", {**defer, "maximum_duration_months": 24}, "no 24-month grace")
+rejects(founding, "FoundingDocumentaryDeferral", {**defer, "maximum_duration_months": 12}, "reject obsolete 12-month policy")
+rejects(founding, "FoundingDocumentaryDeferral", {**defer, "maximum_duration_months": 36}, "no blanket longer grace")
 rejects(founding, "FoundingDocumentaryDeferral", {**defer, "requirement_ids": []}, "no global blanket exemption")
 
 print("LA-01 Organisation-first v2, founding sponsorship, actor and compatibility contracts passed")
