@@ -167,11 +167,11 @@ events:
     asyncapi: contracts/organisation/v2/asyncapi.yaml
     producer: baobab-cp
     lifecycle: ACTIVE
-  - type: com.baobab-platform.control-plane.operating-legal-actor-mandate.expired.v1
+  - type: com.baobab-platform.control-plane.operating-legal-actor-mandate.decided.v1
     asyncapi: contracts/organisation/v2/asyncapi.yaml
     producer: baobab-cp
     lifecycle: ACTIVE
-  - type: com.baobab-platform.control-plane.operating-legal-actor-mandate.decided.v1
+  - type: com.baobab-platform.control-plane.operating-legal-actor-mandate.expired.v1
     asyncapi: contracts/organisation/v2/asyncapi.yaml
     producer: baobab-cp
     lifecycle: ACTIVE
