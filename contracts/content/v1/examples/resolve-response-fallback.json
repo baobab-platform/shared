@@ -1,0 +1,23 @@
+{
+  "record": {
+    "id": "pg_01k4z9aa11",
+    "tenant_id": "tnt_01k4z7g1h0",
+    "content_key": "home",
+    "legal_entity_id": null,
+    "digital_estate_id": "de_nabholdpublic01",
+    "market_id": null,
+    "locale": "en",
+    "publication_state": "PUBLISHED",
+    "effective_from": null,
+    "effective_to": null,
+    "data": { "title": "Nabhold Group Africa" }
+  },
+  "matched_scope": "FALLBACK",
+  "provenance": {
+    "inheritance_mode": "INHERIT",
+    "trace": [
+      { "scope_level": { "locale": "en-ZA", "market_id": "ZA", "digital_estate_id": "de_nabholdpublic01" }, "locale_attempted": "en-ZA", "match_count": 0 },
+      { "scope_level": { "locale": "en", "digital_estate_id": "de_nabholdpublic01" }, "locale_attempted": "en", "match_count": 1 }
+    ]
+  }
+}
