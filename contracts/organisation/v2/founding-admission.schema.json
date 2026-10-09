@@ -30,10 +30,10 @@
           "format": "uuid"
         },
         "sponsor_organisation_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+          "$ref": "domain.schema.json#/$defs/organisationId"
         },
         "operating_organisation_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+          "$ref": "domain.schema.json#/$defs/organisationId"
         },
         "platform_id": {
           "$ref": "../v1/domain.schema.json#/$defs/platformId"
@@ -115,7 +115,7 @@
           "format": "uuid"
         },
         "organisation_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+          "$ref": "domain.schema.json#/$defs/organisationId"
         },
         "sponsorship_id": {
           "type": "string",
