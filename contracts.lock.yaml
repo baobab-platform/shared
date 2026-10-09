@@ -137,3 +137,22 @@ contracts:
       - events.schema.json
       - release-policy.yaml
 
+  - domain: organisation
+    version: v2
+    schemas:
+      - domain.schema.json
+      - pre-tenant-admission.schema.json
+      - legal-actor-mandate.schema.json
+      - founding-admission.schema.json
+  - domain: admission
+    version: v2
+    schemas:
+      - business-identity.schema.json
+      - application.schema.json
+      - onboarding.schema.json
+  - domain: control-plane
+    version: v2
+    schemas:
+      - tenant-registration.schema.json
+      - context-resolution.schema.json
+      - platform-context.schema.json

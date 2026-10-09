@@ -65,7 +65,18 @@ entities.each do |entity|
 end
 
 definition = tenancy.fetch("tenant_definition")
-fail_contract("legal entity must remain the default tenant boundary") unless definition["legal_entity_is_default_boundary"] == true
+fail_contract("Organisation must be the primary tenant boundary (ADR-BCP-027)") unless definition["organisation_is_primary_boundary"] == true
+fail_contract("primary Organisation mapping is mandatory") unless definition["requires_active_primary_organisation"] == true
+fail_contract("legal entity must not remain the universal default boundary") unless definition["legal_entity_is_default_boundary"] == false
+fail_contract("default LegalEntity must be conditional") unless definition["requires_default_active_canonical_legal_entity"] == false
+fail_contract("restricted capabilities still need legal actor") unless definition["requires_legal_actor_for_restricted_operations"] == true
+fail_contract("tenancy governance must be v2.0") unless tenancy.dig("schema", "version") == "2.0"
+fail_contract("tenant must require organisation_id") unless tenancy.dig("identifiers", "organisation_id", "required") == true
+fail_contract("entity_id must be optional compatibility projection") unless tenancy.dig("identifiers", "entity_id", "required") == false
+required_metadata = tenancy.fetch("required_metadata").map { |entry| entry.fetch("field") }
+fail_contract("organisation_id must be required metadata") unless required_metadata.include?("organisation_id")
+fail_contract("entity_id must not be universal metadata") if required_metadata.include?("entity_id")
+fail_contract("tenant->legal actor cardinality must be optional") unless definition.dig("cardinality", "tenant_to_legal_entity") == "zero_or_more_by_explicit_mapping"
 fail_contract("legal entity and tenant must not be synonyms") unless definition["legal_entity_is_tenant_synonym"] == false
 fail_contract("digital estates must not confer tenancy") unless definition["digital_estate_confers_tenancy"] == false
 fail_contract("product consumption must require tenancy") unless definition["product_consumption_requires_tenant"] == true
@@ -74,8 +85,18 @@ tenant_pattern = Regexp.new(tenancy.dig("identifiers", "tenant_id", "exact_forma
 tenant_schema_pattern = domain.dig("$defs", "tenantId", "pattern")
 fail_contract("tenantId schema and tenancy governance must use one exact grammar") unless tenant_schema_pattern == tenancy.dig("identifiers", "tenant_id", "exact_format")
 fail_contract("registration commands must not accept caller-selected tenant_id") if registration_schema.fetch("required").include?("tenant_id") || registration_schema.fetch("properties").key?("tenant_id")
-fail_contract("registration legal_entity_id must be the compatibility input boundary") unless registration_schema.dig("properties", "legal_entity_id", "$ref") == "domain.schema.json#/$defs/legalEntityIdInput"
-fail_contract("context responses must emit canonical legal-entity IDs") unless context_schema.dig("$defs", "response", "properties", "entity_id", "$ref") == "domain.schema.json#/$defs/legalEntityId"
+fail_contract("v1 registration legal_entity_id must remain the compatibility input boundary") unless registration_schema.dig("properties", "legal_entity_id", "$ref") == "domain.schema.json#/$defs/legalEntityIdInput"
+fail_contract("v1 registration remains unchanged for pinned CP consumers") unless registration_schema.fetch("required").include?("legal_entity_id")
+fail_contract("v1 context responses remain canonical for pinned CP consumers") unless context_schema.dig("$defs", "response", "properties", "entity_id", "$ref") == "domain.schema.json#/$defs/legalEntityId"
+v2_registration = load_json("contracts/control-plane/v2/tenant-registration.schema.json")
+v2_context = load_json("contracts/control-plane/v2/context-resolution.schema.json")
+fail_contract("v2 registration MUST require primary organisation") unless v2_registration.fetch("required").include?("organisation_id")
+fail_contract("v2 registration MUST NOT universally require legal entity") if v2_registration.fetch("required").include?("legal_entity_id")
+fail_contract("v2 registration must retain authorised onboarding request") unless v2_registration.fetch("required").include?("tenant_onboarding_request_id")
+fail_contract("v2 registration must not permit caller tenant id") if v2_registration.fetch("properties").key?("tenant_id")
+fail_contract("v2 context MUST require primary Organisation") unless v2_context.dig("$defs", "response", "required").include?("organisation_id")
+fail_contract("v2 context MUST NOT require a legal entity") if v2_context.dig("$defs", "response", "required").include?("entity_id")
+fail_contract("v2 context must not accept caller legal actor") if v2_context.dig("$defs", "request", "properties").keys.any? { |key| ["entity_id", "legal_entity_id", "legal_actor_id", "tenant_id"].include?(key) }
 fail_contract("registration example must let the Control Plane mint tenant_id") if register_example.key?("tenant_id")
 fail_contract("registration must require an AUTHORISED onboarding request (ADR-BCP-017 sections 22-24)") unless registration_schema.fetch("required").include?("tenant_onboarding_request_id")
 fail_contract("registration example must name its onboarding request") unless register_example["tenant_onboarding_request_id"].to_s.match?(/\Ator_[a-z0-9]+\z/)
