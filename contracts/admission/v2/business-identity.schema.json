@@ -73,7 +73,7 @@
           "$ref": "../v1/application.schema.json#/$defs/authorisedRepresentative"
         },
         "proposed_responsible_organisation_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+          "$ref": "../../organisation/v2/domain.schema.json#/$defs/organisationId"
         },
         "declared_relationship_reference": {
           "type": "string",
