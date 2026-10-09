@@ -20,7 +20,7 @@ The normative governance contract tenancy/tenancy.yaml advances to v2.0; brand-n
 | control-plane/v2/context-resolution.schema.json | Tenant and PRIMARY Organisation required; no universal legal entity in product context |
 | control-plane/v2/platform-context.schema.json | Both persisted runtime and resource-server validated contexts require PRIMARY Organisation; v1 purpose and principal checks preserved |
 | organisation/v2/legal-actor-mandate.schema.json | Legal actor authority scoped by Tenant, Organisation, role, activity, market, validity and evidence |
-| organisation/v2/founding-admission.schema.json | Founding sponsorship and named, bounded 12-month documentary deferral, separate from statutory duties |
+| organisation/v2/founding-admission.schema.json | Founding sponsorship and named, bounded 24-month documentary deferral, separate from statutory duties |
 
 All ten v2 schemas are registered in contracts.lock.yaml and validated with repository-local offline JSON Schema Draft 2020-12 references, accepted/rejected fixtures and compatibility checks.
 
@@ -61,3 +61,9 @@ LA-06/07: Founding-group tenant provisioning and accepted per-capability readine
 - python scripts/validate-admission-contracts.py
 
 No universal live trading authority, company incorporation, cross-border permit, property title, revenue subscription or production onboarding is granted by these contracts.
+
+## PEO-02 grace-period amendment (2026-10-09)
+
+Per the platform decision owner's approved amendment to ADR-BCP-026, the maximum one-time founding documentary deferral is **24 calendar months**, beginning with the original effective date of first approved provisional onboarding. The `FoundingDocumentaryDeferral.maximum_duration_months` contract now requires `24` instead of `12`. CP must compute and persist the actual anniversary expiry instant and enforce it at runtime; JSON Schema alone does not verify date arithmetic, reviews, expiry, or scope restrictions. The proposed checkpoints are months 6, 12, 18 and 24. No renewal/reset on renamed, re-applied or re-provisioned organisations.
+
+This is a versioned contract-breaking change for existing consumers pinned to the prior Shared commit: repin and regenerate only after tests, review and explicitly scheduled CP adoption. No existing approved deferral is automatically extended, and the amended contract gives no statutory/provider/KYC waiver or operational entitlement. Existing published v1 wire APIs remain untouched.
