@@ -233,6 +233,25 @@ rejects(ctx, "response", {
 }, "missing primary Organisation context")
 rejects(ctx, "request", {"product_id": "baobab-trade", "legal_entity_id": "NABHOLD"}, "client override in context")
 
+# The newer persisted PlatformContext is also Organisation-first; the old
+# persisted and resource-server validation contracts remain pinned.
+platform_ctx = "control-plane/v2/platform-context.schema.json"
+persisted = {
+    "context_id": MANDATE, "tenant_id": TENANT,
+    "organisation_id": ORG, "resolved_at": DATE, "expires_at": END,
+}
+accepts(platform_ctx, "PlatformContext", persisted, "v2 persisted context")
+rejects(platform_ctx, "PlatformContext", {k:v for k,v in persisted.items() if k != "organisation_id"}, "persisted context lacking PRIMARY")
+accepts(platform_ctx, "PlatformContextValidation", {
+    **persisted, "authority_purpose": "RUNTIME",
+}, "v2 validated context")
+rejects(platform_ctx, "PlatformContextValidation", {
+    "context_id": MANDATE, "tenant_id": TENANT,
+    "resolved_at": DATE, "expires_at": END, "authority_purpose": "RUNTIME",
+}, "validated context lacking PRIMARY")
+accepts(platform_ctx, "PlatformContextResolveRequest", {}, "server derives Organisation for normal runtime")
+rejects(platform_ctx, "PlatformContextResolveRequest", {"legal_entity_id": "NABHOLD"}, "no client actor selection")
+
 sponsor = {
     "id": SPONSORSHIP, "sponsor_organisation_id": NABHOLD_ORG,
     "operating_organisation_id": ORG, "platform_id": "baobab-platform",
