@@ -20,7 +20,7 @@ The normative governance contract tenancy/tenancy.yaml advances to v2.0; brand-n
 | organisation/v2/legal-actor-mandate.schema.json | Legal actor authority scoped by Tenant, Organisation, role, activity, market, validity and evidence |
 | organisation/v2/founding-admission.schema.json | Founding sponsorship and named, bounded 12-month documentary deferral, separate from statutory duties |
 
-All seven v2 schemas are registered in contracts.lock.yaml and validated with repository-local offline JSON Schema Draft 2020-12 references, accepted/rejected fixtures and compatibility checks.
+All eight v2 schemas are registered in contracts.lock.yaml and validated with repository-local offline JSON Schema Draft 2020-12 references, accepted/rejected fixtures and compatibility checks.
 
 ## Non-negotiable rules
 
