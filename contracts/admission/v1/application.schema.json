@@ -491,6 +491,10 @@
           "type": "string",
           "format": "date-time",
           "description": "When a terminal state was reached."
+        },
+        "opened_by_staff_principal_id": {
+          "$ref": "#/$defs/principalId",
+          "description": "Registered platform operator who opened an ASSISTED_ENTERPRISE or INTERNAL_GROUP draft. Not the applicant and not eligible to decide the application. Audit provenance retained; absent on self-service."
         }
       },
       "allOf": [
