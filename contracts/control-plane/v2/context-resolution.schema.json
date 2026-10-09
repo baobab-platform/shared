@@ -38,7 +38,7 @@
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
         },
         "organisation_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+          "$ref": "../../organisation/v2/domain.schema.json#/$defs/organisationId"
         },
         "entity_id": {
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalLegalEntityId",
