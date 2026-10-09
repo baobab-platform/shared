@@ -384,8 +384,8 @@ def check_platform_context_validation() -> None:
                    "a TENANT_PROVISIONING context is never accepted as RUNTIME authority"):
         if phrase not in prose:
             fail(f"POST /platform-context/validate must document {phrase!r}")
-    if openapi["info"]["version"] != "1.36.0":
-        fail("control-plane OpenAPI must be 1.36.0 (signed event ingress is a contract change)")
+    if openapi["info"]["version"] != "1.37.0":
+        fail("control-plane OpenAPI must be 1.37.0 (staff-assisted admission adds an operation)")
     resolve_text = " ".join(openapi["paths"]["/platform-context/resolve"]["post"]["description"].split())
     if "always authority_purpose RUNTIME" not in resolve_text:
         fail("POST /platform-context/resolve must state that its context is always RUNTIME")
