@@ -51,7 +51,7 @@ RESPONSIBILITIES = {
         "countryCode", "applicantIdentifier", "applicantAddress", "authorisedRepresentative", "declaredLegalEntity",
         "ApplicantOrganisationProfile", "BusinessRequirements", "requestedMarket", "applicationEvidenceType",
         "ApplicationEvidence", "InformationRequest", "DecisionSummary", "ClientApplication", "ClientApplicationDraft",
-        "InformationRequestCommand", "ApplicantResponseCommand", "ClosureCommand",
+        "InformationRequestCommand", "ApplicantResponseCommand", "ClosureCommand", "StaffApplicationCreateRequest",
     },
     "decision.schema.json": {
         "admissionDecisionId", "admissionDecisionValue", "subscriptionType", "isolationStrategy",
@@ -193,6 +193,16 @@ decision_defs = SCHEMAS["decision.schema.json"]["$defs"]
 STATUSES = set(application["applicationStatus"]["enum"])
 if set(decision_defs["subscriptionType"]["enum"]) != SUBSCRIPTION_TYPES:
     fail("subscriptionType must be exactly the ADR-BCP-005 vocabulary (no INTERNAL_GROUP)")
+# The staff channel is admission metadata, never an INTERNAL subscription.
+staff = application["StaffApplicationCreateRequest"]
+if set(staff["properties"]["application_channel"]["enum"]) != {"ASSISTED_ENTERPRISE", "INTERNAL_GROUP"}:
+    fail("staff create may only select staff-owned admission channels")
+if staff["properties"]["draft"].get("allOf", [{}])[0].get("$ref") != "#/$defs/ClientApplicationDraft":
+    fail("staff create must reuse the applicant draft schema")
+for prop in ("application_channel", "applicant_principal_id", "reason", "draft"):
+    if prop not in staff["required"]:
+        fail(f"staff create must require {prop}")
+
 if set(application["ClientApplicationDraft"]["properties"]) & SERVER_AUTHORITATIVE:
     fail(f"ClientApplicationDraft accepts server-authoritative fields: "
          f"{sorted(set(application['ClientApplicationDraft']['properties']) & SERVER_AUTHORITATIVE)}")
