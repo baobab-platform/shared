@@ -27,6 +27,8 @@ END = "2027-10-09T09:00:00Z"
 FILES = {
     "organisation/v2/domain.schema.json",
     "organisation/v2/legal-actor-mandate.schema.json",
+    "organisation/v2/legal-actor-mandate-commands.schema.json",
+    "organisation/v2/legal-actor-mandate-events.schema.json",
     "organisation/v2/pre-tenant-admission.schema.json",
     "organisation/v2/founding-admission.schema.json",
     "admission/v2/business-identity.schema.json",
@@ -40,6 +42,8 @@ LOCKED = {
     ("organisation", "v2"): {
         "domain.schema.json",
         "legal-actor-mandate.schema.json",
+        "legal-actor-mandate-commands.schema.json",
+        "legal-actor-mandate-events.schema.json",
         "pre-tenant-admission.schema.json",
         "founding-admission.schema.json",
     },
