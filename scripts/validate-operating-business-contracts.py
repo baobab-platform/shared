@@ -43,7 +43,11 @@ LOCKED = {
         "pre-tenant-admission.schema.json",
         "founding-admission.schema.json",
     },
-    ("admission", "v2"): {"business-identity.schema.json"},
+    ("admission", "v2"): {
+        "business-identity.schema.json",
+        "application.schema.json",
+        "onboarding.schema.json",
+    },
     ("control-plane", "v2"): {
         "tenant-registration.schema.json",
         "context-resolution.schema.json",
