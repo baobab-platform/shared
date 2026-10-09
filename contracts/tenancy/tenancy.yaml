@@ -54,7 +54,7 @@
 #
 # Change history relevant to ADR-BCP-018
 # --------------------------------------
-# v1.1 (this revision):
+# v1.1 (retained for pinned consumers):
 #   - External customers no longer require an entry in the source-controlled
 #     Nabhold legal-entity registry.
 #   - Default legal-entity mapping remains required for v1 compatibility, but
@@ -62,11 +62,18 @@
 #     (with Tenant.LegalEntityID retained as a compatibility projection).
 #   - First-party Nabhold identities (NABHOLD, ZURIBEANS, THAMANI-GLOBAL,
 #     EQUATOR-ESTATE) continue to be governed by the Shared registry.
+# v2.0 (ADR-BCP-026/027, normative governance; v1 APIs remain separately pinned):
+#   - Tenant PRIMARY Organisation is mandatory; default legal-entity mapping
+#     is an optional compatibility projection, not the tenant identity.
+#   - Legal-actor mandate is separately scoped by role, activity, market and
+#     effective period; first-party identity is not incorporation proof.
+#   - New wire schemas live under control-plane/v2, admission/v2 and
+#     organisation/v2. No runtime v2 support is implied until certified.
 # ==============================================================================
 
 schema:
   name: "baobab-tenancy-contract"
-  version: "1.1"
+  version: "2.0"
 
 # ------------------------------------------------------------------------------
 # What constitutes a tenant
@@ -76,16 +83,20 @@ tenant_definition:
 
   description: >
     A tenant is a platform security, data-isolation and product-entitlement
-    boundary established for a consuming organisation. A legal entity is the
-    default tenant boundary, but legal entity and tenant are not synonyms.
-    The canonical tenant record is owned by the Baobab Control Plane and maps
-    explicitly to the legal entity or entities whose operations it serves.
+    boundary established for a consuming Organisation. Exactly one in-effect
+    PRIMARY Organisation is its business identity. A legal entity is a
+    distinct person which may be responsible for specific activities under
+    governed tenant mappings and scoped operating mandates; it is not a
+    universal prerequisite for tenancy. Control Plane owns the canonical
+    Tenant, Organisation references, and their approved mappings.
     A legal entity's independent digital estate is a separate deployment and
     ownership concern: operating a digital estate neither creates nor forbids
     a tenant, while consuming a Baobab product requires an authorised tenant
     and entitlement.
 
-  legal_entity_is_default_boundary: true
+  legal_entity_is_default_boundary: false
+  organisation_is_primary_boundary: true
+  requires_active_primary_organisation: true
   legal_entity_is_tenant_synonym: false
   digital_estate_confers_tenancy: false
   product_consumption_requires_tenant: true
@@ -94,10 +105,11 @@ tenant_definition:
   # source-controlled Nabhold legal-entity registry. The registry remains the
   # governance source for first-party Nabhold Group identities only.
   requires_default_legal_entity_registry_entry: false
-  # ADR-BCP-018 section 114: the obligation is not removed, it moves. Before a
-  # tenant becomes active it MUST resolve to an active canonical LegalEntity
-  # in the Control Plane (the default TenantLegalEntityMapping).
-  requires_default_active_canonical_legal_entity: true
+  # ADR-BCP-027 supersedes the universal default requirement for v2 tenants.
+  # A legal entity is required by an action's actual policy/contractual rules.
+  # CP's v1 API continues to require legal_entity_id until versioned migration.
+  requires_default_active_canonical_legal_entity: false
+  requires_legal_actor_for_restricted_operations: true
   canonical_legal_entity_authority: "baobab-platform/baobab-cp"
   first_party_registry_source: "shared/contracts/legal-entity/registry.yaml"
   first_party_identities:
@@ -112,18 +124,18 @@ tenant_definition:
   runtime_mapping_authority: "baobab-platform/baobab-cp"
 
   cardinality:
-    tenant_to_legal_entity: "one_or_more_by_explicit_mapping"
-    legal_entity_to_tenant: "one_or_more_when_approved_isolation_requires_it"
-    tenant_to_organisation: "one_or_more_by_explicit_mapping"
+    tenant_to_legal_entity: "zero_or_more_by_explicit_mapping"
+    legal_entity_to_tenant: "zero_or_more_when_governed_and_authorised"
+    tenant_to_organisation: "one_primary_plus_optional_additional_mappings"
     description: >
-      Version 1 still requires one default legal-entity reference for
-      compatibility (exposed as Tenant.LegalEntityID). Consumers must not
-      encode a permanent one-to-one identity. Additional mappings
-      (TenantLegalEntityMapping, TenantOrganisationMapping) and stronger
-      isolation topologies may be introduced without changing either
-      canonical identifier. The singular Tenant.LegalEntityID field is a
-      compatibility projection of the default TenantLegalEntityMapping
-      until all consumers migrate (ADR-BCP-018).
+      Every active operational Tenant has exactly one in-effect PRIMARY
+      Organisation. Multiple independent tenants may share a properly
+      established legal actor without sharing IAM authority. An optional
+      DEFAULT TenantLegalEntityMapping derives the nullable legacy projection;
+      it never selects the PRIMARY Organisation or authorises all transactions.
+      For a restricted activity CP resolves an independently approved legal
+      actor mandate by role, activity, market and effective time. Version-1
+      contract consumers retain their existing requirements until migrated.
 
 # ------------------------------------------------------------------------------
 # Required identifiers
@@ -131,25 +143,27 @@ tenant_definition:
 
 identifiers:
 
-  # Default legal-entity identifier (compatibility projection).
-  # For first-party Nabhold tenants this continues to reference the Shared
-  # registry. For external tenants it is a Control-Plane-minted or
-  # Control-Plane-registered legal_entity_id that need not appear in the
-  # source-controlled registry.
-  entity_id:
+  organisation_id:
     required: true
-    source: "control-plane runtime TenantLegalEntityMapping (default); first-party identities also governed by shared legal-entity registry"
+    source: "control-plane runtime in-effect PRIMARY TenantOrganisationMapping"
+    schema_reference: "shared/contracts/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
     description: >
-      The identifier of the tenant's default legal entity (e.g. "THAMANI-GLOBAL"
-      for first-party, or a Control-Plane-issued identifier for external
-      customers). Every version-1 tenant record MUST carry this mapping. It
-      does not define the tenant and must not be reused as tenant_id. No
-      system may invent a local alias for a first-party registry id.
+      Exactly one authoritative primary operating Organisation per operational
+      Tenant. A separate LegalEntityProfile, trading name or corporate parent
+      must not replace this identity.
+  # entity_id is a nullable compatibility projection for v2, while required
+  # by the separately versioned v1 registration/context APIs.
+  entity_id:
+    required: false
+    source: "control-plane runtime active DEFAULT TenantLegalEntityMapping, when present"
+    description: >
+      Optional default LegalEntity reference only. It is never a substitute
+      for organisation_id, and not a generic seller/importer/employer mandate.
+      First-party governance registry identity does not verify incorporation.
     format: "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$"
     notes: >
-      ADR-BCP-018 treats the singular entity_id / Tenant.LegalEntityID as a
-      compatibility projection of the default TenantLegalEntityMapping.
-      New consumers SHOULD prefer the explicit mapping APIs.
+      V1 clients retain their required legal_entity_id contract until
+      migrated. V2 clients resolve purpose-scoped legal-actor responsibility.
 
   tenant_id:
     required: true
@@ -160,10 +174,11 @@ identifiers:
       Human-readable company names, country codes and market codes must not be
       embedded in a newly minted tenant_id.
     mapping_obligation: >
-      The mapping tenant_id -> default legal_entity_id (and any additional
-      TenantLegalEntityMapping / TenantOrganisationMapping rows) MUST be
-      resolvable at all times, in every environment, without exception. Loss
-      of this mapping is treated as a data-integrity incident.
+      Tenant -> exactly one in-effect PRIMARY Organisation MUST be resolvable
+      for every active operational Tenant. A DEFAULT LegalEntity projection,
+      when present, MUST match its mapping atomically. Missing DEFAULT alone
+      is not corruption for an eligible v2 tenant; missing PRIMARY is an
+      integrity incident. Mandates are separately enforced for restricted work.
     exact_format: "^tn_[a-z0-9]+$"
     schema_reference: "shared/contracts/control-plane/v1/domain.schema.json#/$defs/tenantId"
 
@@ -210,10 +225,10 @@ isolation:
 
 required_metadata:
 
-  - field: "entity_id"
+  - field: "organisation_id"
     description: >
-      Default legal-entity identifier (compatibility projection of the
-      default TenantLegalEntityMapping). Not the tenant identifier.
+      The canonical in-effect PRIMARY operating Organisation, distinct from
+      any LegalEntity or trading-style reference.
 
   - field: "tenant_id"
     description: "Platform-internal technical identifier"
@@ -242,12 +257,11 @@ lifecycle:
   events:
     - name: "provisioning"
       description: >
-        Tenant record created, `tenant_id` assigned, and at least one
-        TenantLegalEntityMapping (default) established. For first-party
-        Nabhold identities the mapped legal_entity_id MUST exist in the
-        Shared registry. For external customers the legal_entity_id is
-        registered/issued by the Control Plane and need not appear in the
-        Shared registry (ADR-BCP-018).
+        From an authorised TenantOnboardingRequest CP mints tenant_id and
+        atomically establishes an in-effect PRIMARY Organisation mapping.
+        A DEFAULT LegalEntity mapping is added only where justified and
+        attested. No direct self-registration or fictitious legal person.
+        Pinned v1 consumers continue using their v1 API until migrated.
 
     - name: "activation"
       description: "Tenant transitions to `active`; product access becomes live."
@@ -312,6 +326,16 @@ security:
       resolution MUST fail closed when authoritative evidence is missing
       or conflicted.
 
+
+  legal_actor_responsibility:
+    obligation: >
+      Sharing one LegalEntity across tenants gives no principal any cross-tenant
+      IAM or data rights. Restricted operations must resolve a separate,
+      in-force, approved actor mandate scoped to tenant, operating Organisation,
+      role, activity, market and date. If absent or ambiguous, fail closed for
+      the affected operation, preserving historical legal attribution.
+    contract: "shared/contracts/organisation/v2/legal-actor-mandate.schema.json"
+
 # ------------------------------------------------------------------------------
 # Ownership
 # ------------------------------------------------------------------------------
@@ -360,3 +384,11 @@ notes:
     for Organisation, LegalEntityProfile, CorporateRelationship,
     PlatformRelationship, PlatformAccount and the explicit tenant mappings
     resides in the Control Plane.
+
+  - >
+    ADR-BCP-026/027 (2026-10-09): ZuriBeans and Equator & Estate Co. are
+    declared separately unincorporated operating businesses; Nabhold is the
+    proposed actor for scoped approved work. Thamani Global is a declared
+    CIPC-registered subsidiary. These are business declarations, not
+    independently verified incorporation/ownership or blanket operating
+    permission. Preserve their stable first-party identifiers.
