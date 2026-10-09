@@ -148,6 +148,8 @@ contracts:
     version: v2
     schemas:
       - business-identity.schema.json
+      - application.schema.json
+      - onboarding.schema.json
   - domain: control-plane
     version: v2
     schemas:
