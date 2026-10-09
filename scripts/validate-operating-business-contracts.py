@@ -239,6 +239,75 @@ rejects(ctx, "response", {
 }, "missing primary Organisation context")
 rejects(ctx, "request", {"product_id": "baobab-trade", "legal_entity_id": "NABHOLD"}, "client override in context")
 
+# Complete v2 ClientApplication and TenantOnboardingRequest stage tests.
+# Pre-incorporation applicants can submit real requests without fictitious company IDs.
+application_v2 = "admission/v2/application.schema.json"
+onboarding_v2 = "admission/v2/onboarding.schema.json"
+app_draft = {
+    "client_application_id": "capp_01kaab", "reference": "APP-2026-000002",
+    "status": "DRAFT", "application_channel": "SELF_SERVICE", "version": 1,
+    "applicant_principal_id": "prn_01kapplicant", "requirements": {},
+    "requested_markets": [], "evidence": [], "information_requests": [],
+    "created_at": DATE, "updated_at": DATE,
+}
+accepts(application_v2, "ClientApplicationV2", app_draft, "low-friction incomplete draft")
+submitted = {
+    **app_draft, "status": "SUBMITTED", "business_identity": identity,
+    "requested_markets": [{"country_code": "ZA"}], "submitted_at": DATE,
+}
+accepts(application_v2, "ClientApplicationV2", submitted, "pre-incorporation submitted without registration")
+rejects(application_v2, "ClientApplicationV2", {
+    **submitted, "business_identity": None,
+}, "submitted without business identity")
+rejects(application_v2, "ClientApplicationV2", {
+    **app_draft, "status": "SUBMITTED",
+}, "submitted without minimum information")
+rejects(application_v2, "ClientApplicationDraftUpdateV2", {
+    "business_identity": identity, "subscription_type": "INTERNAL",
+}, "applicant cannot decide INTERNAL classification")
+rejects(application_v2, "ClientApplicationV2", {
+    **submitted, "application_channel": "INTERNAL_GROUP",
+}, "INTERNAL_GROUP not applicant-selected without staff provenance")
+ds = {
+    "display_name": "ZuriBeans", "residency_region": "af-south-1",
+    "isolation_strategy": "schema_per_tenant", "subscription_type": "INTERNAL",
+    "market_scope": ["ZA"],
+    "market_participation": [{"market": "ZA", "activities": ["SELLING"]}],
+    "product_requirements": ["b2b-trade"],
+}
+onboarding = {
+    "tenant_onboarding_request_id": "tor_01kaab", "client_application_id": "capp_01kaab",
+    "admission_decision_id": "adm_01kaab", "organisation_id": ORG,
+    "identity_resolution_policy_reference": "policy/organisation-admission-v2",
+    "status": "REQUESTED", "desired_state": ds, "reason": "Approved admission",
+    "correlation_id": MANDATE, "requested_by": "prn_01krequester",
+    "requested_at": DATE,
+}
+accepts(onboarding_v2, "TenantOnboardingRequestV2", onboarding, "Organisation-bound REQUESTED")
+rejects(onboarding_v2, "TenantOnboardingRequestV2", {
+    **onboarding, "organisation_id": "ZURIBEANS",
+}, "onboarding cannot select legacy legal entity as PRIMARY")
+rejects(onboarding_v2, "TenantOnboardingRequestV2", {
+    **onboarding, "status": "AUTHORISED",
+}, "unauthorised request cannot be AUTHORISED")
+accepts(onboarding_v2, "TenantOnboardingRequestV2", {
+    **onboarding, "status": "AUTHORISED",
+    "authorised_by": "prn_01kapprover", "authorised_at": DATE,
+    "authorisation_policy_reference": "policy/onboarding-approval-v2",
+}, "approved maker/checker stage")
+accepts(onboarding_v2, "TenantOnboardingRequestV2", {
+    **onboarding, "status": "FULFILLED",
+    "authorised_by": "prn_01kapprover", "authorised_at": DATE,
+    "authorisation_policy_reference": "policy/onboarding-approval-v2",
+    "tenant_id": TENANT, "fulfilled_at": DATE,
+}, "governed fulfilled Organisation-first tenant")
+rejects(onboarding_v2, "TenantOnboardingRequestV2", {
+    **onboarding, "default_legal_entity_id": "NABHOLD",
+}, "default legal actor lacking mapping-authority evidence")
+rejects(onboarding_v2, "TenantOnboardingRequestV2", {
+    **onboarding, "tenant_id": TENANT,
+}, "unapproved tenancy fulfilment")
+
 # The newer persisted PlatformContext is also Organisation-first; the old
 # persisted and resource-server validation contracts remain pinned.
 platform_ctx = "control-plane/v2/platform-context.schema.json"
