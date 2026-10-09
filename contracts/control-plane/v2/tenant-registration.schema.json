@@ -10,7 +10,7 @@
       "$ref": "../../admission/v1/onboarding.schema.json#/$defs/tenantOnboardingRequestId"
     },
     "organisation_id": {
-      "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+      "$ref": "../../organisation/v2/domain.schema.json#/$defs/organisationId"
     },
     "legal_entity_id": {
       "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalLegalEntityId",
