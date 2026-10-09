@@ -143,6 +143,8 @@ contracts:
       - domain.schema.json
       - pre-tenant-admission.schema.json
       - legal-actor-mandate.schema.json
+      - legal-actor-mandate-commands.schema.json
+      - legal-actor-mandate-events.schema.json
       - founding-admission.schema.json
   - domain: admission
     version: v2
