@@ -35,6 +35,7 @@ FILES = {
 }
 LOCKED = {
     ("organisation", "v2"): {
+        "domain.schema.json",
         "legal-actor-mandate.schema.json",
         "pre-tenant-admission.schema.json",
         "founding-admission.schema.json",
