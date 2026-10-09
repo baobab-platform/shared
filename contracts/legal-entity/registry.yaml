@@ -9,6 +9,10 @@
 # First-party (Nabhold Group Africa) legal-entity governance registry.
 # Authoritative for NABHOLD, ZURIBEANS, THAMANI-GLOBAL and EQUATOR-ESTATE
 # identity spelling and approved product-consumption intent (ADR-BCP-018).
+# Accepted ADR-BCP-026/027: a registry entry does not prove incorporation.
+# Existing "role" is a group label, not verified legal-person status.
+# identity_class/incorporation_claim are declarations; CP verifies actual
+# legal identity, corporate control and activity-specific mandates separately.
 #
 # This file is NOT the universal legal-entity source for external customers.
 # External legal-entity identities are Control-Plane-issued/registered at runtime;
@@ -62,6 +66,8 @@ entities:
   - id: "NABHOLD"
     legal_name: "NABHOLD GROUP AFRICA (Pty) Ltd"
     role: "holding_company"
+    identity_class: "LEGAL_PERSON"
+    incorporation_claim: "REGISTERED_EVIDENCED" # CP must independently verify the cited evidence
 
     # Verified 2026-10-08 from the CIPC Form COR 14.3 registration certificate
     # (tracking 9450484125, issued 2026-01-16). Pending company-secretary
@@ -93,7 +99,9 @@ entities:
   # ---------------------------------------------------------------------------
   - id: "ZURIBEANS"
     legal_name: "Zuribeans"
-    role: "subsidiary"
+    role: "subsidiary" # legacy group role; not a separately incorporated company
+    identity_class: "OPERATING_BUSINESS"
+    incorporation_claim: "NOT_INCORPORATED" # Group declaration 2026-10-09
     legacy_aliases: ["zuribeans_za"] # accepted only at migration input boundaries
 
     jurisdiction: null            # TBD
@@ -118,6 +126,8 @@ entities:
   - id: "THAMANI-GLOBAL"
     legal_name: "Thamani Global"
     role: "subsidiary"
+    identity_class: "LEGAL_PERSON"
+    incorporation_claim: "REGISTERED_CLAIMED" # CIPC registration reported; evidence pending reconciliation
 
     jurisdiction: null            # TBD
     registration_identifier: null # TBD
@@ -139,7 +149,9 @@ entities:
   # ---------------------------------------------------------------------------
   - id: "EQUATOR-ESTATE"
     legal_name: "Equator & Estate Co."
-    role: "subsidiary"
+    role: "subsidiary" # legacy group role; not a separately incorporated company
+    identity_class: "OPERATING_BUSINESS"
+    incorporation_claim: "NOT_INCORPORATED" # Group declaration 2026-10-09
 
     jurisdiction: null            # TBD
     registration_identifier: null # TBD
@@ -182,7 +194,10 @@ notes:
     `baobab_tenant` records approved platform-consumption intent for bootstrap
     and reconciliation. It is not runtime tenant state. `baobab-platform/baobab-cp`
     owns the provisioned tenant_id, lifecycle, and enforced product
-    entitlements, and must map them explicitly to an entity id in this registry.
+    entitlements. A first-party registry identifier is stable identity, NOT
+    proof of corporate incorporation or licence to trade. Unincorporated
+    businesses have independent PRIMARY Organisations; they may use Nabhold
+    as a scoped legal actor only under an approved mandate.
   - >
     A digital estate does not confer tenancy. NABHOLD is tenant-eligible because
     it consumes Baobab ERP, not because `baobab-platform/nabhold` exists. The estate and
