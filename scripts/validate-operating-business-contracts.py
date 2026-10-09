@@ -45,6 +45,7 @@ LOCKED = {
     ("control-plane", "v2"): {
         "tenant-registration.schema.json",
         "context-resolution.schema.json",
+        "platform-context.schema.json",
     },
 }
 
