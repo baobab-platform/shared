@@ -59,7 +59,7 @@
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
         },
         "operating_organisation_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+          "$ref": "domain.schema.json#/$defs/organisationId"
         },
         "responsible_legal_entity_id": {
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalLegalEntityId"
@@ -197,7 +197,7 @@
           "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId"
         },
         "operating_organisation_id": {
-          "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+          "$ref": "domain.schema.json#/$defs/organisationId"
         },
         "role": {
           "$ref": "#/$defs/legalActorRole"
