@@ -14,6 +14,8 @@ The normative governance contract tenancy/tenancy.yaml advances to v2.0; brand-n
 |---|---|
 | organisation/v2/pre-tenant-admission.schema.json | Resolve the primary Organisation before Tenant registration; an Organisation can exist without tenancy, LegalEntity or entitlements |
 | admission/v2/business-identity.schema.json | Minimum identity declarations for incorporated and unincorporated applicants |
+| admission/v2/application.schema.json | Complete progressive application lifecycle; submitted applicants need business identity, not mandatory incorporation numbers |
+| admission/v2/onboarding.schema.json | Authorised Organisation-bound TenantOnboardingRequest with retained maker/checker and request/authorisation/fulfilment lifecycle |
 | control-plane/v2/tenant-registration.schema.json | AUTHORISED onboarding request and required primary Organisation; optional DEFAULT LegalEntity projection |
 | control-plane/v2/context-resolution.schema.json | Tenant and PRIMARY Organisation required; no universal legal entity in product context |
 | control-plane/v2/platform-context.schema.json | Both persisted runtime and resource-server validated contexts require PRIMARY Organisation; v1 purpose and principal checks preserved |
