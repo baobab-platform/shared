@@ -146,7 +146,7 @@ identifiers:
   organisation_id:
     required: true
     source: "control-plane runtime in-effect PRIMARY TenantOrganisationMapping"
-    schema_reference: "shared/contracts/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    schema_reference: "shared/contracts/organisation/v2/domain.schema.json#/$defs/organisationId"
     description: >
       Exactly one authoritative primary operating Organisation per operational
       Tenant. A separate LegalEntityProfile, trading name or corporate parent
