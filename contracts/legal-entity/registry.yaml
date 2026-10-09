@@ -60,11 +60,17 @@ entities:
 
   # ---------------------------------------------------------------------------
   - id: "NABHOLD"
-    legal_name: "Nabhold Group Africa"
+    legal_name: "NABHOLD GROUP AFRICA (Pty) Ltd"
     role: "holding_company"
 
-    jurisdiction: null            # TBD — pending Legal / Company Secretarial
-    registration_identifier: null # TBD — pending Legal / Company Secretarial
+    # Verified 2026-10-08 from the CIPC Form COR 14.3 registration certificate
+    # (tracking 9450484125, issued 2026-01-16). Pending company-secretary
+    # sign-off. Only non-sensitive facts are recorded here; ownership,
+    # directors and beneficial-ownership data are NOT part of this registry.
+    jurisdiction: "ZA"
+    registration_identifier: "2026/029839/07"
+    registration_effective_date: "2026-01-16"
+    legal_evidence_ref: "baobab-platform/nabhold:docs/go-live/evidence/G01/production/2026-01-16-cipc-registration.md"
 
     business_model: null          # not applicable — holding company, not an
                                    # operating subsidiary
