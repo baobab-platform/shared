@@ -1,0 +1,136 @@
+{
+  "_comment": "SYNTHETIC. Illustrative ADR-BCP-018 instances for a fictional sponsored group that exists only to demonstrate the ADR-BCP-017 INTERNAL eligibility mechanics on the v1 contracts (a verified OWNS fact, a PLATFORM_GROUP_AFFILIATE resting on it, and an AdmissionDecision that cites it). Nothing here is a real organisation, registration, ownership fact, verification or approval, and nothing in it is a Nabhold decision. Every id, name and registration identifier is fictional; the platform_id is the fictional synthetic-platform, never baobab-platform. The real founding group is modelled in nabhold-group-organisation.json (its INTERNAL affiliations stay PENDING_REVIEW and fail closed) and, for the unincorporated businesses, in organisation/v2/examples/zuribeans-organisation-first.json. Runtime ids are Control Plane-minted; runtime authority is the Control Plane.",
+  "organisations": [
+    {
+      "canonical_entity_id": "ce_synthetic_sponsor",
+      "display_name": "Synthetic Sponsor Holdings",
+      "official_name": "Synthetic Sponsor Holdings Ltd",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "synthetic-example",
+      "status": "ACTIVE",
+      "effective_from": "2026-09-20T08:00:00Z",
+      "evidence_references": [
+        "synthetic:evidence/sponsor-registration"
+      ]
+    },
+    {
+      "canonical_entity_id": "ce_synthetic_affiliate",
+      "display_name": "Synthetic Affiliate Trading",
+      "official_name": "Synthetic Affiliate Trading Ltd",
+      "organisation_form": "COMPANY",
+      "jurisdiction": "KE",
+      "verification_state": "VERIFIED",
+      "source_authority": "synthetic-example",
+      "status": "ACTIVE",
+      "effective_from": "2026-09-20T08:00:00Z",
+      "evidence_references": [
+        "synthetic:evidence/affiliate-registration"
+      ]
+    }
+  ],
+  "legal_entity_profiles": [
+    {
+      "legal_entity_id": "LE-SYNTHSPONSOR01",
+      "organisation_id": "ce_synthetic_sponsor",
+      "legal_name": "Synthetic Sponsor Holdings Ltd",
+      "jurisdiction_of_incorporation": "KE",
+      "registration_identifiers": [
+        {
+          "type": "COMPANY_REGISTRATION",
+          "value": "SYNTHETIC-0001",
+          "issuing_jurisdiction": "KE",
+          "verified": true
+        }
+      ],
+      "legal_status": "ACTIVE",
+      "source_authority": "synthetic-example",
+      "verification_state": "VERIFIED",
+      "effective_from": "2026-09-20T08:00:00Z",
+      "evidence_references": [
+        "synthetic:evidence/sponsor-registration"
+      ],
+      "verified_by": "synthetic:example-verifier",
+      "verified_at": "2026-09-21T08:00:00Z"
+    },
+    {
+      "legal_entity_id": "LE-SYNTHAFFIL01",
+      "organisation_id": "ce_synthetic_affiliate",
+      "legal_name": "Synthetic Affiliate Trading Ltd",
+      "jurisdiction_of_incorporation": "KE",
+      "registration_identifiers": [
+        {
+          "type": "COMPANY_REGISTRATION",
+          "value": "SYNTHETIC-0002",
+          "issuing_jurisdiction": "KE",
+          "verified": true
+        }
+      ],
+      "legal_status": "ACTIVE",
+      "source_authority": "synthetic-example",
+      "verification_state": "VERIFIED",
+      "effective_from": "2026-09-20T08:00:00Z",
+      "evidence_references": [
+        "synthetic:evidence/affiliate-registration"
+      ],
+      "verified_by": "synthetic:example-verifier",
+      "verified_at": "2026-09-21T08:00:00Z"
+    }
+  ],
+  "corporate_relationships": [
+    {
+      "id": "crel_01k8synthowns",
+      "source_organisation_id": "ce_synthetic_sponsor",
+      "target_organisation_id": "ce_synthetic_affiliate",
+      "relationship_type": "OWNS",
+      "direct_or_derived": "DIRECT",
+      "verification_state": "VERIFIED",
+      "source_authority": "synthetic-example",
+      "status": "ACTIVE",
+      "effective_from": "2026-09-20T08:00:00Z",
+      "classification": "INTERNAL",
+      "ownership_percentage": 100,
+      "evidence_references": [
+        "synthetic:evidence/share-register"
+      ],
+      "verified_by": "synthetic:example-verifier",
+      "verified_at": "2026-09-21T08:00:00Z"
+    }
+  ],
+  "platform_relationships": [
+    {
+      "id": "prel_01k8synthowner",
+      "platform_id": "synthetic-platform",
+      "organisation_id": "ce_synthetic_sponsor",
+      "relationship_type": "PLATFORM_OWNER",
+      "verification_state": "VERIFIED",
+      "source_authority": "synthetic-example",
+      "status": "ACTIVE",
+      "effective_from": "2026-09-20T08:00:00Z",
+      "classification": "INTERNAL",
+      "evidence_references": [
+        "synthetic:evidence/platform-ownership"
+      ],
+      "verified_by": "synthetic:example-verifier",
+      "verified_at": "2026-09-21T08:00:00Z"
+    },
+    {
+      "id": "prel_01k8synthaffil",
+      "platform_id": "synthetic-platform",
+      "organisation_id": "ce_synthetic_affiliate",
+      "relationship_type": "PLATFORM_GROUP_AFFILIATE",
+      "basis_relationship_id": "crel_01k8synthowns",
+      "verification_state": "VERIFIED",
+      "source_authority": "synthetic-example",
+      "status": "ACTIVE",
+      "effective_from": "2026-09-20T08:00:00Z",
+      "classification": "INTERNAL",
+      "evidence_references": [
+        "synthetic:evidence/share-register"
+      ],
+      "verified_by": "synthetic:example-verifier",
+      "verified_at": "2026-09-21T08:00:00Z"
+    }
+  ]
+}

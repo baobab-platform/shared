@@ -13,8 +13,8 @@
   "data": {
     "inventory_ownership_id": "invown_01k4zio001",
     "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
-    "from_legal_entity_id": "ZURIBEANS-KE",
-    "to_legal_entity_id": "ZURIBEANS-ZA",
+    "from_legal_entity_id": "LE-SYNTHKE000001",
+    "to_legal_entity_id": "LE-SYNTHZA000001",
     "quantity": 500
   }
 }

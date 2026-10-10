@@ -3,7 +3,7 @@
   "id": "0192a1b0-7c3e-7a10-8000-000000000301",
   "type": "com.baobab-platform.product.subscription.classified.v1",
   "source": "urn:baobab-platform:service:baobab-cp",
-  "subject": "subscription:sub_01k9zuribeansxbt",
+  "subject": "subscription:sub_01k9syntheticxbt",
   "time": "2026-09-22T10:05:00Z",
   "datacontenttype": "application/json",
   "dataschema": "https://contracts.baobab-platform.com/product/v1/events.schema.json#/$defs/subscriptionClassifiedEventData",
@@ -11,7 +11,7 @@
   "correlationid": "0192a1b0-7c3e-7a10-8000-0000000003ff",
   "tenantid": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
   "data": {
-    "subscription_id": "sub_01k9zuribeansxbt",
+    "subscription_id": "sub_01k9syntheticxbt",
     "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
     "classification_id": "subcls_01k9zuriinternal",
     "subscription_type": "INTERNAL",

@@ -1,13 +1,13 @@
 {
-  "_comment": "ADR-BCP-017 sections 22-24: APPROVED decisions from client-application-lifecycle.json handed to onboarding. The ZuriBeans request was authorised by a second principal and fulfilled by provisioning; the Kilima request awaits authorisation; a superseded Kilima request was cancelled. The requester is never the applicant or the decider, and the authoriser is never the requester or the applicant.",
+  "_comment": "ADR-BCP-017 sections 22-24: APPROVED decisions from client-application-lifecycle.json handed to onboarding. The synthetic affiliate's request was authorised by a second principal and fulfilled by provisioning; the Kilima request awaits authorisation; a superseded Kilima request was cancelled. The requester is never the applicant or the decider, and the authoriser is never the requester or the applicant.",
   "tenant_onboarding_requests": [
     {
-      "tenant_onboarding_request_id": "tor_01k9zuribeans",
-      "client_application_id": "capp_01k9zuribeans",
-      "admission_decision_id": "adm_01k9zuribeans",
+      "tenant_onboarding_request_id": "tor_01k9synthetic",
+      "client_application_id": "capp_01k9synthetic",
+      "admission_decision_id": "adm_01k9synthetic",
       "status": "FULFILLED",
       "desired_state": {
-        "display_name": "ZuriBeans",
+        "display_name": "Synthetic Affiliate Trading",
         "residency_region": "af-south-1",
         "isolation_strategy": "schema_per_tenant",
         "subscription_type": "INTERNAL",
@@ -44,7 +44,7 @@
       "requested_at": "2026-09-22T11:00:00Z",
       "authorised_by": "prn_01k9security",
       "authorised_at": "2026-09-22T12:00:00Z",
-      "tenant_id": "tn_01k9zuribeans",
+      "tenant_id": "tn_01k9synthetic",
       "fulfilled_at": "2026-09-22T13:00:00Z"
     },
     {

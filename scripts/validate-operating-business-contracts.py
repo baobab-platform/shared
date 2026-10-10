@@ -244,6 +244,40 @@ rejects(ctx, "response", {
 }, "missing primary Organisation context")
 rejects(ctx, "request", {"product_id": "baobab-trade", "legal_entity_id": "NABHOLD"}, "client override in context")
 
+# The real, unincorporated ZuriBeans on the v2 Organisation-first path
+# (ADR-BCP-026 PEO-T04/T19/T21, ADR-BCP-027 LA-T01/T03/T07/T29). Each section
+# must satisfy its schema, and the example must keep the load-bearing facts.
+real_example = json.loads((CONTRACTS / "organisation/v2/examples/zuribeans-organisation-first.json").read_text())
+first_party = {e["id"]: e for e in yaml.safe_load((CONTRACTS / "legal-entity/registry.yaml").read_text())["entities"]}
+require(first_party["ZURIBEANS"]["incorporation_claim"] == "NOT_INCORPORATED", "registry no longer declares ZuriBeans unincorporated")
+require(first_party["NABHOLD"]["identity_class"] == "LEGAL_PERSON", "the proposed responsible legal actor must be a registered legal person")
+ex_identity, ex_reg = real_example["business_identity"], real_example["tenant_registration"]
+ex_primary, ex_mandate = real_example["tenant_primary_organisation"], real_example["operating_legal_actor_mandate_proposal"]
+ex_request, ex_resolution = real_example["legal_actor_resolution_request"], real_example["legal_actor_resolution"]
+accepts(business, "BusinessIdentity", ex_identity, "real ZuriBeans business identity")
+accepts(reg, None, ex_reg, "real ZuriBeans Organisation-only tenant registration")
+accepts(pre, "TenantPrimaryOrganisation", ex_primary, "real ZuriBeans PRIMARY Organisation with no default legal entity")
+accepts(actor, "OperatingLegalActorMandate", ex_mandate, "real ZuriBeans mandate proposal")
+accepts(actor, "LegalActorResolutionRequest", ex_request, "real ZuriBeans resolution request")
+accepts(actor, "LegalActorResolution", ex_resolution, "real ZuriBeans fail-closed resolution")
+require(ex_identity["organisation_form"] == "UNINCORPORATED_ORGANISATION" and ex_identity["incorporation_claim"] == "NOT_INCORPORATED",
+        "the real ZuriBeans example must be an unincorporated Organisation")
+for forbidden in ("registration_identifiers", "jurisdiction_of_incorporation", "legal_name", "legal_entity_id"):
+    require(forbidden not in ex_identity, f"the unincorporated ZuriBeans must not carry {forbidden}")
+require("legal_entity_id" not in ex_reg and "default_legal_entity_id" not in ex_primary,
+        "an unincorporated business's tenant must not be given a legal entity merely to satisfy a contract")
+require(not any("legal_entity_profile" in key for key in real_example), "the real ZuriBeans example must not contain a LegalEntityProfile")
+require(ex_reg["organisation_id"] == ex_primary["primary_organisation_id"] == ex_mandate["operating_organisation_id"] == ex_request["operating_organisation_id"],
+        "ZuriBeans's tenant, mandate and resolution must all name the same operating Organisation")
+require(ex_mandate["responsible_legal_entity_id"] == "NABHOLD" and ex_mandate["status"] == "PENDING"
+        and not {"approved_by", "approved_at", "legal_actor_verification_reference"} & set(ex_mandate),
+        "Nabhold may appear only as a PENDING, unapproved proposed legal actor; approval is never fabricated")
+require(ex_resolution["outcome"] == "NO_APPLICABLE_MANDATE" and "responsible_legal_entity_id" not in ex_resolution,
+        "an unapproved mandate must resolve to no legal actor")
+rejects(actor, "OperatingLegalActorMandate", {**ex_mandate, "status": "ACTIVE"}, "an ACTIVE mandate without an approver")
+rejects(actor, "LegalActorResolution", {**ex_resolution, "responsible_legal_entity_id": "NABHOLD"}, "a denied resolution that still names an actor")
+rejects(reg, None, {**ex_reg, "tenant_id": TENANT}, "caller-chosen tenant id on the real ZuriBeans registration")
+
 # Complete v2 ClientApplication and TenantOnboardingRequest stage tests.
 # Pre-incorporation applicants can submit real requests without fictitious company IDs.
 application_v2 = "admission/v2/application.schema.json"
