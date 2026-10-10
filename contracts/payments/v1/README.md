@@ -24,3 +24,12 @@ The Baobab Payment API. HyperSwitch is an implementation detail behind it: a Bao
 - **Events are emitted only for state that occurred.** They carry identifiers and state, never reasons, descriptions or payment-method references.
 
 Money-moving requests (create intent, confirm, capture, refund) take an `Idempotency-Key`. A retry never duplicates an intent, payment or refund. The amount's currency must equal the context currency; `baobab-payments` enforces this.
+
+
+## LA-05C3 Payments merchant-readiness assessment (candidate)
+
+`merchant-readiness.schema.json` adds a distinct `ReadinessRequest` and `ReadyDecision` for a private Payments-owned endpoint, proposed as `POST /internal/merchant-readiness/v1/assess`. The caller must present a valid workload identity **for the Payments audience** and explicitly reviewed `merchant-readiness:assess` scope; ownership of a CP RUNTIME context alone does not grant this scope. An equivalent Payments-authoritative product permission is still required before activation.
+
+A `READY` response is only possible when Payments has independently confirmed a live, unexpired provider certification, a merchant/legal-entity/market/currency activation, the provider's capability, commercial authorisation and no suspension or relevant compliance/KYC block. The exact tenant, Organisation, responsible LegalEntity, market, currency, capability, mandate and operation reference must be echoed; callers fail closed on missing/mismatched/stale facts. The response lease is **at most 30 seconds**; no caching across cart operations or retries. Failure is RFC 9457 Problem Details or an unavailable response, never a fabricated READY.
+
+**Runtime reality:** As of this contract proposal, `baobab-payments` operates a sandbox, in-memory store without certified HyperSwitch merchants or durable activation records. A route may authenticate and safely deny, but cannot truthfully issue a positive READY decision. Publishing this schema does not certify any provider or authorise a transaction.
