@@ -301,6 +301,10 @@ if "root_organisation_id" in SCHEMAS["relationship.schema.json"]["$defs"]["Corpo
 # 3. Examples.
 registry_doc = yaml.safe_load((CONTRACTS / "legal-entity" / "registry.yaml").read_text())
 FIRST_PARTY = {entity["id"] for entity in registry_doc["entities"]}
+# ADR-BCP-026/027: only LEGAL_PERSON entries are LegalEntityProfiles; an
+# OPERATING_BUSINESS is a separate Organisation with no fabricated legal entity.
+FIRST_PARTY_LEGAL_PERSONS = {entity["id"] for entity in registry_doc["entities"] if entity.get("identity_class") == "LEGAL_PERSON"}
+FIRST_PARTY_OPERATING_BUSINESSES = FIRST_PARTY - FIRST_PARTY_LEGAL_PERSONS
 
 
 def parse_time(value: str) -> datetime:
@@ -519,8 +523,12 @@ if "legacy-buyer-supplier-migration.json" not in examples:
     fail("examples must include legacy-buyer-supplier-migration.json (ADR-BCP-018 gate ORG-13)")
 else:
     nabhold_les = {p["legal_entity_id"] for p in nabhold["legal_entity_profiles"]}
-    if nabhold_les != FIRST_PARTY:
-        fail(f"first-party example legal entities {sorted(nabhold_les)} must match the Shared registry {sorted(FIRST_PARTY)}")
+    if nabhold_les != FIRST_PARTY_LEGAL_PERSONS:
+        fail(f"first-party example legal entities {sorted(nabhold_les)} must match the Shared registry LEGAL_PERSON entries {sorted(FIRST_PARTY_LEGAL_PERSONS)}; unincorporated operating businesses {sorted(FIRST_PARTY_OPERATING_BUSINESSES)} must not have a LegalEntityProfile")
+    for o in nabhold["organisations"]:
+        refs = " ".join(o.get("evidence_references", []))
+        if any(f"#{bid}" in refs for bid in FIRST_PARTY_OPERATING_BUSINESSES) and (o["organisation_form"] != "UNINCORPORATED_ORGANISATION" or o["verification_state"] == "VERIFIED"):
+            fail(f"first-party example: unincorporated operating business {o['canonical_entity_id']} must be an unverified UNINCORPORATED_ORGANISATION")
     for p in acme["legal_entity_profiles"]:
         if p["legal_entity_id"] in FIRST_PARTY:
             fail(f"external example reuses first-party registry id {p['legal_entity_id']}")

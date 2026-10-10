@@ -1,5 +1,5 @@
 {
-  "_comment": "Illustrative ADR-BCP-018 instances for the first-party Nabhold Group Africa structure (ADR-BCP-018 sections 58 and 109). Runtime authority is Control Plane; these are examples, not runtime data. Organisation and LegalEntityProfile identity is VERIFIED from the Shared first-party registry, which is an authoritative governance source for those identities. Jurisdiction and company registration identifiers are recorded in contracts/legal-entity/registry.yaml for NABHOLD and THAMANI-GLOBAL only (REGISTERED_EVIDENCED from their CIPC COR 14.3 certificates, reviewer sign-off pending) and are carried on those two legal-entity profiles as unverified identifiers, because the Control Plane must verify them independently; ZURIBEANS and EQUATOR-ESTATE remain TBD there. Incorporation dates, legal status and ownership percentages are not recorded in the registry and are therefore omitted or UNKNOWN rather than invented; the registry's registration_effective_date is deliberately not asserted here as an incorporation date. The OWNS relationships and PLATFORM_* relationships are PENDING_REVIEW: the registry records roles (holding_company / subsidiary) but not company-secretarial ownership evidence, so ADR-BCP-017 INTERNAL eligibility must fail closed until the 'Verify CorporateRelationship' step of section 109 completes. Canonical entity ids here are readable illustrations; runtime ids are Control Plane-minted.",
+  "_comment": "Illustrative ADR-BCP-018 instances for the first-party Nabhold Group Africa structure (ADR-BCP-018 sections 58 and 109). Runtime authority is Control Plane; these are examples, not runtime data. Organisation and LegalEntityProfile identity is VERIFIED from the Shared first-party registry, which is an authoritative governance source for those identities. Jurisdiction and company registration identifiers are recorded in contracts/legal-entity/registry.yaml for NABHOLD and THAMANI-GLOBAL only (REGISTERED_EVIDENCED from their CIPC COR 14.3 certificates, reviewer sign-off pending) and are carried on those two legal-entity profiles as unverified identifiers, because the Control Plane must verify them independently; ZURIBEANS and EQUATOR-ESTATE are declared NOT_INCORPORATED (ADR-BCP-026/027): they are UNINCORPORATED_ORGANISATION operating businesses with no LegalEntityProfile, no jurisdiction and no registration identifier, and they trade only through Nabhold as scoped legal actor under an approved mandate until each is incorporated. Incorporation dates, legal status and ownership percentages are not recorded in the registry and are therefore omitted or UNKNOWN rather than invented; the registry's registration_effective_date is deliberately not asserted here as an incorporation date. The Nabhold OWNS relationship to Thamani Global, the CONTROLS relationships (sponsorship of the two unincorporated businesses; no ownership is asserted because nothing is incorporated to own) and the PLATFORM_* relationships are PENDING_REVIEW: the registry records roles (holding_company / subsidiary) but not company-secretarial ownership evidence, so ADR-BCP-017 INTERNAL eligibility must fail closed until the 'Verify CorporateRelationship' step of section 109 completes. Canonical entity ids here are readable illustrations; runtime ids are Control Plane-minted.",
   "organisations": [
     {
       "canonical_entity_id": "ce_nabhold_root",
@@ -18,8 +18,8 @@
       "canonical_entity_id": "ce_zuribeans",
       "display_name": "ZuriBeans",
       "official_name": "Zuribeans",
-      "organisation_form": "COMPANY",
-      "verification_state": "VERIFIED",
+      "organisation_form": "UNINCORPORATED_ORGANISATION",
+      "verification_state": "UNVERIFIED",
       "source_authority": "shared-governance",
       "status": "ACTIVE",
       "effective_from": "2026-09-01T00:00:00Z",
@@ -30,7 +30,7 @@
     {
       "canonical_entity_id": "ce_thamani_global",
       "display_name": "Thamani Global",
-      "official_name": "Thamani Global",
+      "official_name": "THAMANI GLOBAL (Pty) Ltd",
       "organisation_form": "COMPANY",
       "verification_state": "VERIFIED",
       "source_authority": "shared-governance",
@@ -44,8 +44,8 @@
       "canonical_entity_id": "ce_equator_estate",
       "display_name": "Equator & Estate Co.",
       "official_name": "Equator & Estate Co.",
-      "organisation_form": "COMPANY",
-      "verification_state": "VERIFIED",
+      "organisation_form": "UNINCORPORATED_ORGANISATION",
+      "verification_state": "UNVERIFIED",
       "source_authority": "shared-governance",
       "status": "ACTIVE",
       "effective_from": "2026-09-01T00:00:00Z",
@@ -80,23 +80,9 @@
       "verified_at": "2026-09-01T00:00:00Z"
     },
     {
-      "legal_entity_id": "ZURIBEANS",
-      "organisation_id": "ce_zuribeans",
-      "legal_name": "Zuribeans",
-      "legal_status": "UNKNOWN",
-      "source_authority": "shared-governance",
-      "verification_state": "VERIFIED",
-      "effective_from": "2026-09-01T00:00:00Z",
-      "evidence_references": [
-        "shared:contracts/legal-entity/registry.yaml#ZURIBEANS"
-      ],
-      "verified_by": "shared-governance-reconciliation",
-      "verified_at": "2026-09-01T00:00:00Z"
-    },
-    {
       "legal_entity_id": "THAMANI-GLOBAL",
       "organisation_id": "ce_thamani_global",
-      "legal_name": "Thamani Global",
+      "legal_name": "THAMANI GLOBAL (Pty) Ltd",
       "jurisdiction_of_incorporation": "ZA",
       "registration_identifiers": [
         {
@@ -116,20 +102,6 @@
       ],
       "verified_by": "shared-governance-reconciliation",
       "verified_at": "2026-09-01T00:00:00Z"
-    },
-    {
-      "legal_entity_id": "EQUATOR-ESTATE",
-      "organisation_id": "ce_equator_estate",
-      "legal_name": "Equator & Estate Co.",
-      "legal_status": "UNKNOWN",
-      "source_authority": "shared-governance",
-      "verification_state": "VERIFIED",
-      "effective_from": "2026-09-01T00:00:00Z",
-      "evidence_references": [
-        "shared:contracts/legal-entity/registry.yaml#EQUATOR-ESTATE"
-      ],
-      "verified_by": "shared-governance-reconciliation",
-      "verified_at": "2026-09-01T00:00:00Z"
     }
   ],
   "corporate_relationships": [
@@ -137,7 +109,7 @@
       "id": "crel_01k8nabzuri",
       "source_organisation_id": "ce_nabhold_root",
       "target_organisation_id": "ce_zuribeans",
-      "relationship_type": "OWNS",
+      "relationship_type": "CONTROLS",
       "direct_or_derived": "DIRECT",
       "verification_state": "PENDING_REVIEW",
       "source_authority": "shared-governance",
@@ -169,7 +141,7 @@
       "id": "crel_01k8nabequator",
       "source_organisation_id": "ce_nabhold_root",
       "target_organisation_id": "ce_equator_estate",
-      "relationship_type": "OWNS",
+      "relationship_type": "CONTROLS",
       "direct_or_derived": "DIRECT",
       "verification_state": "PENDING_REVIEW",
       "source_authority": "shared-governance",
