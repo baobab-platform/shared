@@ -1,5 +1,5 @@
 {
-  "_comment": "Illustrative ADR-BCP-018 instances for the first-party Nabhold Group Africa structure (ADR-BCP-018 sections 58 and 109). Runtime authority is Control Plane; these are examples, not runtime data. Organisation and LegalEntityProfile identity is VERIFIED from the Shared first-party registry, which is an authoritative governance source for those identities. Jurisdiction, registration identifiers, incorporation dates, legal status and ownership percentages are TBD in contracts/legal-entity/registry.yaml and are therefore omitted or UNKNOWN rather than invented. The OWNS relationships and PLATFORM_* relationships are PENDING_REVIEW: the registry records roles (holding_company / subsidiary) but not company-secretarial ownership evidence, so ADR-BCP-017 INTERNAL eligibility must fail closed until the 'Verify CorporateRelationship' step of section 109 completes. Canonical entity ids here are readable illustrations; runtime ids are Control Plane-minted.",
+  "_comment": "Illustrative ADR-BCP-018 instances for the first-party Nabhold Group Africa structure (ADR-BCP-018 sections 58 and 109). Runtime authority is Control Plane; these are examples, not runtime data. Organisation and LegalEntityProfile identity is VERIFIED from the Shared first-party registry, which is an authoritative governance source for those identities. Jurisdiction and company registration identifiers are recorded in contracts/legal-entity/registry.yaml for NABHOLD and THAMANI-GLOBAL only (REGISTERED_EVIDENCED from their CIPC COR 14.3 certificates, reviewer sign-off pending) and are carried on those two legal-entity profiles as unverified identifiers, because the Control Plane must verify them independently; ZURIBEANS and EQUATOR-ESTATE remain TBD there. Incorporation dates, legal status and ownership percentages are not recorded in the registry and are therefore omitted or UNKNOWN rather than invented; the registry's registration_effective_date is deliberately not asserted here as an incorporation date. The OWNS relationships and PLATFORM_* relationships are PENDING_REVIEW: the registry records roles (holding_company / subsidiary) but not company-secretarial ownership evidence, so ADR-BCP-017 INTERNAL eligibility must fail closed until the 'Verify CorporateRelationship' step of section 109 completes. Canonical entity ids here are readable illustrations; runtime ids are Control Plane-minted.",
   "organisations": [
     {
       "canonical_entity_id": "ce_nabhold_root",
@@ -58,7 +58,17 @@
     {
       "legal_entity_id": "NABHOLD",
       "organisation_id": "ce_nabhold_root",
-      "legal_name": "Nabhold Group Africa",
+      "legal_name": "NABHOLD GROUP AFRICA (Pty) Ltd",
+      "jurisdiction_of_incorporation": "ZA",
+      "registration_identifiers": [
+        {
+          "type": "COMPANY_REGISTRATION",
+          "value": "2026/029839/07",
+          "issuing_jurisdiction": "ZA",
+          "issuer": "CIPC",
+          "verified": false
+        }
+      ],
       "legal_status": "UNKNOWN",
       "source_authority": "shared-governance",
       "verification_state": "VERIFIED",
@@ -87,6 +97,16 @@
       "legal_entity_id": "THAMANI-GLOBAL",
       "organisation_id": "ce_thamani_global",
       "legal_name": "Thamani Global",
+      "jurisdiction_of_incorporation": "ZA",
+      "registration_identifiers": [
+        {
+          "type": "COMPANY_REGISTRATION",
+          "value": "2026/291672/07",
+          "issuing_jurisdiction": "ZA",
+          "issuer": "CIPC",
+          "verified": false
+        }
+      ],
       "legal_status": "UNKNOWN",
       "source_authority": "shared-governance",
       "verification_state": "VERIFIED",
