@@ -155,11 +155,19 @@ events:
     asyncapi: contracts/admission/v2/asyncapi.yaml
     producer: baobab-cp
     lifecycle: ACTIVE
+  - type: com.baobab-platform.control-plane.founding-documentary-deferral.expired.v1
+    asyncapi: contracts/admission/v2/asyncapi.yaml
+    producer: baobab-cp
+    lifecycle: ACTIVE
   - type: com.baobab-platform.control-plane.founding-documentary-deferral.revoked.v1
     asyncapi: contracts/admission/v2/asyncapi.yaml
     producer: baobab-cp
     lifecycle: ACTIVE
   - type: com.baobab-platform.control-plane.founding-sponsorship.activated.v1
+    asyncapi: contracts/admission/v2/asyncapi.yaml
+    producer: baobab-cp
+    lifecycle: ACTIVE
+  - type: com.baobab-platform.control-plane.founding-sponsorship.expired.v1
     asyncapi: contracts/admission/v2/asyncapi.yaml
     producer: baobab-cp
     lifecycle: ACTIVE
