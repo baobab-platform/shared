@@ -1,17 +1,17 @@
 {
-  "_comment": "Illustrative ADR-SUB-0001 instances. ZuriBeans' INTERNAL subscription is billing-ready at zero charge with metering on and no payment dependency; its usage is metered but not billable. An external COMMERCIAL subscription on the temporary provider is honestly BLOCKED: billing requires money and no real provider exists yet. Readiness is reported as separate facts with ADR-SUB-0006 blockers: the COMMERCIAL projection names every missing piece (pricing, billing account, provider, payment path) rather than claiming readiness.",
+  "_comment": "Illustrative ADR-SUB-0001 instances. The fictional Synthetic Affiliate Trading's INTERNAL subscription is billing-ready at zero charge with metering on and no payment dependency; its usage is metered but not billable. An external COMMERCIAL subscription on the temporary provider is honestly BLOCKED: billing requires money and no real provider exists yet. Readiness is reported as separate facts with ADR-SUB-0006 blockers: the COMMERCIAL projection names every missing piece (pricing, billing account, provider, payment path) rather than claiming readiness.",
   "ensure_requests": [
     {
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
-      "product_subscription_id": "sub_01k9zuribeansxbt",
+      "product_subscription_id": "sub_01k9syntheticxbt",
       "authoritative_revision": 2,
       "product_id": "baobab-xbt",
-      "legal_entity_id": "ZURIBEANS",
+      "legal_entity_id": "LE-SYNTHAFFIL01",
       "subscription_type": "INTERNAL",
       "classification": {
-        "classification_id": "subcls_01k9zuriinternal",
+        "classification_id": "subcls_01k9synthinternal",
         "classification_source": "ADMISSION_DECISION",
-        "classification_reference": "adm_01k9zuribeans",
+        "classification_reference": "adm_01k9synthetic",
         "classified_at": "2026-09-22T10:05:00Z"
       }
     },
@@ -33,17 +33,17 @@
   ],
   "projections": [
     {
-      "billing_subscription_id": "bsub_01k9zuri",
+      "billing_subscription_id": "bsub_01k9synth",
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
-      "product_subscription_id": "sub_01k9zuribeansxbt",
+      "product_subscription_id": "sub_01k9syntheticxbt",
       "authoritative_revision": 2,
       "product_id": "baobab-xbt",
-      "legal_entity_id": "ZURIBEANS",
+      "legal_entity_id": "LE-SYNTHAFFIL01",
       "subscription_type": "INTERNAL",
       "classification": {
-        "classification_id": "subcls_01k9zuriinternal",
+        "classification_id": "subcls_01k9synthinternal",
         "classification_source": "ADMISSION_DECISION",
-        "classification_reference": "adm_01k9zuribeans",
+        "classification_reference": "adm_01k9synthetic",
         "classified_at": "2026-09-22T10:05:00Z"
       },
       "billing_policy": {
@@ -135,9 +135,9 @@
   ],
   "usage_records": [
     {
-      "usage_record_id": "usage_01k9zuri0001",
-      "billing_subscription_id": "bsub_01k9zuri",
-      "product_subscription_id": "sub_01k9zuribeansxbt",
+      "usage_record_id": "usage_01k9synth0001",
+      "billing_subscription_id": "bsub_01k9synth",
+      "product_subscription_id": "sub_01k9syntheticxbt",
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
       "metric_key": "api.calls",
       "quantity": 1250,

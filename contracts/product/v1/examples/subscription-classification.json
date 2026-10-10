@@ -1,8 +1,8 @@
 {
-  "_comment": "Illustrative ADR-SHARED-011 / ADR-BCP-018 ORG-11 instances. ZuriBeans (a Nabhold Group Africa affiliate) is classified INTERNAL by its AdmissionDecision, whose server-evaluated eligibility rests on the verified PLATFORM_GROUP_AFFILIATE relationship prel_01k8zuriaffil. An illustrative later reclassification to COMMERCIAL shows that the same subscription survives a change of classification. An external organisation is classified COMMERCIAL.",
+  "_comment": "Illustrative ADR-SHARED-011 / ADR-BCP-018 ORG-11 instances. The fictional Synthetic Affiliate Trading (an affiliate in the fictional group of organisation/v1/examples/synthetic-group-organisation.json, not a real organisation or a Nabhold decision) is classified INTERNAL by its AdmissionDecision, whose server-evaluated eligibility rests on the verified PLATFORM_GROUP_AFFILIATE relationship prel_01k8synthaffil. An illustrative later reclassification to COMMERCIAL shows that the same subscription survives a change of classification. An external organisation is classified COMMERCIAL.",
   "product_subscriptions": [
     {
-      "subscription_id": "sub_01k9zuribeansxbt",
+      "subscription_id": "sub_01k9syntheticxbt",
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
       "product_id": "baobab-xbt",
       "product_version_id": "prodver_01k4z9h1m0",
@@ -10,10 +10,10 @@
       "source": "ONBOARDING",
       "effective_from": "2026-09-22T10:05:00Z",
       "classification": {
-        "classification_id": "subcls_01k9zuriinternal",
+        "classification_id": "subcls_01k9synthinternal",
         "subscription_type": "INTERNAL",
         "classification_source": "ADMISSION_DECISION",
-        "classification_reference": "adm_01k9zuribeans",
+        "classification_reference": "adm_01k9synthetic",
         "classified_at": "2026-09-22T10:05:00Z"
       },
       "version": 2
@@ -38,33 +38,33 @@
   ],
   "classification_records": [
     {
-      "classification_id": "subcls_01k9zuriinternal",
-      "subscription_id": "sub_01k9zuribeansxbt",
+      "classification_id": "subcls_01k9synthinternal",
+      "subscription_id": "sub_01k9syntheticxbt",
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
       "subscription_type": "INTERNAL",
       "classification_source": "ADMISSION_DECISION",
-      "classification_reference": "adm_01k9zuribeans",
-      "reason": "Nabhold Group affiliate; INTERNAL subscription approved.",
+      "classification_reference": "adm_01k9synthetic",
+      "reason": "Synthetic group affiliate; INTERNAL subscription approved (illustrative).",
       "classified_at": "2026-09-22T10:05:00Z",
       "classified_by": "prn_01k9approver",
       "internal_eligibility": {
-        "organisation_id": "ce_zuribeans",
-        "platform_id": "baobab-platform",
+        "organisation_id": "ce_synthetic_affiliate",
+        "platform_id": "synthetic-platform",
         "eligibility_status": "ELIGIBLE",
         "basis_relationship_ids": [
-          "prel_01k8zuriaffil"
+          "prel_01k8synthaffil"
         ],
         "evaluated_at": "2026-09-22T10:00:00Z"
       }
     },
     {
-      "classification_id": "subcls_01k9zuricommercial",
-      "subscription_id": "sub_01k9zuribeansxbt",
+      "classification_id": "subcls_01k9synthcommercial",
+      "subscription_id": "sub_01k9syntheticxbt",
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
       "subscription_type": "COMMERCIAL",
       "previous_subscription_type": "INTERNAL",
       "classification_source": "RECLASSIFICATION",
-      "classification_reference": "chg_01k9zuridivestiture",
+      "classification_reference": "chg_01k9synthdivestiture",
       "reason": "Illustrative: after a divestiture ends the qualifying ownership, a governed reclassification moves the same subscription to COMMERCIAL.",
       "classified_at": "2027-03-01T09:00:00Z",
       "classified_by": "prn_01k9approver"
@@ -83,25 +83,25 @@
   ],
   "explanations": [
     {
-      "subscription_id": "sub_01k9zuribeansxbt",
+      "subscription_id": "sub_01k9syntheticxbt",
       "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
       "product_id": "baobab-xbt",
       "current": {
-        "classification_id": "subcls_01k9zuriinternal",
-        "subscription_id": "sub_01k9zuribeansxbt",
+        "classification_id": "subcls_01k9synthinternal",
+        "subscription_id": "sub_01k9syntheticxbt",
         "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
         "subscription_type": "INTERNAL",
         "classification_source": "ADMISSION_DECISION",
-        "classification_reference": "adm_01k9zuribeans",
-        "reason": "Nabhold Group affiliate; INTERNAL subscription approved.",
+        "classification_reference": "adm_01k9synthetic",
+        "reason": "Synthetic group affiliate; INTERNAL subscription approved (illustrative).",
         "classified_at": "2026-09-22T10:05:00Z",
         "classified_by": "prn_01k9approver",
         "internal_eligibility": {
-          "organisation_id": "ce_zuribeans",
-          "platform_id": "baobab-platform",
+          "organisation_id": "ce_synthetic_affiliate",
+          "platform_id": "synthetic-platform",
           "eligibility_status": "ELIGIBLE",
           "basis_relationship_ids": [
-            "prel_01k8zuriaffil"
+            "prel_01k8synthaffil"
           ],
           "evaluated_at": "2026-09-22T10:00:00Z"
         }
@@ -109,7 +109,7 @@
       "current_eligibility": {
         "eligibility_status": "ELIGIBLE",
         "basis_relationship_ids": [
-          "prel_01k8zuriaffil"
+          "prel_01k8synthaffil"
         ],
         "evaluated_at": "2026-09-25T08:00:00Z"
       },
@@ -126,21 +126,21 @@
       "policy_reference": "ADR-BCP-017 section 11 / ADR-BCP-018 ORG-11 INTERNAL policy",
       "history": [
         {
-          "classification_id": "subcls_01k9zuriinternal",
-          "subscription_id": "sub_01k9zuribeansxbt",
+          "classification_id": "subcls_01k9synthinternal",
+          "subscription_id": "sub_01k9syntheticxbt",
           "tenant_id": "tn_01k4m7x9q2v6c8r3d5f1h0j4",
           "subscription_type": "INTERNAL",
           "classification_source": "ADMISSION_DECISION",
-          "classification_reference": "adm_01k9zuribeans",
-          "reason": "Nabhold Group affiliate; INTERNAL subscription approved.",
+          "classification_reference": "adm_01k9synthetic",
+          "reason": "Synthetic group affiliate; INTERNAL subscription approved (illustrative).",
           "classified_at": "2026-09-22T10:05:00Z",
           "classified_by": "prn_01k9approver",
           "internal_eligibility": {
-            "organisation_id": "ce_zuribeans",
-            "platform_id": "baobab-platform",
+            "organisation_id": "ce_synthetic_affiliate",
+            "platform_id": "synthetic-platform",
             "eligibility_status": "ELIGIBLE",
             "basis_relationship_ids": [
-              "prel_01k8zuriaffil"
+              "prel_01k8synthaffil"
             ],
             "evaluated_at": "2026-09-22T10:00:00Z"
           }

@@ -1,0 +1,66 @@
+{
+  "_comment": "Illustrative ADR-BCP-026/027 shapes for the real, unincorporated ZuriBeans on the v2 Organisation-first path. ZuriBeans is a NOT_INCORPORATED operating business (contracts/legal-entity/registry.yaml): it is its own Organisation and its own Tenant, with no LegalEntityProfile, no jurisdiction of incorporation and no registration identifier. Nabhold Group Africa is only the proposed responsible legal actor: the mandate below is PENDING, carries no approval and resolves to nothing (NO_APPLICABLE_MANDATE) until an independent human checker approves a role-, activity- and market-scoped mandate and the separate activation gate permits it. A mandate, a corporate relationship or a registry entry is not an operating mandate, INTERNAL eligibility, tenant access or proof of incorporation. Ids are readable illustrations: runtime ids are Control Plane-minted, and the CP-produced records (tenant_primary_organisation) show a shape, not an event that has happened. The v1 equivalents cannot carry this business (the v1 SUBMITTED application requires a registration identifier); see admission/v1/examples/client-application-lifecycle.json for the fictional synthetic applicant.",
+  "business_identity": {
+    "operating_name": "ZuriBeans",
+    "organisation_form": "UNINCORPORATED_ORGANISATION",
+    "operating_country": "ZA",
+    "incorporation_claim": "NOT_INCORPORATED",
+    "authorised_representative": {
+      "full_name": "Approved Representative",
+      "role": "Manager"
+    },
+    "proposed_responsible_organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6c"
+  },
+  "tenant_registration": {
+    "tenant_onboarding_request_id": "tor_01kaabc",
+    "organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "display_name": "ZuriBeans",
+    "isolation_strategy": "schema_per_tenant",
+    "residency_region": "af-south-1",
+    "requested_products": [
+      "baobab-trade"
+    ]
+  },
+  "tenant_primary_organisation": {
+    "tenant_id": "tn_01kaabbccddeeff",
+    "primary_organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "primary_mapping_id": "tom_01kaabc",
+    "mapping_status": "ACTIVE",
+    "effective_from": "2026-10-09T09:00:00Z"
+  },
+  "operating_legal_actor_mandate_proposal": {
+    "mandate_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6d",
+    "tenant_id": "tn_01kaabbccddeeff",
+    "operating_organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "responsible_legal_entity_id": "NABHOLD",
+    "roles": [
+      "SELLER_OF_RECORD"
+    ],
+    "activity_scope": [
+      "b2b-trade"
+    ],
+    "market_scope": [
+      "ZA"
+    ],
+    "status": "PENDING",
+    "authority_basis_reference": "proposal/example-awaiting-independent-approval",
+    "evidence_references": [
+      "example:evidence-pending-review"
+    ],
+    "effective_from": "2026-10-09T09:00:00Z",
+    "created_at": "2026-10-09T09:00:00Z"
+  },
+  "legal_actor_resolution_request": {
+    "tenant_id": "tn_01kaabbccddeeff",
+    "operating_organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b",
+    "role": "SELLER_OF_RECORD",
+    "activity": "b2b-trade",
+    "market": "ZA",
+    "effective_at": "2026-10-09T09:00:00Z"
+  },
+  "legal_actor_resolution": {
+    "outcome": "NO_APPLICABLE_MANDATE",
+    "evaluated_at": "2026-10-09T09:00:00Z",
+    "policy_reference": "policy/legal-actor-1"
+  }
+}

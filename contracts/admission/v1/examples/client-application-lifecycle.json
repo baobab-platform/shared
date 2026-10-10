@@ -1,22 +1,22 @@
 {
-  "_comment": "Illustrative ADR-BCP-017 ClientApplication instances; runtime authority is the Control Plane. ZuriBeans applies through the INTERNAL_GROUP channel and is approved INTERNAL only because the Control Plane evaluated its verified PLATFORM_GROUP_AFFILIATE relationship (see organisation/v1/examples/nabhold-group-organisation.json); NOTE: the real ZuriBeans is declared NOT_INCORPORATED in contracts/legal-entity/registry.yaml (ADR-BCP-026/027) and trades through Nabhold as scoped legal actor; the COMPANY form, jurisdiction and PLACEHOLDER registration identifier below exist only because the SUBMITTED application schema currently requires a registration identifier (a known contract gap, see baobab-cp docs/showcase/remaining-blockers.md). They are schema-forced illustration, never a ZuriBeans fact, and the applicant's claim of Nabhold control is unverified. Kilima Fresh Produce is a fictional external applicant, approved COMMERCIAL; the fictional Duma Logistics draft shows that a DRAFT may be incomplete, and an application withdrawn before submission needs no completeness either.",
+  "_comment": "SYNTHETIC. Illustrative ADR-BCP-017 ClientApplication instances; runtime authority is the Control Plane. Synthetic Affiliate Trading Ltd is a fictional, incorporated applicant from the fictional group in organisation/v1/examples/synthetic-group-organisation.json. It applies through the INTERNAL_GROUP channel and is approved INTERNAL only because the Control Plane evaluated its synthetic, verified PLATFORM_GROUP_AFFILIATE relationship; its ownership evidence and registration identifier (SYNTHETIC-0002) are fictional. Nothing here is a real organisation, a real registration or ownership fact, or a Nabhold decision. The v1 SUBMITTED application schema requires a registration identifier, so a pre-incorporation business cannot be shown here: the real unincorporated ZuriBeans and Equator & Estate Co. belong on the v2 path (admission/v2 and organisation/v2/examples/zuribeans-organisation-first.json), and their INTERNAL affiliations stay PENDING_REVIEW. Founding-group membership grants no INTERNAL entitlement by itself. Kilima Fresh Produce is a fictional external applicant, approved COMMERCIAL; the fictional Duma Logistics draft shows that a DRAFT may be incomplete, and an application withdrawn before submission needs no completeness either.",
   "client_applications": [
     {
-      "client_application_id": "capp_01k9zuribeans",
+      "client_application_id": "capp_01k9synthetic",
       "reference": "APP-2026-000001",
       "status": "APPROVED",
       "application_channel": "INTERNAL_GROUP",
       "version": 6,
-      "applicant_principal_id": "prn_01k9zuriadmin",
+      "applicant_principal_id": "prn_01k9synthadmin",
       "assigned_reviewer": "prn_01k9reviewer",
       "organisation_profile": {
-        "legal_name": "ZuriBeans",
+        "legal_name": "Synthetic Affiliate Trading Ltd",
         "organisation_form": "COMPANY",
         "jurisdiction_of_incorporation": "KE",
         "registration_identifiers": [
           {
             "type": "COMPANY_REGISTRATION",
-            "value": "PLACEHOLDER-ZURIBEANS",
+            "value": "SYNTHETIC-0002",
             "issuing_jurisdiction": "KE"
           }
         ],
@@ -28,7 +28,7 @@
           {
             "relationship_type": "CONTROLS",
             "applicant_role": "TARGET",
-            "counterparty_organisation_id": "ce_nabhold_root"
+            "counterparty_organisation_id": "ce_synthetic_sponsor"
           }
         ]
       },
@@ -49,16 +49,16 @@
       "evidence": [
         {
           "evidence_type": "OWNERSHIP_EVIDENCE",
-          "evidence_reference": "evd_nabhold_share_register_2026",
+          "evidence_reference": "evd_synthetic_share_register_2026",
           "recorded_at": "2026-09-20T08:00:00Z"
         }
       ],
       "information_requests": [],
       "decision": {
-        "admission_decision_id": "adm_01k9zuribeans",
+        "admission_decision_id": "adm_01k9synthetic",
         "decision": "APPROVED",
         "decided_at": "2026-09-22T10:00:00Z",
-        "reason": "Nabhold Group affiliate; INTERNAL subscription approved."
+        "reason": "Synthetic group affiliate; INTERNAL subscription approved (illustrative)."
       },
       "created_at": "2026-09-20T08:00:00Z",
       "updated_at": "2026-09-22T10:00:00Z",
@@ -191,19 +191,19 @@
   ],
   "admission_decisions": [
     {
-      "admission_decision_id": "adm_01k9zuribeans",
-      "client_application_id": "capp_01k9zuribeans",
+      "admission_decision_id": "adm_01k9synthetic",
+      "client_application_id": "capp_01k9synthetic",
       "decision": "APPROVED",
-      "reason": "Nabhold Group affiliate; INTERNAL subscription approved.",
+      "reason": "Synthetic group affiliate; INTERNAL subscription approved (illustrative).",
       "decided_by": "prn_01k9approver",
       "decided_at": "2026-09-22T10:00:00Z",
       "approved_subscription_type": "INTERNAL",
       "internal_eligibility": {
-        "organisation_id": "ce_zuribeans",
-        "platform_id": "baobab-platform",
+        "organisation_id": "ce_synthetic_affiliate",
+        "platform_id": "synthetic-platform",
         "eligibility_status": "ELIGIBLE",
         "basis_relationship_ids": [
-          "prel_01k8zuriaffil"
+          "prel_01k8synthaffil"
         ],
         "evaluated_at": "2026-09-22T10:00:00Z"
       },
@@ -217,7 +217,7 @@
       ],
       "approved_isolation_requirements": "schema_per_tenant",
       "evidence_references": [
-        "evd_nabhold_share_register_2026"
+        "evd_synthetic_share_register_2026"
       ]
     },
     {
@@ -272,9 +272,9 @@
   "admission_decision_requests": [
     {
       "decision": "APPROVED",
-      "reason": "Nabhold Group affiliate; INTERNAL subscription approved.",
+      "reason": "Synthetic group affiliate; INTERNAL subscription approved (illustrative).",
       "approved_subscription_type": "INTERNAL",
-      "internal_eligibility_organisation_id": "ce_zuribeans",
+      "internal_eligibility_organisation_id": "ce_synthetic_affiliate",
       "approved_market_scope": [
         "KE",
         "UG"
@@ -285,7 +285,7 @@
       ],
       "approved_isolation_requirements": "schema_per_tenant",
       "evidence_references": [
-        "evd_nabhold_share_register_2026"
+        "evd_synthetic_share_register_2026"
       ]
     },
     {

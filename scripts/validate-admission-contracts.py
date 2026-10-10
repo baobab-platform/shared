@@ -381,13 +381,13 @@ def negative(label: str, schema_file: str, definition: str, record: dict) -> Non
     NEGATIVE.append((label, schema_file, definition, record))
 
 
-if {"capp_01k9kilima", "capp_01k9duma"} <= set(apps) and {"adm_01k9zuribeans", "adm_01k9kilima"} <= set(decisions):
+if {"capp_01k9kilima", "capp_01k9duma"} <= set(apps) and {"adm_01k9synthetic", "adm_01k9kilima"} <= set(decisions):
     kilima, duma = apps["capp_01k9kilima"], apps["capp_01k9duma"]
-    internal, commercial = decisions["adm_01k9zuribeans"], decisions["adm_01k9kilima"]
+    internal, commercial = decisions["adm_01k9synthetic"], decisions["adm_01k9kilima"]
     draft = {"organisation_profile": {"legal_name": "Duma Logistics"}}
 
     for field, value in {"status": "APPROVED", "application_channel": "INTERNAL_GROUP", "approved_subscription_type": "INTERNAL",
-                         "tenant_id": "tn_01k9duma", "organisation_id": "ce_zuribeans", "decision": {"decision": "APPROVED"}}.items():
+                         "tenant_id": "tn_01k9duma", "organisation_id": "ce_synthetic_affiliate", "decision": {"decision": "APPROVED"}}.items():
         negative(f"applicant draft sets server-authoritative {field}", "application.schema.json", "ClientApplicationDraft",
                  {**draft, field: value})
     verified = copy.deepcopy(draft)
@@ -436,7 +436,7 @@ if {"capp_01k9kilima", "capp_01k9duma"} <= set(apps) and {"adm_01k9zuribeans", "
     negative("INTERNAL without an organisation to evaluate", "decision.schema.json", "AdmissionDecisionRequest",
              {**request, "approved_subscription_type": "INTERNAL"})
     negative("COMMERCIAL naming an internal-eligibility organisation", "decision.schema.json", "AdmissionDecisionRequest",
-             {**request, "internal_eligibility_organisation_id": "ce_zuribeans"})
+             {**request, "internal_eligibility_organisation_id": "ce_synthetic_affiliate"})
     negative("rejection carrying a classification", "decision.schema.json", "AdmissionDecisionRequest",
              {"decision": "REJECTED", "reason": "no", "approved_subscription_type": "COMMERCIAL"})
     negative("request names its own decider", "decision.schema.json", "AdmissionDecisionRequest", {**request, "decided_by": "prn_x"})
@@ -450,7 +450,7 @@ if {"capp_01k9kilima", "capp_01k9duma"} <= set(apps) and {"adm_01k9zuribeans", "
     no_basis["internal_eligibility"]["basis_relationship_ids"] = []
     negative("eligibility without a governing relationship", "decision.schema.json", "AdmissionDecision", no_basis)
     corporate_basis = copy.deepcopy(internal)
-    corporate_basis["internal_eligibility"]["basis_relationship_ids"] = ["crel_01k8nabzuri"]
+    corporate_basis["internal_eligibility"]["basis_relationship_ids"] = ["crel_01k8synthowns"]
     negative("eligibility resting on a corporate relationship id", "decision.schema.json", "AdmissionDecision", corporate_basis)
     ineligible = copy.deepcopy(internal)
     ineligible["internal_eligibility"]["eligibility_status"] = "INELIGIBLE"

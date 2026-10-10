@@ -301,8 +301,8 @@ def negative(label: str, ref: str, record: dict) -> None:
 
 
 SUBS = "product/v1/subscription.schema.json#/$defs/"
-internal = copy.deepcopy(records["subcls_01k9zuriinternal"])
-reclass = copy.deepcopy(records["subcls_01k9zuricommercial"])
+internal = copy.deepcopy(records["subcls_01k9synthinternal"])
+reclass = copy.deepcopy(records["subcls_01k9synthcommercial"])
 no_evidence = copy.deepcopy(internal); del no_evidence["internal_eligibility"]
 negative("INTERNAL record without eligibility evidence", SUBS + "SubscriptionClassificationRecord", no_evidence)
 negative("COMMERCIAL record carrying eligibility evidence", SUBS + "SubscriptionClassificationRecord",

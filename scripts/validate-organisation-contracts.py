@@ -559,6 +559,49 @@ else:
     if not any(o["verification_state"] != "VERIFIED" and o["source_authority"] == "applicant-submission" for o in acme["organisations"]):
         fail("external example must show an unreviewed applicant claim remaining unverified")
 
+# 3b. The legacy v1 INTERNAL, subscription and legal-entity examples must use
+# the fictional synthetic group, never the real founding businesses. ZuriBeans
+# and Equator & Estate Co. are not incorporated (ADR-BCP-026/027), and a
+# founding-group name in an example must not read as a real Nabhold decision,
+# a real ownership fact or a real INTERNAL entitlement. Only `_comment` text may
+# name the real businesses (to explain the distinction).
+import re as _re
+
+REAL_FIRST_PARTY = _re.compile(r"zuri\s*beans|equator|thamani|nabhold|" + "|".join(_re.escape(i.lower()) for i in FIRST_PARTY), _re.IGNORECASE)
+SYNTHETIC_ONLY_DIRS = ["admission/v1/examples", "product/v1/examples", "subscriptions/v1/examples",
+                       "intercompany/v1/examples", "inventory-ownership/v1/examples"]
+
+
+def _strings(value, path=""):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key != "_comment":
+                yield from _strings(item, f"{path}/{key}")
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            yield from _strings(item, f"{path}/{index}")
+    elif isinstance(value, str):
+        yield path, value
+
+
+synthetic_sources = [p for d in SYNTHETIC_ONLY_DIRS for p in sorted((CONTRACTS / d).rglob("*.json"))]
+synthetic_sources.append(CONTRACTS / "organisation/v1/examples/synthetic-group-organisation.json")
+for source in synthetic_sources:
+    for where, text in _strings(json.loads(source.read_text())):
+        if REAL_FIRST_PARTY.search(text) or text == "baobab-platform":
+            fail(f"{rel(source)}{where}: {text!r} names a real founding-group business or the real platform; v1 INTERNAL and legal-entity examples must use the fictional synthetic group (ADR-BCP-026/027)")
+synthetic = examples.get("synthetic-group-organisation.json")
+if synthetic is None:
+    fail("examples must include synthetic-group-organisation.json (the fictional INTERNAL-eligibility group)")
+else:
+    if "SYNTHETIC" not in synthetic["_comment"]:
+        fail("synthetic-group-organisation.json must announce itself as SYNTHETIC")
+    if {p["legal_entity_id"] for p in synthetic["legal_entity_profiles"]} & FIRST_PARTY:
+        fail("synthetic group reuses a first-party registry legal entity id")
+    for pr in synthetic["platform_relationships"]:
+        if pr["platform_id"] == "baobab-platform":
+            fail(f"{pr['id']}: the synthetic group must not claim a relationship with the real baobab-platform")
+
 # 4. Negative fixtures: each mutation MUST be rejected by the schema.
 def first(doc_name: str, key: str) -> dict:
     return copy.deepcopy(examples[doc_name][key][0])
