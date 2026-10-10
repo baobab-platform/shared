@@ -127,10 +127,18 @@ entities:
     legal_name: "Thamani Global"
     role: "subsidiary"
     identity_class: "LEGAL_PERSON"
-    incorporation_claim: "REGISTERED_CLAIMED" # CIPC registration reported; evidence pending reconciliation
+    incorporation_claim: "REGISTERED_EVIDENCED" # CP must independently verify the cited evidence
 
-    jurisdiction: null            # TBD
-    registration_identifier: null # TBD
+    # Verified 2026-10-10 from the CIPC Form COR 14.3 registration certificate
+    # (issued 2026-04-13; enterprise name printed in capitals by CIPC). Pending
+    # reviewer sign-off. Only non-sensitive facts are recorded here; ownership,
+    # directors, beneficial-ownership data and tax identifiers are NOT part of
+    # this registry. The certificate lists no shareholders, so `role` remains a
+    # group label, not verified ownership.
+    jurisdiction: "ZA"
+    registration_identifier: "2026/291672/07"
+    registration_effective_date: "2026-04-09"
+    legal_evidence_ref: "baobab-platform/thamani:docs/legal/evidence/2026-04-09-cipc-registration.md"
 
     business_model: "B2C"
     baobab_tenant: true
