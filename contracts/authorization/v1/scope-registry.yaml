@@ -587,6 +587,14 @@ scopes:
     audience: ["baobab-subscriptions"]
     allowed_actors: ["workload"]
 
+  - name: "billing:observe"
+    description: >-
+      Authenticated Control Plane workload delivery of canonical founding
+      lifecycle invalidation events to the subscriptions durable inbox.
+      Receipt is not continuing INTERNAL eligibility or payment authority.
+    audience: ["baobab-subscriptions"]
+    allowed_actors: ["workload"]
+
   - name: "billing:read"
     description: "Read billing projections and their readiness (baobab-subscriptions)."
     audience: ["baobab-subscriptions"]
