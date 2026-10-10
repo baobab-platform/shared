@@ -14,8 +14,10 @@ channels:
       sponsorshipActivated: { $ref: "#/components/messages/SponsorshipActivated" }
       sponsorshipSuspended: { $ref: "#/components/messages/SponsorshipSuspended" }
       sponsorshipRevoked: { $ref: "#/components/messages/SponsorshipRevoked" }
+      sponsorshipExpired: { $ref: "#/components/messages/SponsorshipExpired" }
       deferralActivated: { $ref: "#/components/messages/DeferralActivated" }
       deferralRevoked: { $ref: "#/components/messages/DeferralRevoked" }
+      deferralExpired: { $ref: "#/components/messages/DeferralExpired" }
 operations:
   publishFoundingLifecycle:
     action: send
@@ -62,3 +64,19 @@ components:
           - type: object
             properties:
               data: { $ref: "./founding-lifecycle-events.schema.json#/$defs/DeferralRevoked" }
+    SponsorshipExpired:
+      name: com.baobab-platform.control-plane.founding-sponsorship.expired.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./founding-lifecycle-events.schema.json#/$defs/SponsorshipExpired" }
+    DeferralExpired:
+      name: com.baobab-platform.control-plane.founding-documentary-deferral.expired.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./founding-lifecycle-events.schema.json#/$defs/DeferralExpired" }
