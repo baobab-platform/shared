@@ -116,6 +116,50 @@
           "const": "REVOKED"
         }
       }
+    },
+    "SponsorshipExpired": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sponsorship_id",
+        "operating_organisation_id",
+        "status"
+      ],
+      "properties": {
+        "sponsorship_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "operating_organisation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "EXPIRED"
+        }
+      }
+    },
+    "DeferralExpired": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deferral_id",
+        "organisation_id",
+        "status"
+      ],
+      "properties": {
+        "deferral_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "organisation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "EXPIRED"
+        }
+      }
     }
   }
 }
