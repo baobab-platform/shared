@@ -5,13 +5,13 @@
   "plan_version": 1,
   "plan_digest": "sha256:b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
   "legal_entity": {
-    "legal_entity_id": "ZURIBEANS-ZA",
-    "legal_name": "Zuribeans South Africa (Pty) Ltd",
+    "legal_entity_id": "NABHOLD",
+    "legal_name": "NABHOLD GROUP AFRICA (Pty) Ltd",
     "jurisdiction_code": "ZA",
     "registration_identifiers": [
       {
         "type": "COMPANY_REGISTRATION",
-        "value": "2026/000000/07",
+        "value": "2026/029839/07",
         "issuing_jurisdiction": "ZA",
         "verified": true
       }

@@ -124,14 +124,16 @@ entities:
 
   # ---------------------------------------------------------------------------
   - id: "THAMANI-GLOBAL"
-    legal_name: "Thamani Global"
+    legal_name: "THAMANI GLOBAL (Pty) Ltd"
     role: "subsidiary"
     identity_class: "LEGAL_PERSON"
     incorporation_claim: "REGISTERED_EVIDENCED" # CP must independently verify the cited evidence
 
     # Verified 2026-10-10 from the CIPC Form COR 14.3 registration certificate
     # (issued 2026-04-13; enterprise name printed in capitals by CIPC). Pending
-    # reviewer sign-off. Only non-sensitive facts are recorded here; ownership,
+    # reviewer sign-off. The full registered name "THAMANI GLOBAL (Pty) Ltd" was
+    # confirmed by the programme sponsor 2026-10-10 (the certificate prints the
+    # enterprise name as "THAMANI GLOBAL"). Only non-sensitive facts are recorded here; ownership,
     # directors, beneficial-ownership data and tax identifiers are NOT part of
     # this registry. The certificate lists no shareholders, so `role` remains a
     # group label, not verified ownership.

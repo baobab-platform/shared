@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **First-party legal-entity alignment (ADR-BCP-026/027).** `legal-entity/registry.yaml` records Thamani's full registered name `THAMANI GLOBAL (Pty) Ltd`. The first-party organisation example no longer gives ZuriBeans or Equator & Estate Co. a `LegalEntityProfile` or `COMPANY` form (they are unverified `UNINCORPORATED_ORGANISATION` records controlled through Nabhold), and `validate-organisation-contracts.py` now requires legal entities to equal the registry's `LEGAL_PERSON` entries. The `erp-assignment` and `register-tenant` examples use Nabhold as the legal entity; the admission example notes its schema-forced placeholder identifier.
+
 * Remove the vulnerable `braces` dependency chain from TypeScript contract generation by using GraphQL Codegen's programmatic API for local SDL; generated types retain deterministic, identical output.
 * Allow Foundation consumers to pass a read-only `SHARED_READ_TOKEN` for private canonical-policy and contract-history checkouts; use the caller token when no separate credential is supplied.
 
