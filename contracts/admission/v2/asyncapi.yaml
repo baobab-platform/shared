@@ -1,0 +1,64 @@
+asyncapi: 3.1.0
+info:
+  title: Baobab governed founding lifecycle facts
+  version: 1.0.0
+  description: >
+    PEO-02 CP-owned lifecycle events. These events are invalidation signals,
+    not transferable privileges. Consumers MUST independently check the
+    current sponsor verification, scope, time and platform policy.
+defaultContentType: application/json
+channels:
+  foundingLifecycle:
+    address: baobab-platform.control-plane.founding-lifecycle.v1
+    messages:
+      sponsorshipActivated: { $ref: "#/components/messages/SponsorshipActivated" }
+      sponsorshipSuspended: { $ref: "#/components/messages/SponsorshipSuspended" }
+      sponsorshipRevoked: { $ref: "#/components/messages/SponsorshipRevoked" }
+      deferralActivated: { $ref: "#/components/messages/DeferralActivated" }
+      deferralRevoked: { $ref: "#/components/messages/DeferralRevoked" }
+operations:
+  publishFoundingLifecycle:
+    action: send
+    channel: { $ref: "#/channels/foundingLifecycle" }
+components:
+  messages:
+    SponsorshipActivated:
+      name: com.baobab-platform.control-plane.founding-sponsorship.activated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./founding-lifecycle-events.schema.json#/$defs/SponsorshipActivated" }
+    SponsorshipSuspended:
+      name: com.baobab-platform.control-plane.founding-sponsorship.suspended.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./founding-lifecycle-events.schema.json#/$defs/SponsorshipSuspended" }
+    SponsorshipRevoked:
+      name: com.baobab-platform.control-plane.founding-sponsorship.revoked.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./founding-lifecycle-events.schema.json#/$defs/SponsorshipRevoked" }
+    DeferralActivated:
+      name: com.baobab-platform.control-plane.founding-documentary-deferral.activated.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./founding-lifecycle-events.schema.json#/$defs/DeferralActivated" }
+    DeferralRevoked:
+      name: com.baobab-platform.control-plane.founding-documentary-deferral.revoked.v1
+      payload:
+        allOf:
+          - $ref: ../../events/v1/envelope.schema.json
+          - type: object
+            properties:
+              data: { $ref: "./founding-lifecycle-events.schema.json#/$defs/DeferralRevoked" }
