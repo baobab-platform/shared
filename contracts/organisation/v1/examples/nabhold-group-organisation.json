@@ -1,13 +1,13 @@
 {
-  "_comment": "Illustrative ADR-BCP-018 instances for the first-party Nabhold Group Africa structure (ADR-BCP-018 sections 58 and 109). Runtime authority is Control Plane; these are examples, not runtime data. Organisation and LegalEntityProfile identity is VERIFIED from the Shared first-party registry, which is an authoritative governance source for those identities. Jurisdiction and company registration identifiers are recorded in contracts/legal-entity/registry.yaml for NABHOLD and THAMANI-GLOBAL only (REGISTERED_EVIDENCED from their CIPC COR 14.3 certificates, reviewer sign-off pending) and are carried on those two legal-entity profiles as unverified identifiers, because the Control Plane must verify them independently; ZURIBEANS and EQUATOR-ESTATE are declared NOT_INCORPORATED (ADR-BCP-026/027): they are UNINCORPORATED_ORGANISATION operating businesses with no LegalEntityProfile, no jurisdiction and no registration identifier, and they trade only through Nabhold as scoped legal actor under an approved mandate until each is incorporated. Incorporation dates, legal status and ownership percentages are not recorded in the registry and are therefore omitted or UNKNOWN rather than invented; the registry's registration_effective_date is deliberately not asserted here as an incorporation date. The Nabhold OWNS relationship to Thamani Global, the CONTROLS relationships (sponsorship of the two unincorporated businesses; no ownership is asserted because nothing is incorporated to own) and the PLATFORM_* relationships are PENDING_REVIEW: the registry records roles (holding_company / subsidiary) but not company-secretarial ownership evidence, so ADR-BCP-017 INTERNAL eligibility must fail closed until the 'Verify CorporateRelationship' step of section 109 completes. Canonical entity ids here are readable illustrations; runtime ids are Control Plane-minted.",
+  "_comment": "Illustrative ADR-BCP-018 instances for the first-party Nabhold Group Africa structure, corrected to ADR-BCP-026 (sections 3, 5) and ADR-BCP-027 (sections 1.1, 4.2, 11). Runtime authority is the Control Plane; these are examples, not runtime data. A Shared first-party registry entry is governed identity and declared intent, never verification: every Organisation and LegalEntityProfile here is UNVERIFIED with source_authority shared-first-party-identity, matching what the Control Plane first-party reconciler records. NABHOLD and THAMANI-GLOBAL are REGISTERED_EVIDENCED in contracts/legal-entity/registry.yaml (CIPC COR 14.3 certificates, reviewer sign-off pending): their profiles carry the jurisdiction, the registration identifier (verified:false) and the registry's legal_evidence_ref, and become VERIFIED only through independent Control Plane review of that evidence. ZURIBEANS and EQUATOR-ESTATE are declared NOT_INCORPORATED operating businesses: UNINCORPORATED_ORGANISATION records with no LegalEntityProfile, no jurisdiction and no registration identifier; they trade only through Nabhold as scoped legal actor under an independently approved OperatingLegalActorMandate. Incorporation dates, legal status and ownership percentages are not recorded in the registry and are omitted or UNKNOWN rather than invented. The Nabhold OWNS relationship to Thamani Global, the CONTROLS relationships to the two unincorporated businesses (sponsorship; no ownership is asserted because nothing is incorporated to own) and the PLATFORM_* relationships are PENDING_REVIEW: the registry records group roles but not company-secretarial ownership evidence, so ADR-BCP-017 INTERNAL eligibility must fail closed until the corporate relationship is independently verified. Canonical entity ids here are readable illustrations; runtime ids are Control Plane-minted.",
   "organisations": [
     {
       "canonical_entity_id": "ce_nabhold_root",
       "display_name": "Nabhold Group Africa",
       "official_name": "Nabhold Group Africa",
       "organisation_form": "COMPANY",
-      "verification_state": "VERIFIED",
-      "source_authority": "shared-governance",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "shared-first-party-identity",
       "status": "ACTIVE",
       "effective_from": "2026-09-01T00:00:00Z",
       "evidence_references": [
@@ -20,7 +20,7 @@
       "official_name": "Zuribeans",
       "organisation_form": "UNINCORPORATED_ORGANISATION",
       "verification_state": "UNVERIFIED",
-      "source_authority": "shared-governance",
+      "source_authority": "shared-first-party-identity",
       "status": "ACTIVE",
       "effective_from": "2026-09-01T00:00:00Z",
       "evidence_references": [
@@ -32,8 +32,8 @@
       "display_name": "Thamani Global",
       "official_name": "THAMANI GLOBAL (Pty) Ltd",
       "organisation_form": "COMPANY",
-      "verification_state": "VERIFIED",
-      "source_authority": "shared-governance",
+      "verification_state": "UNVERIFIED",
+      "source_authority": "shared-first-party-identity",
       "status": "ACTIVE",
       "effective_from": "2026-09-01T00:00:00Z",
       "evidence_references": [
@@ -46,7 +46,7 @@
       "official_name": "Equator & Estate Co.",
       "organisation_form": "UNINCORPORATED_ORGANISATION",
       "verification_state": "UNVERIFIED",
-      "source_authority": "shared-governance",
+      "source_authority": "shared-first-party-identity",
       "status": "ACTIVE",
       "effective_from": "2026-09-01T00:00:00Z",
       "evidence_references": [
@@ -70,14 +70,13 @@
         }
       ],
       "legal_status": "UNKNOWN",
-      "source_authority": "shared-governance",
-      "verification_state": "VERIFIED",
+      "source_authority": "shared-first-party-identity",
+      "verification_state": "UNVERIFIED",
       "effective_from": "2026-09-01T00:00:00Z",
       "evidence_references": [
-        "shared:contracts/legal-entity/registry.yaml#NABHOLD"
-      ],
-      "verified_by": "shared-governance-reconciliation",
-      "verified_at": "2026-09-01T00:00:00Z"
+        "shared:contracts/legal-entity/registry.yaml#NABHOLD",
+        "baobab-platform/nabhold:docs/go-live/evidence/G01/production/2026-01-16-cipc-registration.md"
+      ]
     },
     {
       "legal_entity_id": "THAMANI-GLOBAL",
@@ -94,14 +93,13 @@
         }
       ],
       "legal_status": "UNKNOWN",
-      "source_authority": "shared-governance",
-      "verification_state": "VERIFIED",
+      "source_authority": "shared-first-party-identity",
+      "verification_state": "UNVERIFIED",
       "effective_from": "2026-09-01T00:00:00Z",
       "evidence_references": [
-        "shared:contracts/legal-entity/registry.yaml#THAMANI-GLOBAL"
-      ],
-      "verified_by": "shared-governance-reconciliation",
-      "verified_at": "2026-09-01T00:00:00Z"
+        "shared:contracts/legal-entity/registry.yaml#THAMANI-GLOBAL",
+        "baobab-platform/thamani:docs/legal/evidence/2026-04-09-cipc-registration.md"
+      ]
     }
   ],
   "corporate_relationships": [

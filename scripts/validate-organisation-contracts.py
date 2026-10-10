@@ -525,6 +525,26 @@ else:
     nabhold_les = {p["legal_entity_id"] for p in nabhold["legal_entity_profiles"]}
     if nabhold_les != FIRST_PARTY_LEGAL_PERSONS:
         fail(f"first-party example legal entities {sorted(nabhold_les)} must match the Shared registry LEGAL_PERSON entries {sorted(FIRST_PARTY_LEGAL_PERSONS)}; unincorporated operating businesses {sorted(FIRST_PARTY_OPERATING_BUSINESSES)} must not have a LegalEntityProfile")
+    # ADR-BCP-027 section 11 / LA-T17, LA-T29 and ADR-BCP-026 PEO-T20: a Shared
+    # registry entry is governed identity and declared intent, never legal
+    # verification. First-party records stay UNVERIFIED until the Control Plane
+    # independently reviews the cited evidence.
+    registry_entities = {e["id"]: e for e in registry_doc["entities"]}
+    for o in nabhold["organisations"]:
+        if o["verification_state"] == "VERIFIED" and o["source_authority"] == "shared-first-party-identity":
+            fail(f"first-party example: Organisation {o['canonical_entity_id']} cannot be VERIFIED from the Shared registry alone (ADR-BCP-027 section 11)")
+    for p in nabhold["legal_entity_profiles"]:
+        entity = registry_entities.get(p["legal_entity_id"], {})
+        if p["verification_state"] == "VERIFIED":
+            fail(f"first-party example: LegalEntityProfile {p['legal_entity_id']} cannot be VERIFIED from registry membership; CP must review the CIPC evidence independently (ADR-BCP-026 PEO-T20)")
+        if any(i.get("verified") for i in p.get("registration_identifiers", [])):
+            fail(f"first-party example: {p['legal_entity_id']} registration identifier cannot be verified:true before independent review")
+        if entity.get("incorporation_claim") == "REGISTERED_EVIDENCED":
+            if entity["legal_evidence_ref"] not in p.get("evidence_references", []):
+                fail(f"first-party example: {p['legal_entity_id']} must cite the registry legal_evidence_ref {entity['legal_evidence_ref']!r}")
+            registry_identifier = entity["registration_identifier"]
+            if [i["value"] for i in p.get("registration_identifiers", [])] != [registry_identifier]:
+                fail(f"first-party example: {p['legal_entity_id']} registration identifier must match the registry ({registry_identifier})")
     for o in nabhold["organisations"]:
         refs = " ".join(o.get("evidence_references", []))
         if any(f"#{bid}" in refs for bid in FIRST_PARTY_OPERATING_BUSINESSES) and (o["organisation_form"] != "UNINCORPORATED_ORGANISATION" or o["verification_state"] == "VERIFIED"):

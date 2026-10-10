@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **First-party verification state (ADR-BCP-026/027).** The first-party organisation example no longer presents registry membership as legal verification: Organisations and the NABHOLD and THAMANI-GLOBAL LegalEntityProfiles are `UNVERIFIED` (source `shared-first-party-identity`) and cite the registry's CIPC `legal_evidence_ref`. `validate-organisation-contracts.py` now rejects a `VERIFIED` first-party profile or Organisation resting on the registry alone, a `verified:true` identifier, a missing evidence reference and a registration number that differs from the registry.
+
 * **First-party legal-entity alignment (ADR-BCP-026/027).** `legal-entity/registry.yaml` records Thamani's full registered name `THAMANI GLOBAL (Pty) Ltd`. The first-party organisation example no longer gives ZuriBeans or Equator & Estate Co. a `LegalEntityProfile` or `COMPANY` form (they are unverified `UNINCORPORATED_ORGANISATION` records controlled through Nabhold), and `validate-organisation-contracts.py` now requires legal entities to equal the registry's `LEGAL_PERSON` entries. The `erp-assignment` and `register-tenant` examples use Nabhold as the legal entity; the admission example notes its schema-forced placeholder identifier.
 
 * Remove the vulnerable `braces` dependency chain from TypeScript contract generation by using GraphQL Codegen's programmatic API for local SDL; generated types retain deterministic, identical output.
