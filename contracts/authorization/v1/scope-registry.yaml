@@ -537,6 +537,15 @@ scopes:
     allowed_actors: ["human"]
     privileged: true
 
+  - name: "subscription:internal-authority"
+    description: >-
+      Allows an authenticated registered baobab-subscriptions workload to ask
+      Control Plane for a fresh, tenant- and ProductSubscription-bound INTERNAL
+      eligibility decision. This is a read-only policy check, never an
+      admission approval, identity verification or entitlement grant.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+
   - name: "subscription:read"
     description: >-
       A platform operator reads ProductSubscription classifications and their
