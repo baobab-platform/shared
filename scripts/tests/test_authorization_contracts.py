@@ -54,6 +54,35 @@ class ValidatorAudienceRegistrationTests(unittest.TestCase):
             self.assertEqual(by_name[name]["audience"], ["baobab-pulse"])
             self.assertIn("workload", by_name[name]["allowed_actors"])
 
+    def test_cms_is_registered_only_as_validator_of_its_resource_server_audience(self):
+        cms = self.registry["workloads"]["baobab-cms-workload"]
+        self.assertIn("context:validate", cms["allowed_scopes"])
+        self.assertEqual(cms["validates_audiences"], ["baobab-cms"])
+        self.assertNotIn("baobab-cms", cms["allowed_audiences"])
+
+        scopes = yaml.safe_load(
+            (self.root / "contracts/authorization/v1/scope-registry.yaml").read_text()
+        )["scopes"]
+        by_name = {scope["name"]: scope for scope in scopes}
+        for name in ("content:entry:resolve", "content:entry:preview"):
+            self.assertEqual(by_name[name]["audience"], ["baobab-cms"])
+            self.assertIn("workload", by_name[name]["allowed_actors"])
+
+    def test_nabhold_is_a_least_privilege_caller_not_a_validator(self):
+        nabhold = self.registry["workloads"]["nabhold-backend"]
+        self.assertEqual(nabhold["status"], "PROVISIONED")
+        self.assertEqual(nabhold["repository"], "baobab-platform/nabhold")
+        self.assertEqual(nabhold["credential_type"], "client_credentials")
+        self.assertEqual(
+            sorted(nabhold["allowed_audiences"]), ["baobab-cms", "baobab-control-plane"]
+        )
+        self.assertEqual(
+            sorted(nabhold["allowed_scopes"]), ["content:entry:resolve", "context:resolve"]
+        )
+        self.assertNotIn("validates_audiences", nabhold)
+        for withheld in ("context:validate", "content:entry:preview", "provider-migration:task"):
+            self.assertNotIn(withheld, nabhold["allowed_scopes"])
+
     def test_two_validators_for_one_audience(self):
         result = self.validate()
         self.assertEqual(result.returncode, 0, result.stderr)
