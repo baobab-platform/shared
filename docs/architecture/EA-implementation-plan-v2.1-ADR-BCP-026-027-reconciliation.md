@@ -130,7 +130,7 @@ A document grace changes only a **specified platform document collection require
 
 **Gate A — Architecture/contract readiness:** Shared LA-01 and PEO-01 contracts accepted, pinned by every affected consumer; nullable actor boundary, purpose/role/market-specific mandate, schema migration and proof negative tests converge.
 
-**Gate B — Platform developer-unfreeze:** Retain EA v2.0 Section 38 prerequisites. Add Organisation-first model + canonical API, mandate policy/service, progressive intake and consumer-ready typed contracts. Selected Digital Estate development can proceed only if frontend does not implement shadow platform authority. *Do not equate with admission or trading permission.*
+**Gate B — Platform developer-unfreeze:** Retain EA v2.0 Section 38 prerequisites but **extend its explicit development freeze/unfreeze list to Nabhold, ZuriBeans, Thamani and Equator & Estate Co.** (the fourth independently deployed founding digital estate). This v2.1 requirement overrides the older three-name list, not the actual prerequisite controls. Add Organisation-first model + canonical API, mandate policy/service, progressive intake and consumer-ready typed contracts. Selected Digital Estate development can proceed only if frontend does not implement shadow platform authority. *Do not equate with admission or trading permission.*
 
 **Gate C — Controlled founding-group onboarding (non-production):** Create truthful Nabhold, Thamani, ZuriBeans, Equator & Estate Organisations; separately classify incorporation/ownership, only permitted sponsorship, enumerate documentary grace, create isolated tenants, scoped actors and pending capability state; no false verified provider or legal record. Require reversible replay/idempotency.
 
