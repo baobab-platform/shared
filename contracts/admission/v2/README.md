@@ -77,6 +77,15 @@ certification or permission to transact. Every Trade, ERP, Payments and
 Trade Docs PEP must separately verify its own complete operation-specific
 authority, and recheck an active hold at the point of irreversible execution.
 
+**JSON Schema alone cannot compare response timestamps or match a response
+to its originating request.** The normative executable pair/lease predicate
+lives in `scripts/documentary_restriction_binding.py`, and
+`scripts/tests/test_peo02t_documentary_restriction_contract.py` is executed
+in Shared's required CI. Consumers **MUST** implement and test equivalent
+runtime checks; simply validating the response JSON object does not satisfy
+this contract. Reject nonpositive or >2-second leases, expired/stale decisions
+and every mismatched echoed Context, operation, market or capability.
+
 CP owns this negative-scoped fact; Trade/ERP/Payments/Trade Docs never
 create or directly remove holds. Independent verified remediation approval
 is required before any release. Existing CP PEO-02S documentary review
