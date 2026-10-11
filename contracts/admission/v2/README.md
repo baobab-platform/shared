@@ -53,3 +53,32 @@ as verified, clear an obligation or reactivate an expired grace.
    staging acceptance, provider-enforcement and operator sign-off.
 
 **This schema alone does not commission any actual review outcome.**
+
+## PEO-02T — current, negative-only documentary PEP veto
+
+The canonical `documentary-restriction.schema.json` defines the private
+authenticated CP runtime `POST /internal/documentary/v1/restrictions/assess`
+boundary. `DocumentaryRestrictionAssessmentRequest` carries only a trusted
+workload-owned runtime `context_id` and the exact market, capability and
+irreversible operation reference. It cannot nominate a tenant, legal actor,
+parent company, provider or mandate.
+
+CP independently redeems the Context and checks the ACTIVE tenant's PRIMARY
+Organisation before reading its current documentary restriction ledger.
+`DocumentaryRestrictionAssessmentResponse` echoes the exact scope, bounds
+the decision lifetime to **at most two seconds**, has `blocked:boolean`
+and MUST contain `authority_granted:false`. A missing/expired/unknown
+decision or service outage requires a deny, not an optimistic default.
+Responses (including denied authorization) require `Cache-Control: no-store`.
+
+**No negative hold** (`blocked:false`) is not proof of incorporation, a
+signed acting mandate, Regulations legal applicability, compliance, provider
+certification or permission to transact. Every Trade, ERP, Payments and
+Trade Docs PEP must separately verify its own complete operation-specific
+authority, and recheck an active hold at the point of irreversible execution.
+
+CP owns this negative-scoped fact; Trade/ERP/Payments/Trade Docs never
+create or directly remove holds. Independent verified remediation approval
+is required before any release. Existing CP PEO-02S documentary review
+decisions can impose negative holds but do **not** grant positive readiness.
+A canonical Shared schema does not activate or certify any provider.
