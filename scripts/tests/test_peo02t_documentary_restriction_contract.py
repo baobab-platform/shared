@@ -7,6 +7,9 @@ from pathlib import Path
 import unittest
 
 from jsonschema import Draft202012Validator, FormatChecker
+from documentary_restriction_binding import (
+    RestrictionDecisionRejected, verify_current_restriction_pair,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 PATH = ROOT / "contracts/admission/v2/documentary-restriction.schema.json"
@@ -51,6 +54,38 @@ class ContractTests(unittest.TestCase):
         ):
             with self.subTest(definition=definition):
                 Draft202012Validator(DEFS[definition], format_checker=FormatChecker()).validate(example)
+
+    def test_temporal_and_original_request_pair_must_match(self):
+        self.assertTrue(verify_current_restriction_pair(
+            request(), response(), organisation_id=ORG,
+            now=NOW + timedelta(milliseconds=500),
+        ))
+        self.assertFalse(verify_current_restriction_pair(
+            request(), {**response(), "blocked": False}, organisation_id=ORG,
+            now=NOW + timedelta(milliseconds=500),
+        ))
+        wrong = [
+            {"context_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a99"},
+            {"capability": "payments.capture"},
+            {"market": "UG"},
+            {"operation_reference": "synthetic/different-operation"},
+            {"organisation_id": "0199a1b2-c3d4-7e8f-9a0b-1c2d3e4f5a99"},
+            {"blocked": "false"},
+            {"authority_granted": True},
+            {"evaluated_at": (NOW - timedelta(seconds=5)).isoformat()},
+            {"evaluated_at": (NOW + timedelta(seconds=3)).isoformat()},
+            {"expires_at": (NOW - timedelta(seconds=1)).isoformat()},
+            {"expires_at": (NOW + timedelta(minutes=10)).isoformat()},
+            {"evaluated_at": (NOW + timedelta(seconds=1)).isoformat(),
+             "expires_at": (NOW + timedelta(milliseconds=700)).isoformat()},
+        ]
+        for mutation in wrong:
+            with self.subTest(mutation=mutation):
+                with self.assertRaises(RestrictionDecisionRejected):
+                    verify_current_restriction_pair(
+                        request(), {**response(), **mutation},
+                        organisation_id=ORG, now=NOW + timedelta(milliseconds=500),
+                    )
 
     def test_applicant_cannot_select_authority_in_request(self):
         validator = Draft202012Validator(
