@@ -128,6 +128,7 @@ contracts:
       - verification.schema.json
       - lifecycle.yaml
       - source-registry.yaml
+      - authoritative-observation.schema.json
   - domain: topology
     version: v1
     schemas:

@@ -40,6 +40,31 @@ sources:
     access_classification: INTERNAL
     effective_from: "2026-01-01T00:00:00Z"
     status: ACTIVE
+  # CIPC Companies API is documented at developer.cipc.co.za. Registry authority
+  # is distinct from an approved Baobab API subscription and adapter certification.
+  # SARS TCS and VAT vendor verification have different authorised access routes.
+  # Neither currently has a Baobab-approved provider integration or delegated
+  # operator verification baseline; registration is therefore SUSPENDED.
+  - source_id: esrc_sarstcs
+    source_class: TAX_AUTHORITY
+    name: South African Revenue Service Tax Compliance Status verification
+    jurisdiction: ZA
+    authority_reference: https://www.sars.gov.za/guide-to-the-tax-compliance-status-functionality-on-efiling/
+    trusted_for:
+      - {claim_type: TAX_COMPLIANCE_STATUS, jurisdiction: ZA}
+    access_classification: RESTRICTED
+    effective_from: "2026-10-11T00:00:00Z"
+    status: SUSPENDED
+  - source_id: esrc_sarsvat
+    source_class: TAX_AUTHORITY
+    name: South African Revenue Service VAT vendor verification
+    jurisdiction: ZA
+    authority_reference: https://www.sars.gov.za/
+    trusted_for:
+      - {claim_type: VAT_REGISTRATION, jurisdiction: ZA}
+    access_classification: RESTRICTED
+    effective_from: "2026-10-11T00:00:00Z"
+    status: SUSPENDED
   # Material an applicant or a reviewer uploads on the applicant's behalf.
   # It corroborates; it is never an authority (sections 9, 180).
   - source_id: esrc_applicant
