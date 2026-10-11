@@ -35,6 +35,7 @@ FILES = {
     "admission/v2/business-identity.schema.json",
     "admission/v2/application.schema.json",
     "admission/v2/onboarding.schema.json",
+    "admission/v2/documentary-restriction.schema.json",
     "control-plane/v2/tenant-registration.schema.json",
     "control-plane/v2/context-resolution.schema.json",
     "control-plane/v2/platform-context.schema.json",
@@ -52,6 +53,7 @@ LOCKED = {
         "business-identity.schema.json",
         "application.schema.json",
         "onboarding.schema.json",
+        "documentary-restriction.schema.json",
     },
     ("control-plane", "v2"): {
         "tenant-registration.schema.json",
@@ -132,6 +134,34 @@ business = "admission/v2/business-identity.schema.json"
 pre = "organisation/v2/pre-tenant-admission.schema.json"
 actor = "organisation/v2/legal-actor-mandate.schema.json"
 founding = "organisation/v2/founding-admission.schema.json"
+
+# PEO-02T remains a negative-only, context-bound veto, never a
+# positive provider entitlement or legal actor mandate.
+restriction = "admission/v2/documentary-restriction.schema.json"
+scope = {
+    "context_id": ORG,
+    "capability": "accounting.customer-invoice.post",
+    "market": "ZA",
+    "operation_reference": "synthetic/invoice/post-1",
+}
+assessment = {
+    **scope, "organisation_id": NABHOLD_ORG, "blocked": True,
+    "authority_granted": False,
+    "policy_reference": "ADR-BCP-026/PEO-02T:negative-only",
+    "evaluated_at": DATE, "expires_at": END,
+}
+accepts(restriction, "DocumentaryRestrictionAssessmentRequest", scope,
+        "bounded private restriction request")
+accepts(restriction, "DocumentaryRestrictionAssessmentResponse", assessment,
+        "negative-only PEO-02T response")
+accepts(restriction, "DocumentaryRestrictionAssessmentResponse",
+        {**assessment, "blocked": False}, "absence of hold is still not a grant")
+rejects(restriction, "DocumentaryRestrictionAssessmentRequest",
+        {**scope, "legal_entity_id": "NABHOLD"}, "client cannot select issuer")
+rejects(restriction, "DocumentaryRestrictionAssessmentResponse",
+        {**assessment, "authority_granted": True}, "cannot grant authority")
+rejects(restriction, "DocumentaryRestrictionAssessmentResponse",
+        {**assessment, "policy_reference": "applicant/claimed"}, "must pin CP policy")
 
 registration = {
     "tenant_onboarding_request_id": "tor_01kaabc",
