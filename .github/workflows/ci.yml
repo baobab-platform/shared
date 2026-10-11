@@ -241,6 +241,8 @@ jobs:
         run: python scripts/validate-operating-business-contracts.py
       - name: Validate PEO-02T current negative restriction pairs and temporal bounds
         run: PYTHONPATH=scripts python scripts/tests/test_peo02t_documentary_restriction_contract.py
+      - name: Validate PEO-03A source observations, witnessed tax evidence and non-authority
+        run: python scripts/tests/test_peo03_authoritative_observation.py
       - name: Validate administrative authority contracts (ADR-BCP-020, Draft 2020-12)
         run: python scripts/validate-administration-contracts.py
       - name: Validate evidence and verification contracts (ADR-BCP-023, Draft 2020-12)
