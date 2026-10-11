@@ -239,6 +239,8 @@ jobs:
         run: python scripts/validate-admission-contracts.py
       - name: Validate LA-01 Organisation-first legal-actor and progressive-admission v2 contracts
         run: python scripts/validate-operating-business-contracts.py
+      - name: Validate PEO-02T current negative restriction pairs and temporal bounds
+        run: PYTHONPATH=scripts python scripts/tests/test_peo02t_documentary_restriction_contract.py
       - name: Validate administrative authority contracts (ADR-BCP-020, Draft 2020-12)
         run: python scripts/validate-administration-contracts.py
       - name: Validate evidence and verification contracts (ADR-BCP-023, Draft 2020-12)
