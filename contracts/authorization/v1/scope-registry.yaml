@@ -485,6 +485,19 @@ scopes:
   # PEO-03J: transport admission only for a separately registered
   # scanned-document extraction worker. Candidate text is NOT a source
   # observation, VERIFIED status, corporate registration or tax authority.
+  # PEO-03K custody implementation extension: independent scan admission.
+  # Not an OCR processor, issuer verification, legal-actor or tenant operation.
+  - name: "verification:scan-attest"
+    description: >-
+      Permit a separately governed scanner workload to submit an independently
+      signed clean-scan observation for an existing EvidenceRecord. Control
+      Plane must validate exact scanner trust anchor, artifact digest, actor,
+      evidence lifecycle and independent antivirus verdict before admission.
+      Scope provides transport only and grants no verification/tenant authority.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
   - name: "verification:document-extract"
     description: >-
       Authorise a dedicated workload to request internal candidate extraction
