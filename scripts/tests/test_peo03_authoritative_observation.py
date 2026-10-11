@@ -93,6 +93,25 @@ class AuthoritativeObservationContractTests(unittest.TestCase):
         self.assertNotIn("TAX_COMPLIANCE_STATUS",
                          [x["claim_type"] for x in SOURCES["esrc_cipc"]["trusted_for"]])
 
+    def test_canonical_witness_ids_and_subdivision_jurisdictions(self):
+        assisted = {
+            **observation(), "method": "MANUAL_REGISTRY_LOOKUP",
+            "jurisdiction": "ZA-GP", "witness_principal_id": "prn_kato",
+            "witnessed_at": "2026-10-11T07:30:00Z",
+        }
+        assisted.pop("provider_adapter_id")
+        self.assertFalse(check("SourceObservation", assisted))
+        self.assertFalse(check("SourceVerificationRequest", {
+            **request(), "jurisdiction": "ZA-GP",
+        }))
+
+    def test_matched_evidence_id_must_resolve_canonical_identifier(self):
+        for bad in ["", "https://untrusted.example/file", "evr_"]:
+            with self.subTest(bad=bad):
+                self.assertTrue(check("SourceObservation", {
+                    **observation(), "evidence_reference": bad,
+                }))
+
     def test_positive_observation_needs_provenance_and_freshness(self):
         for key in ("response_digest", "provenance_reference", "freshness_until",
                     "source_record_reference", "evidence_reference"):
