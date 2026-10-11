@@ -152,6 +152,7 @@ contracts:
       - business-identity.schema.json
       - application.schema.json
       - onboarding.schema.json
+      - documentary-restriction.schema.json
   - domain: control-plane
     version: v2
     schemas:
