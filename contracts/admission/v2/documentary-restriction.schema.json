@@ -85,11 +85,17 @@
         },
         "evaluated_at": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "minLength": 20,
+          "maxLength": 40,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
         },
         "expires_at": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "minLength": 20,
+          "maxLength": 40,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
         }
       },
       "description": "Noncacheable CP-sourced negative hold. A `blocked: false` result NEVER authorizes an irreversible operation. Consumer MUST deny stale (>2-second lease), mismatched, missing, non-CP, or blocked results; unavailability is not an allow."
