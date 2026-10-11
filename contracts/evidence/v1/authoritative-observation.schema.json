@@ -34,8 +34,7 @@
           "$ref": "domain.schema.json#/$defs/claimType"
         },
         "jurisdiction": {
-          "type": "string",
-          "pattern": "^[A-Z]{2}$"
+          "$ref": "domain.schema.json#/$defs/jurisdiction"
         },
         "purpose": {
           "$ref": "domain.schema.json#/$defs/verificationPurpose"
@@ -91,8 +90,7 @@
           "$ref": "domain.schema.json#/$defs/claimType"
         },
         "jurisdiction": {
-          "type": "string",
-          "pattern": "^[A-Z]{2}$"
+          "$ref": "domain.schema.json#/$defs/jurisdiction"
         },
         "subject": {
           "$ref": "domain.schema.json#/$defs/subjectReference"
@@ -148,8 +146,7 @@
           "pattern": "^[a-z0-9][a-z0-9._-]{2,99}$"
         },
         "witness_principal_id": {
-          "type": "string",
-          "format": "uuid"
+          "$ref": "../../administration/v1/domain.schema.json#/$defs/principalId"
         },
         "witnessed_at": {
           "type": "string",
@@ -159,8 +156,7 @@
           "type": "boolean"
         },
         "evidence_reference": {
-          "type": "string",
-          "maxLength": 256
+          "$ref": "domain.schema.json#/$defs/evidenceRecordId"
         },
         "reason_code": {
           "type": "string",
