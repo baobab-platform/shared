@@ -28,7 +28,7 @@
         },
         "source_id": {
           "type": "string",
-          "pattern": "^esrc_[a-z0-9_]+$"
+          "pattern": "^esrc_[a-z0-9]+$"
         },
         "claim_type": {
           "$ref": "domain.schema.json#/$defs/claimType"
@@ -85,7 +85,7 @@
         },
         "source_id": {
           "type": "string",
-          "pattern": "^esrc_[a-z0-9_]+$"
+          "pattern": "^esrc_[a-z0-9]+$"
         },
         "claim_type": {
           "$ref": "domain.schema.json#/$defs/claimType"
