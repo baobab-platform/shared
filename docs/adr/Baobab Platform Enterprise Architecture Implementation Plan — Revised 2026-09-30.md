@@ -1,6 +1,8 @@
 # Baobab Platform Enterprise Architecture Implementation Plan
 
-**Revision:** EA Implementation Plan v2.0  
+**Revision:** EA Implementation Plan v2.0 — historical 30 September 2026 baseline  
+**Post-ADR revision:** [EA Implementation Plan v2.1 — ADR-BCP-026/027 reconciliation](../architecture/EA-implementation-plan-v2.1-ADR-BCP-026-027-reconciliation.md) (proposed 11 October 2026; governs active post-ADR sequencing once approved).  
+**Scope note:** This v2.0 document predates the Accepted 9 October 2026 ADR-BCP-026 and ADR-BCP-027. Its September status dashboard and legacy one-size-fits-all enterprise onboarding assumptions SHALL NOT override the newer accepted decisions. The v2.1 addendum preserves earlier EA workstreams while reconciling progressive enterprise admission, Organisation-first tenancy, legally scoped operating mandates and independent evidence/operational acceptance.  
 **Date:** 30 September 2026  
 **Programme:** Baobab Platform Enterprise Architecture Convergence  
 **Canonical Contract Authority:** `baobab-platform/shared`  
