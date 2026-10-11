@@ -45,7 +45,7 @@ sources:
   # SARS TCS and VAT vendor verification have different authorised access routes.
   # Neither currently has a Baobab-approved provider integration or delegated
   # operator verification baseline; registration is therefore SUSPENDED.
-  - source_id: esrc_sars_tcs
+  - source_id: esrc_sarstcs
     source_class: TAX_AUTHORITY
     name: South African Revenue Service Tax Compliance Status verification
     jurisdiction: ZA
@@ -55,7 +55,7 @@ sources:
     access_classification: RESTRICTED
     effective_from: "2026-10-11T00:00:00Z"
     status: SUSPENDED
-  - source_id: esrc_sars_vat
+  - source_id: esrc_sarsvat
     source_class: TAX_AUTHORITY
     name: South African Revenue Service VAT vendor verification
     jurisdiction: ZA
