@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/evidence/v1/authoritative-observation.schema.json",
+  "title": "PEO-03A: source observation handoff, not a verified legal fact",
+  "description": "Authority-specific adapter output and assisted portal review material for existing OEV-03 cases. Must undergo independent checks, source trust policy and reviewer decision before any claim is VERIFIED. Never contain credentials, SARS TCS PIN or raw tax/PII fields.",
+  "$defs": {
+    "SourceVerificationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verification_case_id",
+        "claim_id",
+        "source_id",
+        "claim_type",
+        "jurisdiction",
+        "purpose",
+        "subject",
+        "correlation_id"
+      ],
+      "properties": {
+        "verification_case_id": {
+          "type": "string",
+          "pattern": "^vcase_[a-z0-9]+$"
+        },
+        "claim_id": {
+          "type": "string",
+          "pattern": "^ecl_[a-z0-9]+$"
+        },
+        "source_id": {
+          "type": "string",
+          "pattern": "^esrc_[a-z0-9_]+$"
+        },
+        "claim_type": {
+          "$ref": "domain.schema.json#/$defs/claimType"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "purpose": {
+          "$ref": "domain.schema.json#/$defs/verificationPurpose"
+        },
+        "subject": {
+          "$ref": "domain.schema.json#/$defs/subjectReference"
+        },
+        "correlation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "SourceObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "verification_case_id",
+        "claim_id",
+        "source_id",
+        "claim_type",
+        "jurisdiction",
+        "subject",
+        "purpose",
+        "method",
+        "outcome",
+        "source_observed_at",
+        "recorded_at",
+        "source_record_reference",
+        "response_digest",
+        "provenance_reference",
+        "is_synthetic"
+      ],
+      "properties": {
+        "observation_id": {
+          "type": "string",
+          "pattern": "^aobs_[a-z0-9]+$"
+        },
+        "verification_case_id": {
+          "type": "string",
+          "pattern": "^vcase_[a-z0-9]+$"
+        },
+        "claim_id": {
+          "type": "string",
+          "pattern": "^ecl_[a-z0-9]+$"
+        },
+        "source_id": {
+          "type": "string",
+          "pattern": "^esrc_[a-z0-9_]+$"
+        },
+        "claim_type": {
+          "$ref": "domain.schema.json#/$defs/claimType"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "subject": {
+          "$ref": "domain.schema.json#/$defs/subjectReference"
+        },
+        "purpose": {
+          "$ref": "domain.schema.json#/$defs/verificationPurpose"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "SOURCE_API_LOOKUP",
+            "MANUAL_REGISTRY_LOOKUP",
+            "OFFICIAL_DOCUMENT_REVIEW"
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "MATCHED",
+            "NOT_MATCHED",
+            "INCONCLUSIVE",
+            "UNAVAILABLE"
+          ]
+        },
+        "source_observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "freshness_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_record_reference": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 256
+        },
+        "response_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "provenance_reference": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512
+        },
+        "provider_adapter_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,99}$"
+        },
+        "witness_principal_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "witnessed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "is_synthetic": {
+          "type": "boolean"
+        },
+        "evidence_reference": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "reason_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{2,100}$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "SOURCE_API_LOOKUP"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "provider_adapter_id"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "enum": [
+                  "MANUAL_REGISTRY_LOOKUP",
+                  "OFFICIAL_DOCUMENT_REVIEW"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "witness_principal_id",
+              "witnessed_at"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "MATCHED"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "freshness_until",
+              "evidence_reference"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
