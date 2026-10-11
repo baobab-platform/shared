@@ -445,7 +445,7 @@ workloads:
     rotation_owner: baobab-platform/baobab-iam
     status: PROVISIONED
 
-  # PEO-03L: independent malware scanner and signer. Separation is
+  # PEO-03K custody implementation extension: isolated malware signer. Separation is
   # mandatory: this principal is NOT an OCR extractor or CIPC source verifier.
   # Scanner private Ed25519 signing key is provided only to the isolated
   # scanner process, never via IAM registry or to the CP/extractor.
