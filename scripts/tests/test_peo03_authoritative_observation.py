@@ -15,7 +15,7 @@ SCHEMA = json.loads((DOCS / "authoritative-observation.schema.json").read_text()
 SOURCE_REGISTRY = yaml.safe_load((DOCS / "source-registry.yaml").read_text())
 SOURCES = {s["source_id"]: s for s in SOURCE_REGISTRY["sources"]}
 REG = Registry()
-for file in DOCS.glob("*.schema.json"):
+for file in (ROOT / "contracts").rglob("*.schema.json"):
     doc = json.loads(file.read_text())
     REG = REG.with_resource(doc["$id"], Resource.from_contents(doc))
 
