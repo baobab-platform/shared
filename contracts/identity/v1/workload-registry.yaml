@@ -430,6 +430,21 @@ workloads:
     rotation_owner: baobab-platform/baobab-iam
     status: PROVISIONED
 
+  # PEO-03J independent document extractor. Its identity is not the CIPC
+  # registry verifier: text extraction is non-authorising candidate evidence.
+  # Staging issuance/CP acceptance and encrypted custody proof are mandatory
+  # before ACTIVE promotion. No production credential is allocated here.
+  baobab-document-extractor-staging:
+    repository: baobab-platform/baobab-cp
+    owner: baobab-platform/baobab-cp
+    runtime: "scanned-evidence document candidate extraction staging worker"
+    environment: staging
+    allowed_audiences: ["baobab-control-plane"]
+    allowed_scopes: ["verification:document-extract"]
+    credential_type: federated_workload_token
+    rotation_owner: baobab-platform/baobab-iam
+    status: PROVISIONED
+
   # MP2-C staging IAM authority consumer. It is distinct from browser,
   # administrator and provider-native identities and may call only the private
   # Control Plane federation authority surface. PROVISIONED until Hydra issues
