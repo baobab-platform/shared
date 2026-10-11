@@ -482,6 +482,20 @@ scopes:
     allowed_actors: ["workload"]
     grants_authority: false
 
+  # PEO-03J: transport admission only for a separately registered
+  # scanned-document extraction worker. Candidate text is NOT a source
+  # observation, VERIFIED status, corporate registration or tax authority.
+  - name: "verification:document-extract"
+    description: >-
+      Authorise a dedicated workload to request internal candidate extraction
+      for an existing UNDER_VERIFICATION claim with an AVAILABLE and independently
+      malware-scanned evidence artifact. Requires CP-side exact workload,
+      case, claim, evidence and custody attestation binding. Grants no applicant,
+      tax, CIPC, claim-verification, tenant or legal-actor authority.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
   - name: "verification:read"
     description: >-
       Read verification cases, their claims, checks, results and
