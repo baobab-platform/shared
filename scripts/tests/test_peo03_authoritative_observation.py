@@ -112,6 +112,46 @@ class AuthoritativeObservationContractTests(unittest.TestCase):
                     **observation(), "evidence_reference": bad,
                 }))
 
+    def test_payroll_and_customs_authorities_are_separate_and_inactive(self):
+        expected = {
+            "esrc_sarspaye": {"PAYE_EMPLOYER_REGISTRATION"},
+            "esrc_sarssdl": {"SDL_EMPLOYER_REGISTRATION"},
+            "esrc_sarsuif": {"UIF_EMPLOYER_REGISTRATION"},
+            "esrc_uifdept": {"UIF_EMPLOYER_REGISTRATION"},
+            "esrc_sarscustoms": {
+                "CUSTOMS_TRADER_REGISTRATION",
+                "CUSTOMS_OPERATOR_AUTHORISATION",
+            },
+        }
+        for source_id, types in expected.items():
+            with self.subTest(source_id=source_id):
+                source = SOURCES[source_id]
+                self.assertEqual(source["status"], "SUSPENDED")
+                self.assertEqual(source["jurisdiction"], "ZA")
+                self.assertEqual({
+                    t["claim_type"] for t in source["trusted_for"]
+                }, types)
+                self.assertEqual({
+                    t["jurisdiction"] for t in source["trusted_for"]
+                }, {"ZA"})
+        for provider in ("esrc_cipc", "esrc_sarstcs", "esrc_sarsvat"):
+            self.assertFalse(expected.keys() & {provider})
+            self.assertFalse(
+                {t["claim_type"] for t in SOURCES[provider]["trusted_for"]} &
+                set().union(*expected.values()),
+                msg=f"{provider} must not automatically verify employer/customs claims",
+            )
+
+    def test_hs_classification_is_not_company_registration(self):
+        vocabulary = json.loads(
+            (DOCS / "domain.schema.json").read_text()
+        )["$defs"]["claimType"]["enum"]
+        self.assertIn("CUSTOMS_TRADER_REGISTRATION", vocabulary)
+        self.assertIn("CUSTOMS_OPERATOR_AUTHORISATION", vocabulary)
+        self.assertNotIn("HS_CLASSIFICATION", vocabulary)
+        self.assertNotIn("CLASSIFICATION_RULING", vocabulary)
+        self.assertNotIn("TARIFF_DUTY", vocabulary)
+
     def test_positive_observation_needs_provenance_and_freshness(self):
         for key in ("response_digest", "provenance_reference", "freshness_until",
                     "source_record_reference", "evidence_reference"):
