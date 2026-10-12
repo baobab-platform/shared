@@ -29,6 +29,34 @@ ruleset](docs/governance/foundation-4-branch-protection.md).
 
 ---
 
+## Current Control Plane governance contracts (12 October 2026)
+
+Shared owns the **published interfaces and permission vocabulary**, not the
+running Control Plane, IAM issuer, or Console. In particular:
+
+- [Dataset-operation API](contracts/control-plane/v1/README.md) and
+  [OpenAPI](contracts/control-plane/v1/openapi.yaml) define bounded redacted
+  preview, purpose-bound proposal, independent reviewer decision, execution,
+  status and controlled CSV delivery.
+- [Administrative permissions](contracts/administration/v1/README.md) keep
+  `organisation.view` independent from nondelegable
+  `organisation.export`, `organisation.bulk.propose`, and
+  `organisation.bulk.approve`. A corporate relationship is not a grant.
+- Consumers pin an **immutable accepted Shared commit** in
+  `contracts.lock.yaml`, copy its schema and generate clients. The CP
+  `internal/contracts/shared` mirror and TypeScript client must match the
+  declared revision exactly, including the independent-review response.
+- Schema publication is **not** IAM client allocation, tenant admission,
+  enabled production APIs, live E2E acceptance or a durable approval itself.
+
+Changes that add or modify a governed API should update the schema, examples
+where appropriate, authority semantics, migration expectations, documentation
+and consumer contract checks in the same PR. Document *why* a security boundary
+exists in consuming code, not merely the public field names. See
+[the dataset publication and compatibility guide](docs/governance/cx05-dataset-api-publication.md).
+
+---
+
 ## Overview
 
 `baobab-platform/shared` is the central repository for **versioned organisational
