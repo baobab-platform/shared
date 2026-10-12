@@ -52,8 +52,8 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = ROOT / "contracts"
 PKG = CONTRACTS / "evidence" / "v1"
 BASE_URI = "https://contracts.baobab-platform.com/evidence/v1/"
-SCHEMAS = ["domain.schema.json", "evidence.schema.json", "verification.schema.json", "authoritative-observation.schema.json"]
-YAMLS = ["lifecycle.yaml", "source-registry.yaml"]
+SCHEMAS = ["domain.schema.json", "evidence.schema.json", "verification.schema.json", "authoritative-observation.schema.json", "scanner-intake.schema.json"]
+YAMLS = ["lifecycle.yaml", "source-registry.yaml", "scanner-intake.openapi.yaml"]
 ACTORS = {"APPLICANT", "REVIEWER", "PLATFORM"}
 POSITIVE = {"MATCHED", "VERIFIED", "PARTIALLY_VERIFIED"}
 # A claim's status after verification is its current result's outcome.

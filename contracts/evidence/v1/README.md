@@ -73,3 +73,34 @@ Assurance and compliance (sections 83-100) build on these, and are later gates.
 ## Versioning
 
 Adding an enum value, a definition or an optional field is additive. Removing or renaming any of them, or narrowing a grammar, is breaking and needs a v2.
+
+## P0-02B private scanner intake
+
+`scanner-intake.openapi.yaml` publishes the exact private route and scope.
+`scanner-intake.schema.json` defines `ScanSubmission`, `ScanProof` and redacted
+`ScanReceipt` for **POST /internal/evidence/v1/scanned-artifacts**. This is a
+private nonproduction workload protocol, not an applicant upload or a Console
+command. The existing `verification:scan-attest` scope remains separate from
+`verification:document-extract`, source capture and human verification decisions.
+
+The isolated scanner signs the existing canonical UTF-8 JSON payload in exact
+field order: evidence_id, artifact_id, media_type, digest, scanner_id,
+scanner_version, outcome, scanned_at (UTC RFC3339Nano, microsecond precision).
+`signature_base64` transports the 64-byte Ed25519 signature; the signature is
+not part of its payload. `document_base64` carries at most 8 MiB decoded bytes
+and must match the signed SHA-256 and MIME signature. JSON Schema validates
+shape; consumers must enforce decoded limits, canonical base64, signature,
+time precision/freshness and current independent trust. A schema-valid CLEAN
+string or synthetic signature is never proof of a real scan.
+
+Before custody, CP requires issuer/audience verified workload JWT, current
+RFC 7662 token activity, the exact ACTIVE environment/scope/audience/credential
+profile from a freshly read governed registry snapshot, independently approved
+scanner public trust, and current row-locked case/claim/evidence/artifact
+admission. Recheck token/registry/trust before side effects and commit. Retain
+exact proof replay; no automatic rescan or evidence-state promotion.
+
+No document, token, signer key or signature may appear in receipts/audit/logs.
+The protocol requires verified HTTPS, refuses redirects, defaults OFF and
+rejects production activation pending independent acceptance. Scanner/extractor
+Shared records remain PROVISIONED; this schema creates no IAM lifecycle decision.
