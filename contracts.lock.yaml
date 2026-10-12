@@ -129,6 +129,8 @@ contracts:
       - lifecycle.yaml
       - source-registry.yaml
       - authoritative-observation.schema.json
+      - scanner-intake.schema.json
+      - scanner-intake.openapi.yaml
   - domain: topology
     version: v1
     schemas:
