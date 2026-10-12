@@ -3928,6 +3928,10 @@ paths:
         and Control Plane platform-admin role. Does not infer corporate group
         permissions, linked-tenant rights, current mandates, activation, source
         certification, legal incorporation or downstream service authority.
+        Tenant summaries are included only when both an in-effect primary organisation
+        mapping and a separate exact tenant.view grant are established; markets,
+        subscriptions and Digital Estates each demand their own exact tenant
+        permission. Visibility flags distinguish no access from no records.
         All arrays are complete only up to the bounded size; an oversized
         result fails closed with 503, never silently truncates.
       security:
