@@ -732,3 +732,17 @@ scopes:
     audience: ["baobab-control-plane"]
     allowed_actors: ["workload"]
     grants_authority: false
+
+  # LA-05 Priority 2: independent NEGATIVE-ONLY documentary restriction read.
+  # Context owner, market, capability, freshness and explicit CP client
+  # allowlist still bind the decision. A nonblocked result NEVER grants
+  # finance, provider, invoice, payment or merchant execution.
+  - name: "documentary:restriction-assess"
+    description: >-
+      Private non-authorising Control Plane documentary restriction assessment
+      for a short-lived workload-owned runtime Context. Requires dedicated
+      IAM admission, ACTIVE workload registry, explicitly allowlisted caller
+      and current CP evidence. Cannot grant any positive business authority.
+    audience: ["baobab-control-plane"]
+    allowed_actors: ["workload"]
+    grants_authority: false

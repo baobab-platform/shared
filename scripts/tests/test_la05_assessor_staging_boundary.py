@@ -32,6 +32,20 @@ class LegalActorAssessorWorkloadBoundaryTests(unittest.TestCase):
         self.assertEqual(scope["allowed_actors"], ["workload"])
         self.assertFalse(scope["grants_authority"])
 
+    def test_documentary_scope_is_negative_only_and_private(self):
+        scope = self.scopes["documentary:restriction-assess"]
+        self.assertEqual(scope["audience"], ["baobab-control-plane"])
+        self.assertEqual(scope["allowed_actors"], ["workload"])
+        self.assertFalse(scope["grants_authority"])
+        authorised = {
+            "baobab-erp-legal-actor-assessor-staging",
+            "baobab-payments-legal-actor-assessor-staging",
+        }
+        for name, workload in self.workloads.items():
+            if name not in authorised:
+                self.assertNotIn("documentary:restriction-assess",
+                                 workload.get("allowed_scopes", []))
+
     def test_no_staging_assessor_has_live_credentials_or_permissions(self):
         self.assertEqual(len(NAMES), 4)
         for name, owner in NAMES.items():
@@ -44,8 +58,13 @@ class LegalActorAssessorWorkloadBoundaryTests(unittest.TestCase):
                 self.assertEqual(w["rotation_owner"], "baobab-platform/" + owner)
                 self.assertEqual(w["credential_type"], "federated_workload_token")
                 self.assertEqual(w["allowed_audiences"], ["baobab-control-plane"])
-                self.assertEqual(set(w["allowed_scopes"]),
-                                 {"context:resolve", "legal-actor:assess"})
+                expected = {"context:resolve", "legal-actor:assess"}
+                if name in {
+                    "baobab-erp-legal-actor-assessor-staging",
+                    "baobab-payments-legal-actor-assessor-staging",
+                }:
+                    expected.add("documentary:restriction-assess")
+                self.assertEqual(set(w["allowed_scopes"]), expected)
                 self.assertEqual(w["context_purposes"], ["RUNTIME"])
                 for field in ("tenant_id", "organisation_id", "legal_entity_id",
                               "merchant_id", "permissions", "granted_roles",
