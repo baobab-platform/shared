@@ -118,8 +118,8 @@ for entry in load_yaml(PKG / "permission-registry.yaml")["permissions"]:
         fail(f"permission {key} must name known scope levels")
     if entry["delegable"] and (entry["risk_class"] == "CRITICAL" or entry["domain"] == "EMERGENCY"):
         fail(f"permission {key} is {entry['risk_class']}/{entry['domain']} and must not be delegable (section 49)")
-    if entry["read_only"] != key.endswith(".view"):
-        fail(f"permission {key}: read_only must be true exactly for .view permissions")
+    if entry["read_only"] != (key.endswith(".view") or key == "organisation.export"):
+        fail(f"permission {key}: read_only must be true for .view permissions and explicitly governed organisation.export only")
 
 # 3. Profiles.
 profiles = {}
