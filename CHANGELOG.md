@@ -23,6 +23,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **EA v2.1 register refresh (EA-R01 follow-up).** Every cross-repository PR the register cites is now verified merged on its owning repository's `main`, and the "as reported" qualifier is removed. P0-04A is recorded complete for all current consumers (Trade Docs #13 included) and P0-04B-01/02 as merged (Trade #146–#148, CP #389/#390). Cells previously held at NO for lack of a cited PR are rescored on merged CP evidence: PEO-04 (CP #339–#341), PEO-05 (#342–#345), LA-02 (migration 000102) and LA-03 (#294). The PEO-03L label now follows baobab-cp, where it names the scanner runtime and scanned-custody admission inside the PEO-03K family; decision 4's remap of the proposed criteria is unchanged. No Stag, Legal or Ops cell changes.
+
 * **EA Implementation Plan v2.1 Accepted; v2.1 register replaces the v2.0 dashboard (EA-R01, audit D-01).** The platform owner approved all five §11 decisions on 2026-10-13. PEO-03L becomes PEO-03K's protected-staging criterion and PEO-03M becomes PEO-03F's certification criterion; no new gate, ADR or registry key is created. The platform owner is the acceptance owner for all eight repositories.
   * `docs/architecture/ea-dashboard.md` is now the v2.1 register. It scores each programme gate, EA workstream, PEO and LA gate in eight separate columns, from architecture accepted to operational certification. Cross-repository evidence is marked "as reported" until the owning repository confirms it.
   * The 2026-10-04 v2.0 dashboard is kept unchanged as `ea-dashboard-v2.0-historical-2026-10-04.md`.
