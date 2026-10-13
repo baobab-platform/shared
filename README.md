@@ -1363,3 +1363,5 @@ No content in this repository should be copied, redistributed, or reused outside
 This repository is intended for authorised BAOBAB-PLATFORM personnel, systems, and repositories.
 
 Because workflows, contracts, and packages contained here may execute with elevated privileges — or be relied upon as interfaces — across other repositories, treat changes to this repository as changes to **shared organisational infrastructure**.
+
+P0-04B-02 Trade seller-binding human admission is defined in [commerce/v1](contracts/commerce/v1/README.md); scope and grant vocabulary is registered without assignments.
