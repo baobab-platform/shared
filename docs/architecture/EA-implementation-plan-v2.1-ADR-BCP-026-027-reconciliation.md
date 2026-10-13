@@ -1,8 +1,10 @@
 # Baobab Platform Enterprise Architecture Implementation Plan v2.1
-## Normative post-ADR-BCP-026/027 reconciliation — proposed revision
+## Normative post-ADR-BCP-026/027 reconciliation
 
+**Status:** **Accepted 13 October 2026**: governs active sequencing. Decisions 1–5 of §11 were approved by the platform owner; the resolution is in §11.  
 **Revision proposed:** 11 October 2026  
-**Supersedes for active sequencing:** [EA Implementation Plan v2.0 (30 September 2026)](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) upon architecture/governance acceptance.  
+**Supersedes for active sequencing:** [EA Implementation Plan v2.0 (30 September 2026)](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md), which remains the baseline for workstreams this revision does not change.  
+**Live status:** [EA v2.1 register](ea-dashboard.md).  
 **Authority:** Shared is the normative contract authority; Control Plane governs business admission, legal-actor mandate and platform desired state; IAM verifies principals and issues provider-neutral workload identity.  
 **Source decisions:** `baobab-cp/docs/adr/ADR-BCP-026 — Progressive Enterprise Onboarding, Founding-Group Exemption and Capability-Specific Evidence Governance.md` and `ADR-BCP-027 — Organisation-First Tenancy, Operating Business, Trading Style and Legal-Actor Responsibility Model.md` (Accepted 9 October 2026).  
 **Purpose:** Bring the existing EA-01–EA-13 programme into line with **two later, accepted foundational ADRs**, without erasing earlier technical convergence work or equating a merged PR with a certified live service.
@@ -95,10 +97,14 @@ The diagram is a *decision and dependency model*, not proof that every connectio
 
 - **PEO-03F–I:** certified official-source transport, signed/immutable versioned custody, authenticated source capture, independently approved SARS-assisted witness. A recorded witness remains non-authorising; CIPC/URSB proof must be genuinely independent.
 - **PEO-03H/J/K:** bounded certificate-pinned OCR, worker with current case/claim/evidence + workload authorisation, independently signed malware-scan proof, artifact custody, encrypted non-authorising candidate ledger. No extraction API serves raw documents to clients.
-- **PEO-03L (new proposed gate):** protected staging composition and auditable scanner/token, custody/KMS, legal evidence, evidence destruction, redaction, retention and operational negative tests.
-- **PEO-03M (new proposed gate):** independently certified external government/PSP source and policy proof; no synthetic approval or proxy CIPC verification.
+- **PEO-03L (proposed gate; remapped into PEO-03K, §11 decision 4):** protected staging composition and auditable scanner/token, custody/KMS, legal evidence, evidence destruction, redaction, retention and operational negative tests.
+- **PEO-03M (proposed gate; remapped into PEO-03F, §11 decision 4):** independently certified external government/PSP source and policy proof; no synthetic approval or proxy CIPC verification.
 
-New gate names PEO-03L/M are **programme planning identifiers** until accepted by CP; this plan does not silently create an ADR, capability or protocol registry key.
+Under §11 decision 4, PEO-03L/M are **not** separate gates:
+- the PEO-03L criteria are the protected-staging acceptance criterion of **PEO-03K**;
+- the PEO-03M criteria are the certification criterion of **PEO-03F**.
+
+The labels survive only as historical references. This plan does not create an ADR, capability or protocol registry key.
 
 ## 6. Four distinct readiness decisions
 
@@ -163,17 +169,17 @@ v
 D  Cross-engine events / recovery / observability (EA-06 / 10 / 11)
 |   -> correct historical actor, no leaking scanned documents
 v
-E  Synthetic & protected staging acceptance (EA-09A / PEO-03L)
+E  Synthetic & protected staging acceptance (EA-09A / PEO-03K protected-staging criterion)
 |   -> readiness measured by tested operation and negative evidence
 v
 F  Controlled founding onboarding (PEO-04 / LA-06) + digital estate unfreeze (EA-12)
 |   -> truthful legal forms, separate tenants, explicit restricted capability state
 v
-G  Actual government / PSP / provider certification + live ops (EA-09B / PEO-03M)
+G  Actual government / PSP / provider certification + live ops (EA-09B / PEO-03F certification criterion)
     -> capability-by-capability production authorisation
 ```
 
-**Dashboard must have separate columns** for *architecture accepted*, *contracts converged*, *code merged*, *database migrated*, *synthetic test passed*, *protected staging passed*, *independent legal/provider evidence accepted* and *operational certification*. Each value is YES / PARTIAL / NO / EXTERNAL DEPENDENCY with a verifiable evidence link. The old September v2.0 dashboard is historical and must not be copied forward as live status.
+**Dashboard must have separate columns** for *architecture accepted*, *contracts converged*, *code merged*, *database migrated*, *synthetic test passed*, *protected staging passed*, *independent legal/provider evidence accepted* and *operational certification*. Each value is YES / PARTIAL / NO / EXTERNAL DEPENDENCY with a verifiable evidence link. The old September v2.0 dashboard is historical and must not be copied forward as live status. The register is [`ea-dashboard.md`](ea-dashboard.md); the v2.0 page is kept as [history](ea-dashboard-v2.0-historical-2026-10-04.md).
 
 ## 11. Decision requests before marking v2.1 Accepted
 
@@ -182,5 +188,19 @@ G  Actual government / PSP / provider certification + live ops (EA-09B / PEO-03M
 3. Confirm the founding group **24-month** deferral, truthful legal-entity posture, Option B autonomy, scope-bound Nabhold mandates, and independent external verification requirement.
 4. Approve PEO-03L/M as plan-only gate labels or remap them into existing PEO-03 subgates; never create canonical contracts merely by naming gates in a plan.
 5. Assign cross-repository acceptance owners for CP / IAM / Shared / Subscriptions / ERP / Trade / Payments / Infrastructure; only the owning authority may publish its production-support claim.
+
+### Resolution (13 October 2026)
+
+All five decisions were approved by the platform owner (the repository owner) on 2026-10-13. v2.1 is therefore **Accepted** ([S#301](https://github.com/baobab-platform/shared/pull/301)).
+
+| # | Outcome |
+|---:|---|
+| 1 | **Approved.** ADR-BCP-026/027 amend and extend EA v2.0; unchanged v2.0 workstreams and the no-premature-production premise are retained |
+| 2 | **Approved.** Separate gate sequence and the four readiness decisions of §6; no global verified legal status |
+| 3 | **Approved.** 24-month founding deferral, truthful legal-entity posture, Option B autonomy, scope-bound Nabhold mandates, independent external verification |
+| 4 | **Remapped.** PEO-03L becomes PEO-03K's protected-staging acceptance criterion. PEO-03M becomes PEO-03F's certification criterion. No canonical contract or registry key |
+| 5 | **Approved.** The platform owner is the acceptance owner for CP, IAM, Shared, Subscriptions, ERP, Trade, Payments and Infrastructure until delegation is recorded in the [register](ea-dashboard.md) |
+
+Acceptance governs **sequencing only**. It authorises no gate, unfreeze, activation or production use: each still needs its own evidence in the register.
 
 **Final principle:** Admit organisations progressively; authorise legal actors per operation; grant capabilities explicitly; let engines execute within bounded authority; rely on independently attested evidence; certify actual production operation last.
