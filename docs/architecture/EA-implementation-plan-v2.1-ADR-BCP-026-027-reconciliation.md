@@ -169,13 +169,13 @@ v
 D  Cross-engine events / recovery / observability (EA-06 / 10 / 11)
 |   -> correct historical actor, no leaking scanned documents
 v
-E  Synthetic & protected staging acceptance (EA-09A / PEO-03L)
+E  Synthetic & protected staging acceptance (EA-09A / PEO-03K protected-staging criterion)
 |   -> readiness measured by tested operation and negative evidence
 v
 F  Controlled founding onboarding (PEO-04 / LA-06) + digital estate unfreeze (EA-12)
 |   -> truthful legal forms, separate tenants, explicit restricted capability state
 v
-G  Actual government / PSP / provider certification + live ops (EA-09B / PEO-03M)
+G  Actual government / PSP / provider certification + live ops (EA-09B / PEO-03F certification criterion)
     -> capability-by-capability production authorisation
 ```
 
