@@ -71,7 +71,7 @@ PRODUCTION ACTIVATION              NOT AUTHORISED
 
 | Gate | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | State and evidence |
 |---|---|---|---|---|---|---|---|---|---|
-| **A** Architecture/contract readiness | YES | PART | PART | PART | PART | NO | N/A | N/A | **Not passed.** v2.1 Accepted (this change). LA-01 contracts `5930dcf`; PEO-01 [S#274](https://github.com/baobab-platform/shared/pull/274). Open: Trade Docs convergence; the consumer-pin inventory for LA-01/PEO-01 has not been re-verified |
+| **A** Architecture/contract readiness | YES | PART | PART | PART | PART | NO | N/A | N/A | **Not passed.** v2.1 Accepted ([S#301](https://github.com/baobab-platform/shared/pull/301)). LA-01 contracts `5930dcf`; PEO-01 [S#274](https://github.com/baobab-platform/shared/pull/274). Open: Trade Docs convergence; the consumer-pin inventory for LA-01/PEO-01 has not been re-verified |
 | **B** Platform developer unfreeze | YES | PART | PART | N/A | PART | NO | N/A | N/A | **Not passed.** The unfreeze list covers Nabhold, ZuriBeans, Thamani and Equator & Estate Co. (v2.1 §8). It needs Gate A, plus proof that no estate frontend implements shadow authority (Thamani drift D-09) |
 | **C** Controlled founding-group onboarding (non-production) | YES | PART | PART | PART | PART | NO | NO | N/A | **Not passed.** Truthful examples: [S#268](https://github.com/baobab-platform/shared/pull/268), [S#269](https://github.com/baobab-platform/shared/pull/269), [S#270](https://github.com/baobab-platform/shared/pull/270). Synthetic qualification is in CP (as reported). No authentic, accepted business records exist (D-02) |
 | **D** Capability-specific staging qualification | YES | PART | PART | PART | PART | NO | EXT | NO | **Not passed** for any capability. Needs protected staging and certified providers (D-03, D-05) |
@@ -137,7 +137,7 @@ Ownership alone never lets Nabhold act as issuer, seller, importer or contractin
 
 ## v2.1 §11 decisions
 
-All five were approved on **2026-10-13** by the **platform owner** (the repository owner). The approval was recorded in the EA-R01 change that accepted v2.1.
+All five were approved on **2026-10-13** by the **platform owner** (the repository owner). The approval is recorded in [S#301](https://github.com/baobab-platform/shared/pull/301), the EA-R01 change that accepted v2.1.
 
 | # | Decision | Outcome |
 |---:|---|---|

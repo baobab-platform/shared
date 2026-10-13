@@ -191,7 +191,7 @@ G  Actual government / PSP / provider certification + live ops (EA-09B / PEO-03M
 
 ### Resolution (13 October 2026)
 
-All five decisions were approved by the platform owner (the repository owner) on 2026-10-13. v2.1 is therefore **Accepted**.
+All five decisions were approved by the platform owner (the repository owner) on 2026-10-13. v2.1 is therefore **Accepted** ([S#301](https://github.com/baobab-platform/shared/pull/301)).
 
 | # | Outcome |
 |---:|---|
