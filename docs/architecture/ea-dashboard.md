@@ -191,7 +191,7 @@ All open. Details are in [audit §6](ea-v2.1-audit-2026-10-13.md#6-landing-page-
 | # | Item | State |
 |---:|---|---|
 | EA-R01 | Reconcile architecture and governance | **Done (2026-10-13)**, including cross-repository evidence verification |
-| EA-R02 | Founding legal/evidence acceptance foundation | CP machinery merged ([CP #339](https://github.com/baobab-platform/baobab-cp/pull/339)–[CP #345](https://github.com/baobab-platform/baobab-cp/pull/345)); blocked on authentic records and decisions (EXT) |
+| EA-R02 | Founding legal/evidence acceptance foundation | In progress. CP machinery merged ([CP #339](https://github.com/baobab-platform/baobab-cp/pull/339)–[CP #345](https://github.com/baobab-platform/baobab-cp/pull/345)). Open and actionable: integrate the scanner and custody with approved infrastructure (bucket/KMS deployment, scanner signer, operating retention policy; see PEO-03K). Externally blocked: authentic Nabhold/Thamani records, corporate-control decisions and mandates (EXT) |
 | EA-R03 | Complete P0-04A and P0-04B native PEPs | P0-04A complete; P0-04B-01/02 merged; next: Trade protected native checkout |
 | EA-R04 | Close frontend and Console integration | Not started |
 | EA-R05 | Protected staging and E2E acceptance (audit §10 matrix) | Not started; needs EXT infrastructure |
