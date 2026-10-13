@@ -1,236 +1,198 @@
-# EA Implementation Dashboard
+# EA Implementation Register (v2.1)
 
-**Governing plan:** [EA Implementation Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) (30 September 2026)
-**Last updated:** 2026-10-04 (fleet consumed-contract reconciliation; historical stream assessments retain their evidence dates)
-**Maintained:** every EA gate PR updates this page (plan §48).
+**Governing plan:** [EA Implementation Plan v2.1](EA-implementation-plan-v2.1-ADR-BCP-026-027-reconciliation.md), Accepted 2026-10-13. [EA Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) remains the baseline for workstreams that v2.1 does not change.  
+**Last updated:** 2026-10-13 (EA-R01; Shared `main` at `5dcff30`)  
+**Source audit:** [EA v2.1 audit, 13 October 2026](ea-v2.1-audit-2026-10-13.md)  
+**History:** [v2.0 dashboard, last updated 2026-10-04](ea-dashboard-v2.0-historical-2026-10-04.md). It is historical and is not carried forward as live status (v2.1 §10).
 
-This page is the single live status for each EA stream, gate and PR. The plan
-holds the reasoning; this page holds where things stand now. The plan's §44
-dashboard is the audit snapshot this page started from.
+This page is the live register for every EA gate. The plan holds the reasoning.
+Any PR that moves a gate updates its row here and records (v2.1 §9):
+- commit
+- contract pin
+- migration ID
+- test run
+- approver
+- unmet external dependencies
+- rollback plan
 
-Status words mean what they mean in the plan: *implemented* is not *proven*,
-*proven* is not *certified*, and nothing here is *production-permitted*
-unless it says so.
+## How to read this register
 
-## Current resumption checkpoint — 2026-10-04
+Each row is scored separately at eight evidence levels (v2.1 §10):
 
-[EA v2 resumption checkpoint](ea-v2-resumption-2026-10-04.md) records the current
-Shared/IAM/CP baselines, all eight observed consumer pins and the next bounded
-execution sequence. IAM #56–#60 are merged and their isolated live evidence is
-sufficient to resume eligible source/integration tasks. **EA-04 remains partial**:
-federated resource audiences, real signer lifecycle, deployed consumer routes
-and activation evidence remain open. Provider declarations remain planned-only.
+| Column | Meaning |
+|---|---|
+| **Arch** | Architecture accepted |
+| **Contr** | Contracts converged |
+| **Code** | Code merged |
+| **DB** | Database migrated |
+| **Synth** | Synthetic test passed |
+| **Stag** | Protected staging passed |
+| **Legal** | Independent legal/provider evidence accepted |
+| **Ops** | Operational certification |
 
-IAM [#62](https://github.com/baobab-platform/baobab-iam/pull/62) reconciles its
-five consumed contracts from `10810e2` to reviewed Shared `6899a2d`; final-head
-compatibility CI is required before merge. No scope grant, canonical activation,
-Digital Estate unfreeze or infrastructure deployment is implied.
+Values:
 
-The checkpoint takes precedence over conflicting historical IAM/pin statements
-below. The remaining streams have **not** been fully re-audited in this update;
-in particular the ERP lock has advanced and its old operational gaps must be
-checked against current runtime code before being treated as outstanding work.
+| Value | Meaning |
+|---|---|
+| **YES** | Done, with linked evidence |
+| **PART** | Partial |
+| **NO** | Not done |
+| **EXT** | Blocked on an external dependency that cannot be produced in code |
+| **N/A** | Not applicable to this row |
 
-## Fleet consumed-contract reconciliation — 2026-10-04
+Rules:
+- A YES or PART in a column needs evidence linked in its row.
+- Synthetic CI never sets Stag, Legal or Ops.
+- *Merged* is not *proven*, *proven* is not *certified*, and nothing here is *production-permitted*.
 
-[Current fleet reconciliation](ea-v2-contract-drift-2026-10-04.md) records the
-six consumer PRs, consumed semantic deltas, exact reviewed Shared target and
-head-specific CI. IAM #62 and Shared #210 were merged by the owner; CP already
-pins the reviewed contract target. New consumer PRs remain unmerged proposals; ERP #56 and Trade #115 are marked ready for review.
+**Evidence provenance:**
+- `S#NNN` links a PR in Shared, checked against Shared `main`.
+- `CP #`, `Trade #`, `ERP #`, `Payments #` and `Subscriptions #` are as reported by the [2026-10-13 audit](ea-v2.1-audit-2026-10-13.md). They have not been re-verified from Shared. A row that depends on them stays at PART until the owning repository's register or record confirms it.
 
-ERP now implements the new caller-bound CP context boundary in its reconciliation
-PR, retaining independent approved-plan and Finance requirements. Production
-validator registration/grant and deployed acceptance remain outstanding.
-Subscriptions/Payments provider metadata is DRAFT, simulated and non-production.
-CMS/Trade dependency and ERP/Trade image security failures remain merge blockers; contract compatibility alone
-does not override them. This record supersedes older pin and ERP 501 statements
-within its audit scope. EA-04, certification, activation and deployment remain held.
-
-## Baselines — historical 2026-10-02 assessment
-
-Verified against each repository's `main` on 2026-10-02. Evidence-level baselines are read from `main`, not from this table; re-verify before relying on a pin.
-
-| Repository | `main` | Shared pin | Note |
-|---|---|---|---|
-| `shared` | `a503649` (shared#195) | n/a | Administration policy: criteria APPROVED, phishing-resistant evidence = trusted `acr` 3 or `webauthn`/`hwk` `amr` |
-| `baobab-cp` | `f234ee5` (cp#252) | `a503649` | CURRENT. Consumes the approved shadow criteria and the ACR-or-AMR evidence form |
-| `baobab-iam` | `2a5bd78` (iam#51) | `1bb1c94` | **BEHIND, and behind in substance**: IAM issues `administrator:read/write/approve` (iam#50, iam#51), which the pinned registry does not contain. Correction open (see *Open corrections*). iam#52 open |
-| `baobab-payments`, `baobab-subscriptions` | `fc144da`, `0019f3a` | `3a8230e` | Re-pinned (payments#16, subscriptions#21) |
-| `baobab-cms`, `baobab-pulse` | `19deac1`, `0cece91` | `b63ce52` | Canonical locks (cms#19, pulse#28) |
-| `baobab-trade` | `78d16b8` (trade#114) | `b063f8a` | T-COMPAT-04…07 DONE: adapted, re-pinned, exact-pin conformance suite |
-| `baobab-erp` | `b65ef74` | `2da1a42` | HELD deliberately: consumed contracts changed, so a mechanical re-pin is wrong. Semantic reconciliation not started |
-
-## Readiness
+## Readiness summary
 
 ```text
-BAOBAB EA READINESS                                   2026-10-02
-─────────────────────────────────────────────────────────────────
-
-EA-01 Contract Convergence             CONVERGED for locks, pins and ERP semantic compatibility (proven); open: EA-01B nabhold references, EA-01E, ERP operational gaps (record: ea-01-contract-convergence.md)
-  CP Shared pin                        a503649 (cp#252): 1 behind, no consumed contract changed (BEHIND_UNCHANGED), canonical lock
-  IAM Shared pin                       a503649 (iam#52): 1 behind, no consumed contract changed; the lock covers the scopes IAM issues and check-issued-scopes.sh asserts every Baobab-defined issued scope exists in the exact pinned registry
-  Subscriptions Shared pin             3a8230e (subscriptions#21): 66 behind, BEHIND_CHANGED (control-plane domain, capabilities.json)
-  Payments Shared pin                  3a8230e (payments#16): 66 behind, BEHIND_CHANGED (control-plane domain, capabilities.json)
-  Trade Shared pin                     b063f8a (trade#114): 34 behind, BEHIND_CHANGED (control-plane openapi, workload-registry); T-COMPAT-04…07 DONE with an exact-pin conformance suite
-  ERP Shared pin                       CURRENT (739f0ca, erp#46): ERP-COMPAT-01…07 DONE; exact-pin conformance suite (28 tests, CI shared-conformance); lock 19 to 36 contracts. Not done: 4 boundary operations (501), domain events held (none delivered), see record
-  Pulse Shared pin                     b63ce52 (pulse#28): 85 behind, BEHIND_CHANGED (control-plane domain), canonical lock
-  CMS contract lock                    b63ce52 (cms#19): 85 behind, BEHIND_UNCHANGED, canonical lock
-  Lock schema in Shared (EA-01A)       READY (shared#157)
-  Foundation lock validation (EA-01C)  ENFORCING in Shared and on all 8 consumers (Foundation `06c49e8`); all 8 locks pass `check --mode auto` against Shared 739f0ca (2026-10-02)
-  Drift report (EA-01D)                READY (Foundation job summary)
-
-EA-02 Capability Governance            02A–02E IMPLEMENTED; G-FCI-1 ENFORCED FLEET-WIDE; PLATFORM CONFORMANCE GATE CLOSED (not certification)
-  Canonical catalogue                  16 capabilities
-  Provider declarations                PARTIAL (see table)
-  Foundation enforcement (G-FCI-1)     ENFORCING on all 8 consumers, all on Foundation `06c49e8`: CP (cp#238), IAM (iam#48), CMS (cms#20), Payments (payments#17), Subscriptions (subscriptions#23), Pulse (pulse#29), Trade (trade#113), ERP (erp#42)
-  Control Plane classification         DONE: control-plane trait (shared#174); CP classified control-plane, no declaration, Foundation `06c49e8` (cp#238)
-  ERP container scan (erp#42)          FIXED: jackson-databind 2.15.4 CVE-2026-91776/91777 in the upstream idempiere:13-release image replaced by Jackson 2.18.11 (ADR-ERP-004 s5 emergency mitigation, in the Dockerfile with owner, removal condition and build guards). jackson-datatype-joda stays 2.15.4 (needs joda-time 2.12, image has 2.10.14). CVE-2026-89425 (jackson-core 2.15.2 shaded inside Hazelcast 5.3.7 in the Hazelcast bundle, in neither 13-release nor 13-daily fixed) cleared in erp#43 by removing the unused Hazelcast bundle (ADR-ERP-004 s5, build guard; no scan exception). Not boot-tested: no CI job starts iDempiere. Upstream issue not yet filed
-  Gate closed because                  every consumer pins an enforcing Foundation and passes it in CI. It proves structure, catalogue references and contract locks only; it never certifies (EA-09) or activates (Control Plane) anything
-  Provider registration DRAFT (02C)    READY (shared#167, cp#231)
-  Provider activation Changeset (02D)  READY (shared#167, #168, cp#232; ENGINE_RELEASE check cp#233)
-  Binding integrity (02E)              READY (cp#234: constraint validated, fails loudly on unresolved bindings)
-
-EA-03 Runtime Topology                 PARTIAL      (ER-01…05 IMPLEMENTED; capability-based invocation and operational proof OPEN)
-  EngineInstance                       READY
-  HealthObservation                    READY
-  ProviderMigration                    READY
-  EngineRelease architecture           ACCEPTED (ADR-BCP-025, A1–A4)
-  EngineRelease                        ER-01 contracts; ER-02 record/read (cp#233); release approval via ENGINE_RELEASE_APPROVAL Changeset (shared#171, cp#235); ER-03 desired release/deprecation/revocation (shared#173, cp#237) MERGED; ER-04 intake and observed release MERGED (shared#178, cp#239) but NOT OPERATIONALLY PROVEN (see ER-04 production gates); ER-05 MERGED: drift (cp#240), release/status/desired-release events and topology metrics (cp#242), readiness consequences (cp#243)
-  Binding contract versions            positive integer majors (cp#236, ADR-BCP-025 §2.1.1)
-  Capability exclusion on observed state ER-06: DISABLED (amendment A4)
-  DeploymentObservation                CP intake MERGED (cp#239); production reporter registered PROVISIONED; no observation received
-  Capability-based invocation (EA-03D) OPEN: the Control Plane still invokes Subscriptions through BILLING_ENGINE_URL rather than CapabilityResolution to an eligible instance
-
-EA-04 Identity                         ADVANCED
-  provider-neutral identity contracts  READY (shared#151)
-  IAM #42                              MERGED
-  activation evidence (#148)           MERGED
-  IAM provider declaration             PLANNED-ONLY
-  federated workload path              IMPLEMENTED / UNPROVEN
-  Workload registry authority          Shared owns it; a production CP loads it and fails closed (cp#241). The six existing ACTIVE records still need reconciling before ACTIVE lifecycle enforcement is trusted (ER-04 production gate 1)
-  Deployment controller workload       PROVISIONED (baobab-deployment-controller-production)
-  CP workload                          PROVISIONED
-  Subscriptions workload               PROVISIONED
-
-EA-05 Governance                       ADVANCED
-  Administrative authority             MIGRATION PATH ACCEPTED (roles-to-grants-decision.md); implementation in progress
-    ADA-05 grant administration        IMPLEMENTED (cp#244, shared#184/#185; exact-scope delegation, then narrower-scope cp#247)
-    grant replace/supersede            IMPLEMENTED (cp#246)
-    narrower-scope delegation          IMPLEMENTED (cp#247, cp#248) for provable containment, incl. org->tenant via effective TenantOrganisationMapping; group-descendant needs a supplied canonical group graph
-    CRITICAL grant bound               24 hours, STANDING prohibited (shared#190, cp#248)
-    ADA-06 maker/checker and SoD       IMPLEMENTED (shared#187, cp#245)
-    authority:self issuance            DONE (iam#49)
-    administrator:read/write/approve   DONE (iam#50, iam#51): optional, privileged, human admin client only
-    ADA-07 step-up / assurance         IMPLEMENTED (shared#192, cp#249, shared#195, cp#252): trusted acr 3 or webauthn/hwk amr; CRITICAL stays PROHIBITED. IAM passkey step-up (raw LoA 3) is iam#52, OPEN and blocked by a base-image CVE gate; no real passkey login has been driven
-    shadow blind spots                 operations routes closed (cp); organisation ancestry via TenantOrganisationMapping
-    shadow evidence / readiness        IMPLEMENTED (shared#193, cp#250); exit criteria APPROVED 2026-10-02 (shared#195, cp#252): 14 observed UTC days / 100 decisions / 0 narrower, not-evaluated, unresolved-or-error; no evidence collected yet
-    grant population                   tooling only (cp#251): the reviewed list is Platform Security / CP Governance's to supply; approved_by must be a real accountable human principal
-    per-permission enforcement         MECHANISM IN PLACE (cp#251), EMPTY: `enforced: []`, no permission enforced, NOT AUTHORISED YET; CRITICAL PROHIBITED
-    realm-role retirement              NOT AUTHORISED
-
-EA-06 Event Fabric                     PARTIAL      (plan §44, not re-audited)
-  event context registry               READY (ADR-SHARED-018; 29 contexts)
-  event-type registry                  READY (124 types: 107 ACTIVE, 17 PROPOSED)
-  Trade legacy event migration         T-COMPAT-03 MERGED (trade#111); no com.nabhold in event code; legacy migrations immutable
-  Broker/relay/inbox/replay            OPEN
-EA-09A Pre-deployment certification    NOT COMPLETE
-EA-10 Observability                    PARTIAL      (plan §44, not re-audited)
-EA-11 Recovery Engineering             NOT COMPLETE
-EA-12 Console                          FOUNDATION
-EA-13 Regulations                      DECIDED — Option B; step 1 ADR review drafted (g-reg-ns-adr-review.md), nothing accepted; follow-through open
-
-Infrastructure Deployment              DEFERRED BY PLAN
-─────────────────────────────────────────────────────────────────
-DIGITAL ESTATE DEVELOPMENT              HOLD
-PRODUCTION ACTIVATION                   BLOCKED
+BAOBAB EA v2.1 READINESS                                   2026-10-13
+──────────────────────────────────────────────────────────────────────
+EA v2.1 plan                       ACCEPTED (2026-10-13; §11 decisions recorded below)
+Backend development                SUBSTANTIAL (code merged; not proven live)
+Public site ↔ Console code         INTEGRATED IN CODE (not live end-to-end certified)
+Console production login           BLOCKED BY DESIGN (readAuthSettings rejects production)
+Protected live E2E                 NOT DEMONSTRATED
+Founding-group legal acceptance    OUTSTANDING (no independently accepted verification case)
+P0-04A contract convergence        ADVANCED (Trade, ERP, Payments, Subscriptions); Trade Docs open
+P0-04B native execution PEPs       OPEN (next priority)
+DIGITAL ESTATE DEVELOPMENT         GATE B NOT PASSED
+PRODUCTION ACTIVATION              NOT AUTHORISED
+──────────────────────────────────────────────────────────────────────
 ```
 
-## Engine lifecycle and provider declarations
+## Programme gates (v2.1 §8)
 
-G-FCI-1 applies: an `active` engine must carry `.baobab/capability-provider.yaml`;
-an `experimental` one may omit it or declare planned support only. Foundation
-validates a declaration. It never certifies or activates a provider.
+| Gate | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | State and evidence |
+|---|---|---|---|---|---|---|---|---|---|
+| **A** Architecture/contract readiness | YES | PART | PART | PART | PART | NO | N/A | N/A | **Not passed.** v2.1 Accepted (this change). LA-01 contracts `5930dcf`; PEO-01 [S#274](https://github.com/baobab-platform/shared/pull/274). Open: Trade Docs convergence; the consumer-pin inventory for LA-01/PEO-01 has not been re-verified |
+| **B** Platform developer unfreeze | YES | PART | PART | N/A | PART | NO | N/A | N/A | **Not passed.** The unfreeze list covers Nabhold, ZuriBeans, Thamani and Equator & Estate Co. (v2.1 §8). It needs Gate A, plus proof that no estate frontend implements shadow authority (Thamani drift D-09) |
+| **C** Controlled founding-group onboarding (non-production) | YES | PART | PART | PART | PART | NO | NO | N/A | **Not passed.** Truthful examples: [S#268](https://github.com/baobab-platform/shared/pull/268), [S#269](https://github.com/baobab-platform/shared/pull/269), [S#270](https://github.com/baobab-platform/shared/pull/270). Synthetic qualification is in CP (as reported). No authentic, accepted business records exist (D-02) |
+| **D** Capability-specific staging qualification | YES | PART | PART | PART | PART | NO | EXT | NO | **Not passed** for any capability. Needs protected staging and certified providers (D-03, D-05) |
+| **E** Production activation (EA-09B) | YES | NO | NO | NO | NO | NO | EXT | NO | **Not authorised.** Needs real registry/PSP/KMS arrangements and a signed go/no-go (D-04, D-05) |
 
-The Control Plane is not an engine. It carries the `control-plane` trait,
-provides no resolvable capability, and may not carry a declaration
-(ADR-0020 amendment, 2026-10-01).
+## EA workstreams
 
-| Engine | `repository.lifecycle` | Declaration | Support declared |
+EA v2.0 and v2.1 do not define EA-07 or EA-08 as workstreams like the others, so this register gives them no status.
+
+| Stream | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | Assessment, evidence and gap |
+|---|---|---|---|---|---|---|---|---|---|
+| EA-01 Canonical contracts | YES | PART | YES | N/A | YES | NO | N/A | NO | **Substantially implemented.** Shared CI validators on each contract PR (e.g. `5930dcf`, [S#283](https://github.com/baobab-platform/shared/pull/283)–[S#289](https://github.com/baobab-platform/shared/pull/289), [S#300](https://github.com/baobab-platform/shared/pull/300)). Consumers reconciled: Trade #145, ERP #95, Payments #36, Subscriptions #40 (as reported). Gaps: Trade Docs convergence, consistent consumer pins, live semantic acceptance |
+| EA-02 Capability catalogue and providers | YES | PART | PART | PART | PART | NO | EXT | NO | **Partial.** Payments merchant-readiness contract [S#264](https://github.com/baobab-platform/shared/pull/264). Gaps: real provider admission, active bindings, legal restrictions at runtime, certification per capability. Provider support stays simulated and `production_permitted: false` |
+| EA-03 EngineRelease and topology | YES | YES | YES | PART | PART | NO | N/A | NO | **Substantial foundation.** ER-01 to ER-05 (see the [historical dashboard](ea-dashboard-v2.0-historical-2026-10-04.md)). Gaps: genuine release and deployment observations, reconciliation, protected failover |
+| EA-04 IAM / workload identity | YES | YES | PART | N/A | PART | NO | N/A | NO | **Partial.** Scopes and staging identities defined: [S#251](https://github.com/baobab-platform/shared/pull/251), [S#265](https://github.com/baobab-platform/shared/pull/265), [S#278](https://github.com/baobab-platform/shared/pull/278), [S#279](https://github.com/baobab-platform/shared/pull/279), [S#281](https://github.com/baobab-platform/shared/pull/281). A scope definition creates no ACTIVE client or issued credential. Gaps: active scoped credentials, live revocation, acceptance of the issuer and federation |
+| EA-05 CP governance | YES | YES | YES | PART | YES | NO | NO | NO | **Substantial.** Mandates LA-04C/D ([S#257](https://github.com/baobab-platform/shared/pull/257)–[S#260](https://github.com/baobab-platform/shared/pull/260)); sponsorship/deferral ([S#263](https://github.com/baobab-platform/shared/pull/263), [S#272](https://github.com/baobab-platform/shared/pull/272), [S#275](https://github.com/baobab-platform/shared/pull/275)); CP #379 (as reported). Administrative grants stay `enforced: []`. Gaps: real founding-group decisions, external evidence, complete workbenches |
+| EA-06 Event fabric | YES | YES | PART | PART | PART | NO | N/A | NO | **Partial.** Event registrations [S#259](https://github.com/baobab-platform/shared/pull/259), [S#272](https://github.com/baobab-platform/shared/pull/272). Gaps: proof of cross-engine replay, redaction, durable delivery and recovery |
+| EA-09A Pre-deployment conformance | YES | PART | PART | N/A | PART | NO | EXT | N/A | **Partial.** Gap: independent acceptance of security and providers across engines |
+| EA-09B Operational certification | YES | NO | NO | NO | NO | NO | EXT | NO | **Not demonstrated.** Gaps: protected staging, external certification, signed go/no-go |
+| EA-10 Observability | YES | PART | PART | N/A | PART | NO | N/A | NO | **Partial.** Gap: deployed trace correlation from admission through native transaction and recovery |
+| EA-11 Recovery engineering | YES | PART | PART | PART | PART | NO | N/A | NO | **Partial.** Custody key rewrap and orphan recovery are in CP #382 (as reported). Gap: live drills for backup/restore, key rotation, replay and rollback |
+| EA-12 Console and Digital Estates | YES | YES | PART | N/A | PART | NO | N/A | NO | **Console substantial; estates uneven.** CP #360, #377, #378 (as reported); CX-04/05 contracts [S#287](https://github.com/baobab-platform/shared/pull/287), [S#288](https://github.com/baobab-platform/shared/pull/288), [S#289](https://github.com/baobab-platform/shared/pull/289), [S#295](https://github.com/baobab-platform/shared/pull/295), [S#296](https://github.com/baobab-platform/shared/pull/296). Gaps: F-01 to F-07, Thamani drift (D-09) |
+| EA-13 Regulatory architecture | YES | PART | PART | N/A | PART | NO | EXT | NO | **Substantial reference implementation.** Gaps: accepted real requirement sources, trust, integration of runtime applicability |
+
+## ADR-BCP-026 gates (progressive enterprise onboarding)
+
+| Gate | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | Assessment, evidence and remaining |
+|---|---|---|---|---|---|---|---|---|---|
+| PEO-00/01 | YES | YES | PART | N/A | YES | NO | N/A | N/A | Architecture and contracts established ([S#274](https://github.com/baobab-platform/shared/pull/274), `596a0da`, `dd3777f`). Remaining: reconcile the programme and its evidence |
+| PEO-02 | YES | YES | PART | PART | PART | NO | NO | NO | Sponsorship and the 24-month deferral ([S#263](https://github.com/baobab-platform/shared/pull/263), [S#272](https://github.com/baobab-platform/shared/pull/272), [S#273](https://github.com/baobab-platform/shared/pull/273), [S#275](https://github.com/baobab-platform/shared/pull/275)). Remaining: live approval, handling of expiry, acceptance of restriction release |
+| PEO-03 (A–K) | YES | YES | PART | PART | PART | NO | EXT | NO | Scanner, custody and admission machinery: [S#276](https://github.com/baobab-platform/shared/pull/276)–[S#279](https://github.com/baobab-platform/shared/pull/279), [S#281](https://github.com/baobab-platform/shared/pull/281), [S#298](https://github.com/baobab-platform/shared/pull/298); CP #380–#382 (as reported). See PEO-03F and PEO-03K below |
+| ↳ PEO-03F (incl. former M) | YES | YES | PART | N/A | PART | NO | EXT | NO | Certified official-source transport. Under decision 4 it also carries **independently certified government/PSP source and policy proof, with no synthetic approval or proxy CIPC verification**. Remaining: a genuinely certified external source |
+| ↳ PEO-03K (incl. former L) | YES | YES | PART | PART | PART | NO | EXT | NO | Custody and the candidate ledger (CP #382 as reported: migration 000124, S3 Object Lock/KMS). Under decision 4 its staging criterion is **protected staging composition of scanner/token, custody/KMS, retention, destruction, redaction and operational negative tests**. Remaining: approved bucket/KMS deployed, scanner signer, operating retention policy |
+| PEO-04 | YES | YES | PART | PART | PART | NO | NO | N/A | Controlled founding-group machinery exists. Remaining: four authentic, accepted business records (D-02) |
+| PEO-05 | YES | PART | PART | N/A | PART | NO | EXT | NO | Qualification orchestration and staging runbooks exist. Remaining: protected acceptance of IAM, subscription, provider and tenant |
+| PEO-06 | YES | YES | PART | N/A | PART | NO | N/A | NO | Applicant, reviewer and Console functionally implemented (as reported). Remaining: guided evidence UX (F-04), browser security and accessibility (F-05) |
+| PEO-07 | YES | N/A | NO | NO | NO | NO | EXT | NO | Criteria defined. Remaining: signed production-readiness decisions |
+
+## ADR-BCP-027 gates (Organisation-first tenancy and legal actor)
+
+| Gate | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | Assessment, evidence and remaining |
+|---|---|---|---|---|---|---|---|---|---|
+| LA-00/01 | YES | PART | YES | N/A | YES | NO | N/A | N/A | Canonical model and contracts substantially converged (`5930dcf`). Remaining: final consumer inventory, compatibility sign-off |
+| LA-02 | YES | YES | PART | PART | PART | NO | N/A | NO | Nullable legal entity and PRIMARY mapping foundations. Remaining: migration of real data, proof for legacy consumers, rollback |
+| LA-03 | YES | YES | PART | PART | PART | NO | NO | N/A | Governed Organisation-first registration implemented (as reported). Remaining: execution accepted for the four founding businesses |
+| LA-04 | YES | YES | PART | PART | PART | NO | NO | NO | Mandates, independent decisions, lifecycle and readback: [S#257](https://github.com/baobab-platform/shared/pull/257)–[S#260](https://github.com/baobab-platform/shared/pull/260), [S#287](https://github.com/baobab-platform/shared/pull/287), [S#297](https://github.com/baobab-platform/shared/pull/297); CP #379 (as reported). Remaining: authentic mandates, human authority decisions |
+| LA-05 | YES | YES | PART | PART | PART | NO | EXT | NO | Engine policy and contract guards: [S#261](https://github.com/baobab-platform/shared/pull/261), [S#262](https://github.com/baobab-platform/shared/pull/262), [S#264](https://github.com/baobab-platform/shared/pull/264), [S#282](https://github.com/baobab-platform/shared/pull/282), [S#300](https://github.com/baobab-platform/shared/pull/300). Remaining: **P0-04B** native execution certification, issuer/PSP identity, bypasses closed (D-03) |
+| LA-06 | YES | YES | PART | PART | PART | NO | NO | N/A | Synthetic founding-business qualification (as reported). Remaining: real records, evidence, independent approval |
+| LA-07 | YES | PART | PART | PART | PART | NO | NO | NO | Cutover/test infrastructure and Console increments. Remaining: operational cutover, historical financial attribution, recovery |
+
+## Founding-group truth table
+
+These are declared business positions, not verified registry facts (v2.1 §3).
+
+| Business | Canonical operating treatment | Independently accepted? | Still required |
 |---|---|---|---|
-| baobab-iam | active | Yes | Planned only: `identity.authentication.perform`, `identity.workload-token.issue` |
-| baobab-payments | active | Yes | IMPLEMENTED, sandbox/temporary, simulated, `production_permitted: false` |
-| baobab-subscriptions | active | Yes | IMPLEMENTED, sandbox/temporary, simulated, `production_permitted: false` |
-| baobab-cms | active | Yes | Planned only: `content.entry.resolve` |
-| baobab-pulse | experimental | None | None; intelligence/v1 not yet in scope |
-| baobab-trade | active | Yes | Declared; contents not re-reviewed here |
-| baobab-erp | active | Yes | Declared; contents not re-reviewed here |
-| baobab-cp | active, `control-plane` (cp#238) | None, by design | None: platform authority, not a provider |
+| Nabhold Group Africa | Its own Organisation and Tenant; a potential scoped legal actor | **NO.** [S#252](https://github.com/baobab-platform/shared/pull/252) is a documentary CIPC reference, and examples stay `UNVERIFIED` ([S#269](https://github.com/baobab-platform/shared/pull/269)) | A verification case accepted in CP; any authority to act for another business |
+| Thamani Global | An independent incorporated business and Tenant | **NO.** [S#266](https://github.com/baobab-platform/shared/pull/266) is a documentary CIPC reference | Its own official registration; separate proof of group control |
+| ZuriBeans | An independent Organisation and Tenant, with no fictional incorporation ([S#270](https://github.com/baobab-platform/shared/pull/270)) | N/A (unincorporated) | A scope-specific authorised legal actor for each activity that needs one |
+| Equator & Estate Co. | An independent Organisation and Tenant, with no fictional incorporation | N/A (unincorporated) | Real legal responsibility for property, construction and other relevant activities |
 
-## Immediate execution queue (plan §51)
+Ownership alone never lets Nabhold act as issuer, seller, importer or contracting actor for ZuriBeans or Equator. Each role needs its own accepted mandate.
 
-| # | Gate | State | Evidence |
-|---:|---|---|---|
-| 1 | EA plan v2 committed; prior sequence superseded | Done | Plan in `docs/adr`; this dashboard (#155); v1 assessment marked Historical and plan registered Accepted (#156) |
-| 2 | Contract convergence audit and lock remediation | Done | Lock schema, check and drift report shared#157; canonical locks on all 8 consumers (cp#229, iam#47, cms#19, pulse#28, trade#114, erp#46, subscriptions#21, payments#16); all 8 pass the enforced check at Shared 739f0ca; ERP semantic convergence proven by an exact-pin suite (erp#43 to erp#46); remaining BEHIND_CHANGED pins re-pin by explicit PR with each engine's compatibility tests ([EA-01 record](ea-01-contract-convergence.md)) |
-| 3 | `identity.workload-token.issue` provider neutrality | Done | shared#151 |
-| 4 | Complete IAM #42 | Done | iam#42 |
-| 5 | Shared #148 lifecycle semantics | Done | shared#148 |
-| 6 | IAM provider declaration | Planned-only | iam#45; support waits on M2–M4 evidence |
-| 7 | CMS provider declaration and contract lock | Done | cms#17, cms#19 |
-| 8 | Foundation provider-declaration validation | Done (enforcing) | shared#152, #153, #154 |
-| 9 | Finalise/accept EngineRelease architecture | Done | cp#228 (ADR-BCP-025 A1–A4) |
-| 10 | Implement EngineRelease | ER-01…05 implemented; operational proof open | ER-01 contracts; ER-02 record and read (shared#169, #170, cp#233); release approval (shared#171, cp#235); ER-03 (shared#173, cp#237); ER-04 (shared#178, cp#239); ER-05 (cp#240, cp#242, cp#243); ER-06 a separate gate, disabled |
-| 11 | DeploymentObservation model/interfaces | Intake merged; not operationally proven | ER-01 contracts; ER-04 (shared#178, cp#239). Production evidence waits on the gates in [er-04-production-gates.md](er-04-production-gates.md) |
-| 12 | Provider activation Changeset | Done | DRAFT-only registration and PROVIDER_ACTIVATION (shared#167, #168, cp#231, cp#232); binding integrity (cp#234). Release approval (cp#235) lets a release be APPROVED and a provider be activated without direct SQL |
-| 13 | AdministrativeGrant enforcement | Machinery built; evidence phase not begun; flip not authorised | Staged path in roles-to-grants-decision.md; ADA-05/06/07, readiness, population check and enforcement gate merged; `enforced: []` |
-| 14–30 | Engine hardening onward | Not started | Plan §51 |
+## v2.1 §11 decisions
 
-## Decisions
+All five were approved on **2026-10-13** by the **platform owner** (the repository owner). The approval was recorded in the EA-R01 change that accepted v2.1.
 
-| Decision | Outcome | Record |
-|---|---|---|
-| G-REG-NS | Option B: Regulations is a first-class capability provider; Trade keeps operational enforcement | [g-reg-ns-resolution.md](g-reg-ns-resolution.md) |
-| G-FCI-1 | Declaration mandatory for `active` engines; enforcing on all 8 consumers (closed 2026-10-01) | [ea-02-capability-catalogue.md](ea-02-capability-catalogue.md) |
-| Control Plane classification | CP is `control-plane`, not `engine`; no provider declaration | [ea-02-capability-catalogue.md](ea-02-capability-catalogue.md), ADR-0020 amendment |
-| Payments/Subscriptions lifecycle | Promoted to `active`; simulated support stays non-production | payments#14, subscriptions#19 |
-| Pulse lifecycle | `experimental` | pulse#26 |
-| ADR-BCP-025 | Accepted with amendments A1–A4 | cp#228 |
-| Workload registry in production CP | Mandatory and fail-closed; ACTIVE lifecycle enforced for every inbound workload after the existing ACTIVE entries are reconciled | [er-04-production-gates.md](er-04-production-gates.md) |
-| ADR-BCP-025 reporter | Infrastructure deployment controller and runtime observer, federated, no static secret; no admission webhook (production is ECS/Fargate, EKS deferred); PROVISIONED until proven | [er-04-production-gates.md](er-04-production-gates.md) |
-| Event context governance | ADR-SHARED-018 Accepted; `erp` DEPRECATED, `payments` kept, fulfilment/logistics/trade.shipment distinct, Regulations owns classification and assessment, `thamani-*` retired in T-COMPAT-03 | shared#161 |
-
-Still open, and not to be decided in code: the roles→grants *flip* (the migration path is accepted;
-`authority:self` is issued, iam#49); tenant suspend/activate routes; OEV-02 storage and regions;
-CIPC/URSB access; capability resolution record retention.
-
-## ADR status
-
-Normative status lives in each register, not here:
-[Shared](../adr/README.md) and `baobab-cp` `docs/adr/index.md`. In summary:
-
-| Class | Shared | CP |
-|---|---|---|
-| Accepted | ADR-0001…0006, ADR-SHARED-007…017, ADR-0020, Canonical Mapping Model, EA Plan v2.0 | ADR-0001, 0004, 0006, ADR-BCP-001…025, Tenant Onboarding spec |
-| Superseded (in part) | ADR-0001 tenancy portions (by ADR-0003) | ADR-0003 (by ADR-BCP-001…010, 018) |
-| Historical | Production-Readiness Assessment v1 (findings kept; sequencing superseded by EA Plan v2.0, which is registered Accepted) | — |
-| Proposed | — | — |
-| Rejected | — | — |
-
-Outside these registers: `baobab-regulations` ADR-REG-0001…0030 are all
-Proposed, pending individual review (G-REG-NS step 1). Trade ADR-0018 and
-ADR-0021 are Accepted and due amendments under G-REG-NS step 2.
-
-## Open corrections (audit of 2026-10-02)
-
-| # | Correction | State |
+| # | Decision | Outcome |
 |---:|---|---|
-| 1 | Provider-neutral identity assurance contracts must not force `amr` (ACR-or-AMR, no SPI) | This change: `AuthenticationAssurance.amr` optional, `AssuranceRequirement.accepted_acr_values` added, `accepted_methods` optional, behaviour validated |
-| 2 | CP consumes shared#195 | DONE (cp#252, pin `a503649`) |
-| 3 | IAM consumer lock must cover the scopes IAM issues; every Baobab-defined scope IAM issues must exist in the exact pinned scope registry | DONE (iam#52: pin `a503649`, `check-issued-scopes.sh`, integration sections 9b, 19, 19b) |
-| 4 | iam#52 (passkey step-up) is blocked by the Foundation container scan: Keycloak 26.7.4 ships jackson-core 2.21.5 (CVE-2026-89407, CVE-2026-89425, fixed in 2.21.7). Not weakened, not merged. `main` fails the same scan | DONE: upstream Keycloak 26.7.5 (iam#53) pinned by digest `sha256:37dbaf6f…475a85` (R-1 closed); the Bouncy Castle, FreeMarker and Jackson overrides were removed after CI showed the image vendors 1.86, 2.3.35 and 2.21.7 (server and admin CLI); container scan green; iam#52 then merged with no waiver |
-| 5 | ERP semantic convergence (Trade-style census, reconciliation, exact-pin suite, re-pin) | DONE (erp#43 to erp#46; evidence in the EA-01 record). Residual ERP operational items are rows 7 to 10 |
-| 6 | Reconcile this page and the historical sections of roles-to-grants-decision.md | DONE for the 2026-10-02 reconciliation; re-reconciled in this change for EA-01 |
-| 7 | ERP Boundary API: `POST`/`GET /provisioning-operations`, `GET /order-consequences/{id}`, `GET /inventory-availability` answer 501 | OPEN: needs a Control Plane assignment source and finance baseline, a consequence read model, an iDempiere stock query |
-| 8 | ERP delivers no events: domain recorders still emit legacy-shaped events with iDempiere native ids, stored `held` | OPEN: outcome projection to the registered `erp.*` events |
-| 9 | ERP OpenAPI declared no 400 on the two mapping reads and no 501; ERP tracked them in `KNOWN_UNDECLARED` | CLOSED: OpenAPI 1.0.1 (shared#198, `92accac`) declares them; ERP pinned it (erp#47, `a672a64`), deleted `KNOWN_UNDECLARED`, and its exact-pin conformance fails on any undeclared status. The 501s remain a capability-absent signal, not readiness (row 7) |
-| 10 | Baobab IAM grants ERP workloads only `erp:integrate`; the Boundary API needs `erp:read`/`erp:provision` and a `tenant_id` claim | OPEN: owner grant (not made here) |
+| 1 | ADR-BCP-026/027 amend and extend EA v2.0; unchanged v2.0 workstreams and the no-premature-production premise are retained | **Approved** |
+| 2 | Separate gate sequence and four distinct readiness decisions (§6); no global verified legal status | **Approved** |
+| 3 | Founding-group 24-month deferral, truthful legal-entity posture, Option B autonomy, scope-bound Nabhold mandates, independent external verification | **Approved** |
+| 4 | PEO-03L/M labels | **Remapped:** L becomes the staging-acceptance criterion of PEO-03K; M becomes the certification criterion of PEO-03F. No ADR, registry key or contract is created |
+| 5 | Cross-repository acceptance owners | **Approved:** see below |
+
+## Acceptance owners (decision 5)
+
+Only the owning authority may publish a production-support claim for its repository.
+
+| Repository | Acceptance owner |
+|---|---|
+| baobab-cp, baobab-iam, shared, baobab-subscriptions, baobab-erp, baobab-trade, baobab-payments, Infrastructure | Platform owner, until delegated in writing in this register |
+
+## Drift and gap register
+
+| ID | Finding | Severity | Owner repo | State |
+|---|---|---|---|---|
+| D-01 | EA v2.1 proposed; dashboard on v2.0 | P0 Governance | shared | **Closed (2026-10-13):** v2.1 Accepted and this register published. Follow-up: confirm cross-repo evidence marked "as reported" against each owning repository |
+| D-02 | Genuine founding-company and group-control evidence not accepted | P0 Authority | baobab-cp | Open |
+| D-03 | P0-04B native bypass closure incomplete | P0 Financial/legal | Trade, ERP, Payments, Subscriptions, Trade Docs | Open. Shared contract step P0-04B-02 merged ([S#300](https://github.com/baobab-platform/shared/pull/300)) |
+| D-04 | Console production authentication deliberately disabled | P0 Go-live | baobab-cp | Open (by design until security-approved) |
+| D-05 | No certification of scanner/custody as deployed | P0 Evidence | baobab-cp, Infrastructure | Open |
+| D-06 | Public registration and login deep-link journey incomplete | P1 UX | baobab-cp, baobab-iam | Open (F-01, F-02) |
+| D-07 | Independent Console workbenches incomplete | P1 Workflow | baobab-cp | Open (F-03, F-04; CX-06–10) |
+| D-08 | No acceptance for protected browser, dataset lifecycle or performance | P1 Assurance | baobab-cp | Open (F-05) |
+| D-09 | EA-12 estates uneven; Thamani legacy storefront routes | P1 Product | thamani and estates | Open |
+| D-10 | Public website publication and documentation governance incomplete | P1 Publication | baobab-cp | Open (F-06, F-07) |
+
+### Frontend gaps (baobab-cp)
+
+All open. Details are in [audit §6](ea-v2.1-audit-2026-10-13.md#6-landing-page-and-console).
+
+| ID | Gap |
+|---|---|
+| F-01 | Safe post-login deep-link return. The callback always redirects to `/workspace` |
+| F-02 | IAM-owned enrolment or invitation for new applicants |
+| F-03 | Role-aware navigation for every independent authority persona |
+| F-04 | Guided, business-language transitions in place of hand-typed identifiers |
+| F-05 | Real frontend acceptance: provider login, sessions, revocation, accessibility, CSRF, cross-tenant |
+| F-06 | Public website publication: ownership, domain, legal notices, indexing |
+| F-07 | Stale CP documentation (`cx05e-governed-datasets.md`, README snapshot) |
+
+## Execution order (audit §9)
+
+| # | Item | State |
+|---:|---|---|
+| EA-R01 | Reconcile architecture and governance | **Done in Shared (2026-10-13)**; cross-repo evidence confirmation follows |
+| EA-R02 | Founding legal/evidence acceptance foundation | Not started |
+| EA-R03 | Complete P0-04A (Trade Docs) and P0-04B native PEPs | In progress (contracts); native enforcement open |
+| EA-R04 | Close frontend and Console integration | Not started |
+| EA-R05 | Protected staging and E2E acceptance (audit §10 matrix) | Not started; needs EXT infrastructure |
+| EA-R06 | Publication and operational certification | Not started |
+
+Code increments may run in parallel. Production activation stays gated on its dependencies.

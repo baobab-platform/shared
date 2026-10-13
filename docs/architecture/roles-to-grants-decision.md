@@ -17,7 +17,7 @@ This paper takes that as a hard prerequisite and checks it against the code.
 
 ## What existed when this paper was written (HISTORICAL SNAPSHOT, 2026-10-01)
 
-> **Historical.** This table and the "Why the flip is unsafe today" section describe the Control Plane **before** ADA-05. They are kept because the reasoning behind the migration path rests on them, not because they describe today. Grant administration routes, `authority:self`, maker-checker, atomic replacement, scope containment, step-up evaluation, persistent shadow evidence, readiness, the reviewed-population check and the per-permission enforcement gate have since been implemented; see *Rulings*, *Evidence-phase rulings* and `ea-dashboard.md` for current state. Nothing is enforced: `enforced: []`.
+> **Historical.** This table and the "Why the flip is unsafe today" section describe the Control Plane **before** ADA-05. They are kept because the reasoning behind the migration path rests on them, not because they describe today. Grant administration routes, `authority:self`, maker-checker, atomic replacement, scope containment, step-up evaluation, persistent shadow evidence, readiness, the reviewed-population check and the per-permission enforcement gate have since been implemented; see *Rulings*, *Evidence-phase rulings* and `ea-dashboard.md` for current state (the pre-v2.1 EA-05 detail is in `ea-dashboard-v2.0-historical-2026-10-04.md`). Nothing is enforced: `enforced: []`.
 
 ## Table as of 2026-10-01 (superseded)
 
