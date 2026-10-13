@@ -97,14 +97,16 @@ The diagram is a *decision and dependency model*, not proof that every connectio
 
 - **PEO-03F–I:** certified official-source transport, signed/immutable versioned custody, authenticated source capture, independently approved SARS-assisted witness. A recorded witness remains non-authorising; CIPC/URSB proof must be genuinely independent.
 - **PEO-03H/J/K:** bounded certificate-pinned OCR, worker with current case/claim/evidence + workload authorisation, independently signed malware-scan proof, artifact custody, encrypted non-authorising candidate ledger. No extraction API serves raw documents to clients.
-- **PEO-03L (proposed gate; remapped into PEO-03K, §11 decision 4):** protected staging composition and auditable scanner/token, custody/KMS, legal evidence, evidence destruction, redaction, retention and operational negative tests.
-- **PEO-03M (proposed gate; remapped into PEO-03F, §11 decision 4):** independently certified external government/PSP source and policy proof; no synthetic approval or proxy CIPC verification.
+- **PEO-03L criteria (proposed; remapped into PEO-03K, §11 decision 4):** protected staging composition and auditable scanner/token, custody/KMS, legal evidence, evidence destruction, redaction, retention and operational negative tests.
+- **PEO-03M criteria (proposed; remapped into PEO-03F, §11 decision 4):** independently certified external government/PSP source and policy proof; no synthetic approval or proxy CIPC verification.
 
-Under §11 decision 4, PEO-03L/M are **not** separate gates:
-- the PEO-03L criteria are the protected-staging acceptance criterion of **PEO-03K**;
-- the PEO-03M criteria are the certification criterion of **PEO-03F**.
+Under §11 decision 4, these proposed criteria are **not** separate gates:
+- the proposed PEO-03L criteria are the protected-staging acceptance criterion of **PEO-03K**;
+- the proposed PEO-03M criteria are the certification criterion of **PEO-03F**.
 
-The labels survive only as historical references. This plan does not create an ADR, capability or protocol registry key.
+The label **PEO-03L itself follows baobab-cp**, which already uses it for the independent scanner runtime (PEO-03L, CP #338) and scanned-custody admission (PEO-03L2). Both are part of the PEO-03K custody family, so CP's naming and this remap agree.
+
+This plan does not create an ADR, capability or protocol registry key.
 
 ## 6. Four distinct readiness decisions
 
@@ -198,7 +200,7 @@ All five decisions were approved by the platform owner (the repository owner) on
 | 1 | **Approved.** ADR-BCP-026/027 amend and extend EA v2.0; unchanged v2.0 workstreams and the no-premature-production premise are retained |
 | 2 | **Approved.** Separate gate sequence and the four readiness decisions of §6; no global verified legal status |
 | 3 | **Approved.** 24-month founding deferral, truthful legal-entity posture, Option B autonomy, scope-bound Nabhold mandates, independent external verification |
-| 4 | **Remapped.** PEO-03L becomes PEO-03K's protected-staging acceptance criterion. PEO-03M becomes PEO-03F's certification criterion. No canonical contract or registry key |
+| 4 | **Remapped.** The proposed PEO-03L criteria become PEO-03K's protected-staging acceptance criterion. The proposed PEO-03M criteria become PEO-03F's certification criterion. No canonical contract or registry key. The PEO-03L label follows CP's scanner-runtime gates (see §5) |
 | 5 | **Approved.** The platform owner is the acceptance owner for CP, IAM, Shared, Subscriptions, ERP, Trade, Payments and Infrastructure until delegation is recorded in the [register](ea-dashboard.md) |
 
 Acceptance governs **sequencing only**. It authorises no gate, unfreeze, activation or production use: each still needs its own evidence in the register.
