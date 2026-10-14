@@ -1,0 +1,27 @@
+{
+  "decision_id": "a3e9c7d1-5b2f-4e6a-8c1d-9f0b7e3a2c55",
+  "context_id": "6f1c2a9e-4b7d-4c1e-9a3f-2d5e8b7c1a40",
+  "engine_instance_id": "ei_paystaging01",
+  "operation_class": "payments.capture.execute",
+  "operation_reference": "payments/capture/pay_01J9Z8M4/key-91bc",
+  "attempt": 2,
+  "instruction_fingerprint": "9041f9bd88069299cf9d302e2bb4546efaf9bd57ecf483410c0739a543f90589",
+  "outcome": "AUTHORIZED",
+  "tenant_id": "tn_synthetic01",
+  "operating_organisation_id": "2c8e4f6a-1b3d-4e5f-8a7c-9d0e1f2a3b4c",
+  "market": "UG",
+  "legal_actor_role": "PAYMENT_BENEFICIARY",
+  "activity": "PAYMENT_COLLECTION",
+  "capability_key": "payment.payment.capture",
+  "mandate_id": "7d2b9e4f-6a1c-4f3e-b8d5-0c9a8e7f6d22",
+  "responsible_legal_entity_id": "SYNTHETIC-LE-01",
+  "evidence_references": [
+    "synthetic:mandate-evidence/02"
+  ],
+  "mandate_effective_from": "2026-10-01T00:00:00Z",
+  "mandate_effective_to": "2026-12-31T23:59:59Z",
+  "evaluated_at": "2026-10-14T18:00:00Z",
+  "expires_at": "2026-10-14T18:00:30Z",
+  "policy_reference": "ADR-SHARED-035/payments-money-movement-authority:v1",
+  "provider_permissions_granted": false
+}

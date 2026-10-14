@@ -172,3 +172,8 @@ contracts:
     schemas:
       - posting-authority.schema.json
       - posting-operations.yaml
+  - domain: payments
+    version: v2
+    schemas:
+      - money-movement-authority.schema.json
+      - money-movement-operations.yaml

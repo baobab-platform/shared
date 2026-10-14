@@ -1,0 +1,19 @@
+{
+  "context_id": "6f1c2a9e-4b7d-4c1e-9a3f-2d5e8b7c1a40",
+  "engine_instance_id": "ei_paystaging01",
+  "operation_class": "payments.capture.execute",
+  "operation_reference": "payments/capture/pay_01J9Z8M4/key-91bc",
+  "attempt": 2,
+  "instruction": {
+    "tenant_id": "tn_synthetic01",
+    "operating_organisation_id": "2c8e4f6a-1b3d-4e5f-8a7c-9d0e1f2a3b4c",
+    "market": "UG",
+    "currency": "UGX",
+    "merchant_profile_reference": "mprof_synthetic01",
+    "amount_minor": 150000,
+    "payment_reference": "pay_01J9Z8M4",
+    "parent_reference": "pay_01J9Z8M4",
+    "destination_reference": null
+  },
+  "instruction_fingerprint": "9041f9bd88069299cf9d302e2bb4546efaf9bd57ecf483410c0739a543f90589"
+}
