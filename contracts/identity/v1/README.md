@@ -30,3 +30,25 @@ See [MP2-A authority, validation and remaining consumer requirements](../../../d
 Run `python scripts/validate-federation-contracts.py` and `python scripts/tests/test_federation_contracts.py`. Cross-field/transition checks supplement JSON Schema; current-time acceptance, authoritative reference/evidence approval and protocol verification remain runtime obligations. Both OIDC/SAML examples are synthetic, VERIFYING/UNRESOLVED/UNKNOWN and permit no federation login.
 
 See [MP2-B semantics, compatibility and remaining consumer duties](../../../docs/architecture/iam-mp2-federation-contracts.md).
+
+## Workload request scope syntax — Nabhold R0 convergence
+
+`workload-token-request.schema.json` accepts the existing colon-separated
+scope names from `authorization/v1/scope-registry.yaml`, including
+`content:entry:resolve` and `content:entry:preview`. The earlier one-colon
+pattern rejected the CMS scope already allocated to `nabhold-backend`.
+This supports existing hierarchical scopes; one-colon scopes remain valid.
+Workload/audience/scope lexical validation also requires absolute string end:
+a final line terminator cannot exploit the usual dollar-anchor semantics.
+
+No scope registration/allocation or workload status changes. A schema-valid
+request is not a grant: the provider still requires an ACTIVE workload in the
+correct environment, exact audience/scope ceilings and authenticated credential
+evidence. `nabhold-backend` remains PROVISIONED until its separate qualification.
+No credential, provider field, realm or grant type is accepted in this request.
+
+Regression tests (`python scripts/tests/test_workload_token_contract.py`) validate
+all declared workload scopes against the real schema and reject malformed
+segments, whitespace, wildcards, duplicate/excess scopes and provider leakage.
+IAM must update its pinned schema and lexical validator together before this
+corrected contract is considered consumed by the issuer.
