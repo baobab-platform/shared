@@ -149,7 +149,7 @@ def main() -> None:
                                  "instruction": {**payout_vector["instruction"], "destination_reference": None}})
 
     # AUTHORIZED carries the full actor; every other outcome carries none of it.
-    for required in ["tenant_id", "operating_organisation_id", "market", "legal_actor_role", "activity",
+    for required in ["tenant_id", "operating_organisation_id", "market", "legal_actor_role", "activity", "capability_key",
                      "mandate_id", "responsible_legal_entity_id", "evidence_references",
                      "mandate_effective_from", "expires_at", "decision_id", "attempt", "instruction_fingerprint"]:
         bad = copy.deepcopy(authorized)

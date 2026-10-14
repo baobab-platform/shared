@@ -421,6 +421,7 @@
               "market",
               "legal_actor_role",
               "activity",
+              "capability_key",
               "mandate_id",
               "responsible_legal_entity_id",
               "evidence_references",
