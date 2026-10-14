@@ -104,6 +104,8 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Added
 
+* **ERP posting-authority decision carries the whole mandate evidence list.** `erp/v2` `PostingAuthorityDecision.evidence_references` drops its 20-item cap to match `organisation/v2` mandates, which have none; a mandate with more references previously produced a decision that failed its own contract (baobab-cp#393 review).
+
 * **ERP posting-authority contract (ADR-SHARED-034, P0-04B ERP).** New `erp/v2` `PostingAuthorityRequest`/`PostingAuthorityDecision` and a closed operation catalogue join Control Plane legal-actor authority to an ERP-owned native placement for one accounting operation. CP derives tenant, Organisation, market, role, activity and mandate; the request carries only a RUNTIME context, engine instance, operation class, opaque placement reference and operation reference, and no native identifiers. `AUTHORIZED` lasts at most 30 seconds, carries a retained `decision_id` for historical attribution and grants nothing. Workload scope `erp-posting-authority:resolve` is registered and granted only to the PROVISIONED ERP staging assessor. `erp/v1` is unchanged.
 
 * Administrative metric `administrative_authority_enforced_total{permission,result}` (administration/v1 `administrativeMetric`, label `result`: allowed, denied, unavailable): requests decided by AdministrativeGrants under `enforcement-policy.yaml`. Empty while no permission is enforced. No contract shape change.
