@@ -1055,3 +1055,7 @@ Tagged infrastructure releases `v1.0.0`–`v1.4.0` exist on the repository; deta
 * BAOBAB-PLATFORM `SECURITY.md`
 * BAOBAB-PLATFORM `CODEOWNERS`
 * `docs/governance/foundation-ci-promotion-v2.0.0.md`
+
+## Workload scope grammar correction — 14 October 2026
+
+Canonical workload requests now represent the already registered CMS scopes; no scope or workload status is promoted. Regression tests cover declared workload scopes and malformed requests.
