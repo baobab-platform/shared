@@ -54,7 +54,7 @@ Rules:
 ## Readiness summary
 
 ```text
-BAOBAB EA v2.1 READINESS                                   2026-10-13
+BAOBAB EA v2.1 READINESS                                   2026-10-14
 ──────────────────────────────────────────────────────────────────────
 EA v2.1 plan                       ACCEPTED (2026-10-13; §11 decisions recorded below)
 Backend development                SUBSTANTIAL (code merged; not proven live)
@@ -192,7 +192,7 @@ All open. Details are in [audit §6](ea-v2.1-audit-2026-10-13.md#6-landing-page-
 |---:|---|---|
 | EA-R01 | Reconcile architecture and governance | **Done (2026-10-13)**, including cross-repository evidence verification |
 | EA-R02 | Founding legal/evidence acceptance foundation | In progress. CP machinery merged ([CP #339](https://github.com/baobab-platform/baobab-cp/pull/339)–[CP #345](https://github.com/baobab-platform/baobab-cp/pull/345)). Open and actionable: integrate the scanner and custody with approved infrastructure (bucket/KMS deployment, scanner signer, operating retention policy; see PEO-03K). Externally blocked: authentic Nabhold/Thamani records, corporate-control decisions and mandates (EXT) |
-| EA-R03 | Complete P0-04A and P0-04B native PEPs | P0-04A complete; P0-04B-01/02/03 merged (Trade, [Trade #149](https://github.com/baobab-platform/baobab-trade/pull/149)); next: ERP native trusted context/readiness and atomic posting, then Payments, Subscriptions and Trade Docs |
+| EA-R03 | Complete P0-04A and P0-04B native PEPs | P0-04A complete; P0-04B-01/02/03 merged (Trade, [Trade #149](https://github.com/baobab-platform/baobab-trade/pull/149)); next: ERP native trusted context/readiness and atomic posting, then Payments, Subscriptions and Trade Docs execution points; Trade full order/payment execution also remains open |
 | EA-R04 | Close frontend and Console integration | Not started |
 | EA-R05 | Protected staging and E2E acceptance (audit §10 matrix) | Not started; needs EXT infrastructure |
 | EA-R06 | Publication and operational certification | Not started |
