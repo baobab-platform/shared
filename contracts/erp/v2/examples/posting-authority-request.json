@@ -1,0 +1,10 @@
+{
+  "context_id": "6f1c2a9e-4b7d-4c1e-9a3f-2d5e8b7c1a40",
+  "engine_instance_id": "ei_erpstaging01",
+  "operation_class": "erp.gl-journal.post",
+  "native_placement_reference": {
+    "placement_id": "0b6d1f9a-3c2e-4a8b-9d7f-5e4c3b2a1908",
+    "placement_version": 2
+  },
+  "operation_reference": "erp/gl-journal/placement-0b6d1f9a/v2/record-1000234/complete/trx-7f3a"
+}

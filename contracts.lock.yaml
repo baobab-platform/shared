@@ -167,3 +167,8 @@ contracts:
     version: v1
     schemas:
       - seller-binding.schema.json
+  - domain: erp
+    version: v2
+    schemas:
+      - posting-authority.schema.json
+      - posting-operations.yaml

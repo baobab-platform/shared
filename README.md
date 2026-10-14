@@ -1365,3 +1365,5 @@ This repository is intended for authorised BAOBAB-PLATFORM personnel, systems, a
 Because workflows, contracts, and packages contained here may execute with elevated privileges — or be relied upon as interfaces — across other repositories, treat changes to this repository as changes to **shared organisational infrastructure**.
 
 P0-04B-02 Trade seller-binding human admission is defined in [commerce/v1](contracts/commerce/v1/README.md); scope and grant vocabulary is registered without assignments.
+
+P0-04B ERP posting-authority resolution is defined in [erp/v2](contracts/erp/v2/README.md) (ADR-SHARED-034); its workload scope is granted only to the PROVISIONED ERP staging assessor.

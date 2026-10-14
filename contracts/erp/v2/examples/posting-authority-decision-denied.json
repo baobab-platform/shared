@@ -1,0 +1,20 @@
+{
+  "decision_id": "c4f0d8e2-6c3a-4f7b-9d2e-0a1c8f4b3d65",
+  "context_id": "6f1c2a9e-4b7d-4c1e-9a3f-2d5e8b7c1a40",
+  "engine_instance_id": "ei_erpstaging01",
+  "operation_class": "erp.customer-invoice.issue",
+  "native_placement_reference": {
+    "placement_id": "0b6d1f9a-3c2e-4a8b-9d7f-5e4c3b2a1908",
+    "placement_version": 2
+  },
+  "operation_reference": "erp/customer-invoice/placement-0b6d1f9a/v2/record-1000877/complete/trx-91bc",
+  "outcome": "NO_APPLICABLE_MANDATE",
+  "tenant_id": "tn_synthetic01",
+  "operating_organisation_id": "2c8e4f6a-1b3d-4e5f-8a7c-9d0e1f2a3b4c",
+  "market": "UG",
+  "legal_actor_role": "INVOICE_ISSUER",
+  "activity": "CUSTOMER_INVOICE_ISSUANCE",
+  "evaluated_at": "2026-10-14T06:00:00Z",
+  "policy_reference": "ADR-SHARED-034/erp-posting-authority:v1",
+  "provider_permissions_granted": false
+}
