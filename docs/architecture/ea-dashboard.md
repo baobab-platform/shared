@@ -1,7 +1,7 @@
 # EA Implementation Register (v2.1)
 
 **Governing plan:** [EA Implementation Plan v2.1](EA-implementation-plan-v2.1-ADR-BCP-026-027-reconciliation.md), Accepted 2026-10-13. [EA Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) remains the baseline for workstreams that v2.1 does not change.  
-**Last updated:** 2026-10-13 (register refresh: cross-repository evidence verified, P0-04A complete, P0-04B-01/02 recorded, PEO-03L naming aligned with CP)  
+**Last updated:** 2026-10-14 (P0-04B-03 Trade checkout COMMIT fence merged; previous: 2026-10-13 register refresh)  
 **Source audit:** [EA v2.1 audit, 13 October 2026](ea-v2.1-audit-2026-10-13.md)  
 **History:** [v2.0 dashboard, last updated 2026-10-04](ea-dashboard-v2.0-historical-2026-10-04.md). It is historical and is not carried forward as live status (v2.1 §10).
 
@@ -54,7 +54,7 @@ Rules:
 ## Readiness summary
 
 ```text
-BAOBAB EA v2.1 READINESS                                   2026-10-13
+BAOBAB EA v2.1 READINESS                                   2026-10-14
 ──────────────────────────────────────────────────────────────────────
 EA v2.1 plan                       ACCEPTED (2026-10-13; §11 decisions recorded below)
 Backend development                SUBSTANTIAL (code merged; not proven live)
@@ -63,7 +63,7 @@ Console production login           BLOCKED BY DESIGN (readAuthSettings rejects p
 Protected live E2E                 NOT DEMONSTRATED
 Founding-group legal acceptance    OUTSTANDING (no independently accepted verification case)
 P0-04A contract convergence        COMPLETE for current consumers (Trade, ERP, Payments, Subscriptions, Trade Docs)
-P0-04B native execution PEPs       OPEN: P0-04B-01/02 merged (Trade binding lifecycle and authenticated intake); next: Trade protected native checkout
+P0-04B native execution PEPs       OPEN: P0-04B-01/02/03 merged (Trade binding lifecycle, authenticated intake, cart-completion COMMIT fence); next: ERP native context/readiness and atomic posting
 DIGITAL ESTATE DEVELOPMENT         GATE B NOT PASSED
 PRODUCTION ACTIVATION              NOT AUTHORISED
 ──────────────────────────────────────────────────────────────────────
@@ -120,7 +120,7 @@ EA v2.0 and v2.1 do not define EA-07 or EA-08 as workstreams like the others, so
 | LA-02 | YES | YES | PART | PART | PART | NO | N/A | NO | Nullable legal entity and PRIMARY mapping: contracts and validators `5930dcf`; CP database and Go compatibility [CP `c606b20`](https://github.com/baobab-platform/baobab-cp/commit/c606b20) (migration 000102). Remaining: migration of real data, proof for legacy consumers, rollback |
 | LA-03 | YES | YES | PART | PART | PART | NO | NO | N/A | Contract: `5930dcf` (`tenant-registration.schema.json`, `pre-tenant-admission.schema.json`). CP governed registration: [CP #294](https://github.com/baobab-platform/baobab-cp/pull/294) (migration 000103, API and service tests). Remaining: execution accepted for the four founding businesses |
 | LA-04 | YES | YES | PART | PART | PART | NO | NO | NO | Mandates, independent decisions, lifecycle and readback: [S#257](https://github.com/baobab-platform/shared/pull/257)–[S#260](https://github.com/baobab-platform/shared/pull/260), [S#287](https://github.com/baobab-platform/shared/pull/287), [S#297](https://github.com/baobab-platform/shared/pull/297); [CP #379](https://github.com/baobab-platform/baobab-cp/pull/379). Remaining: authentic mandates, human authority decisions |
-| LA-05 | YES | YES | PART | PART | PART | NO | EXT | NO | Engine policy and contract guards: [S#261](https://github.com/baobab-platform/shared/pull/261), [S#262](https://github.com/baobab-platform/shared/pull/262), [S#264](https://github.com/baobab-platform/shared/pull/264), [S#282](https://github.com/baobab-platform/shared/pull/282), [S#300](https://github.com/baobab-platform/shared/pull/300). P0-04B-01/02 Trade binding lifecycle, authenticated intake and CP-owned activation with native PostgreSQL 17/Medusa proof: [Trade #146](https://github.com/baobab-platform/baobab-trade/pull/146), [Trade #147](https://github.com/baobab-platform/baobab-trade/pull/147), [Trade #148](https://github.com/baobab-platform/baobab-trade/pull/148), [CP #389](https://github.com/baobab-platform/baobab-cp/pull/389), [CP #390](https://github.com/baobab-platform/baobab-cp/pull/390). Remaining: **P0-04B** protected native checkout, ERP/Payments/Subscriptions/Trade Docs execution points, issuer/PSP identity (D-03) |
+| LA-05 | YES | YES | PART | PART | PART | NO | EXT | NO | Engine policy and contract guards: [S#261](https://github.com/baobab-platform/shared/pull/261), [S#262](https://github.com/baobab-platform/shared/pull/262), [S#264](https://github.com/baobab-platform/shared/pull/264), [S#282](https://github.com/baobab-platform/shared/pull/282), [S#300](https://github.com/baobab-platform/shared/pull/300). P0-04B-01/02 Trade binding lifecycle, authenticated intake and CP-owned activation with native PostgreSQL 17/Medusa proof: [Trade #146](https://github.com/baobab-platform/baobab-trade/pull/146), [Trade #147](https://github.com/baobab-platform/baobab-trade/pull/147), [Trade #148](https://github.com/baobab-platform/baobab-trade/pull/148), [CP #389](https://github.com/baobab-platform/baobab-cp/pull/389), [CP #390](https://github.com/baobab-platform/baobab-cp/pull/390). P0-04B-03 cart-completion COMMIT fence for activated bindings (single consumption, revocation, lease expiry, replay, compensation; real completeCartWorkflow acceptance on PostgreSQL 17): [Trade #149](https://github.com/baobab-platform/baobab-trade/pull/149), receipt [CP #392](https://github.com/baobab-platform/baobab-cp/pull/392). Remaining: **P0-04B** Trade full order/payment execution, ERP/Payments/Subscriptions/Trade Docs execution points, issuer/PSP identity (D-03) |
 | LA-06 | YES | YES | PART | NO | PART | NO | NO | N/A | Contract examples separating synthetic and real businesses: [S#270](https://github.com/baobab-platform/shared/pull/270). CP synthetic founding qualification and correlation: [CP #340](https://github.com/baobab-platform/baobab-cp/pull/340), [CP #341](https://github.com/baobab-platform/baobab-cp/pull/341). Remaining: real records, evidence, independent approval |
 | LA-07 | YES | PART | PART | NO | PART | NO | NO | NO | Read-only mandate scope and readback, with validators: [S#287](https://github.com/baobab-platform/shared/pull/287), [S#297](https://github.com/baobab-platform/shared/pull/297); [CP #379](https://github.com/baobab-platform/baobab-cp/pull/379). No cutover migration is cited, so DB stays NO. Remaining: operational cutover, historical financial attribution, recovery |
 
@@ -163,7 +163,7 @@ Only the owning authority may publish a production-support claim for its reposit
 |---|---|---|---|---|
 | D-01 | EA v2.1 proposed; dashboard on v2.0 | P0 Governance | shared | **Closed (2026-10-13):** v2.1 Accepted and this register published; cross-repository evidence verified merged on each owning `main` |
 | D-02 | Genuine founding-company and group-control evidence not accepted | P0 Authority | baobab-cp | Open |
-| D-03 | P0-04B native bypass closure incomplete | P0 Financial/legal | Trade, ERP, Payments, Subscriptions, Trade Docs | Open. P0-04B-01/02 merged ([S#300](https://github.com/baobab-platform/shared/pull/300), [Trade #146](https://github.com/baobab-platform/baobab-trade/pull/146), [Trade #147](https://github.com/baobab-platform/baobab-trade/pull/147), [Trade #148](https://github.com/baobab-platform/baobab-trade/pull/148), [CP #389](https://github.com/baobab-platform/baobab-cp/pull/389), [CP #390](https://github.com/baobab-platform/baobab-cp/pull/390)); next: Trade protected native checkout |
+| D-03 | P0-04B native bypass closure incomplete | P0 Financial/legal | Trade, ERP, Payments, Subscriptions, Trade Docs | Open. P0-04B-01/02/03 merged ([S#300](https://github.com/baobab-platform/shared/pull/300), [Trade #146](https://github.com/baobab-platform/baobab-trade/pull/146), [Trade #147](https://github.com/baobab-platform/baobab-trade/pull/147), [Trade #148](https://github.com/baobab-platform/baobab-trade/pull/148), [CP #389](https://github.com/baobab-platform/baobab-cp/pull/389), [CP #390](https://github.com/baobab-platform/baobab-cp/pull/390)), [Trade #149](https://github.com/baobab-platform/baobab-trade/pull/149)); next: ERP native trusted context/readiness and atomic posting |
 | D-04 | Console production authentication deliberately disabled | P0 Go-live | baobab-cp | Open (by design until security-approved) |
 | D-05 | No certification of scanner/custody as deployed | P0 Evidence | baobab-cp, Infrastructure | Open |
 | D-06 | Public registration and login deep-link journey incomplete | P1 UX | baobab-cp, baobab-iam | Open (F-01, F-02) |
@@ -192,7 +192,7 @@ All open. Details are in [audit §6](ea-v2.1-audit-2026-10-13.md#6-landing-page-
 |---:|---|---|
 | EA-R01 | Reconcile architecture and governance | **Done (2026-10-13)**, including cross-repository evidence verification |
 | EA-R02 | Founding legal/evidence acceptance foundation | In progress. CP machinery merged ([CP #339](https://github.com/baobab-platform/baobab-cp/pull/339)–[CP #345](https://github.com/baobab-platform/baobab-cp/pull/345)). Open and actionable: integrate the scanner and custody with approved infrastructure (bucket/KMS deployment, scanner signer, operating retention policy; see PEO-03K). Externally blocked: authentic Nabhold/Thamani records, corporate-control decisions and mandates (EXT) |
-| EA-R03 | Complete P0-04A and P0-04B native PEPs | P0-04A complete; P0-04B-01/02 merged; next: Trade protected native checkout |
+| EA-R03 | Complete P0-04A and P0-04B native PEPs | P0-04A complete; P0-04B-01/02/03 merged (Trade, [Trade #149](https://github.com/baobab-platform/baobab-trade/pull/149)); next: ERP native trusted context/readiness and atomic posting, then Payments, Subscriptions and Trade Docs execution points; Trade full order/payment execution also remains open |
 | EA-R04 | Close frontend and Console integration | Not started |
 | EA-R05 | Protected staging and E2E acceptance (audit §10 matrix) | Not started; needs EXT infrastructure |
 | EA-R06 | Publication and operational certification | Not started |
