@@ -123,6 +123,7 @@ on:
       - "scripts/validate-administration-contracts.py"
       - "scripts/validate-seller-binding-contract.py"
       - "scripts/validate-erp-posting-authority-contract.py"
+      - "scripts/validate-payments-money-movement-authority-contract.py"
       - "scripts/validate-evidence-contracts.py"
       - "scripts/tests/test_scanner_intake_contract.py"
       - "scripts/validate-commercial-contracts.py"
@@ -165,6 +166,7 @@ on:
       - "scripts/validate-administration-contracts.py"
       - "scripts/validate-seller-binding-contract.py"
       - "scripts/validate-erp-posting-authority-contract.py"
+      - "scripts/validate-payments-money-movement-authority-contract.py"
       - "scripts/validate-evidence-contracts.py"
       - "scripts/tests/test_scanner_intake_contract.py"
       - "scripts/validate-commercial-contracts.py"
@@ -257,6 +259,8 @@ jobs:
         run: python scripts/validate-seller-binding-contract.py
       - name: Validate ERP posting-authority resolution contract (ADR-SHARED-034)
         run: python scripts/validate-erp-posting-authority-contract.py
+      - name: Validate Payments money-movement authority contract (ADR-SHARED-035)
+        run: python scripts/validate-payments-money-movement-authority-contract.py
       - name: Validate evidence and verification contracts (ADR-BCP-023, Draft 2020-12)
         run: python scripts/validate-evidence-contracts.py
       - name: Validate P0-02B private signed scanner intake and redacted receipts

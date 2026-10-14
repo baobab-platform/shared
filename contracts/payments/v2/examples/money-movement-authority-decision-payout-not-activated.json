@@ -1,0 +1,14 @@
+{
+  "decision_id": "d5a1e9f3-7d4b-4a8c-8e3f-1b2d9a5c4e77",
+  "context_id": "6f1c2a9e-4b7d-4c1e-9a3f-2d5e8b7c1a40",
+  "engine_instance_id": "ei_paystaging01",
+  "operation_class": "payments.payout.execute",
+  "operation_reference": "payments/payout/payout_01J9ZA00/key-77aa",
+  "attempt": 1,
+  "instruction_fingerprint": "cadb0fdf18b8a682af614a9c1aacd8f4c81fdbbf2dc040037c775579b8976f38",
+  "outcome": "OPERATION_NOT_ACTIVATED",
+  "activity": "BENEFICIARY_DISBURSEMENT",
+  "evaluated_at": "2026-10-14T18:00:00Z",
+  "policy_reference": "ADR-SHARED-035/payments-money-movement-authority:v1",
+  "provider_permissions_granted": false
+}
