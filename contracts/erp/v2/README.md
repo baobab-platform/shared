@@ -19,8 +19,11 @@ mandate, role, market or time, and carries no native client, organisation or
 table identifier.
 
 `AUTHORIZED` lasts at most 30 seconds, is bound to one operation reference and
-grants nothing (`provider_permissions_granted: false`). ERP must deny at its
-database COMMIT once `expires_at` has passed, and must store `decision_id`,
+grants nothing (`provider_permissions_granted: false`). The schema binds the
+decision's role and activity to its operation class. Consumers must also apply
+the semantic rules in the schema: `evaluated_at < expires_at <= evaluated_at + 30 s`
+and an exact echo of the request. ERP must deny at its database COMMIT once
+`min(expires_at, its own receipt time + 30 s)` has passed, and must store `decision_id`,
 `mandate_id` and the placement reference with the posting so the legal actor
 that applied can be answered later. Finance readiness (period, tax, baseline)
 remains ERP's own check. This contract activates no workload and certifies no

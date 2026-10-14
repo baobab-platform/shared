@@ -112,6 +112,25 @@ def main() -> None:
         assert entry["legal_actor_role"] in roles, entry
         assert 3 <= len(entry["activity"]) <= 160 and entry["activity"].isupper(), entry
         assert entry["capability_key"] is None, "finance capability keys await ADR-SHARED-033"
+    # Role and activity are bound to the operation class by the schema itself,
+    # mirroring the catalogue entry for entry.
+    bindings = [rule for rule in schema["$defs"]["PostingAuthorityDecision"]["allOf"]
+                if "operation_class" in rule.get("if", {}).get("properties", {})]
+    assert {(b["if"]["properties"]["operation_class"]["const"],
+             b["then"]["properties"]["legal_actor_role"]["const"],
+             b["then"]["properties"]["activity"]["const"]) for b in bindings} == {
+        (e["operation_class"], e["legal_actor_role"], e["activity"]) for e in catalogue["operations"]}
+    for entry in catalogue["operations"]:
+        good = {**authorized, "operation_class": entry["operation_class"],
+                "legal_actor_role": entry["legal_actor_role"], "activity": entry["activity"]}
+        decision.validate(good)
+        for other in catalogue["operations"]:
+            if other["legal_actor_role"] != entry["legal_actor_role"]:
+                assert not decision.is_valid({**good, "legal_actor_role": other["legal_actor_role"]}), (entry, other)
+            if other["activity"] != entry["activity"]:
+                assert not decision.is_valid({**good, "activity": other["activity"]}), (entry, other)
+    assert not decision.is_valid({**denied, "legal_actor_role": "ACCOUNTING_ENTITY"}), "denied role/class mismatch"
+    assert "evaluated_at + 30 seconds" in schema["$defs"]["PostingAuthorityDecision"]["description"]
     assert authorized["activity"] == next(
         e["activity"] for e in catalogue["operations"] if e["operation_class"] == authorized["operation_class"])
 

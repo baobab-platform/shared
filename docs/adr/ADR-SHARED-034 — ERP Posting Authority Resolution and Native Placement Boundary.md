@@ -53,11 +53,11 @@ CP mandates are immutable: an amendment is a new mandate naming `supersedes_mand
 A synchronous CP call cannot join ERP's database transaction. The two guarantees are separate and both required:
 
 - **Database atomicity.** The authority attribution and the native financial mutation commit or roll back together in ERP's transaction.
-- **Bounded freshness.** ERP must deny at database COMMIT when `expires_at` has passed. A revocation therefore takes effect within the lease (30 seconds at most). Where that bound cannot be met, the operation is denied ([OWASP Authorization Policy and Data Distribution Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Policy_And_Data_Distribution_Cheat_Sheet.html)).
+- **Bounded freshness.** ERP must deny at database COMMIT once `min(expires_at, ERP's own receipt time + 30 seconds)` has passed, so a decision that claims a longer lease can never extend a posting. Because JSON Schema cannot compare timestamps, every consumer must also check `evaluated_at < expires_at <= evaluated_at + 30 s` and that the decision echoes its request. A revocation therefore takes effect within the lease (30 seconds at most). Where that bound cannot be met, the operation is denied ([OWASP Authorization Policy and Data Distribution Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Policy_And_Data_Distribution_Cheat_Sheet.html)).
 
 ## 5. Catalogue
 
-`posting-operations.yaml` is closed. Each class names one legal-actor role (ADR-BCP-027 §6.1: ledger posting is `ACCOUNTING_ENTITY`, a tax invoice `INVOICE_ISSUER`) and one activity that a mandate must scope. The activity vocabulary is new in this ADR and must match how mandates are written; the platform owner reviews it with this change. `capability_key` stays null until ADR-SHARED-033 registers finance keys; a null key matches only mandates without a capability scope.
+`posting-operations.yaml` is closed, and the decision schema binds each `operation_class` to exactly its catalogued role and activity, so a decision for one class can never carry another class's authority. Each class names one legal-actor role (ADR-BCP-027 §6.1: ledger posting is `ACCOUNTING_ENTITY`, a tax invoice `INVOICE_ISSUER`) and one activity that a mandate must scope. The activity vocabulary is new in this ADR and must match how mandates are written; the platform owner reviews it with this change. `capability_key` stays null until ADR-SHARED-033 registers finance keys; a null key matches only mandates without a capability scope.
 
 ## 6. Consequences
 
