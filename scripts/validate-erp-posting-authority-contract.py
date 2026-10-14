@@ -94,6 +94,12 @@ def main() -> None:
     for leaked in ["mandate_id", "responsible_legal_entity_id", "evidence_references", "expires_at",
                    "supersedes_mandate_id", "mandate_effective_from"]:
         assert not decision.is_valid({**denied, leaked: authorized[leaked]}), leaked
+    # Evidence is projected whole: a mandate's evidence list has no cap, so
+    # neither does the decision that cites it.
+    decision.validate({**authorized, "evidence_references": [f"synthetic:evidence/{i}" for i in range(25)]})
+    assert schema["$defs"]["PostingAuthorityDecision"]["properties"]["evidence_references"].get("maxItems") is None
+    assert not decision.is_valid({**authorized, "evidence_references": []})
+    assert not decision.is_valid({**authorized, "evidence_references": ["dup", "dup"]})
     assert not decision.is_valid({**authorized, "provider_permissions_granted": True})
     assert not decision.is_valid({**authorized, "outcome": "PROVIDER_RESTRICTED"})
     issued = datetime.fromisoformat(authorized["evaluated_at"].replace("Z", "+00:00"))
