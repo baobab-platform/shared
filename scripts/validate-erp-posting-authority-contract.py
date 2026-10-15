@@ -175,7 +175,9 @@ def main() -> None:
     assert vectors["catalogue_version"] == catalogue["version"]
     assert vectors["base_example"] == "posting-authority-decision-authorized.json"
     expected = set()
-    all_roles = sorted({e["legal_actor_role"] for e in catalogue["operations"]})
+    # Every legal-actor role, not only the ones ERP uses: a consumer that accepts
+    # e.g. PAYMENT_BENEFICIARY for an ERP class must fail a vector.
+    all_roles = roles
     for entry in catalogue["operations"]:
         expected.add((entry["operation_class"], entry["legal_actor_role"], entry["activity"], "VALID"))
         expected |= {(entry["operation_class"], role, entry["activity"], "INVALID")
