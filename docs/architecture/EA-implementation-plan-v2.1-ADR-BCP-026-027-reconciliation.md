@@ -1,10 +1,10 @@
 # Baobab Platform Enterprise Architecture Implementation Plan v2.1
 ## Normative post-ADR-BCP-026/027 reconciliation
 
-**Status:** **Accepted 13 October 2026**: governs active sequencing. Decisions 1–5 of §11 were approved by the platform owner; the resolution is in §11.  
+**Status:** **Accepted 13 October 2026 — historical active-sequence baseline, superseded for current execution by [EA v2.2](EA-implementation-plan-v2.2-ADR-SHARED-036-integration-reconciliation.md), Accepted 15 October 2026.** Decisions 1–5 of §11 remain accepted substantive architecture and gate rules; no v2.2 supersession invalidates them. The resolution is in §11.  
 **Revision proposed:** 11 October 2026  
 **Supersedes for active sequencing:** [EA Implementation Plan v2.0 (30 September 2026)](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md), which remains the baseline for workstreams this revision does not change.  
-**Live status:** [EA v2.1 register](ea-dashboard.md).  
+**Live status:** [EA v2.2 register](ea-dashboard.md). **Historical audit:** [13 October snapshot](ea-v2.1-audit-2026-10-13.md). **New binding architecture:** [ADR-SHARED-036](../adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) (Accepted 15 October 2026).  
 **Authority:** Shared is the normative contract authority; Control Plane governs business admission, legal-actor mandate and platform desired state; IAM verifies principals and issues provider-neutral workload identity.  
 **Source decisions:** `baobab-cp/docs/adr/ADR-BCP-026 — Progressive Enterprise Onboarding, Founding-Group Exemption and Capability-Specific Evidence Governance.md` and `ADR-BCP-027 — Organisation-First Tenancy, Operating Business, Trading Style and Legal-Actor Responsibility Model.md` (Accepted 9 October 2026).  
 **Purpose:** Bring the existing EA-01–EA-13 programme into line with **two later, accepted foundational ADRs**, without erasing earlier technical convergence work or equating a merged PR with a certified live service.

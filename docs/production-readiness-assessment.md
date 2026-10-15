@@ -1,5 +1,7 @@
 # Production Readiness Assessment — Baobab Canonical Mapping Model
 
+**Status:** HISTORICAL TECHNICAL SNAPSHOT — not a current EA/production go-live assessment. The percentages and ETA below are September estimates, NOT a certified current readiness score. Governing authority: [Accepted EA v2.2](architecture/EA-implementation-plan-v2.2-ADR-SHARED-036-integration-reconciliation.md), [live dashboard](architecture/ea-dashboard.md) and [ADR-SHARED-036 Accepted](adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md).
+
 **Assessment Date:** 2026-09-02  
 **Baseline:** Blueprint completion (77 sections) + 5 priority implementation tasks  
 **Evaluation Target:** Production-grade deployment capability  

@@ -9,10 +9,18 @@
 
 ---
 
+## Active Enterprise Architecture implementation baseline
+
+**Current EA execution authority:** [Accepted EA Implementation Plan v2.2](docs/architecture/EA-implementation-plan-v2.2-ADR-SHARED-036-integration-reconciliation.md), approved 15 October 2026, implements [Accepted ADR-SHARED-036](docs/adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md). [Live evidence dashboard](docs/architecture/ea-dashboard.md), [15 October audit](docs/architecture/ea-v2.2-evidence-audit-2026-10-15.md), and [L4 acceptance matrix](docs/architecture/ea-v2.2-integration-acceptance-matrix.md) distinguish merged code, real-component synthetic integration, protected staging, external certification and signed production permission.
+
+**First engineering increment:** INT-01 in Infrastructure establishes the same version-pinned L4 integration environment in GitHub Codespaces and Actions. Nabhold is the first consumer; Thamani, ZuriBeans, Equator & Estate Co. and external **API-only tenants with zero Baobab Digital Estates** must be supported without inventing group privileges. Existing EA v2.1/2.0 plans are historical for execution, with their unchanged accepted controls retained.
+
+---
+
 ## Foundation 4 repository baseline
 
 This repository owns the reusable GitHub and contract-compatibility gates used
-across all eleven Baobab-Platform repositories. Its Codespaces environment uses the
+across Baobab Platform repositories; new engines and Digital Estates join the same governance as they become eligible. Its Codespaces environment uses the
 `baobab-dev` v1.4.4 `frontend` profile because Shared builds Node-based contract
 packages but no deployable service.
 
