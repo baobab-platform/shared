@@ -1,12 +1,12 @@
-# EA Implementation Register (v2.1)
+# EA Implementation Register (v2.2)
 
-**Governing plan:** [EA Implementation Plan v2.1](EA-implementation-plan-v2.1-ADR-BCP-026-027-reconciliation.md), Accepted 2026-10-13. [EA Plan v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) remains the baseline for workstreams that v2.1 does not change.  
-**Last updated:** 2026-10-14 (P0-04B-05 ERP remaining classes merged, Gate D passed for all six catalogued classes; previous: P0-04B-04 ERP posting authority)  
-**Source audit:** [EA v2.1 audit, 13 October 2026](ea-v2.1-audit-2026-10-13.md)  
-**History:** [v2.0 dashboard, last updated 2026-10-04](ea-dashboard-v2.0-historical-2026-10-04.md). It is historical and is not carried forward as live status (v2.1 §10).
+**Governing plan:** [EA Implementation Plan v2.2](EA-implementation-plan-v2.2-ADR-SHARED-036-integration-reconciliation.md), **ACCEPTED 2026-10-15** under [ADR-SHARED-036](../adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) (**ACCEPTED**, Shared [#310](https://github.com/baobab-platform/shared/pull/310)). [EA v2.1](EA-implementation-plan-v2.1-ADR-BCP-026-027-reconciliation.md), Accepted 2026-10-13, remains the prior execution baseline with its substantive 026/027 decisions retained; [EA v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) retains earlier unchanged workstream scope only.  
+**Last updated:** **2026-10-15** — ADR-SHARED-036 and EA v2.2 accepted; Payments D1 merged, IAM #116 green on unmerged PR; source vs L4 vs protected staging reconciled.
+**Source audit:** [EA v2.2 audit, 15 October 2026](ea-v2.2-evidence-audit-2026-10-15.md); [v2.1 audit](ea-v2.1-audit-2026-10-13.md) is a dated historical snapshot.  
+**History:** [v2.0 dashboard, 4 October 2026](ea-dashboard-v2.0-historical-2026-10-04.md); v2.1 approval [Shared #301](https://github.com/baobab-platform/shared/pull/301); new v2.2 [integration matrix](ea-v2.2-integration-acceptance-matrix.md). Historical dashboards are not live status.
 
 This page is the live register for every EA gate. The plan holds the reasoning.
-Any PR that moves a gate updates its row here and records (v2.1 §9):
+Any PR that moves a gate updates its row here and records (v2.2 §§3, 9–11):
 - commit
 - contract pin
 - migration ID
@@ -17,7 +17,7 @@ Any PR that moves a gate updates its row here and records (v2.1 §9):
 
 ## How to read this register
 
-Each row is scored separately at eight evidence levels (v2.1 §10):
+Each row retains v2.1's eight independent acceptance dimensions. **L4 real-component evidence is tracked independently in the EA-INT matrix below**; do not collapse L4 into Synth or Stag:
 
 | Column | Meaning |
 |---|---|
@@ -42,9 +42,11 @@ Values:
 
 Rules:
 - A YES or PART in any column except Arch needs evidence linked in its row; a column with no linked evidence is scored NO.
-- Arch = YES in every row rests on one record, not repeated per row: the v2.1 acceptance ([S#301](https://github.com/baobab-platform/shared/pull/301)) and ADR-BCP-026/027, Accepted in baobab-cp on 2026-10-09.
-- Synthetic CI never sets Stag, Legal or Ops.
+- Arch = YES for original v2.1 rows remains grounded in [S#301](https://github.com/baobab-platform/shared/pull/301) and CP accepted ADR-BCP-026/027. The **additional** EA-INT/production SaaS architecture is grounded in ADR-SHARED-036 Accepted via [Shared #310](https://github.com/baobab-platform/shared/pull/310) and the accepted v2.2 plan. This does NOT change Code/Synth/Stag/Legal/Ops scores.
+- Synthetic CI or real-component L4 never sets Stag, Legal or Ops. A mandatory L4 BLOCKED is not a passed capability-specific pre-staging gate.
 - *Merged* is not *proven*, *proven* is not *certified*, and nothing here is *production-permitted*.
+
+**Important newer evidence:** [Payments #38](https://github.com/baobab-platform/baobab-payments/pull/38) and [CP #400](https://github.com/baobab-platform/baobab-cp/pull/400) were independently checked merged on main on 2026-10-15; [IAM #116](https://github.com/baobab-platform/baobab-iam/pull/116) checked OPEN, latest PR checks green. [Full 16-repo main and open PR/branch audit](ea-v2.2-evidence-audit-2026-10-15.md).
 
 **Evidence provenance:**
 - `S#NNN` links a PR in Shared, checked against Shared `main`.
@@ -54,49 +56,77 @@ Rules:
 ## Readiness summary
 
 ```text
-BAOBAB EA v2.1 READINESS                                   2026-10-14
+BAOBAB EA v2.2 READINESS                                   2026-10-15
 ──────────────────────────────────────────────────────────────────────
-EA v2.1 plan                       ACCEPTED (2026-10-13; §11 decisions recorded below)
+EA v2.2 plan                       ACCEPTED (2026-10-15; ADR-SHARED-036 accepted)
 Backend development                SUBSTANTIAL (code merged; not proven live)
 Public site ↔ Console code         INTEGRATED IN CODE (not live end-to-end certified)
 Console production login           BLOCKED BY DESIGN (readAuthSettings rejects production)
 Protected live E2E                 NOT DEMONSTRATED
 Founding-group legal acceptance    OUTSTANDING (no independently accepted verification case)
 P0-04A contract convergence        COMPLETE for current consumers (Trade, ERP, Payments, Subscriptions, Trade Docs)
-P0-04B native execution PEPs       OPEN: P0-04B-01/02/03 merged (Trade); P0-04B-04/05 ERP posting authority merged, Gate D passed for the six currently catalogued ERP classes (synthetic); open: Trade full order/payment execution, ERP purchase-side/vendor-disbursement/bank-cash/inventory/cost-adjustment classes (need Shared catalogue revision), Payments, Subscriptions, Trade Docs
+P0-04B native execution PEPs       PART: Trade cart and ERP six classes merged; Payments Gate D1 merged (#38; protected D2 open); remaining Trade/ERP/Subscriptions/Trade Docs and certified issuer/PSP acceptance
+EA-INT/L4 reproducible integration   NOT IMPLEMENTED (ADR ACCEPTED; INT-01–08 pending)
 DIGITAL ESTATE DEVELOPMENT         GATE B NOT PASSED
 PRODUCTION ACTIVATION              NOT AUTHORISED
 ──────────────────────────────────────────────────────────────────────
 ```
 
-## Programme gates (v2.1 §8)
+## Programme gates A–E (retained from v2.1 §8; L4 prerequisite added by v2.2 §7)
 
 | Gate | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | State and evidence |
 |---|---|---|---|---|---|---|---|---|---|
 | **A** Architecture/contract readiness | YES | YES | PART | PART | PART | NO | N/A | N/A | **Not passed.** v2.1 Accepted ([S#301](https://github.com/baobab-platform/shared/pull/301)). LA-01 contracts `5930dcf` and PEO-01 [S#274](https://github.com/baobab-platform/shared/pull/274), consumed by every owning engine through P0-04A: [Trade #145](https://github.com/baobab-platform/baobab-trade/pull/145), [ERP #95](https://github.com/baobab-platform/baobab-erp/pull/95), [Payments #36](https://github.com/baobab-platform/baobab-payments/pull/36), [Subscriptions #40](https://github.com/baobab-platform/baobab-subscriptions/pull/40), [Trade Docs #13](https://github.com/baobab-platform/baobab-trade-docs/pull/13). Organisation-first migration: [CP `c606b20`](https://github.com/baobab-platform/baobab-cp/commit/c606b20) (000102). Remaining: acceptance-owner compatibility sign-off of the final consumer inventory (LA-00/01) |
 | **B** Platform developer unfreeze | YES | PART | PART | N/A | PART | NO | N/A | N/A | **Not passed.** Contracts, code and validators so far: LA-01 `5930dcf`, PEO-01 [S#274](https://github.com/baobab-platform/shared/pull/274). The unfreeze list covers Nabhold, ZuriBeans, Thamani and Equator & Estate Co. (v2.1 §8). It needs Gate A, plus proof that no estate frontend implements shadow authority (Thamani drift D-09) |
 | **C** Controlled founding-group onboarding (non-production) | YES | PART | PART | PART | PART | NO | NO | N/A | **Not passed.** Truthful examples: [S#268](https://github.com/baobab-platform/shared/pull/268), [S#269](https://github.com/baobab-platform/shared/pull/269), [S#270](https://github.com/baobab-platform/shared/pull/270). CP machinery and synthetic four-tenant PostgreSQL qualification: [CP #339](https://github.com/baobab-platform/baobab-cp/pull/339) (migration 000120), [CP #340](https://github.com/baobab-platform/baobab-cp/pull/340), [CP #341](https://github.com/baobab-platform/baobab-cp/pull/341). No authentic, accepted business records exist (D-02) |
-| **D** Capability-specific staging qualification | YES | PART | PART | PART | PART | NO | EXT | NO | **Not passed** for any capability. Contracts: [S#264](https://github.com/baobab-platform/shared/pull/264), [S#300](https://github.com/baobab-platform/shared/pull/300). Code, migration and synthetic tests: [CP #382](https://github.com/baobab-platform/baobab-cp/pull/382), [CP #389](https://github.com/baobab-platform/baobab-cp/pull/389), [CP #390](https://github.com/baobab-platform/baobab-cp/pull/390), [Trade #146](https://github.com/baobab-platform/baobab-trade/pull/146), [Trade #147](https://github.com/baobab-platform/baobab-trade/pull/147), [Trade #148](https://github.com/baobab-platform/baobab-trade/pull/148), [ERP #95](https://github.com/baobab-platform/baobab-erp/pull/95), [Payments #36](https://github.com/baobab-platform/baobab-payments/pull/36), [Subscriptions #40](https://github.com/baobab-platform/baobab-subscriptions/pull/40). Protected staging qualification code: [CP #345](https://github.com/baobab-platform/baobab-cp/pull/345). Needs protected staging and certified providers (D-03, D-05) |
-| **E** Production activation (EA-09B) | YES | NO | NO | NO | NO | NO | EXT | NO | **Not authorised.** Needs real registry/PSP/KMS arrangements and a signed go/no-go (D-04, D-05) |
+| **D** Capability-specific staging qualification (requires relevant L4 pass first) | YES | PART | PART | PART | PART | NO | EXT | NO | **Not passed** for any capability. Contracts: [S#264](https://github.com/baobab-platform/shared/pull/264), [S#300](https://github.com/baobab-platform/shared/pull/300). Code, migration and synthetic tests: [CP #382](https://github.com/baobab-platform/baobab-cp/pull/382), [CP #389](https://github.com/baobab-platform/baobab-cp/pull/389), [CP #390](https://github.com/baobab-platform/baobab-cp/pull/390), [Trade #146](https://github.com/baobab-platform/baobab-trade/pull/146), [Trade #147](https://github.com/baobab-platform/baobab-trade/pull/147), [Trade #148](https://github.com/baobab-platform/baobab-trade/pull/148), [ERP #95](https://github.com/baobab-platform/baobab-erp/pull/95), [Payments #36](https://github.com/baobab-platform/baobab-payments/pull/36), [Subscriptions #40](https://github.com/baobab-platform/baobab-subscriptions/pull/40). Protected staging qualification code: [CP #345](https://github.com/baobab-platform/baobab-cp/pull/345). Needs protected staging and certified providers (D-03, D-05) |
+| **E** Production activation (EA-09B; unchanged signed approval) | YES | NO | NO | NO | NO | NO | EXT | NO | **Not authorised.** Needs real registry/PSP/KMS arrangements and a signed go/no-go (D-04, D-05) |
 
 ## EA workstreams
 
-EA v2.0 and v2.1 do not define EA-07 or EA-08 as workstreams like the others, so this register gives them no status.
+EA v2.0–v2.2 do not define EA-07 or EA-08 as workstreams like the others, so this register gives them no status. **EA-INT is newly established by Accepted v2.2 as a cross-cutting implementation workstream, not a capability or a substitute for EA-09B.**
 
 | Stream | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | Assessment, evidence and gap |
 |---|---|---|---|---|---|---|---|---|---|
 | EA-01 Canonical contracts | YES | YES | YES | N/A | YES | NO | N/A | NO | **Implemented and converged for current consumers.** Shared CI validators on each contract PR (e.g. `5930dcf`, [S#283](https://github.com/baobab-platform/shared/pull/283)–[S#289](https://github.com/baobab-platform/shared/pull/289), [S#300](https://github.com/baobab-platform/shared/pull/300)). P0-04A owning-engine convergence: [Trade #145](https://github.com/baobab-platform/baobab-trade/pull/145), [ERP #95](https://github.com/baobab-platform/baobab-erp/pull/95), [Payments #36](https://github.com/baobab-platform/baobab-payments/pull/36), [Subscriptions #40](https://github.com/baobab-platform/baobab-subscriptions/pull/40), [Trade Docs #13](https://github.com/baobab-platform/baobab-trade-docs/pull/13). Gap: live semantic acceptance |
 | EA-02 Capability catalogue and providers | YES | PART | PART | NO | PART | NO | EXT | NO | **Partial.** Payments merchant-readiness contract [S#264](https://github.com/baobab-platform/shared/pull/264). Gaps: real provider admission, active bindings, legal restrictions at runtime, certification per capability. Provider support stays simulated and `production_permitted: false` |
 | EA-03 EngineRelease and topology | YES | YES | YES | PART | PART | NO | N/A | NO | **Substantial foundation.** ER-01 to ER-05 (see the [historical dashboard](ea-dashboard-v2.0-historical-2026-10-04.md)). Gaps: genuine release and deployment observations, reconciliation, protected failover |
-| EA-04 IAM / workload identity | YES | YES | PART | N/A | PART | NO | N/A | NO | **Partial.** Scopes and staging identities defined: [S#251](https://github.com/baobab-platform/shared/pull/251), [S#265](https://github.com/baobab-platform/shared/pull/265), [S#278](https://github.com/baobab-platform/shared/pull/278), [S#279](https://github.com/baobab-platform/shared/pull/279), [S#281](https://github.com/baobab-platform/shared/pull/281). A scope definition creates no ACTIVE client or issued credential. Gaps: active scoped credentials, live revocation, acceptance of the issuer and federation |
+| EA-04 IAM / workload identity | YES | YES | PART | N/A | PART | NO | N/A | NO | **Partial.** [IAM #116](https://github.com/baobab-platform/baobab-iam/pull/116) G04B-04 human-client/CP-audience changes remain OPEN (head 4ee06ef, five PR workflows green); **not in IAM main, not an active protected client**. [Nabhold #55](https://github.com/baobab-platform/nabhold/pull/55) confidential BFF source IS merged.  Scopes and staging identities defined: [S#251](https://github.com/baobab-platform/shared/pull/251), [S#265](https://github.com/baobab-platform/shared/pull/265), [S#278](https://github.com/baobab-platform/shared/pull/278), [S#279](https://github.com/baobab-platform/shared/pull/279), [S#281](https://github.com/baobab-platform/shared/pull/281). A scope definition creates no ACTIVE client or issued credential. Gaps: active scoped credentials, live revocation, acceptance of the issuer and federation |
 | EA-05 CP governance | YES | YES | YES | PART | YES | NO | NO | NO | **Substantial.** Mandates LA-04C/D ([S#257](https://github.com/baobab-platform/shared/pull/257)–[S#260](https://github.com/baobab-platform/shared/pull/260)); sponsorship/deferral ([S#263](https://github.com/baobab-platform/shared/pull/263), [S#272](https://github.com/baobab-platform/shared/pull/272), [S#275](https://github.com/baobab-platform/shared/pull/275)); [CP #379](https://github.com/baobab-platform/baobab-cp/pull/379). Administrative grants stay `enforced: []`. Gaps: real founding-group decisions, external evidence, complete workbenches |
 | EA-06 Event fabric | YES | YES | PART | NO | PART | NO | N/A | NO | **Partial.** Event registrations [S#259](https://github.com/baobab-platform/shared/pull/259), [S#272](https://github.com/baobab-platform/shared/pull/272). Gaps: proof of cross-engine replay, redaction, durable delivery and recovery |
-| EA-09A Pre-deployment conformance | YES | PART | PART | N/A | PART | NO | EXT | N/A | **Partial.** Contracts: [ADR-SHARED-026](../adr/ADR-SHARED-026%20%E2%80%94%20Cross-Repository%20Regulations%2C%20Trade%20Docs%20and%20Pulse%20Conformance%20Architecture.md) (cross-repository conformance) and [ADR-SHARED-032](../adr/ADR-SHARED-032%20%E2%80%94%20EA-09%20Provider%20Capability%20Certification%20and%20Pulse%20Activation%20Admission.md) (EA-09 certification and activation admission). Code and synthetic: Foundation G-FCI-1 enforcing on all 8 consumers and the rtd-conformance suite (`scripts/rtd_conformance.py`); see the [historical dashboard](ea-dashboard-v2.0-historical-2026-10-04.md). Gap: independent acceptance of security and providers across engines |
+| EA-09A Pre-deployment conformance | YES | PART | PART | N/A | PART | NO | EXT | N/A | **Partial.** Mandatory relevant L4 cross-engine profile acceptance is **not yet demonstrated**; [ADR-SHARED-036](../adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) Accepted establishes the architecture but not the runner. Contracts: [ADR-SHARED-026](../adr/ADR-SHARED-026%20%E2%80%94%20Cross-Repository%20Regulations%2C%20Trade%20Docs%20and%20Pulse%20Conformance%20Architecture.md) (cross-repository conformance) and [ADR-SHARED-032](../adr/ADR-SHARED-032%20%E2%80%94%20EA-09%20Provider%20Capability%20Certification%20and%20Pulse%20Activation%20Admission.md) (EA-09 certification and activation admission). Code and synthetic: Foundation G-FCI-1 enforcing on all 8 consumers and the rtd-conformance suite (`scripts/rtd_conformance.py`); see the [historical dashboard](ea-dashboard-v2.0-historical-2026-10-04.md). Gap: independent acceptance of security and providers across engines |
 | EA-09B Operational certification | YES | NO | NO | NO | NO | NO | EXT | NO | **Not demonstrated.** Gaps: protected staging, external certification, signed go/no-go |
 | EA-10 Observability | YES | PART | NO | N/A | NO | NO | N/A | NO | **Partial (contracts only).** Canonical correlation metadata: [ADR-0004](../adr/ADR-0004-canonical-cross-engine-metadata.md). No merged trace-correlation code or test is cited, so Code and Synth stay NO until one is linked. Gap: deployed trace correlation from admission through native transaction and recovery |
 | EA-11 Recovery engineering | YES | PART | PART | PART | PART | NO | N/A | NO | **Partial.** Custody contracts [S#281](https://github.com/baobab-platform/shared/pull/281), [S#298](https://github.com/baobab-platform/shared/pull/298). Key rewrap, orphan recovery and migration 000124 in [CP #382](https://github.com/baobab-platform/baobab-cp/pull/382). Gap: live drills for backup/restore, key rotation, replay and rollback |
-| EA-12 Console and Digital Estates | YES | YES | PART | N/A | PART | NO | N/A | NO | **Console substantial; estates uneven.** [CP #360](https://github.com/baobab-platform/baobab-cp/pull/360), [CP #377](https://github.com/baobab-platform/baobab-cp/pull/377), [CP #378](https://github.com/baobab-platform/baobab-cp/pull/378); CX-04/05 contracts [S#287](https://github.com/baobab-platform/shared/pull/287), [S#288](https://github.com/baobab-platform/shared/pull/288), [S#289](https://github.com/baobab-platform/shared/pull/289), [S#295](https://github.com/baobab-platform/shared/pull/295), [S#296](https://github.com/baobab-platform/shared/pull/296). Gaps: F-01 to F-07, Thamani drift (D-09) |
+| EA-12 Console and Digital Estates | YES | YES | PART | N/A | PART | NO | N/A | NO | **Console substantial; estates uneven.** First-party Nabhold BFF is merged, but live IAM↔CP↔CMS is not accepted. **External API-only tenants MUST NOT require a Baobab-owned DigitalEstate**; test INT-07 before claiming external SaaS readiness. [CP #360](https://github.com/baobab-platform/baobab-cp/pull/360), [CP #377](https://github.com/baobab-platform/baobab-cp/pull/377), [CP #378](https://github.com/baobab-platform/baobab-cp/pull/378); CX-04/05 contracts [S#287](https://github.com/baobab-platform/shared/pull/287), [S#288](https://github.com/baobab-platform/shared/pull/288), [S#289](https://github.com/baobab-platform/shared/pull/289), [S#295](https://github.com/baobab-platform/shared/pull/295), [S#296](https://github.com/baobab-platform/shared/pull/296). Gaps: F-01 to F-07, Thamani drift (D-09) |
 | EA-13 Regulatory architecture | YES | PART | PART | N/A | PART | NO | EXT | NO | **Substantial reference implementation.** Contracts: [ADR-SHARED-028](../adr/ADR-SHARED-028%20%E2%80%94%20Canonical%20Regulatory%20Decision%20Evaluation%20Contract.md), [S#276](https://github.com/baobab-platform/shared/pull/276), [S#277](https://github.com/baobab-platform/shared/pull/277). Code and synthetic: the cross-repository rtd-conformance suite ([ADR-SHARED-026](../adr/ADR-SHARED-026%20%E2%80%94%20Cross-Repository%20Regulations%2C%20Trade%20Docs%20and%20Pulse%20Conformance%20Architecture.md)). Gaps: accepted real requirement sources, trust, integration of runtime applicability |
+
+## EA-INT — New v2.2 real-component integration workstream
+
+**Architecture:** ADR-SHARED-036 Accepted and merged via [Shared #310](https://github.com/baobab-platform/shared/pull/310). **Programme plan:** v2.2 Accepted, this register. **Implementation:** not merged. L3 Infrastructure tests do not themselves constitute L4. [Audit source/branch assessment](ea-v2.2-evidence-audit-2026-10-15.md); [normative matrix](ea-v2.2-integration-acceptance-matrix.md).
+
+| Workstream/gate | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | Evidence and remaining |
+|---|---|---|---|---|---|---|---|---|---|
+| **EA-INT / INT-01** Codespaces/Actions L4 runner | YES | NO | NO | N/A | NO | N/A | N/A | NO | [ADR-SHARED-036](../adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) accepted, but no merged runner/lock/Compose profile. Infra [feat/integrated-testing-strategy](https://github.com/baobab-platform/infrastructure/tree/feat/integrated-testing-strategy) is divergent (2 ahead/24 behind) and uses older conflicting L4 terminology. |
+| **INT-02** IAM↔CP real-process tests | YES | PART | NO | N/A | NO | NO | N/A | NO | IAM/CP individual suites exist. Cross-engine audience/principal/revocation proof **not demonstrated**. |
+| **INT-03** Nabhold IAM/CP/BFF/CMS | YES | PART | NO | N/A | NO | NO | NO | NO | Nabhold [#55](https://github.com/baobab-platform/nabhold/pull/55) merged, IAM [#116](https://github.com/baobab-platform/baobab-iam/pull/116) PR open, CMS code merged; no single-pinned full execution. |
+| **INT-04** Thamani B2B/B2C logistics | YES | PART | NO | N/A | NO | NO | N/A | NO | Owner ADR B2B/B2C reconciliation and qualified services required before profile source acceptance. |
+| **INT-05** ZuriBeans B2B | YES | PART | NO | N/A | NO | NO | N/A | NO | Buyer/supplier, corridor, quotations and relevant Trade/ERP providers need real integrated test. |
+| **INT-06** Equator & Estate Co. | YES | PART | NO | N/A | NO | NO | EXT | NO | Domain capabilities and responsible actor to be qualified; no fabricated property/finance success. |
+| **INT-07** EXTERNAL_CLIENT API-only, zero estate | YES | PART | NO | N/A | NO | NO | N/A | NO | Mandatory platform invariant. Real context/capability consumption by synthetic unrelated tenant with **zero DigitalEstate objects** unproven. |
+| **INT-08** Finance/events/regulations mesh | YES | PART | NO | N/A | NO | NO | EXT | NO | Payments D1 merged; provider-specific L4 integration suite and authentic PSP/source qualification outstanding. |
+
+### L4 evidence is a separate engineering gate, not protected staging
+
+| Profile | Real selected components/fixture | L4 (actual multi-repo runner) | Protected staging | Relevant source proof |
+|---|---|---|---|---|
+| Core IAM↔CP | Real process/DB, synthetic scoped Principal/Tenant | NO | NO | CP/IAM own tests, no orchestrated E2E |
+| Institutional Nabhold | Real IAM/CP/Nabhold BFF/CMS/TLS Redis | NO | NO | Nabhold #55 merged; IAM #116 OPEN |
+| Thamani logistics | Identity/context, B2B/B2C provider and estate | NO | NO | Owner ADR/consumer work outstanding |
+| ZuriBeans B2B | Buyer/supplier and actual provider instances | NO | NO | UI and providers individually tested |
+| Equator property | Owner-approved real property capability and consumer | NO | NO | Source/role maturity pending |
+| External API-only | EXTERNAL_CLIENT; zero estates; real approved provider | NO | NO | Accepted invariant, not implemented |
+| Payments/ERP/event | Real CP/Payments/ERP, durable state and bus | NO | NO | Gate D1/D ERP local suites, no platform L4 |
 
 ## ADR-BCP-026 gates (progressive enterprise onboarding)
 
@@ -137,9 +167,9 @@ These are declared business positions, not verified registry facts (v2.1 §3).
 
 Ownership alone never lets Nabhold act as issuer, seller, importer or contracting actor for ZuriBeans or Equator. Each role needs its own accepted mandate.
 
-## v2.1 §11 decisions
+## Preserved v2.1 §11 decisions (historical approval, still binding)
 
-All five were approved on **2026-10-13** by the **platform owner** (the repository owner). The approval is recorded in [S#301](https://github.com/baobab-platform/shared/pull/301), the EA-R01 change that accepted v2.1.
+All five v2.1 decisions were approved on **2026-10-13** by the **platform owner** (the repository owner). The approval is recorded in [S#301](https://github.com/baobab-platform/shared/pull/301), the EA-R01 change that accepted v2.1.
 
 | # | Decision | Outcome |
 |---:|---|---|
@@ -163,7 +193,7 @@ Only the owning authority may publish a production-support claim for its reposit
 |---|---|---|---|---|
 | D-01 | EA v2.1 proposed; dashboard on v2.0 | P0 Governance | shared | **Closed (2026-10-13):** v2.1 Accepted and this register published; cross-repository evidence verified merged on each owning `main` |
 | D-02 | Genuine founding-company and group-control evidence not accepted | P0 Authority | baobab-cp | Open |
-| D-03 | P0-04B native bypass closure incomplete | P0 Financial/legal | Trade, ERP, Payments, Subscriptions, Trade Docs | Open. P0-04B-01/02/03 merged ([S#300](https://github.com/baobab-platform/shared/pull/300), [Trade #146](https://github.com/baobab-platform/baobab-trade/pull/146), [Trade #147](https://github.com/baobab-platform/baobab-trade/pull/147), [Trade #148](https://github.com/baobab-platform/baobab-trade/pull/148), [CP #389](https://github.com/baobab-platform/baobab-cp/pull/389), [CP #390](https://github.com/baobab-platform/baobab-cp/pull/390)), [Trade #149](https://github.com/baobab-platform/baobab-trade/pull/149)); P0-04B-04 ERP posting authority merged ([S#304](https://github.com/baobab-platform/shared/pull/304), [CP #393](https://github.com/baobab-platform/baobab-cp/pull/393), [ERP #96](https://github.com/baobab-platform/baobab-erp/pull/96), [ERP #98](https://github.com/baobab-platform/baobab-erp/pull/98)), Gate D passed for GL journals; P0-04B-05 [ERP #99](https://github.com/baobab-platform/baobab-erp/pull/99) Gate D passed for the six currently catalogued ERP classes; still open: Trade full order/payment execution, ERP purchase-side, vendor-disbursement, bank/cash, inventory and cost-adjustment classes (Shared catalogue revision), Payments, Subscriptions, Trade Docs |
+| D-03 | P0-04B native bypass closure incomplete | P0 Financial/legal | Trade, ERP, Payments, Subscriptions, Trade Docs | PART; **Payments D1 now merged via [Payments #38](https://github.com/baobab-platform/baobab-payments/pull/38), CP resolver [CP #400](https://github.com/baobab-platform/baobab-cp/pull/400); D2 protected/real PSP NOT passed**. P0-04B-01/02/03 merged ([S#300](https://github.com/baobab-platform/shared/pull/300), [Trade #146](https://github.com/baobab-platform/baobab-trade/pull/146), [Trade #147](https://github.com/baobab-platform/baobab-trade/pull/147), [Trade #148](https://github.com/baobab-platform/baobab-trade/pull/148), [CP #389](https://github.com/baobab-platform/baobab-cp/pull/389), [CP #390](https://github.com/baobab-platform/baobab-cp/pull/390)), [Trade #149](https://github.com/baobab-platform/baobab-trade/pull/149)); P0-04B-04 ERP posting authority merged ([S#304](https://github.com/baobab-platform/shared/pull/304), [CP #393](https://github.com/baobab-platform/baobab-cp/pull/393), [ERP #96](https://github.com/baobab-platform/baobab-erp/pull/96), [ERP #98](https://github.com/baobab-platform/baobab-erp/pull/98)), Gate D passed for GL journals; P0-04B-05 [ERP #99](https://github.com/baobab-platform/baobab-erp/pull/99) Gate D passed for the six currently catalogued ERP classes; still open: Trade full order/payment execution, ERP purchase-side, vendor-disbursement, bank/cash, inventory and cost-adjustment classes (Shared catalogue revision), Payments, Subscriptions, Trade Docs |
 | D-04 | Console production authentication deliberately disabled | P0 Go-live | baobab-cp | Open (by design until security-approved) |
 | D-05 | No certification of scanner/custody as deployed | P0 Evidence | baobab-cp, Infrastructure | Open |
 | D-06 | Public registration and login deep-link journey incomplete | P1 UX | baobab-cp, baobab-iam | Open (F-01, F-02) |
@@ -171,6 +201,12 @@ Only the owning authority may publish a production-support claim for its reposit
 | D-08 | No acceptance for protected browser, dataset lifecycle or performance | P1 Assurance | baobab-cp | Open (F-05) |
 | D-09 | EA-12 estates uneven; Thamani legacy storefront routes | P1 Product | thamani and estates | Open |
 | D-10 | Public website publication and documentation governance incomplete | P1 Publication | baobab-cp | Open (F-06, F-07) |
+| **D-11** | ADR-SHARED-036 L4 orchestration/locked cross-engine CI not implemented | P0 Integration | Infrastructure, Shared, engines | OPEN. Accepted [Shared #310](https://github.com/baobab-platform/shared/pull/310); INT-01 pending |
+| **D-12** | IAM Nabhold CP human profile awaiting PR merge and protected identity proof | P0 IAM | baobab-iam, baobab-cp, Nabhold | OPEN. [IAM #116](https://github.com/baobab-platform/baobab-iam/pull/116) five CI workflows passed; PR OPEN, no actual Principal/client activation |
+| **D-13** | External tenant with zero Digital Estate not demonstrated | P0 SaaS | CP, IAM, Infrastructure, Shared | OPEN. Mandatory INT-07; no placeholder estate |
+| **D-14** | Thamani B2B/B2C clarified requirement inconsistent with earlier B2B-only owner ADR | P1 Consumer | thamani | OPEN; reconcile owner ADR, then business integration profile |
+| **D-15** | Legacy Infrastructure integrated-testing branch has L4=staging nomenclature and diverges from accepted ADR | P1 Consistency | Infrastructure | OPEN; selectively reuse against current main and ADR-SHARED-036 |
+| **D-16** | Major open Node/TypeScript/GraphQL/Playwright dependency branches may not match approved runtime matrix | P1 Toolchain | Affected repos | OPEN; never treat bot candidate version as certified runtime, pin exact tested candidates |
 
 ### Frontend gaps (baobab-cp)
 
@@ -186,7 +222,29 @@ All open. Details are in [audit §6](ea-v2.1-audit-2026-10-13.md#6-landing-page-
 | F-06 | Public website publication: ownership, domain, legal notices, indexing |
 | F-07 | Stale CP documentation (`cx05e-governed-datasets.md`, README snapshot) |
 
-## Execution order (audit §9)
+## Execution order (Accepted EA v2.2)
+
+The 13 October execution order remains a **historical sequence**. The accepted v2.2 adds an Infrastructure-owned engineering lane that runs **in parallel** with legal/evidence and source-PEP work.
+
+| Position | Item | Current status |
+|---|---|---|
+| EA-R00 | Accept v2.2 plan, L4 test matrix and dashboard | Source changes in this Shared PR; Accepted plan, no deployment |
+| **INT-01** | Infrastructure Codespaces + Actions reproducible harness | **NOT STARTED/NO MERGED L4**; L3 present |
+| EA-R02 | Genuine founding/legal evidence, custody, source and mandates | In progress; real external approvals/infra dependencies |
+| EA-R03 | Complete current native PEP operation families | PART; **Payments D1 merged**, D2 and other engines remaining |
+| **INT-02** | IAM↔CP real-component issued token/context/denial | Not demonstrated |
+| **INT-03** | Nabhold↔IAM↔CP↔CMS full browser/content pilot | Not demonstrated; IAM #116 open |
+| EA-R04 | Console and estate UX/no-shadow-authority completion | Partial; real end-to-end acceptance missing |
+| **INT-04/05/07** | Thamani, ZuriBeans, EXTERNAL_CLIENT with no DigitalEstate | Not demonstrated; owner business ADR and provider readiness |
+| **INT-06/08** | Equator and selective finance/event/Regulations mesh | Not demonstrated; domain readiness gates |
+| EA-R05 | Protected staging, legal/source/PSP/provider E2E | EXTERNAL DEPENDENCY; no protected GO |
+| EA-R06 | Public/operational certification and production authorisation | NOT AUTHORISED |
+
+**Separation:** L4 pass on actual processes with synthetic humans/legal actors is a prerequisite to later protected capability qualification. It does not convert a founding identity to VERIFIED or authorise a real financial instruction. Gate A–E are retained (v2.2 §7).
+
+### Retained previous v2.1 execution order (historical, not the active queue)
+
+### Execution order (audit §9)
 
 | # | Item | State |
 |---:|---|---|

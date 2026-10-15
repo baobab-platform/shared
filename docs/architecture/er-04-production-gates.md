@@ -1,6 +1,6 @@
 # ER-04 production gates
 
-**Authority:** owner rulings of 2026-10-01 on ADR-BCP-025 §2.9 and on the Shared workload registry (shared#148). This page records them as explicit gates. They are not implementation choices.
+**Authority:** owner rulings of 2026-10-01 on ADR-BCP-025 §2.9 and on the Shared workload registry (shared#148). This page records them as explicit gates. They are not implementation choices. **Accepted [ADR-SHARED-036](../adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) and [EA v2.2](EA-implementation-plan-v2.2-ADR-SHARED-036-integration-reconciliation.md) add an L4 engineering prequalification requirement; they do NOT replace this production deployment-controller and signed-acceptance protocol.**
 
 ER-04 and ER-05 are implemented and tested with controlled test reporters. Their production evidence stays **NOT OPERATIONALLY PROVEN** until every gate below is closed.
 

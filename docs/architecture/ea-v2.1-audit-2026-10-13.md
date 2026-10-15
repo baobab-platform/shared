@@ -1,5 +1,6 @@
 # EA v2.1 — Comprehensive implementation audit, 13 October 2026
 
+**Status:** HISTORICAL AUDIT SNAPSHOT, 13 October 2026 — do not use as live status. Current governing [EA v2.2 plan](EA-implementation-plan-v2.2-ADR-SHARED-036-integration-reconciliation.md), [live dashboard](ea-dashboard.md) and [15 October audit](ea-v2.2-evidence-audit-2026-10-15.md) reflect Payments D1, IAM open PR and ADR-SHARED-036.
 **Scope:** EA Implementation Plan v2.1, ADR-BCP-026/027, Control Plane frontend, public landing page, IAM and dependent engines.  
 **Shared baseline:** `5dcff30` (shared#300).  
 **Nature:** A code-and-repository audit, not an inspection of every deployed runtime. Each status reflects the strongest evidence found for it.  
