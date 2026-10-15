@@ -20,7 +20,7 @@
 ## Foundation 4 repository baseline
 
 This repository owns the reusable GitHub and contract-compatibility gates used
-across all eleven Baobab-Platform repositories. Its Codespaces environment uses the
+across Baobab Platform repositories; new engines and Digital Estates join the same governance as they become eligible. Its Codespaces environment uses the
 `baobab-dev` v1.4.4 `frontend` profile because Shared builds Node-based contract
 packages but no deployable service.
 

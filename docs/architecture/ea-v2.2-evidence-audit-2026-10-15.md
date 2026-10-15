@@ -32,7 +32,7 @@ Commit SHAs are point-in-time source pins, not implied contract compatibility, v
 
 ## 2. Open pull request census (organisation-wide)
 
-**55 open PRs discovered** via organisation-wide search on 15 October 2026. One substantive source PR affects the immediate Nabhold/G04 critical path; 54 are developer-toolchain, dependency or Foundation CI candidates. These are **not merged**, and their PR head and CI may change. Do not accidentally reference them as active code.
+**55 open PRs discovered** via organisation-wide search on 15 October 2026 **before the new EA v2.2 documentation PR #311 was created**. One substantive source PR affects the immediate Nabhold/G04 critical path; 54 are developer-toolchain, dependency or Foundation CI candidates. These are **not merged**, and their PR head and CI may change. Do not accidentally reference them as active code.
 
 | Repository | Open PRs identified | Relevance and classification |
 |---|---|---|
