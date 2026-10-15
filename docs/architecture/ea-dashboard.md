@@ -1,7 +1,7 @@
 # EA Implementation Register (v2.2)
 
 **Governing plan:** [EA Implementation Plan v2.2](EA-implementation-plan-v2.2-ADR-SHARED-036-integration-reconciliation.md), **ACCEPTED 2026-10-15** under [ADR-SHARED-036](../adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) (**ACCEPTED**, Shared [#310](https://github.com/baobab-platform/shared/pull/310)). [EA v2.1](EA-implementation-plan-v2.1-ADR-BCP-026-027-reconciliation.md), Accepted 2026-10-13, remains the prior execution baseline with its substantive 026/027 decisions retained; [EA v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) retains earlier unchanged workstream scope only.  
-**Last updated:** **2026-10-15** — ADR-SHARED-036 and EA v2.2 accepted; Payments D1 merged, IAM #116 green on unmerged PR; source vs L4 vs protected staging reconciled.
+**Last updated:** **2026-10-15** — ADR-SHARED-036 and EA v2.2 accepted; Payments D1 merged, IAM #116 merged, Infrastructure INT-01 L4-00 real Actions proof merged; Codespaces execution and L4-01/02 still outstanding.
 **Source audit:** [EA v2.2 audit, 15 October 2026](ea-v2.2-evidence-audit-2026-10-15.md); [v2.1 audit](ea-v2.1-audit-2026-10-13.md) is a dated historical snapshot.  
 **History:** [v2.0 dashboard, 4 October 2026](ea-dashboard-v2.0-historical-2026-10-04.md); v2.1 approval [Shared #301](https://github.com/baobab-platform/shared/pull/301); new v2.2 [integration matrix](ea-v2.2-integration-acceptance-matrix.md). Historical dashboards are not live status.
 
@@ -66,7 +66,7 @@ Protected live E2E                 NOT DEMONSTRATED
 Founding-group legal acceptance    OUTSTANDING (no independently accepted verification case)
 P0-04A contract convergence        COMPLETE for current consumers (Trade, ERP, Payments, Subscriptions, Trade Docs)
 P0-04B native execution PEPs       PART: Trade cart and ERP six classes merged; Payments Gate D1 merged (#38; protected D2 open); remaining Trade/ERP/Subscriptions/Trade Docs and certified issuer/PSP acceptance
-EA-INT/L4 reproducible integration  NOT IMPLEMENTED (ADR ACCEPTED; INT-01–08 pending)
+EA-INT/L4 reproducible integration  INT-01 SOURCE + REAL ACTIONS PROVEN; CODESPACES LIVE RUN NOT YET OBSERVED; INT-02–08 OPEN
 DIGITAL ESTATE DEVELOPMENT         GATE B NOT PASSED
 PRODUCTION ACTIVATION              NOT AUTHORISED
 ──────────────────────────────────────────────────────────────────────
@@ -103,13 +103,13 @@ EA v2.0–v2.2 do not define EA-07 or EA-08 as workstreams like the others, so t
 
 ## EA-INT — New v2.2 real-component integration workstream
 
-**Architecture:** ADR-SHARED-036 Accepted and merged via [Shared #310](https://github.com/baobab-platform/shared/pull/310). **Programme plan:** v2.2 Accepted, this register. **Implementation:** not merged. L3 Infrastructure tests do not themselves constitute L4. [Audit source/branch assessment](ea-v2.2-evidence-audit-2026-10-15.md); [normative matrix](ea-v2.2-integration-acceptance-matrix.md).
+**Architecture:** ADR-SHARED-036 Accepted and merged via [Shared #310](https://github.com/baobab-platform/shared/pull/310). **Programme plan:** v2.2 Accepted, this register. **Implementation:** INT-01 Foundation merged via [Infrastructure #34](https://github.com/baobab-platform/infrastructure/pull/34), main commit `09d3774fbcbcf08b190330429915a6f9393839e6`; [real L4-00 Actions suite](https://github.com/baobab-platform/infrastructure/actions/runs/38719421668) passed with pinned PostgreSQL/RabbitMQ/Redis images, mandatory L4-MAN-01–04, scrubbed receipt and cleanup. Source/Actions proof is **not** an observed Codespaces run, IAM↔CP integration, protected staging or production acceptance. L3 remains separate. [Audit source/branch assessment](ea-v2.2-evidence-audit-2026-10-15.md); [normative matrix](ea-v2.2-integration-acceptance-matrix.md).
 
 | Workstream/gate | Arch | Contr | Code | DB | Synth | Stag | Legal | Ops | Evidence and remaining |
 |---|---|---|---|---|---|---|---|---|---|
-| **EA-INT / INT-01** Codespaces/Actions L4 runner | YES | NO | NO | N/A | NO | N/A | N/A | NO | [ADR-SHARED-036](../adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) accepted, but no merged runner/lock/Compose profile. Infra [feat/integrated-testing-strategy](https://github.com/baobab-platform/infrastructure/tree/feat/integrated-testing-strategy) is divergent (2 ahead/24 behind) and uses older conflicting L4 terminology. |
+| **EA-INT / INT-01** Codespaces/Actions L4 runner | YES | PART | YES | N/A | YES | N/A | N/A | NO | [Infrastructure #34](https://github.com/baobab-platform/infrastructure/pull/34) merged (`09d3774`), [final-head Actions L4 real-process run](https://github.com/baobab-platform/infrastructure/actions/runs/38719421668) **PASS**; PostgreSQL, RabbitMQ and Redis image digests pinned, L4-MAN-01–04 and negative source checks green. **Codespaces interactive run not separately demonstrated**, other engine source materialisation and INT-02/03 remain open. No protected staging claimed. |
 | **INT-02** IAM↔CP real-process tests | YES | PART | NO | N/A | NO | NO | N/A | NO | IAM/CP individual suites exist. Cross-engine audience/principal/revocation proof **not demonstrated**. |
-| **INT-03** Nabhold IAM/CP/BFF/CMS | YES | PART | NO | N/A | NO | NO | NO | NO | Nabhold [#55](https://github.com/baobab-platform/nabhold/pull/55) merged, IAM [#116](https://github.com/baobab-platform/baobab-iam/pull/116) PR open, CMS code merged; no single-pinned full execution. |
+| **INT-03** Nabhold IAM/CP/BFF/CMS | YES | PART | NO | N/A | NO | NO | NO | NO | Nabhold [#55](https://github.com/baobab-platform/nabhold/pull/55) merged, IAM [#116](https://github.com/baobab-platform/baobab-iam/pull/116) **merged** (`49aa42c`), CMS code merged; no single-pinned IAM↔CP↔Nabhold↔CMS real execution. |
 | **INT-04** Thamani B2B/B2C logistics | YES | PART | NO | N/A | NO | NO | N/A | NO | Owner ADR B2B/B2C reconciliation and qualified services required before profile source acceptance. |
 | **INT-05** ZuriBeans B2B | YES | PART | NO | N/A | NO | NO | N/A | NO | Buyer/supplier, corridor, quotations and relevant Trade/ERP providers need real integrated test. |
 | **INT-06** Equator & Estate Co. | YES | PART | NO | N/A | NO | NO | EXT | NO | Domain capabilities and responsible actor to be qualified; no fabricated property/finance success. |
@@ -201,8 +201,8 @@ Only the owning authority may publish a production-support claim for its reposit
 | D-08 | No acceptance for protected browser, dataset lifecycle or performance | P1 Assurance | baobab-cp | Open (F-05) |
 | D-09 | EA-12 estates uneven; Thamani legacy storefront routes | P1 Product | thamani and estates | Open |
 | D-10 | Public website publication and documentation governance incomplete | P1 Publication | baobab-cp | Open (F-06, F-07) |
-| **D-11** | ADR-SHARED-036 L4 orchestration/locked cross-engine CI not implemented | P0 Integration | Infrastructure, Shared, engines | OPEN. Accepted [Shared #310](https://github.com/baobab-platform/shared/pull/310); INT-01 pending |
-| **D-12** | IAM Nabhold CP human profile awaiting PR merge and protected identity proof | P0 IAM | baobab-iam, baobab-cp, Nabhold | OPEN. [IAM #116](https://github.com/baobab-platform/baobab-iam/pull/116) five CI workflows passed; PR OPEN, no actual Principal/client activation |
+| **D-11** | ADR-SHARED-036 L4 orchestration/locked cross-engine CI not implemented | P0 Integration | Infrastructure, Shared, engines | PARTIAL. [Infrastructure #34](https://github.com/baobab-platform/infrastructure/pull/34) **merged**; real L4-00 Actions execution passed, but actual Codespaces invocation, multi-repo source materialisation and engine-level INT-02/03 remain unproven |
+| **D-12** | IAM Nabhold CP human profile awaiting PR merge and protected identity proof | P0 IAM | baobab-iam, baobab-cp, Nabhold | PARTIAL. [IAM #116](https://github.com/baobab-platform/baobab-iam/pull/116) **merged** (`49aa42c`) after five workflows passed; dormant client and protected observer in source. No real Principal/client activation, approved secrets or protected login. |
 | **D-13** | External tenant with zero Digital Estate not demonstrated | P0 SaaS | CP, IAM, Infrastructure, Shared | OPEN. Mandatory INT-07; no placeholder estate |
 | **D-14** | Thamani B2B/B2C clarified requirement inconsistent with earlier B2B-only owner ADR | P1 Consumer | thamani | OPEN; reconcile owner ADR, then business integration profile |
 | **D-15** | Legacy Infrastructure integrated-testing branch has L4=staging nomenclature and diverges from accepted ADR | P1 Consistency | Infrastructure | OPEN; selectively reuse against current main and ADR-SHARED-036 |
@@ -229,11 +229,11 @@ The 13 October execution order remains a **historical sequence**. The accepted v
 | Position | Item | Current status |
 |---|---|---|
 | EA-R00 | Accept v2.2 plan, L4 test matrix and dashboard | Source changes in this Shared PR; Accepted plan, no deployment |
-| **INT-01** | Infrastructure Codespaces + Actions reproducible harness | **NOT STARTED/NO MERGED L4**; L3 present |
+| **INT-01** | Infrastructure Codespaces + Actions reproducible harness | **MERGED, real Actions L4-00 PASS** ([Infra #34](https://github.com/baobab-platform/infrastructure/pull/34)); actual Codespaces proof not demonstrated |
 | EA-R02 | Genuine founding/legal evidence, custody, source and mandates | In progress; real external approvals/infra dependencies |
 | EA-R03 | Complete current native PEP operation families | PART; **Payments D1 merged**, D2 and other engines remaining |
 | **INT-02** | IAM↔CP real-component issued token/context/denial | Not demonstrated |
-| **INT-03** | Nabhold↔IAM↔CP↔CMS full browser/content pilot | Not demonstrated; IAM #116 open |
+| **INT-03** | Nabhold↔IAM↔CP↔CMS full browser/content pilot | Not demonstrated; IAM #116 merged as dormant source, real connected profile missing |
 | EA-R04 | Console and estate UX/no-shadow-authority completion | Partial; real end-to-end acceptance missing |
 | **INT-04/05/07** | Thamani, ZuriBeans, EXTERNAL_CLIENT with no DigitalEstate | Not demonstrated; owner business ADR and provider readiness |
 | **INT-06/08** | Equator and selective finance/event/Regulations mesh | Not demonstrated; domain readiness gates |
