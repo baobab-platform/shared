@@ -1,0 +1,29 @@
+{
+  "decision_id": "5e2a8c41-9d3f-4b7e-a6c2-1f8d0b4e7a93",
+  "context_id": "6f1c2a9e-4b7d-4c1e-9a3f-2d5e8b7c1a40",
+  "engine_instance_id": "ei_erpstaging01",
+  "operation_class": "erp.vendor-payment.record",
+  "native_placement_reference": {
+    "placement_id": "0b6d1f9a-3c2e-4a8b-9d7f-5e4c3b2a1908",
+    "placement_version": 2
+  },
+  "operation_reference": "erp/vendor-payment/placement-0b6d1f9a/v2/record-1004410/complete/trx-2c8d",
+  "outcome": "AUTHORIZED",
+  "tenant_id": "tn_synthetic01",
+  "operating_organisation_id": "2c8e4f6a-1b3d-4e5f-8a7c-9d0e1f2a3b4c",
+  "market": "UG",
+  "legal_actor_role": "ACCOUNTING_ENTITY",
+  "activity": "VENDOR_PAYMENT_RECORDING",
+  "mandate_id": "7d2b9e4f-6a1c-4f3e-b8d5-0c9a8e7f6d21",
+  "supersedes_mandate_id": "1e8f7d6c-5b4a-4392-8170-6f5e4d3c2b1a",
+  "responsible_legal_entity_id": "SYNTHETIC-LE-01",
+  "evidence_references": [
+    "synthetic:mandate-evidence/01"
+  ],
+  "mandate_effective_from": "2026-10-01T00:00:00Z",
+  "mandate_effective_to": "2026-12-31T23:59:59Z",
+  "evaluated_at": "2026-10-14T06:00:00Z",
+  "expires_at": "2026-10-14T06:00:30Z",
+  "policy_reference": "ADR-SHARED-034/erp-posting-authority:v1",
+  "provider_permissions_granted": false
+}

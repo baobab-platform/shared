@@ -137,6 +137,59 @@ def main() -> None:
                 assert not decision.is_valid({**good, "activity": other["activity"]}), (entry, other)
     assert not decision.is_valid({**denied, "legal_actor_role": "ACCOUNTING_ENTITY"}), "denied role/class mismatch"
     assert "evaluated_at + 30 seconds" in schema["$defs"]["PostingAuthorityDecision"]["description"]
+
+    # Catalogue version 2 (ADR-SHARED-037): version 1 classes are unchanged and
+    # first, in order; the revision only appends purchase-side recording classes.
+    assert catalogue["version"] == 2, "catalogue revision must be versioned"
+    v1 = [("erp.gl-journal.post", "ACCOUNTING_ENTITY", "GENERAL_LEDGER_POSTING"),
+          ("erp.customer-invoice.issue", "INVOICE_ISSUER", "CUSTOMER_INVOICE_ISSUANCE"),
+          ("erp.payment.record", "ACCOUNTING_ENTITY", "PAYMENT_RECORDING"),
+          ("erp.allocation.record", "ACCOUNTING_ENTITY", "PAYMENT_ALLOCATION"),
+          ("erp.shipment.complete", "CONTRACTING_PARTY", "GOODS_DELIVERY"),
+          ("erp.sales-order.complete", "CONTRACTING_PARTY", "SALES_ORDER_COMMITMENT")]
+    as_tuples = [(e["operation_class"], e["legal_actor_role"], e["activity"]) for e in catalogue["operations"]]
+    assert as_tuples[:len(v1)] == v1, "version 1 classes must stay unchanged and first"
+    assert as_tuples[len(v1):] == [
+        ("erp.purchase-order.complete", "CONTRACTING_PARTY", "PURCHASE_ORDER_COMMITMENT"),
+        ("erp.material-receipt.complete", "CONTRACTING_PARTY", "GOODS_RECEIPT"),
+        ("erp.vendor-invoice.record", "ACCOUNTING_ENTITY", "VENDOR_INVOICE_RECORDING"),
+        ("erp.vendor-payment.record", "ACCOUNTING_ENTITY", "VENDOR_PAYMENT_RECORDING"),
+        ("erp.payables-allocation.record", "ACCOUNTING_ENTITY", "PAYABLES_ALLOCATION")], "ADR-SHARED-037 table"
+    activities = [e["activity"] for e in catalogue["operations"]]
+    assert len(activities) == len(set(activities)), "each class needs its own activity scope"
+    # Recording is never money movement: no ERP activity or class name may
+    # coincide with, or read as, a payments/v2 movement (ADR-SHARED-035 §1).
+    money = yaml.safe_load((CONTRACTS / "payments/v2/money-movement-operations.yaml").read_text())["operations"]
+    assert not set(activities) & {m["activity"] for m in money}, "ERP activity reuses a money-movement activity"
+    for entry in catalogue["operations"]:
+        assert not entry["operation_class"].endswith((".disburse", ".execute", ".payout")), entry
+    assert all(entry["legal_actor_role"] != "INVOICE_ISSUER" for entry in catalogue["operations"]
+               if entry["operation_class"].startswith(("erp.vendor-", "erp.purchase-", "erp.material-",
+                                                       "erp.payables-"))), "a buyer never issues"
+    vendor_payment = json.loads((examples / "posting-authority-decision-vendor-payment-authorized.json").read_text())
+    decision.validate(vendor_payment)
+    assert not decision.is_valid({**vendor_payment, "activity": "PAYMENT_RECORDING"}), "receipt scope != disbursement"
+
+    # Golden vectors: complete over the catalogue and agreeing with the schema.
+    vectors = json.loads((examples / "catalogue-vectors.json").read_text())
+    assert vectors["catalogue_version"] == catalogue["version"]
+    assert vectors["base_example"] == "posting-authority-decision-authorized.json"
+    expected = set()
+    all_roles = sorted({e["legal_actor_role"] for e in catalogue["operations"]})
+    for entry in catalogue["operations"]:
+        expected.add((entry["operation_class"], entry["legal_actor_role"], entry["activity"], "VALID"))
+        expected |= {(entry["operation_class"], role, entry["activity"], "INVALID")
+                     for role in all_roles if role != entry["legal_actor_role"]}
+        expected |= {(entry["operation_class"], entry["legal_actor_role"], act, "INVALID")
+                     for act in activities if act != entry["activity"]}
+    got = [(v["operation_class"], v["legal_actor_role"], v["activity"], v["expected"]) for v in vectors["vectors"]]
+    assert len(got) == len(set(got)) and set(got) == expected, "golden vectors incomplete or stale"
+    assert len({v["vector_id"] for v in vectors["vectors"]}) == len(got), "duplicate vector_id"
+    for v in vectors["vectors"]:
+        candidate = {**authorized, "operation_class": v["operation_class"],
+                     "legal_actor_role": v["legal_actor_role"], "activity": v["activity"]}
+        assert decision.is_valid(candidate) == (v["expected"] == "VALID"), v["vector_id"]
+        request.validate({**good_request, "operation_class": v["operation_class"]})
     assert authorized["activity"] == next(
         e["activity"] for e in catalogue["operations"] if e["operation_class"] == authorized["operation_class"])
 

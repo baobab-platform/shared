@@ -7,7 +7,8 @@
 **Work item:** P0-04B ERP execution-point enforcement (EA v2.1 EA-R03, CP completion plan §13)  
 **Depends On:** ADR-0005, ADR-SHARED-012, ADR-SHARED-033 (Proposed), ADR-BCP-026, ADR-BCP-027, ADR-ERP-021  
 **Semantic Owners:** Control Plane (authority), `baobab-erp` (native placement and accounting execution)  
-**Canonical Contract:** `contracts/erp/v2/posting-authority.schema.json`, `contracts/erp/v2/posting-operations.yaml`
+**Canonical Contract:** `contracts/erp/v2/posting-authority.schema.json`, `contracts/erp/v2/posting-operations.yaml`  
+**Catalogue revisions:** [ADR-SHARED-037](ADR-SHARED-037%20%E2%80%94%20ERP%20Purchase-Side%20and%20Vendor-Payment%20Recording%20Operation%20Classes.md) (catalogue version 2, purchase-side and vendor-payment recording); this ADR's resolution, freshness and attribution rules are unchanged
 
 ---
 

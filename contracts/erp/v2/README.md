@@ -9,8 +9,14 @@ one accounting operation. `erp/v1` stays wire-compatible and unchanged.
   `erp-posting-authority:resolve`) and `PostingAuthorityDecision`.
 - `posting-operations.yaml` — the closed catalogue of operation classes, each
   with one legal-actor role and one activity. CP derives role and activity from
-  it; the caller never supplies them.
+  it; the caller never supplies them. Catalogue `version: 2`
+  ([ADR-SHARED-037](../../../docs/adr/ADR-SHARED-037%20%E2%80%94%20ERP%20Purchase-Side%20and%20Vendor-Payment%20Recording%20Operation%20Classes.md))
+  appends purchase-order, material-receipt, vendor-invoice, vendor-payment and
+  payables-allocation *recording* classes; the six version 1 classes are
+  unchanged. `erp.vendor-payment.record` is never money-movement authority.
 - `examples/` — synthetic fixtures for contract shape only.
+  `catalogue-vectors.json` holds golden VALID/INVALID class-to-role/activity
+  vectors for every catalogued class, for CP and ERP conformance tests.
 
 The request names a workload-owned RUNTIME context, the engine instance, an
 operation class, an opaque `{placement_id, placement_version}` and the exact
