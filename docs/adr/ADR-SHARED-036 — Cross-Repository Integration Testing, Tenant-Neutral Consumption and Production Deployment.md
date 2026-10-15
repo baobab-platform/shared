@@ -275,7 +275,7 @@ A mandatory scenario is not PASS if it is skipped, uses the wrong source version
 
 ### 6.7 Evidence schema and evaluation
 
-Every run SHALL produce a scrubbed, machine-readable receipt with run and profile IDs, commit/image/contract digests, real versus simulated component declaration, test scenario IDs, PASS/FAIL/BLOCKED outcomes, evidence hash and correlation, failure/retry reason, timestamps, custody reference and verification-review status.
+Every run SHALL produce a scrubbed, machine-readable receipt with run and profile IDs, commit/image/contract digests, real versus simulated component declaration, test scenario IDs, PASS/FAIL/BLOCKED/NOT_APPLICABLE outcomes (NOT_APPLICABLE permitted only for a documented owner-approved non-mandatory profile exclusion), evidence hash and correlation, failure/retry reason, timestamps, custody reference and verification-review status.
 
 Evidence grades are distinct:
 

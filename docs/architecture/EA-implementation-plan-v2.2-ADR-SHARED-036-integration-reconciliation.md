@@ -119,24 +119,24 @@ A synthetic unrelated EXTERNAL_CLIENT must be admitted and call at least one rea
 
 ### 4.4 Source and release pin rules
 
-Each L4 receipt SHALL name (i) candidate repository and full SHA, (ii) dependency approved SHA, (iii) Shared canonical schema/contract pins, (iv) OCI image digest/build provenance, (v) executing profile and resource limits, (vi) actual vs simulated provider, (vii) positive and negative scenario IDs, (viii) PASS/FAIL/BLOCKED, (ix) scrubbed evidence digest/location and (x) reviewer authority if applicable. Floating main references and hidden mock substitutions are not sufficient in release candidates.
+Each L4 receipt SHALL name (i) candidate repository and full SHA, (ii) dependency approved SHA, (iii) Shared canonical schema/contract pins, (iv) OCI image digest/build provenance, (v) executing profile and resource limits, (vi) actual vs simulated provider, (vii) positive and negative scenario IDs, (viii) PASS/FAIL/BLOCKED/NOT_APPLICABLE (only for approved profile exclusions), (ix) scrubbed evidence digest/location and (x) reviewer authority if applicable. Floating main references and hidden mock substitutions are not sufficient in release candidates.
 
 ## 5. Integration and protected acceptance matrix
 
-The full enforceable [acceptance matrix](ea-v2.2-integration-acceptance-matrix.md) governs every profile. The required common tests are:
+The full enforceable [acceptance matrix](ea-v2.2-integration-acceptance-matrix.md) is the **single canonical scenario identifier registry** for every profile. This plan references identifiers or scenario groups in that matrix; it MUST NOT define new overlapping IDs. The required common tests and additional named profile assertions are:
 
 | ID | Boundary / positive and negative proof | Implementation authority | First profile |
 |---|---|---|---|
-| L4-ID-01 | Real issued human token, exact JWT issuer/aud/signature/nonce/PKCE; bad issuer/expired/nonce denies | IAM, Nabhold | INT-02/03 |
-| L4-ID-02 | Workload registered target audience and scope; wrong audience/revoked client denies | IAM/Shared/CP/provider | INT-02 |
+| L4-IAM-01 | Real issued human token, exact JWT issuer/aud/signature/nonce/PKCE; bad issuer/expired/nonce denies | IAM, Nabhold | INT-02/03 |
+| L4-IAM-02 | Workload registered target audience and scope; wrong audience/revoked client denies | IAM/Shared/CP/provider | INT-02 |
 | L4-CP-01 | Actual Principal/Organisation/Tenant/context/grant; forged tenant/unmapped person fails | CP | INT-02 |
 | L4-CP-02 | Provider, capability contract major, market and binding; wrong or stale instance fails | CP/provider | INT-02 |
-| L4-ISO-01 | Parent/sibling/external tenants denied without current mandate | CP/domain engines | INT-02 |
-| L4-EST-01 | Nabhold encrypted BFF, session revocation and published CMS; restricted preview denied | Nabhold/CMS/IAM | INT-03 |
-| L4-EXT-01 | EXTERNAL_CLIENT with exactly zero Digital Estates can invoke allowed provider, but not another tenant | CP/IAM/provider | INT-07 |
-| L4-BIZ-01 | Native Trade/ERP/Payments legal and financial veto, no bypass at COMMIT/dispatch | CP/owning engine | INT-08 |
-| L4-EVT-01 | Durable outbox/inbox idempotency, crash/replay/reconciliation | Event owners | INT-08 |
-| L4-OPS-01 | Accurate deployed image/capability observation, failover/rollback/secret and backup boundaries | Infrastructure/CP/engines | L4 and staging as appropriate |
+| L4-CP-03 | Parent/sibling/external tenants denied without current mandate | CP/domain engines | INT-02 |
+| NAB-01/NAB-02/NAB-03 | Nabhold encrypted BFF, session revocation and published CMS; restricted preview denied | Nabhold/CMS/IAM | INT-03 |
+| INT-07 external API-only scenario | EXTERNAL_CLIENT with exactly zero Digital Estates can invoke allowed provider, but not another tenant | CP/IAM/provider | INT-07 |
+| FIN-01/FIN-02/FIN-04/FIN-05 | Native Trade/ERP/Payments legal and financial veto, no bypass at COMMIT/dispatch | CP/owning engine | INT-08 |
+| EVT-01 | Durable outbox/inbox idempotency, crash/replay/reconciliation | Event owners | INT-08 |
+| L4-OPS-01 (failure/recovery) + REC-01 (backup/restore) | Accurate deployed image/capability observation, failover/rollback/secret and backup boundaries | Infrastructure/CP/engines | L4 and staging as appropriate |
 
 A true positive must execute the intended authorised operation, not only parse its request. A true negative must prove the protected consequence was not committed/dispatched. A resource unavailable for a mandatory case causes BLOCKED/FAIL; no green with required skips.
 
