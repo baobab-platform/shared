@@ -1,7 +1,8 @@
 # ADR-SHARED-036 — Cross-Repository Integration Testing, Tenant-Neutral Consumption and Production Deployment
 
-**Status:** Proposed — architectural decision pending approval  
+**Status:** Accepted — Normative Cross-Repository Platform Architecture (approved by platform owner, 2026-10-15)  
 **Date:** 2026-10-15  
+**Acceptance record:** Explicit platform-owner direction on 2026-10-15: comprehensive, authoritative and Accepted. This is a design acceptance, not an infrastructure go-live or credential-approval ceremony.  
 **Decision owners:** Baobab Platform Architecture / Shared Contracts / Infrastructure / Security / Control Plane / IAM / Domain Engines  
 **Authority repository:** baobab-platform/shared  
 **Implementation orchestrator:** baobab-platform/infrastructure  
@@ -20,6 +21,14 @@ Baobab is a headless, capability-centric, contract-governed and multi-tenant pla
 Independent repository CI does not yet prove a complete consumer journey across **real components**. For example, a passed Nabhold OIDC unit test does not demonstrate real IAM token issuance plus active CP principal mapping plus resolved CMS provider plus cross-tenant denial. Likewise an isolated engine test is not a legally or financially approved staging acceptance.
 
 We must not accidentally institutionalise a model where every tenant has a Baobab-developed frontend or where a new company requires one separately installed CP, IAM and copy of every engine. Nabhold is the first **integration test pioneer**, with identical patterns needed for Thamani, ZuriBeans, later Equator & Estate Co., and eventually external enterprise tenants who bring their own frontend, use an ERP integrator, or have no frontend.
+
+## 1.1 Normative authority, scope and precedence
+
+This decision is **Accepted and immediately binding** upon all Baobab repositories and programmes in its scope. SHALL and MUST are mandatory; SHOULD requires a documented risk-based exception approved by the relevant architecture/security authority; MAY permits a choice within all other constraints. Teams SHALL implement against this ADR rather than treat the tests, tenant-neutral channels or production topology as optional suggestions.
+
+This ADR governs **cross-repository verification, consumer access patterns and convergence with existing production deployment decisions**. It does not make Infrastructure the author of CP governance or of an engine's business model. On a conflict, a higher-fidelity accepted owner ADR or canonical Shared schema covering the precise subject SHALL prevail, and an explicit reconciliation ADR/contract change SHALL be made before activation. A stale implementation note, historical screenshot or illustrative diagram does not override an accepted contract.
+
+**Architecture approval ≠ capability certification ≠ tenant admission ≠ staging acceptance ≠ production authorisation.** Each is a separately evidenced decision by its authority. The status Accepted authorises implementation of this architecture, not silent promotion or provisioning.
 
 ## 2. Core decision and invariants
 
@@ -172,7 +181,7 @@ CP SHALL remain one logically authoritative platform governance system. It may h
 
 ### 6.1 Canonical implementation owner and target structure
 
-Infrastructure SHALL develop the implementation under the following proposed paths (not yet present):
+Infrastructure SHALL develop the implementation under the following required implementation paths (not yet present):
 
     infrastructure/
       .devcontainer/platform-integration/devcontainer.json
@@ -292,6 +301,96 @@ No CI-generated artifact promotes itself from (2) to (3)-(5). Protected GitHub E
 
 An Actions runner cannot turn into production deployment merely because it can start Compose. Codespaces cannot bypass release controls. Runtime deployments remain Infrastructure-controlled and use approved immutable build artifacts and release manifests.
 
+
+### 6.9 Concrete L4 implementation contract
+
+**The test runner interface SHALL be a real, versioned contract.** Infrastructure SHALL publish a readme with a stable CLI and a JSON-schema-validated lock manifest. Commands SHALL exit nonzero on missing tools, missing pins, unexpected mocked providers, compose health failures, invalid JWT/audience claims, failed denial scenarios, missing evidence, or cleanup failures. A failed required test SHALL never be downgraded to a warning because the scenario is expensive or a dependency is unavailable.
+
+The lock manifest SHALL include exactly scoped source pins and configuration values; the example below is **schematic**, not currently implemented and not a deployable credential file:
+
+~~~yaml
+schema_version: 1
+suite: l4-nabhold-institutional
+environment_class: REAL_COMPONENT_SYNTHETIC_DATA
+consumer:
+  kind: digital-estate
+  organisation_fixture: nabhold
+  estate_fixture: nabhold-test-bff
+  requires_estate: true
+sources:
+  shared: "<approved immutable commit>"
+  baobab-iam: "<approved immutable commit>"
+  baobab-cp: "<approved immutable commit>"
+  baobab-cms: "<approved immutable commit>"
+  nabhold: "<candidate immutable commit>"
+images:
+  postgres: "<reviewed OCI image digest>"
+  rabbitmq: "<reviewed OCI image digest>"
+scenarios:
+  mandatory:
+    - iam-human-oidc-login
+    - cp-effective-authority
+    - cp-tenant-denial
+    - cp-capability-binding
+    - cms-published-only
+    - session-revocation
+  optional: []
+simulators:
+  permitted: []
+evidence:
+  redact_tokens: true
+  required: true
+~~~
+
+No environment file SHALL contain a stored private signing key, live provider secret or actual tenant personal data. Image tags alone SHALL NOT satisfy a production-equivalent pin. Every fetched Git revision SHALL be verified to match its declared full SHA before compiling, and the resulting tested artifact digest SHALL be recorded.
+
+The L4 runner SHALL provide at least:
+
+| Entrypoint | Required contract |
+|---|---|
+| **preflight** | Validate lock/schema, policy, required tools, executable file modes, trusted CA, forbidden secrets, disk/RAM/CPU, ports, network profiles, repo visibility and allowed image sources; do not launch services if invalid |
+| **materialise** | Fetch only authorised repositories at exact immutable commits; verify SHA and dependency graph; isolate writable test worktree; refuse floating branches |
+| **up** | Create a uniquely named Compose project and disposable volumes/networks, provision unique test CA/keys, perform required migrations, await bounded readiness |
+| **test** | Execute identified positive and negative scenarios, real-component identity/resource calls, network failure injection, and schema validation with hard timeouts |
+| **evidence** | Emit scrubbed canonical receipt, component digests, failures and test boundary classification; upload least-privilege artifacts |
+| **down** | Revoke disposable credentials, terminate child processes, remove containers, volumes and networks; cleanup runs on success, interruption and failure |
+
+Where a Codespace preview uses a dynamic forwarded HTTPS URL, its browser client/callback registry SHALL be reviewed and exact for that run. An internal Docker hostname or forwarded host address SHALL NOT be assumed to have the same issuer origin or signing trust. If the provider cannot support the required callback and cookies over a verified origin, the full browser scenario SHALL be BLOCKED rather than using an insecure shortcut.
+
+### 6.10 CI/CD architecture and repository trust
+
+The Infrastructure-owned reusable workflow SHALL be callable from a changed-engine repository or triggered by a central integration coordinator. It SHALL test the change SHA against a reviewed dependency-lock baseline, not blindly test unrelated mutable main branches. For an external fork or untrusted PR, no stage/prod credential or privileged runner access is available, even when the PR requests additional scopes.
+
+- All GitHub Actions SHALL be pinned to reviewed immutable commit SHAs; use least-privilege workflow permissions and short-lived GitHub App installation or GitHub-provided read tokens as approved by cross-repository access policy.
+- A central integration workflow SHALL NOT be implemented by taking untrusted pull-request fields into shell commands without validation, or by running untrusted PR code under an elevated pull_request_target credential context.
+- Dependency snapshots SHALL be inspected for incompatible Shared/CP/IAM versions before boot. An approved contract-breaking change SHALL either retain compatibility across the acceptance matrix or require a coordinated release/capability provider migration decision.
+- Profiles SHALL have separately configured timeouts, CPU/RAM budgets and concurrency ceilings. The first IAM/CP/Nabhold/CMS profile MAY use a larger Codespace if needed; cost control SHALL follow measurement. Hardware requirements SHALL be recorded in each profile, and preflight SHALL fail before downloads if insufficient.
+- Central evidence ingestion SHALL verify all mandatory scenario IDs and test result signatures or trusted workflow provenance. A green test-runner process with unexecuted scenario IDs SHALL NOT be marked PASS.
+- The L4 CI workflow SHALL prove teardown after a failing test as well as after success, and include one deliberate fail-closed security fixture.
+- Nonproduction integration users, tenants and legal evidence SHALL carry explicit SYNTHETIC labels and MUST NOT be synchronised to a protected production or founding-business data store.
+
+### 6.11 Consumer-neutral fixtures and independent regression suites
+
+The suite's generic fixture SHALL define canonical Organisation, optional LegalEntity, PlatformRelationship, Tenant, isolation, market, Principal/client, optional DigitalEstate, subscription/capability, registered instance and legal authority. It SHALL never treat a known group-company name as a bypass key.
+
+A minimum four-party isolation fixture SHALL include Nabhold holding company, one autonomous subsidiary, another autonomous subsidiary and an **unrelated external enterprise**. Positive tests must prove each can perform only its expressly bound operations; negatives must prove group ownership does not grant parent access and an external customer cannot read other tenants. Audit evidence SHALL preserve the correct initiator and affected operating/legal actor, not conflate them.
+
+The API-only profile is a **mandatory platform-level qualification** even when no external customer has yet been commercially onboarded. It SHALL explicitly create **zero DigitalEstate objects** for the synthetic external tenant and demonstrate permitted workload-to-provider calls. Its success cannot be achieved by turning on a fictional default estate. This is an invariant applicable to future enterprise customers, not an optional marketing feature.
+
+### 6.12 Test classification and acceptance honesty
+
+| Classification | Real components and authority | Pass can establish | It cannot establish |
+|---|---|---|---|
+| STATIC_CONTRACT | No running provider required | Schema and source conformance | A functional API, actual identity or tenant admission |
+| REAL_COMPONENT_SYNTHETIC_DATA | Running actual build of selected CP/IAM/engine(s) with isolated fake users, legal entities and provider fixtures | Real network/protocol/data/code interoperability | Valid independent real-world identity, government evidence, PSP or AWS deployment |
+| PROVIDER_SANDBOX | Actual vendor sandbox with its approved contract; synthetic business data | Vendor test integration behaviour only within terms | Live funding, production certification or legal approval |
+| PROTECTED_STAGING | Approved deployed production-like services and principals, independently reviewed environment | Technical staging readiness for the specified operation | Production activation without G17/release signoff |
+| EXTERNAL_CERTIFICATION | Independent authority/PSP/certifier evidence | Specific externally certified fact or use case | All other platform gates |
+| PRODUCTION_ACCEPTANCE | Signed gate-specific operational dossier | Deployment/use under the approved scope and time | Permanent immunity to revocation, regression or re-certification |
+
+Every scenario result SHALL identify the underlying classification. A multi-component CI run that uses a synthetic IAM issuer SHALL declare that dependency **simulated** even if CP and ERP are real. A finance test that uses HyperSwitch with a deterministic processor SHALL not assert actual PSP certification. Protected staging SHALL include real human maker/checker authorisation where required.
+
+
 ## 7. Deployment and tenant onboarding operational sequence
 
 1. Build and security attest approved engine versions independently, then publish immutable OCI images.
@@ -305,6 +404,84 @@ An Actions runner cannot turn into production deployment merely because it can s
 9. For a dedicated tenant or new AWS region, create a new approved isolated resource cell and map it to the existing canonical tenant, retaining historical facts and requiring separate migration/drift acceptance.
 
 **Current rollout status:** Architecture and several nonproduction test/release assets exist. Actual AWS production services, approved account-specific configuration and protected G17 certifications SHALL NOT be assumed complete.
+
+
+## 7.1 Normative service deployment matrix
+
+The infrastructure team SHALL produce a reviewed per-service deployment descriptor before production activation. The following is the **default target class**, not evidence that a service is presently live:
+
+| Workload or dependency | Production deployment form | Authority and requirements |
+|---|---|---|
+| APISIX traffic plane and related routing | Independent private ECS/Fargate-compatible service/task or approved exception; public ALB in front | Infrastructure owns network/TLS; gateway routes do not confer business grants |
+| APISIX control plane and etcd | Private, persistent/high-availability architecture qualified separately | Infrastructure; administrative exposure denied; no ephemeral etcd as authority |
+| CP API replicas | Private independently scaled ECS/Fargate services, stateless per request | CP owns canonical authoritative state; no process-local mutable tenant truth |
+| CP background workers/provisioners | Separately scaled ECS services/tasks | CP determines approved desired state; Infrastructure performs restricted physical provisioning; events/outbox are durable |
+| IAM native humans, OAuth and federation | Independently deployed Kratos/Hydra/Keycloak provider boundaries with reviewed HA/storage | IAM owns identity/federation and client/scope/issuer; CP owns canonical identity and tenant membership |
+| ERP (iDempiere) | Independent JVM service(s), workers, persistence and startup/migration handling | ERP owns accounting; prove per-vendor Fargate compatibility, AD_Client/AD_Org placement and legal-actor veto |
+| Trade (Medusa) | Independent headless application/worker services | Trade owns commerce domain, provider contract and legal seller context |
+| CMS (Payload) | Independent API, publishing and worker services | CMS owns content state, approval and publication; estate is optional for platform admission |
+| Pulse (Haystack) / search projections | Independently scaled services and owned projection/persistent-store policy | Pulse owns intelligence/evidence semantics; Qdrant projection is not silently treated as canonical authority |
+| Payments and payment router | Independent service(s), journal and provider connector topology | Payments owns financial execution; CP's independent legal veto remains mandatory; provider credential boundary |
+| Subscriptions / billing | Independent engine and durable store/worker | Subscription and metering authority, idempotency and ERP reconciliation |
+| TMS, Trade Docs, Regulations and future engines | Deploy only as actually certified/registered capabilities | Their owning domains retain laws, transport, documentary and policy decisions |
+| Frontend Digital Estates | Independently deployed where actually owned/required, including optional ECS BFF/web service | NOT part of mandatory platform-engine deployment; external clients may self-host |
+| RDS PostgreSQL | Managed encrypted Multi-AZ PostgreSQL baseline | Separate logical authority and least-privilege roles per engine |
+| Cache, broker and object storage | ElastiCache/Valkey, Amazon MQ and approved object storage services | Never a universal shared data lake or unauthorised cross-engine database |
+| Observability and secrets | Central scoped telemetry, KMS/Secrets Manager/approved equivalent | Security/Operations with retention, audit and sensitive-field controls |
+
+Every EngineInstance SHALL have an owner, environment, region/cell, image digest, supported capabilities, supported context/isolation, health and readiness observation. A syntactically valid Dockerfile does not certify the process's performance, state durability, HA or operational security.
+
+## 7.2 Exact cross-plane responsibilities
+
+| Action | Accountable decision authority | Execution / evidence owner |
+|---|---|---|
+| Confirm organisational identity and legal-registration evidence | CP's governed verification and independent source reviewers | Approved evidence providers/operators; durable CP evidence references |
+| Admit a platform Tenant | CP's current Organisation/Tenant governance with independent authorised operators | CP workflow and identity/membership integration |
+| Register/login a human or service | IAM provider/federation authority | IAM; CP separately validates principal mapping and authority |
+| Subscribe to products | Subscriptions and CP entitlements under canonical contract | Subscriptions; CP current binding and provisioner |
+| Resolve a capability | CP and current context/registry/IsolationProfile | CP returns authorised EngineInstance, not a business operation |
+| Deliver domain service | The selected domain engine | Engine API/worker, own durable store and event outbox |
+| Deploy infrastructure for an instance | Infrastructure governed IaC and release policies | Terraform/ECS/managed service implementation; CP observes desired vs deployed |
+| Activate an external BYO integration | IAM, CP, owning provider and customer onboarding approvals | Customer BFF/workload plus gateway; independent external client governance |
+| Approve production release | Designated environment/security/operations/business gate owners | Protected CI/CD deploy and independently signed release evidence |
+| Settle financial movement | CP legal veto and Payments financial approval | Payments + certified provider, not ERP journal or parent-company ownership |
+| Produce portfolio reporting | Current CP group/membership grants and domain data owners | Aggregated authorised projection; no wildcard subsidiary data access |
+
+**CP's physical deployment role is intentionally bounded.** CP SHALL NOT run Terraform, issue unrestricted cloud deploy credentials or directly operate RDS. Infrastructure SHALL NOT create a tenant, grant a capability, forge a legal actor or interpret corporate affiliation from its AWS tags.
+
+## 7.3 Real tenant registration and infrastructure decision algorithm
+
+When a new external or internal customer requests access, the platform SHALL execute the following ordered decisions. Each transition SHALL have an auditable outcome:
+
+1. **Admission:** Create/locate real canonical Organisation; verify applicable legal or natural-person identity/mandates; distinguish a corporate affiliate from an EXTERNAL_CLIENT independently of the frontend domain.
+2. **Scope:** Establish approved Tenant and current Organisation/LegalEntity/Market relationship, independent security and platform account, permissions and required contractual responsibilities.
+3. **Commercial entitlement:** Confirm the exact product subscription and capabilities. The tenant receives none automatically because the engine exists or the applicant is an affiliate.
+4. **Authentication:** Register an IAM principal/human federation and/or dedicated external workload client. Approve audience/scope/redirects and secret or client-assurance policy, with real revocation paths.
+5. **Isolation:** Select the approved IsolationProfile and data residency requirements. Determine whether existing certified EngineInstances satisfy both domain capability and isolation constraints.
+6. **Provisioning:** If shared instances suffice, bind without new cloud infrastructure. Otherwise create an approved, measured dedicated instance/DB/service or isolated cell through Infrastructure provisioning and observe deployed release identity.
+7. **Activation:** CP verifies current provider certification, legal authority, identity, deployment receipt, scoped binding and all necessary gate approvals before exposing a capability to that tenant.
+8. **Consumption:** The external BYO BFF or workload sends a short-lived audience-correct token and uses authorised CP context and resource APIs. DigitalEstate MAY remain absent.
+9. **Operations:** Collect only contracted telemetry/usage, enforce tenant data segregation, alert on drift, rotate tokens and secrets and maintain evidence/DR procedures.
+10. **Suspension and exit:** Revoke workload/human access, remove capability bindings, honour legal/accounting/document retention, preserve immutable business audit history and deprovision only resources eligible for release.
+
+A group subsidiary exiting Nabhold SHALL retain its historical Organisation/Tenant identity. Changing CorporateRelationship does not automatically change business data ownership or create a right for the former parent to retain access.
+
+## 7.4 Multi-region, cells, topology and authority safety
+
+Initial production is in af-south-1 as already accepted. A future tenant in Uganda, Kenya or Europe SHALL NOT automatically cause a matching AWS region; placement requires evidence of lawful residency, acceptable latency, recovery, costs, controlled data transfer and service availability.
+
+Before a second production region/cell, Infrastructure and CP SHALL approve explicit **authority topology**, including: primary writer/location of canonical CP records; isolation of domain-owned business data; data replication direction and RPO/RTO; token audience/issuer and IAM federation distribution; event correlation and delivery replay; deployment/certification per EngineInstance; failover rules; partition behaviour; conflict-resolution ownership; KMS/legal evidence locality; observability and rollback. A second CP writer SHALL NOT be introduced without a separately accepted consistency and anti-split-brain decision.
+
+An existing Tenant MAY migrate from pooled to dedicated instances or between cells, but the move SHALL use audited ProviderMigration, current Binding/Context and approved data-copy/cutover procedures. Source and destination SHALL not execute the same consequential mutation concurrently. A rollback never reconstructs approvals that have been revoked.
+
+## 7.5 Release and operation safeguards
+
+An approved production release manifest SHALL carry: environment/account/region, each selected image digest, exact Shared contract compatibility, migrations, expected EngineInstance IDs/capabilities, provider readiness, secrets references, infrastructure dependency changes, canary/rollback strategy, telemetry and evidence locations. Production container images SHALL be promoted, not rebuilt under mutable tags.
+
+The release workflow SHALL verify all service/durability prerequisites: health **and actual readiness**, ingress/private-network placement, database migrations and backward compatibility, source-of-truth authority consistency, correct IAM issuers/audiences, event routing/idempotency, consumer compatibility, negative cross-tenant tests, secret custody and tested rollback. Production traffic cannot begin merely because an ECS task reports RUNNING.
+
+Minimum operational capabilities before affected go-live approval include: service SLO/alert ownership, log/trace correlation with tenant-safe redaction, backup and independently demonstrated restore, multi-AZ failover, recovery exercises, traffic/abuse limits for external APIs, incident response, audit/retention schedule and protected environment approvers. External customer contracts may require stricter independent certifications but shall not weaken the default.
+
 
 ## 8. Alternatives
 
@@ -326,11 +503,11 @@ An Actions runner cannot turn into production deployment merely because it can s
 
 **Costs/risks:** Real-service CI resource demand, cross-repo access governance, IAM issuer/callback consistency, engine-specific fixtures, CI runtimes, test matrix evolution, evidence sanitisation, and partial provider simulations. These are mitigated with scoped profiles, exact version locks, security preflight and honest evidence grades.
 
-**To accept as implemented**, prove: (a) one Codespace and an Actions runner execute an identical pinned IAM+CP+Nabhold journey; (b) CMS and principal revocation deny correctly; (c) Thamani and ZuriBeans scenarios work with independent legal/tenant contexts; (d) an external API-only tenant successfully invokes its approved engine without a DigitalEstate; (e) false or absent mandatory evidence fails; (f) no CI fixture can become a provider or production credential; (g) protected staging retains independent signed approval.
+**This ADR is Accepted as architecture. To certify its implementation**, prove: (a) one Codespace and an Actions runner execute an identical pinned IAM+CP+Nabhold journey; (b) CMS and principal revocation deny correctly; (c) Thamani and ZuriBeans scenarios work with independent legal/tenant contexts; (d) an external API-only tenant successfully invokes its approved engine without a DigitalEstate; (e) false or absent mandatory evidence fails; (f) no CI fixture can become a provider or production credential; (g) protected staging retains independent signed approval.
 
 **Implementation ownership:** Infrastructure = L4 orchestrator, manifest and runtime lifecycle; Shared = cross-provider contract/evidence governance; IAM = real issuer and client profile; CP = context, entitlement, no-estate API-only conformance and isolation; Nabhold = first test consumer; Thamani = reconcile commercial ADR and add own profile; ZuriBeans = B2B profile; Equator = later property/operations profile; providers = real domain fixtures; Security/Operations = protected review/certification.
 
-This Proposed ADR does **not** claim operational acceptance, expand any authority or update commercial domain ADRs by implication.
+This Accepted ADR does **not** claim operational acceptance, expand any authority or update commercial domain ADRs by implication.
 
 ## 10. External research references
 
