@@ -21,10 +21,13 @@ class FinanceF1DraftContractTests(unittest.TestCase):
         cls.schema = json.loads(CANDIDATE.read_text(encoding="utf-8"))
         cls.defs = cls.schema["$defs"]
 
-    def test_candidate_is_not_a_canonical_capability(self):
+    def test_candidate_document_is_never_a_canonical_contract_source(self):
+        # The historical design can coexist with separately reviewed DRAFT
+        # catalogue entries. Its proposal path/ID must never be indexed.
         canonical = CATALOGUE.read_text(encoding="utf-8")
-        for key in ("finance.ledger.read", "finance.journal.manage", "finance.statement.read"):
-            self.assertNotIn("capability_key: " + key, canonical)
+        self.assertNotIn("finance-f1-candidate", canonical)
+        self.assertNotIn("proposals/", canonical)
+        self.assertIn("/proposals/", self.schema["$id"])
 
     def test_all_requests_reject_payload_authority(self):
         for key in ("scope", "ledgerReadRequest", "statementReadRequest",

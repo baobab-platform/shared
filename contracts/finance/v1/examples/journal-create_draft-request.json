@@ -1,0 +1,23 @@
+{
+  "operation": "CREATE_DRAFT",
+  "idempotency_key": "synthetic-command-0001",
+  "draft": {
+    "book_ref": "erp_booksynth",
+    "period_start": "2026-01-01",
+    "period_end": "2026-01-31",
+    "currency": "ZAR",
+    "accounting_date": "2026-01-15",
+    "lines": [
+      {
+        "account_ref": "erp_acctcash",
+        "debit": "100",
+        "credit": "0"
+      },
+      {
+        "account_ref": "erp_acctequity",
+        "debit": "0",
+        "credit": "100"
+      }
+    ]
+  }
+}

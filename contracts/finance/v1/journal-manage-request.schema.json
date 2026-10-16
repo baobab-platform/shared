@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/journal-manage-request.schema.json",
+  "title": "Finance F1 journal manage request",
+  "description": "DRAFT/EXPERIMENTAL wire contract. No provider, legal authority, scope allocation or production activation is implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation",
+    "idempotency_key"
+  ],
+  "properties": {
+    "operation": {
+      "enum": [
+        "CREATE_DRAFT",
+        "SUBMIT",
+        "APPROVE",
+        "POST",
+        "REVERSE"
+      ]
+    },
+    "idempotency_key": {
+      "$ref": "domain.schema.json#/$defs/idempotencyKey"
+    },
+    "journal_ref": {
+      "$ref": "domain.schema.json#/$defs/resourceRef"
+    },
+    "expected_version": {
+      "$ref": "domain.schema.json#/$defs/version"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "not": {
+        "pattern": "^\\s*$"
+      }
+    },
+    "reversal_date": {
+      "$ref": "domain.schema.json#/$defs/date"
+    },
+    "draft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "book_ref",
+        "period_start",
+        "period_end",
+        "accounting_date",
+        "currency",
+        "lines"
+      ],
+      "properties": {
+        "book_ref": {
+          "$ref": "domain.schema.json#/$defs/resourceRef"
+        },
+        "period_start": {
+          "$ref": "domain.schema.json#/$defs/date"
+        },
+        "period_end": {
+          "$ref": "domain.schema.json#/$defs/date"
+        },
+        "accounting_date": {
+          "$ref": "domain.schema.json#/$defs/date"
+        },
+        "currency": {
+          "$ref": "domain.schema.json#/$defs/currency"
+        },
+        "lines": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 1000,
+          "items": {
+            "$ref": "domain.schema.json#/$defs/journalLine"
+          }
+        }
+      }
+    }
+  },
+  "$comment": "Only CREATE_DRAFT carries lines. Transitions identify an existing journal and its expected version. No Principal, approval or CP permit may be supplied by the caller. Reversal creates a distinct correcting journal; it never edits posted lines.",
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "CREATE_DRAFT"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "draft"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "journal_ref"
+              ]
+            },
+            {
+              "required": [
+                "expected_version"
+              ]
+            },
+            {
+              "required": [
+                "reversal_date"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "journal_ref",
+          "expected_version"
+        ],
+        "not": {
+          "required": [
+            "draft"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "REVERSE"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason",
+          "reversal_date"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "reversal_date"
+          ]
+        }
+      }
+    }
+  ]
+}

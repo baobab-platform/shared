@@ -1,0 +1,42 @@
+{
+  "scope": {
+    "book_ref": "erp_booksynth",
+    "period_start": "2026-01-01",
+    "period_end": "2026-01-31",
+    "as_of": "2026-02-01T00:00:00Z",
+    "currency": "ZAR"
+  },
+  "completeness": "complete",
+  "observed_at": "2026-02-01T00:00:01Z",
+  "data_version": "synthetic-ledger-v1",
+  "snapshot_id": "synthetic-snapshot-v1",
+  "statement_type": "CASH_FLOW",
+  "reconciliation": {
+    "status": "RECONCILED",
+    "trial_balance_data_version": "synthetic-ledger-v1",
+    "policy_ref": "erp_reportsynth"
+  },
+  "lines": [
+    {
+      "line_code": "SYNTHETIC_NET",
+      "label": "Synthetic policy-defined line",
+      "amount": {
+        "amount": "100",
+        "currency": "ZAR"
+      }
+    }
+  ],
+  "finance_baselines": [
+    {
+      "baseline_id": "fb_01k4syntheticza",
+      "legal_entity_id": "LE-SYNTHZA01",
+      "version": 3,
+      "digest": "sha256:9f2c1d7e4b0a5c3e8d6f1a2b4c7e9d0f3a5b8c1e4d7f0a2b5c8e1d4f7a0b3c6e",
+      "effective_from": "2026-01-01",
+      "authority": {
+        "engine_id": "baobab-erp",
+        "system_of_record": "FINANCE_BASELINE"
+      }
+    }
+  ]
+}

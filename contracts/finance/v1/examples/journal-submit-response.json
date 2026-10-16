@@ -1,0 +1,19 @@
+{
+  "operation": "SUBMIT",
+  "journal_ref": "erp_journalsynth",
+  "version": 2,
+  "status": "SUBMITTED",
+  "accounting_date": "2026-01-15",
+  "observed_at": "2026-01-15T12:00:00Z",
+  "finance_baseline": {
+    "baseline_id": "fb_01k4syntheticza",
+    "legal_entity_id": "LE-SYNTHZA01",
+    "version": 3,
+    "digest": "sha256:9f2c1d7e4b0a5c3e8d6f1a2b4c7e9d0f3a5b8c1e4d7f0a2b5c8e1d4f7a0b3c6e",
+    "effective_from": "2026-01-01",
+    "authority": {
+      "engine_id": "baobab-erp",
+      "system_of_record": "FINANCE_BASELINE"
+    }
+  }
+}

@@ -280,3 +280,19 @@ are separate from provider implementation, live iDempiere, protected L4 and
 activation. Infrastructure #35 at `0f6cbac` has real L4-IAM-02 PASS, while
 L4-IAM-01 and L4-CP-01/02/03 remain BLOCKED; the overall profile still fails.
 No EA Gate D/E or Nabhold release is promoted by the isolated workload proof.
+
+
+## 16 October 2026 — independent Finance F1 source checkpoint
+
+Finance F1 source work proceeds independently of Infrastructure #35 under the
+sponsor's clarified execution instruction. Design checkpoint Shared #319 is
+merged (`27eb77a`). Shared #321 publishes the separately reviewed DRAFT wire
+tranche: three DRAFT/EXPERIMENTAL vocabulary entries, six schemas/common types,
+synthetic examples, offline reference validation and negative CI coverage.
+See the [F1 implementation register](finance-f1-implementation-register.md).
+
+This is not acceptance of Proposed ADR-SHARED-033 or ERP provider support.
+G03/G06 F1 wire source advances; real baseline/book/approval/native posting,
+reconciliation, journal events, CP qualification and Finance signoff remain.
+Infrastructure #35 is not changed or merged by this independent increment.
+No EA Gate D/E or Nabhold release advances from DRAFT source registration.

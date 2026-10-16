@@ -146,3 +146,15 @@ For each key, in its own Shared PR (`SH-NAB-FIN-02` onward, one tranche at a tim
 ## 14. Final decision
 
 Adopt the `finance` domain for corporate finance, accept the three-tranche key set in section 1 as the **proposed** inventory, and defer every schema, catalogue entry and provider claim to its own contract change.
+
+
+## 15. Engineering checkpoint — 16 October 2026
+
+This ADR remains **Proposed**; no steward or Finance decision is inferred.
+Shared #319 preserves the reviewed design checkpoint. The separately reviewed
+Shared #321 contract change implements the section 11 **DRAFT/EXPERIMENTAL**
+vocabulary and wire tranche under ADR-SHARED-017, with examples/negative tests.
+Its [implementation register](../architecture/finance-f1-implementation-register.md)
+tracks the distinction between source registration, semantic acceptance and
+provider/native qualification. Event production and operational acceptance remain
+explicit follow-ups; this checkpoint does not change an ADR's acceptance status.

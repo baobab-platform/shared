@@ -1,0 +1,6 @@
+{
+  "operation": "POST",
+  "idempotency_key": "synthetic-command-0001",
+  "journal_ref": "erp_journalsynth",
+  "expected_version": 1
+}

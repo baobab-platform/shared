@@ -1,0 +1,531 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/domain.schema.json",
+  "title": "Finance F1 domain",
+  "description": "DRAFT/EXPERIMENTAL wire contract. No provider, legal authority, scope allocation or production activation is implied.",
+  "$comment": "Common F1 vocabulary only. All command/read authority remains CP/ERP-owned; no runtime money calculation or policy implementation lives in Shared.",
+  "$defs": {
+    "resourceRef": {
+      "$ref": "../../erp/v1/domain.schema.json#/$defs/erpResourceId"
+    },
+    "decimal": {
+      "allOf": [
+        {
+          "$ref": "../../erp/v1/domain.schema.json#/$defs/decimal"
+        },
+        {
+          "not": {
+            "pattern": "\\s"
+          }
+        }
+      ],
+      "$comment": "Reuse ERP exact decimal strings and their 64-character bound. Disallow whitespace including a trailing newline which a dollar-anchored regex alone may accept. No currency scale is hard-coded."
+    },
+    "nonnegativeDecimal": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/decimal"
+        },
+        {
+          "pattern": "^[0-9]"
+        }
+      ]
+    },
+    "positiveDecimal": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/nonnegativeDecimal"
+        },
+        {
+          "not": {
+            "pattern": "^0(?:\\.0+)?$"
+          }
+        }
+      ]
+    },
+    "zeroDecimal": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/decimal"
+        },
+        {
+          "pattern": "^0(?:\\.0+)?$"
+        }
+      ]
+    },
+    "currency": {
+      "allOf": [
+        {
+          "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
+        },
+        {
+          "not": {
+            "pattern": "\\s"
+          }
+        }
+      ]
+    },
+    "money": {
+      "allOf": [
+        {
+          "$ref": "../../erp/v1/domain.schema.json#/$defs/money"
+        },
+        {
+          "properties": {
+            "amount": {
+              "$ref": "#/$defs/decimal"
+            },
+            "currency": {
+              "$ref": "#/$defs/currency"
+            }
+          }
+        }
+      ]
+    },
+    "nonnegativeMoney": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/money"
+        },
+        {
+          "properties": {
+            "amount": {
+              "$ref": "#/$defs/nonnegativeDecimal"
+            }
+          }
+        }
+      ]
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "version": {
+      "$ref": "../../erp/v1/domain.schema.json#/$defs/version"
+    },
+    "financeBaseline": {
+      "$ref": "../../erp/v1/finance-baseline.schema.json#/$defs/FinanceBaselineReference"
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "not": {
+        "pattern": "\\s"
+      },
+      "$comment": "Matches contracts/idempotency/v1/policy.yaml. The HTTP Idempotency-Key must equal this value; provider admission rejects mismatch before executing. Never log the key."
+    },
+    "view": {
+      "enum": [
+        "chart_of_accounts",
+        "balances",
+        "entries"
+      ]
+    },
+    "postingState": {
+      "enum": [
+        "POSTED",
+        "DRAFT",
+        "ALL"
+      ]
+    },
+    "statementType": {
+      "enum": [
+        "TRIAL_BALANCE",
+        "INCOME_STATEMENT",
+        "BALANCE_SHEET",
+        "CASH_FLOW"
+      ]
+    },
+    "completeness": {
+      "enum": [
+        "complete",
+        "partial",
+        "stale",
+        "withheld"
+      ]
+    },
+    "dataVersion": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "^\\s*$"
+      }
+    },
+    "snapshotId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "^\\s*$"
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "book_ref",
+        "period_start",
+        "period_end",
+        "as_of",
+        "currency"
+      ],
+      "properties": {
+        "book_ref": {
+          "$ref": "#/$defs/resourceRef"
+        },
+        "period_start": {
+          "$ref": "#/$defs/date"
+        },
+        "period_end": {
+          "$ref": "#/$defs/date"
+        },
+        "as_of": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
+        }
+      },
+      "$comment": "One ERP-owned book of the currently authorised legal entity. Currency is its functional currency, not market currency. ERP verifies book ownership, currency, inclusive ordered dates and as-of cut-off; no browser identity is trusted."
+    },
+    "journalLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_ref",
+        "debit",
+        "credit"
+      ],
+      "properties": {
+        "account_ref": {
+          "$ref": "#/$defs/resourceRef"
+        },
+        "debit": {
+          "$ref": "#/$defs/decimal"
+        },
+        "credit": {
+          "$ref": "#/$defs/decimal"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 512
+        }
+      },
+      "$comment": "Explicit positive/zero sides. ERP separately checks account membership, decimal precision, balanced sums, open period and current independent approvals.",
+      "oneOf": [
+        {
+          "properties": {
+            "debit": {
+              "$ref": "#/$defs/positiveDecimal"
+            },
+            "credit": {
+              "$ref": "#/$defs/zeroDecimal"
+            }
+          }
+        },
+        {
+          "properties": {
+            "debit": {
+              "$ref": "#/$defs/zeroDecimal"
+            },
+            "credit": {
+              "$ref": "#/$defs/positiveDecimal"
+            }
+          }
+        }
+      ]
+    },
+    "chartRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_ref",
+        "account_code",
+        "name",
+        "account_type",
+        "normal_balance",
+        "postable",
+        "status"
+      ],
+      "properties": {
+        "account_ref": {
+          "$ref": "#/$defs/resourceRef"
+        },
+        "account_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "not": {
+            "pattern": "^\\s*$"
+          }
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "not": {
+            "pattern": "^\\s*$"
+          }
+        },
+        "account_type": {
+          "enum": [
+            "ASSET",
+            "LIABILITY",
+            "EQUITY",
+            "INCOME",
+            "EXPENSE"
+          ]
+        },
+        "normal_balance": {
+          "enum": [
+            "DEBIT",
+            "CREDIT"
+          ]
+        },
+        "postable": {
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "ACTIVE",
+            "INACTIVE"
+          ]
+        }
+      }
+    },
+    "balanceRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_ref",
+        "account_code",
+        "opening_balance",
+        "debit_total",
+        "credit_total",
+        "closing_balance"
+      ],
+      "properties": {
+        "account_ref": {
+          "$ref": "#/$defs/resourceRef"
+        },
+        "account_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "not": {
+            "pattern": "^\\s*$"
+          }
+        },
+        "opening_balance": {
+          "$ref": "#/$defs/money"
+        },
+        "debit_total": {
+          "$ref": "#/$defs/money"
+        },
+        "credit_total": {
+          "$ref": "#/$defs/money"
+        },
+        "closing_balance": {
+          "$ref": "#/$defs/money"
+        }
+      },
+      "$comment": "Period activity totals preserve signed native correction/reversal facts; they are not constrained like positive-magnitude manual journal instructions."
+    },
+    "entryRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_ref",
+        "journal_ref",
+        "account_ref",
+        "account_code",
+        "accounting_date",
+        "posting_state",
+        "debit",
+        "credit",
+        "currency"
+      ],
+      "properties": {
+        "entry_ref": {
+          "$ref": "#/$defs/resourceRef"
+        },
+        "journal_ref": {
+          "$ref": "#/$defs/resourceRef"
+        },
+        "account_ref": {
+          "$ref": "#/$defs/resourceRef"
+        },
+        "account_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "not": {
+            "pattern": "^\\s*$"
+          }
+        },
+        "accounting_date": {
+          "$ref": "#/$defs/date"
+        },
+        "posted_at": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "posting_state": {
+          "enum": [
+            "DRAFT",
+            "POSTED"
+          ]
+        },
+        "debit": {
+          "$ref": "#/$defs/decimal"
+        },
+        "credit": {
+          "$ref": "#/$defs/decimal"
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
+        },
+        "finance_baseline": {
+          "$ref": "#/$defs/financeBaseline"
+        }
+      },
+      "$comment": "Accounting date and posting instant are different facts (ADR-ERP-008). A posted row must disclose the actual posting instant; a draft must not invent one. Signed debit/credit facts preserve native correction history. A posted entry names the exact historical Finance baseline, even if a newer version is now effective.",
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "posting_state"
+            ],
+            "properties": {
+              "posting_state": {
+                "const": "POSTED"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "posted_at",
+              "finance_baseline"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "posted_at"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "trialBalanceLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_ref",
+        "account_code",
+        "debit_balance",
+        "credit_balance"
+      ],
+      "properties": {
+        "account_ref": {
+          "$ref": "#/$defs/resourceRef"
+        },
+        "account_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "not": {
+            "pattern": "^\\s*$"
+          }
+        },
+        "debit_balance": {
+          "$ref": "#/$defs/nonnegativeMoney"
+        },
+        "credit_balance": {
+          "$ref": "#/$defs/nonnegativeMoney"
+        }
+      }
+    },
+    "statementLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "line_code",
+        "label",
+        "amount"
+      ],
+      "properties": {
+        "line_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "not": {
+            "pattern": "^\\s*$"
+          }
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "not": {
+            "pattern": "^\\s*$"
+          }
+        },
+        "amount": {
+          "$ref": "#/$defs/money"
+        }
+      },
+      "$comment": "Line codes and signed values come from the approved ERP reporting policy; the estate does not calculate tax, profit, FX or consolidation."
+    },
+    "reconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "RECONCILED",
+            "UNRECONCILED",
+            "UNAVAILABLE"
+          ]
+        },
+        "trial_balance_data_version": {
+          "$ref": "#/$defs/dataVersion"
+        },
+        "policy_ref": {
+          "$ref": "#/$defs/resourceRef"
+        }
+      },
+      "$comment": "A claim by the ERP reporting authority, not a consumer-calculated assertion. Native provider tests and Finance signoff must prove the claim before provider activation.",
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "RECONCILED"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "trial_balance_data_version",
+              "policy_ref"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

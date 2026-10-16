@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/statement-read-request.schema.json",
+  "title": "Finance F1 statement read request",
+  "description": "DRAFT/EXPERIMENTAL wire contract. No provider, legal authority, scope allocation or production activation is implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "statement_type"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "domain.schema.json#/$defs/scope"
+    },
+    "statement_type": {
+      "$ref": "domain.schema.json#/$defs/statementType"
+    }
+  }
+}

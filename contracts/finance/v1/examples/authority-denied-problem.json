@@ -1,0 +1,8 @@
+{
+  "type": "https://problems.baobab-platform.com/authority-denied",
+  "title": "Financial operation denied",
+  "status": 403,
+  "code": "AUTHORITY_DENIED",
+  "correlation_id": "00000000-0000-4000-8000-000000000001",
+  "retryable": false
+}

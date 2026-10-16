@@ -1,6 +1,6 @@
 # SH-NAB-FIN-02 — Finance F1 contract design checkpoint (16 October 2026)
 
-**State:** CANDIDATE FOR REVIEW, not canonical. **Authority:** Proposed ADR-SHARED-033; accepted ADR-SHARED-017, ADR-SHARED-034/037/038 and EA v2.2. **Stewards:** Shared capability-contract steward and baobab-erp semantic owner.
+**State:** HISTORICAL DESIGN CHECKPOINT, not a runtime contract. **Authority:** Proposed ADR-SHARED-033; accepted ADR-SHARED-017, ADR-SHARED-034/037/038 and EA v2.2. **Stewards:** Shared capability-contract steward and baobab-erp semantic owner.
 
 ## Deliverables and limits
 - [Candidate JSON Schema](finance-f1-candidate.schema.json) specifies scoped ledger-read, journal draft/transition and statement-read envelope types.
@@ -42,3 +42,13 @@ representable fields. The journal and ledger negative fixtures run through a
 real Draft 2020-12 validator in CI, not substring assertions. This remains a
 noncanonical historical design checkpoint; #321 supplies the separately
 reviewed DRAFT catalogue contracts. ADR-SHARED-033 remains Proposed.
+
+
+## Subsequent DRAFT wire tranche
+
+The separate `contracts/finance/v1` package in Shared #321 is the indexed DRAFT
+wire source. Do not import this historical candidate ID into a consumer. Its
+local eight-place draft scalar approximation is not a currency precision policy;
+the canonical draft reuses ERP decimal strings and leaves precision to ERP.
+The candidate tests now protect separation of proposal IDs from catalogue sources
+while permitting a separately reviewed DRAFT tranche to be registered.

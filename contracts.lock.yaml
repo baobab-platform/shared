@@ -184,3 +184,15 @@ contracts:
     schemas:
       - money-movement-authority.schema.json
       - money-movement-operations.yaml
+
+  - domain: finance
+    version: v1
+    schemas:
+      - domain.schema.json
+      - ledger-read-request.schema.json
+      - ledger-read-response.schema.json
+      - journal-manage-request.schema.json
+      - journal-manage-response.schema.json
+      - statement-read-request.schema.json
+      - statement-read-response.schema.json
+      - capabilities.yaml
