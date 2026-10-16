@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/ledger-read-response.schema.json",
+  "title": "Finance F1 ledger read response",
+  "description": "Canonical DRAFT/EXPERIMENTAL wire shape. Trusted CP context and provider authorisation are out of band. Not an activated provider permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "completeness",
+    "observed_at",
+    "data_version",
+    "items"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period_start",
+        "period_end",
+        "as_of",
+        "currency"
+      ],
+      "properties": {
+        "period_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "period_end": {
+          "type": "string",
+          "format": "date"
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "currency": {
+          "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
+        }
+      }
+    },
+    "completeness": {
+      "enum": [
+        "complete",
+        "partial",
+        "stale",
+        "withheld"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "account_code",
+          "amount"
+        ],
+        "properties": {
+          "account_code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "amount": {
+            "$ref": "../../erp/v1/domain.schema.json#/$defs/decimal"
+          },
+          "currency": {
+            "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
+          }
+        }
+      }
+    },
+    "next_cursor": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
