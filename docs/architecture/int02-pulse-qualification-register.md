@@ -7,9 +7,14 @@ rules, CP ADR-BCP-025 and Pulse ADR-PULSE-018/019. No new exception is accepted.
 ## Implemented allocation
 
 `baobab-int02-pulse-consumer` is an Infrastructure-owned, integration-only,
-PROVISIONED client-credentials ceiling. Its two audiences/scopes let a future
-actual caller resolve its own CP context and request PUBLIC-level evidence
-search at Pulse. No classification clearance, validator authority, mutation,
+PROVISIONED client-credentials ceiling in the canonical `development`
+environment (the executor profile is named INT-02 integration). Its two
+audiences/scopes let a future actual caller resolve its own CP context and
+request evidence search at Pulse. The base search scope has the existing
+CONFIDENTIAL classification ceiling; it is not PUBLIC-only. Restrict fixtures
+to synthetic data, test that RESTRICTED results remain denied, and never infer
+a real tenant grant from that ceiling. No additional RESTRICTED clearance,
+validator authority, mutation,
 provider administration, deployment observation or certification scope is
 allocated. Credentials must be generated per disposable run and never supplied
 for production, protected staging or a real enterprise. No Tenant, grant,

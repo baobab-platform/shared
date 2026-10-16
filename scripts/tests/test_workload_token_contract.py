@@ -28,6 +28,14 @@ class WorkloadTokenContracts(unittest.TestCase):
             with self.subTest(scope=scope):
                 self.assertEqual([], list(VALIDATOR.iter_errors(request([scope]))))
 
+    def test_every_workload_environment_fits_the_canonical_identity(self):
+        schema = json.loads((ROOT / "contracts/identity/v1/workload-identity.schema.json").read_text())
+        allowed = schema["properties"]["environment"]["enum"]
+        registry = yaml.safe_load((ROOT / "contracts/identity/v1/workload-registry.yaml").read_text())
+        for client, entry in registry["workloads"].items():
+            with self.subTest(client=client):
+                self.assertIn(entry["environment"], allowed)
+
     def test_every_declared_workload_scope_fits_the_canonical_contract(self):
         registry = yaml.safe_load((ROOT / "contracts/identity/v1/workload-registry.yaml").read_text())
         scopes = {scope for workload in registry["workloads"].values() for scope in workload.get("allowed_scopes", [])}

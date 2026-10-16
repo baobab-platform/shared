@@ -167,7 +167,7 @@ workloads:
     repository: baobab-platform/infrastructure
     owner: baobab-platform/infrastructure
     runtime: "INT-02 disposable real-component Pulse qualification consumer"
-    environment: integration
+    environment: development
     allowed_audiences: ["baobab-control-plane", "baobab-pulse"]
     allowed_scopes: ["context:resolve", "intelligence:evidence:search"]
     credential_type: client_credentials
