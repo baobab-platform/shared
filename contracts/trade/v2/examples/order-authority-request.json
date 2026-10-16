@@ -1,0 +1,11 @@
+{
+  "context_id": "6f1c2a9e-4b7d-4c1e-9a3f-2d5e8b7c1a40",
+  "engine_instance_id": "ei_tradestaging01",
+  "operation_class": "trade.order.commit",
+  "seller_operating_binding_reference": {
+    "binding_id": "3f9a1c2e-7b4d-4e8a-9c1f-2d6e5b4a3c21",
+    "binding_version": 2
+  },
+  "native_configuration_digest": "9f2c4e6a8b0d1f3e5a7c9b1d3f5e7a9c2b4d6f8e0a1c3e5b7d9f1a3c5e7b9d1f",
+  "operation_reference": "trade/trade.order.commit/cart-synthetic-01/r1/a1"
+}
