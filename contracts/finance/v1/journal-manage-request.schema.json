@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/journal-manage-request.schema.json",
+  "title": "Finance F1 journal manage request",
+  "description": "Canonical DRAFT/EXPERIMENTAL wire shape. Trusted CP context and provider authorisation are out of band. Not an activated provider permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation",
+    "idempotency_key"
+  ],
+  "properties": {
+    "operation": {
+      "enum": [
+        "CREATE_DRAFT",
+        "SUBMIT",
+        "APPROVE",
+        "POST",
+        "REVERSE"
+      ]
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128
+    },
+    "journal_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 1024
+    },
+    "draft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period_start",
+        "period_end",
+        "currency",
+        "lines"
+      ],
+      "properties": {
+        "period_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "period_end": {
+          "type": "string",
+          "format": "date"
+        },
+        "currency": {
+          "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
+        },
+        "lines": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "account_ref",
+              "debit",
+              "credit"
+            ],
+            "properties": {
+              "account_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "debit": {
+                "$ref": "../../erp/v1/domain.schema.json#/$defs/decimal"
+              },
+              "credit": {
+                "$ref": "../../erp/v1/domain.schema.json#/$defs/decimal"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
