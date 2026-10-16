@@ -170,6 +170,7 @@ contracts:
   - domain: erp
     version: v2
     schemas:
+      - payment-execution-evidence.schema.json
       - posting-authority.schema.json
       - posting-operations.yaml
   - domain: payments

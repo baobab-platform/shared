@@ -195,6 +195,35 @@ def main() -> None:
     assert authorized["activity"] == next(
         e["activity"] for e in catalogue["operations"] if e["operation_class"] == authorized["operation_class"])
 
+    # ERP-B (ADR-SHARED-038): vendor-payment recording needs independently
+    # verified execution evidence. The catalogue stays frozen at version 2.
+    evidence_schema = json.loads((V2 / "payment-execution-evidence.schema.json").read_text())
+    Draft202012Validator.check_schema(evidence_schema)
+    assert evidence_schema["$id"] == BASE + "erp/v2/payment-execution-evidence.schema.json"
+    for key in walk_keys(evidence_schema):
+        assert not key.lower().startswith(VENDOR), f"vendor field {key!r} in erp/v2 evidence"
+    evidence = validator(evidence_schema, "PaymentExecutionEvidence", reg)
+    good_evidence = json.loads((examples / "payment-execution-evidence-synthetic.json").read_text())
+    evidence.validate(good_evidence)
+    # The only admissible authority is synthetic: a real one needs a revision.
+    assert evidence_schema["$defs"]["executionAuthority"]["enum"] == ["SYNTHETIC_ENGINE_LOCAL"]
+    for required in evidence_schema["$defs"]["PaymentExecutionEvidence"]["required"]:
+        bad = copy.deepcopy(good_evidence)
+        del bad[required]
+        assert not evidence.is_valid(bad), required
+    for bad_value in [{"execution_authority": "PAYMENTS_PAYOUT"}, {"execution_authority": "BANK_STATEMENT"},
+                      {"amount": "0"}, {"amount": "0.00"}, {"amount": "-5"}, {"amount": "1e3"},
+                      {"amount": 1250}, {"currency": "zar"}, {"responsible_legal_entity_id": "le-1"},
+                      {"payee_reference": "has space"}, {"obligation_reference": ""},
+                      {"evidence_references": []}, {"evidence_references": ["dup", "dup"]},
+                      {"native_placement_reference": {**good_evidence["native_placement_reference"], "ad_org_id": 11}}]:
+        assert not evidence.is_valid({**good_evidence, **bad_value}), bad_value
+    # Evidence is a fact, never an instruction or a grant.
+    for forged in ["disbursement_instruction", "destination", "bank_account", "provider_permissions_granted",
+                   "operation_class", "mandate_id", "decision_id", "c_payment_id", "ad_client_id"]:
+        assert not evidence.is_valid({**good_evidence, forged: "forged"}), forged
+    assert catalogue["version"] == 2, "ERP-B freezes the catalogue at version 2"
+
     # Workload-only, non-authorising scope, granted to no ACTIVE workload.
     scopes = yaml.safe_load((CONTRACTS / "authorization/v1/scope-registry.yaml").read_text())["scopes"]
     scope = next(s for s in scopes if s["name"] == SCOPE)
@@ -207,7 +236,8 @@ def main() -> None:
 
     lock = yaml.safe_load((ROOT / "contracts.lock.yaml").read_text())
     entry = next(c for c in lock["contracts"] if c["domain"] == "erp" and c["version"] == "v2")
-    assert set(entry["schemas"]) == {"posting-authority.schema.json", "posting-operations.yaml"}
+    assert set(entry["schemas"]) == {"payment-execution-evidence.schema.json", "posting-authority.schema.json",
+                                     "posting-operations.yaml"}
     print("ERP posting-authority contract, catalogue, examples and scope passed")
 
 

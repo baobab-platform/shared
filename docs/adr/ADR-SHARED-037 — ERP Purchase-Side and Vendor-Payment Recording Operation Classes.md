@@ -49,7 +49,7 @@ ADR-ERP-022 §4.1 gave `erp.vendor-payment.disburse` as an example class name. T
 
 - **No AP/AR netting.** An allocation that joins purchase-side and sales-side documents maps to neither allocation class. ERP must deny it, because a native document that maps to no class or to more than one is denied (ADR-SHARED-034 §1).
 - **Derived writes.** A native write that iDempiere makes deterministically while completing a catalogued root document may inherit that document's decision, under ADR-ERP-022 §4.2. Examples are purchase-order or invoice matching rows, receipt costing and the ledger lines the document posts. ERP proves the same transaction, the same placement and the same attribution. Every other origin of such a write stays denied.
-- **Out of scope.** Bank statements, cash journals, inventory, movement, production, landed cost and cost adjustment are not catalogued here. They remain denied until increment ERP-B revises the catalogue again. Accounting configuration stays outside the catalogue (ADR-SHARED-034 §6).
+- **Out of scope.** Bank statements, cash journals, inventory, movement, production, landed cost and cost adjustment are not catalogued here. ERP-B did not revise the catalogue (ADR-SHARED-038): they stay denied by name until their own increments. Accounting configuration stays outside the catalogue (ADR-SHARED-034 §6).
 
 ## 5. Compatibility
 
@@ -73,6 +73,7 @@ Every decision record keeps its own `operation_class`, so historical attribution
 
 - Real mandates and placements.
 - Finance capability keys (ADR-SHARED-033).
-- Bank, cash, inventory and cost classes (ERP-B).
+- Bank, cash, inventory and cost classes (deferred by ADR-SHARED-038; manufacturing to ERP-C).
+- Vendor-payment execution provenance (ADR-SHARED-038).
 - Payout activation (ADR-SHARED-035 §2).
 - Provider certification and production enablement.
