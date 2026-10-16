@@ -1,13 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.baobab-platform.com/proposals/finance/f1-candidate.schema.json",
-  "title": "Finance F1 proposed wire contracts — NOT canonical or provider certified",
+  "title": "Finance F1 proposed wire contracts \u2014 NOT canonical or provider certified",
   "description": "Review-only design for SH-NAB-FIN-02. Do not deploy/register without Shared steward and ERP owner approval, catalogue promotion and conformance tests. CP authenticates and provides trusted tenant, Organisation, legal actor and legal-entity context outside user payload.",
   "$defs": {
     "decimal": {
       "type": "string",
       "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,8})?$",
-      "description": "Decimal string, no floating point or exponent; scale is further restricted by ISO currency policy."
+      "description": "Decimal string, no floating point or exponent; scale is further restricted by ISO currency policy.",
+      "maxLength": 64,
+      "allOf": [
+        {
+          "not": {
+            "pattern": "\\s"
+          }
+        }
+      ]
     },
     "currency": {
       "type": "string",
@@ -142,7 +150,8 @@
         "scope",
         "observed_at",
         "data_version",
-        "rows"
+        "rows",
+        "view"
       ],
       "properties": {
         "completeness": {
@@ -160,25 +169,73 @@
         },
         "rows": {
           "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "account_code",
-              "balance"
-            ],
+          "maxItems": 1000
+        },
+        "view": {
+          "enum": [
+            "chart_of_accounts",
+            "balances",
+            "entries"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
             "properties": {
-              "account_code": {
-                "type": "string",
-                "minLength": 1
-              },
-              "balance": {
-                "$ref": "#/$defs/money"
+              "view": {
+                "const": "chart_of_accounts"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rows": {
+                "items": {
+                  "$ref": "#/$defs/chartRow"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "view": {
+                "const": "balances"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rows": {
+                "items": {
+                  "$ref": "#/$defs/balanceRow"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "view": {
+                "const": "entries"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rows": {
+                "items": {
+                  "$ref": "#/$defs/entryRow"
+                }
               }
             }
           }
         }
-      }
+      ],
+      "$comment": "View is echoed and discriminates closed row shapes. No journal or chart metadata is forced into a balance-only row. Statement response semantics are a separate promotion decision."
     },
     "journalLine": {
       "type": "object",
@@ -203,7 +260,30 @@
           "type": "string",
           "maxLength": 512
         }
-      }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "debit": {
+              "$ref": "#/$defs/positiveDecimal"
+            },
+            "credit": {
+              "$ref": "#/$defs/zeroDecimal"
+            }
+          }
+        },
+        {
+          "properties": {
+            "credit": {
+              "$ref": "#/$defs/positiveDecimal"
+            },
+            "debit": {
+              "$ref": "#/$defs/zeroDecimal"
+            }
+          }
+        }
+      ],
+      "$comment": "Both fields are explicit: exactly one positive magnitude and one zero counterpart. A zero-only line, negative amount or dual positive line is invalid."
     },
     "journalDraftRequest": {
       "type": "object",
@@ -239,7 +319,7 @@
           "maxLength": 128
         }
       },
-      "description": "Server must enforce balanced debit/credit, period-open, exact CP legal actor, scoped idempotency and maker/checker separation; JSON schema alone cannot do so.. Each line may have a debit OR credit > 0, never both; zero and signed negative values are forbidden on postings."
+      "description": "A draft has one positive debit or credit on each line, with zero on the opposite side. ERP must separately enforce balanced totals, currency precision, chronological/open periods, CP authority, payload-scoped idempotency and distinct maker/checker Principals."
     },
     "journalTransitionRequest": {
       "type": "object",
@@ -278,6 +358,173 @@
         }
       },
       "description": "Approval/posting must re-resolve current CP grants and deny maker=checker even with privileged roles."
+    },
+    "positiveDecimal": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/decimal"
+        },
+        {
+          "pattern": "^[0-9]"
+        },
+        {
+          "not": {
+            "pattern": "^0(?:\\.0+)?$"
+          }
+        }
+      ],
+      "$comment": "Strictly positive magnitude; decimal strings remain exact. Precision and balancing are ERP policy."
+    },
+    "zeroDecimal": {
+      "type": "string",
+      "pattern": "^0(?:\\.0{1,8})?$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "chartRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_ref",
+        "account_code",
+        "name",
+        "account_type",
+        "normal_balance",
+        "postable"
+      ],
+      "properties": {
+        "account_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "account_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "account_type": {
+          "enum": [
+            "ASSET",
+            "LIABILITY",
+            "EQUITY",
+            "INCOME",
+            "EXPENSE"
+          ]
+        },
+        "normal_balance": {
+          "enum": [
+            "DEBIT",
+            "CREDIT"
+          ]
+        },
+        "postable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "balanceRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_ref",
+        "account_code",
+        "balance"
+      ],
+      "properties": {
+        "account_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "account_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "balance": {
+          "$ref": "#/$defs/money"
+        }
+      }
+    },
+    "entryRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_ref",
+        "journal_ref",
+        "account_ref",
+        "account_code",
+        "posting_date",
+        "posting_state",
+        "debit",
+        "credit"
+      ],
+      "properties": {
+        "entry_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "journal_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "account_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "account_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "posting_date": {
+          "$ref": "#/$defs/date"
+        },
+        "posting_state": {
+          "enum": [
+            "DRAFT",
+            "POSTED"
+          ]
+        },
+        "debit": {
+          "$ref": "#/$defs/decimal"
+        },
+        "credit": {
+          "$ref": "#/$defs/decimal"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "debit": {
+              "$ref": "#/$defs/positiveDecimal"
+            },
+            "credit": {
+              "$ref": "#/$defs/zeroDecimal"
+            }
+          }
+        },
+        {
+          "properties": {
+            "credit": {
+              "$ref": "#/$defs/positiveDecimal"
+            },
+            "debit": {
+              "$ref": "#/$defs/zeroDecimal"
+            }
+          }
+        }
+      ]
     }
   }
 }

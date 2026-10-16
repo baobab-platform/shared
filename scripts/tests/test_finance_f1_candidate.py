@@ -65,5 +65,47 @@ class FinanceF1DraftContractTests(unittest.TestCase):
         self.assertEqual(transition["properties"]["expected_version"]["minimum"], 1)
 
 
+
+
+# Real schema validation catches semantic holes which key-presence tests
+# cannot see. These synthetic fixtures establish wire behaviour only.
+from jsonschema import Draft202012Validator, FormatChecker
+
+
+class FinanceF1CandidateValidationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.schema = json.loads(CANDIDATE.read_text())
+        Draft202012Validator.check_schema(cls.schema)
+
+    def valid(self, definition, value):
+        schema = {**self.schema, '$ref': '#/$defs/' + definition}
+        return Draft202012Validator(schema, format_checker=FormatChecker()).is_valid(value)
+
+    def test_journal_line_has_one_positive_side_and_zero_counterpart(self):
+        for debit, credit in [('10.25','0'),('0.00','10.25'),('0.00000001','0')]:
+            self.assertTrue(self.valid('journalLine', {'account_ref':'acct_cash','debit':debit,'credit':credit}))
+        for debit, credit in [('0','0'),('1','2'),('-1','0'),('0','-1'),('1e3','0'),(1,'0'),('1\n','0')]:
+            self.assertFalse(self.valid('journalLine', {'account_ref':'acct_cash','debit':debit,'credit':credit}))
+        self.assertFalse(self.valid('journalLine', {'account_ref':'acct_cash','debit':'1'}))
+
+    def test_ledger_rows_follow_the_echoed_view(self):
+        base={'completeness':'complete','scope':{'period':{'start':'2026-01-01','end':'2026-01-31'},
+              'as_of':'2026-02-01T00:00:00Z','currency':'ZAR'},'observed_at':'2026-02-01T00:00:00Z','data_version':'synthetic-1'}
+        rows={'chart_of_accounts':{'account_ref':'acct_cash','account_code':'1000','name':'Synthetic cash',
+                  'account_type':'ASSET','normal_balance':'DEBIT','postable':True},
+              'balances':{'account_ref':'acct_cash','account_code':'1000','balance':{'amount':'10.25','currency':'ZAR'}},
+              'entries':{'entry_ref':'entry_a','journal_ref':'journal_a','account_ref':'acct_cash','account_code':'1000',
+                  'posting_date':'2026-01-15','posting_state':'POSTED','debit':'10.25','credit':'0'}}
+        for view,row in rows.items():
+            with self.subTest(view=view):
+                self.assertTrue(self.valid('readResponse',{**base,'view':view,'rows':[row]}))
+                for other,wrong in rows.items():
+                    if other!=view:
+                        self.assertFalse(self.valid('readResponse',{**base,'view':view,'rows':[wrong]}))
+                self.assertFalse(self.valid('readResponse',{**base,'view':view,'rows':[{**row,'AD_Org_ID':1}]}))
+        self.assertFalse(self.valid('readResponse',{**base,'rows':[]}))
+
+
 if __name__ == "__main__":
     unittest.main()

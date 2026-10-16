@@ -26,3 +26,19 @@
 - Payments: D1 merged, D2 PSP/certification outstanding.
 - Subscriptions and Trade Docs: native execution-point guards and real L4 evidence remain independent owner tasks.
 - Infrastructure #35 is still open; do not reclassify its INT-02 mandatory blocked tests as passed.
+
+## Engineering review correction — 16 October 2026
+
+The candidate now requires an explicit debit and credit with exactly one
+strictly positive amount and one zero counterpart. “No zero posting” means no
+zero-only line; a zero counterpart is required for an unambiguous wire shape.
+Both-positive, both-zero, signed-negative, exponent and JSON-number amounts are
+rejected structurally. ERP still owns balance/precision/closed-period/approval
+and idempotency enforcement; this draft cannot prove those runtime behaviours.
+
+Ledger responses echo `view` and use separate closed chart, balance and entry
+row schemas. Chart metadata and dated journal/entry references therefore have
+representable fields. The journal and ledger negative fixtures run through a
+real Draft 2020-12 validator in CI, not substring assertions. This remains a
+noncanonical historical design checkpoint; #321 supplies the separately
+reviewed DRAFT catalogue contracts. ADR-SHARED-033 remains Proposed.
