@@ -65,7 +65,7 @@ Console production login           BLOCKED BY DESIGN (readAuthSettings rejects p
 Protected live E2E                 NOT DEMONSTRATED
 Founding-group legal acceptance    OUTSTANDING (no independently accepted verification case)
 P0-04A contract convergence        COMPLETE for current consumers (Trade, ERP, Payments, Subscriptions, Trade Docs)
-P0-04B native execution PEPs       PART: Trade cart, ERP six classes, ERP-A purchase side (five classes) and ERP-B payables provenance/deny-by-name (engine-local real-CP harness) merged; Payments Gate D1 merged (#38; protected D2 open); remaining Trade/Subscriptions/Trade Docs and certified issuer/PSP acceptance
+P0-04B native execution PEPs       PART: Trade cart, ERP six classes, ERP-A purchase side (five classes) and ERP-B payables provenance/deny-by-name (engine-local real-CP harness) merged; Payments Gate D1 merged (#38; protected D2 open); remaining Trade/Subscriptions/Trade Docs, plus the deferred ERP families (bank/cash, inventory, costing; manufacturing in ERP-C), which stay denied by name and certified issuer/PSP acceptance
 EA-INT/L4 reproducible integration  INT-01 SOURCE + REAL ACTIONS PROVEN; CODESPACES LIVE RUN NOT YET OBSERVED; INT-02–08 OPEN
 DIGITAL ESTATE DEVELOPMENT         GATE B NOT PASSED
 PRODUCTION ACTIVATION              NOT AUTHORISED
@@ -231,7 +231,7 @@ The 13 October execution order remains a **historical sequence**. The accepted v
 | EA-R00 | Accept v2.2 plan, L4 test matrix and dashboard | Source changes in this Shared PR; Accepted plan, no deployment |
 | **INT-01** | Infrastructure Codespaces + Actions reproducible harness | **MERGED, real Actions L4-00 PASS** ([Infra #34](https://github.com/baobab-platform/infrastructure/pull/34)); actual Codespaces proof not demonstrated |
 | EA-R02 | Genuine founding/legal evidence, custody, source and mandates | In progress; real external approvals/infra dependencies |
-| EA-R03 | Complete current native PEP operation families | PART; **Payments D1 merged**; **ERP-A and ERP-B merged** (engine-local real-CP harness, not EA Gate D, not L4); Payments D2, Trade, Subscriptions and Trade Docs remaining |
+| EA-R03 | Complete current native PEP operation families | PART; **Payments D1 merged**; **ERP-A and ERP-B merged** (engine-local real-CP harness, not EA Gate D, not L4); Payments D2, Trade, Subscriptions and Trade Docs remaining, plus the deferred ERP families (bank/cash, inventory, costing; manufacturing in ERP-C), which stay denied by name |
 | **INT-02** | IAM↔CP real-component issued token/context/denial | Not demonstrated |
 | **INT-03** | Nabhold↔IAM↔CP↔CMS full browser/content pilot | Not demonstrated; IAM #116 merged as dormant source, real connected profile missing |
 | EA-R04 | Console and estate UX/no-shadow-authority completion | Partial; real end-to-end acceptance missing |
