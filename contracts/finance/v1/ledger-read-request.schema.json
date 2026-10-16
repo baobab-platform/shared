@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/ledger-read-request.schema.json",
+  "title": "Finance F1 ledger read request",
+  "description": "Canonical DRAFT/EXPERIMENTAL wire shape. Trusted CP context and provider authorisation are out of band. Not an activated provider permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "view"
+  ],
+  "properties": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period_start",
+        "period_end",
+        "as_of",
+        "currency"
+      ],
+      "properties": {
+        "period_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "period_end": {
+          "type": "string",
+          "format": "date"
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "currency": {
+          "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
+        }
+      }
+    },
+    "view": {
+      "enum": [
+        "chart_of_accounts",
+        "balances",
+        "entries"
+      ]
+    },
+    "posting_state": {
+      "enum": [
+        "POSTED",
+        "DRAFT",
+        "ALL"
+      ]
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+}
