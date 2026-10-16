@@ -85,12 +85,16 @@ end
 scopes = load_yaml("contracts/authorization/v1/scope-registry.yaml").fetch("scopes").to_h { |s| [s.fetch("name"), s] }
 workloads = load_yaml("contracts/identity/v1/workload-registry.yaml").fetch("workloads")
 fail_contract("workload-registry.yaml declares no workloads") if workloads.nil? || workloads.empty?
+# A profile label (e.g. INT-02 integration) cannot invent an identity
+# environment that conforming IAM/CP consumers cannot represent.
+known_environments = load_json("contracts/identity/v1/workload-identity.schema.json").fetch("properties").fetch("environment").fetch("enum")
 known_statuses = %w[PROVISIONED ACTIVE SUSPENDED REVOKED RETIRED]
 known_credentials = %w[client_credentials federated_workload_token]
 workloads.each do |client_id, entry|
   %w[repository owner runtime environment allowed_audiences allowed_scopes credential_type rotation_owner status].each do |field|
     fail_contract("workload #{client_id} is missing #{field}") if entry[field].nil? || entry[field].to_s.strip.empty?
   end
+  fail_contract("workload #{client_id} has noncanonical environment #{entry['environment'].inspect}") unless known_environments.include?(entry["environment"])
   fail_contract("workload #{client_id} has unknown status #{entry['status'].inspect}") unless known_statuses.include?(entry["status"])
   fail_contract("workload #{client_id} has unknown credential_type #{entry['credential_type'].inspect}") unless known_credentials.include?(entry["credential_type"])
   audiences = entry.fetch("allowed_audiences")

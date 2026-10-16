@@ -1384,3 +1384,10 @@ Because workflows, contracts, and packages contained here may execute with eleva
 P0-04B-02 Trade seller-binding human admission is defined in [commerce/v1](contracts/commerce/v1/README.md); scope and grant vocabulary is registered without assignments.
 
 P0-04B ERP posting-authority resolution is defined in [erp/v2](contracts/erp/v2/README.md) (ADR-SHARED-034); its workload scope is granted only to the PROVISIONED ERP staging assessor.
+
+### INT-02 Pulse consumer allocation
+
+[The qualification register](docs/architecture/int02-pulse-qualification-register.md)
+records the PROVISIONED, nonproduction read-only test-consumer ceiling and the
+remaining owner-governed proof bootstrap. No ACTIVE workload, provider
+certification, tenant entitlement or production permission is inferred.

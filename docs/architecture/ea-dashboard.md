@@ -296,3 +296,12 @@ G03/G06 F1 wire source advances; real baseline/book/approval/native posting,
 reconciliation, journal events, CP qualification and Finance signoff remain.
 Infrastructure #35 is not changed or merged by this independent increment.
 No EA Gate D/E or Nabhold release advances from DRAFT source registration.
+
+## INT-02 provider allocation checkpoint — 16 October 2026
+
+The [Pulse qualification register](int02-pulse-qualification-register.md) records
+`baobab-int02-pulse-consumer` as PROVISIONED for a disposable integration-only
+read. No workload promotion or evidence-producer exception is added. Actual
+issuer/resource/CP proof, independently recorded scoped provider qualification
+and current health remain required; L4-CP-02 and Infrastructure #35 remain
+blocked. Existing capability lifecycle and production gates are unchanged.
