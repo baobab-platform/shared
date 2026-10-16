@@ -1,0 +1,281 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/proposals/finance/f1-candidate.schema.json",
+  "title": "Finance F1 proposed wire contracts — NOT canonical or provider certified",
+  "description": "Review-only design for SH-NAB-FIN-02. Do not deploy/register without Shared steward and ERP owner approval, catalogue promotion and conformance tests. CP authenticates and provides trusted tenant, Organisation, legal actor and legal-entity context outside user payload.",
+  "$defs": {
+    "decimal": {
+      "type": "string",
+      "pattern": "^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]{1,8})?$",
+      "description": "Decimal string, no floating point or exponent; scale is further restricted by ISO currency policy."
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/date"
+        },
+        "end": {
+          "$ref": "#/$defs/date"
+        }
+      }
+    },
+    "completeness": {
+      "enum": [
+        "complete",
+        "partial",
+        "stale",
+        "withheld"
+      ]
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period",
+        "as_of",
+        "currency"
+      ],
+      "properties": {
+        "period": {
+          "$ref": "#/$defs/period"
+        },
+        "as_of": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
+        }
+      },
+      "description": "No caller-supplied tenant/legal_entity_id; context comes from verified CP resolution."
+    },
+    "money": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "$ref": "#/$defs/decimal"
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
+        }
+      }
+    },
+    "ledgerReadRequest": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/scope"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "view": {
+              "enum": [
+                "chart_of_accounts",
+                "balances",
+                "entries"
+              ]
+            },
+            "posting_state": {
+              "enum": [
+                "draft",
+                "posted",
+                "all"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "statementReadRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "statement_type"
+      ],
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "statement_type": {
+          "enum": [
+            "trial_balance",
+            "income_statement",
+            "balance_sheet",
+            "cash_flow"
+          ]
+        }
+      }
+    },
+    "readResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "completeness",
+        "scope",
+        "observed_at",
+        "data_version",
+        "rows"
+      ],
+      "properties": {
+        "completeness": {
+          "$ref": "#/$defs/completeness"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/dateTime"
+        },
+        "data_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "account_code",
+              "balance"
+            ],
+            "properties": {
+              "account_code": {
+                "type": "string",
+                "minLength": 1
+              },
+              "balance": {
+                "$ref": "#/$defs/money"
+              }
+            }
+          }
+        }
+      }
+    },
+    "journalLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_ref",
+        "debit",
+        "credit"
+      ],
+      "properties": {
+        "account_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "debit": {
+          "$ref": "#/$defs/decimal"
+        },
+        "credit": {
+          "$ref": "#/$defs/decimal"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 512
+        }
+      }
+    },
+    "journalDraftRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "period",
+        "currency",
+        "lines",
+        "idempotency_key"
+      ],
+      "properties": {
+        "period": {
+          "$ref": "#/$defs/period"
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
+        },
+        "lines": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/journalLine"
+          }
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        },
+        "reference": {
+          "type": "string",
+          "maxLength": 128
+        }
+      },
+      "description": "Server must enforce balanced debit/credit, period-open, exact CP legal actor, scoped idempotency and maker/checker separation; JSON schema alone cannot do so."
+    },
+    "journalTransitionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "journal_ref",
+        "action",
+        "expected_version",
+        "idempotency_key"
+      ],
+      "properties": {
+        "journal_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "enum": [
+            "submit",
+            "approve",
+            "post",
+            "reverse"
+          ]
+        },
+        "expected_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 1024
+        }
+      },
+      "description": "Approval/posting must re-resolve current CP grants and deny maker=checker even with privileged roles."
+    }
+  }
+}
