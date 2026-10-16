@@ -157,6 +157,23 @@ schema:
   version: "1.0"
 
 workloads:
+  # INT-02 source qualification caller; no real enterprise or production
+  # credential. Allocation is deliberately not activation. This workload
+  # cannot validate contexts, observe deployments, certify or mutate data.
+  # The existing single evidence-producer exception above is NOT extended.
+  # Promotion requires owner-reviewed real issuer/resource-server/CP proof;
+  # a test fixture must not bypass the current registry to manufacture it.
+  baobab-int02-pulse-consumer:
+    repository: baobab-platform/infrastructure
+    owner: baobab-platform/infrastructure
+    runtime: "INT-02 disposable real-component Pulse qualification consumer"
+    environment: integration
+    allowed_audiences: ["baobab-control-plane", "baobab-pulse"]
+    allowed_scopes: ["context:resolve", "intelligence:evidence:search"]
+    credential_type: client_credentials
+    rotation_owner: baobab-platform/infrastructure
+    status: PROVISIONED
+
   baobab-cms-workload:
     repository: baobab-platform/baobab-cms
     owner: baobab-platform/baobab-cms
