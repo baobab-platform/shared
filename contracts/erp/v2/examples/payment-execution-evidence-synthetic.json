@@ -1,0 +1,19 @@
+{
+  "evidence_id": "9c4e2b7a-1d3f-4a6e-8b5c-7f0a2d9e4c61",
+  "execution_authority": "SYNTHETIC_ENGINE_LOCAL",
+  "native_placement_reference": {
+    "placement_id": "0b6d1f9a-3c2e-4a8b-9d7f-5e4c3b2a1908",
+    "placement_version": 2
+  },
+  "responsible_legal_entity_id": "SYNTHETIC-LE-01",
+  "payee_reference": "erp:bpartner/synthetic-supplier-01",
+  "obligation_reference": "erp:vendor-invoice/synthetic-ap-0001",
+  "amount": "1250.00",
+  "currency": "ZAR",
+  "executed_at": "2026-10-14T05:58:00Z",
+  "verified_at": "2026-10-14T05:59:00Z",
+  "verified_by": "synthetic-verifier-01",
+  "evidence_references": [
+    "synthetic:payment-execution/01"
+  ]
+}

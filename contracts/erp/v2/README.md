@@ -14,6 +14,14 @@ one accounting operation. `erp/v1` stays wire-compatible and unchanged.
   appends purchase-order, material-receipt, vendor-invoice, vendor-payment and
   payables-allocation *recording* classes; the six version 1 classes are
   unchanged. `erp.vendor-payment.record` is never money-movement authority.
+- `payment-execution-evidence.schema.json` — `PaymentExecutionEvidence`
+  ([ADR-SHARED-038](../../../docs/adr/ADR-SHARED-038%20%E2%80%94%20ERP%20Payables%20Recording%20Provenance%20and%20Native%20Deny-by-Name.md)):
+  the independently verified fact that a vendor disbursement already happened
+  outside ERP. ERP classifies an outbound payment as `erp.vendor-payment.record`
+  only when it is bound to exactly one such record naming the same placement,
+  payee, amount, currency and vendor-invoice obligation. The only execution
+  authority is `SYNTHETIC_ENGINE_LOCAL`, so vendor-payment recording stays
+  non-activatable for real placements until a revision admits a real one.
 - `examples/` — synthetic fixtures for contract shape only.
   `catalogue-vectors.json` holds golden VALID/INVALID class-to-role/activity
   vectors for every catalogued class, for CP and ERP conformance tests.

@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ERP-B payables recording provenance and deny-by-name (ADR-SHARED-038; EA v2.2 EA-R03).** The platform owner decided ERP-B on 2026-10-16. ERP-B covers only the five ADR-SHARED-037 purchase-side and payables classes, and the `erp/v2` catalogue stays at `version: 2`.
+  * New `contracts/erp/v2/payment-execution-evidence.schema.json`. ERP may record a vendor payment only when it is bound to exactly one independently verified execution-evidence record naming the same placement, payee, amount, currency and vendor-invoice obligation.
+  * The execution-authority vocabulary is closed at `SYNTHETIC_ENGINE_LOCAL`, so vendor-payment recording stays non-activatable for protected and production placements.
+  * Bank statements never mint payment authority. Bank statements, cash journals, inventory, movement, production (deferred to ERP-C), independent costing, payment selection and treasury writes are denied by name at both the JVM boundary and PostgreSQL.
+  * `validate-erp-posting-authority-contract.py` checks the evidence schema, its example and its negative cases.
+  * No CP class, scope, workload or grant changes. Engine-local evidence on synthetic data is not EA Gate D and not L4.
+
 * **EA v2.1 register: P0-04B-03 recorded.** Trade #149 (cart-completion COMMIT fence for activated seller bindings) is merged, with its receipt in CP #392. LA-05, D-03 and EA-R03 now name the next owning-engine set: ERP native trusted context/readiness and atomic posting. No Stag, Legal or Ops cell changes.
 
 * **EA v2.1 register refresh (EA-R01 follow-up).** Every cross-repository PR the register cites is now verified merged on its owning repository's `main`, and the "as reported" qualifier is removed. P0-04A is recorded complete for all current consumers (Trade Docs #13 included) and P0-04B-01/02 as merged (Trade #146–#148, CP #389/#390). Cells previously held at NO for lack of a cited PR are rescored on merged CP evidence: PEO-04 (CP #339–#341), PEO-05 (#342–#345), LA-02 (migration 000102) and LA-03 (#294). The PEO-03L label now follows baobab-cp, where it names the scanner runtime and scanned-custody admission inside the PEO-03K family; decision 4's remap of the proposed criteria is unchanged. No Stag, Legal or Ops cell changes.

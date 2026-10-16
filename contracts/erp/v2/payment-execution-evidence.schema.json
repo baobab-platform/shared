@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/erp/v2/payment-execution-evidence.schema.json",
+  "title": "ERP vendor-payment execution evidence (P0-04B ERP-B, ADR-SHARED-038)",
+  "description": "The independently verified fact that a vendor disbursement was already executed outside ERP. ERP classifies an outbound payment into erp.vendor-payment.record only when it is bound to exactly one such record naming the same placement (and so the same responsible legal entity), payee, amount, currency and originating vendor-invoice obligation, and not already bound to another payment. Evidence is never an instruction, never money-movement authority and never accounting authority: a current CP posting-authority decision is still required. The execution-authority vocabulary is closed; its only value in this revision is SYNTHETIC_ENGINE_LOCAL, which proves the mechanism on synthetic data and never that a real disbursement happened. Native vendor identifiers never cross this boundary: payee and obligation are opaque ERP references.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "$defs": {
+    "erpReference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+      "description": "Opaque ERP-issued reference. ERP resolves it to its own native record within the named placement; it never carries a native client, organisation or table identifier."
+    },
+    "executionAuthority": {
+      "type": "string",
+      "enum": [
+        "SYNTHETIC_ENGINE_LOCAL"
+      ],
+      "description": "Closed vocabulary of approved execution authorities. SYNTHETIC_ENGINE_LOCAL is admissible only in engine-local harnesses on synthetic data. A real authority (for example a Payments payout execution, ADR-SHARED-035) needs its own versioned revision; until then vendor-payment recording is non-activatable for protected and production placements."
+    },
+    "PaymentExecutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "execution_authority",
+        "native_placement_reference",
+        "responsible_legal_entity_id",
+        "payee_reference",
+        "obligation_reference",
+        "amount",
+        "currency",
+        "executed_at",
+        "verified_at",
+        "verified_by",
+        "evidence_references"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "execution_authority": {
+          "$ref": "#/$defs/executionAuthority"
+        },
+        "native_placement_reference": {
+          "$ref": "https://contracts.baobab-platform.com/erp/v2/posting-authority.schema.json#/$defs/nativePlacementReference"
+        },
+        "responsible_legal_entity_id": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 63,
+          "pattern": "^[A-Z][A-Z0-9]*(-[A-Z0-9]+)*$",
+          "description": "The payer. Must equal the legal entity of the named placement version."
+        },
+        "payee_reference": {
+          "$ref": "#/$defs/erpReference",
+          "description": "The supplier paid, as an opaque ERP business-partner reference."
+        },
+        "obligation_reference": {
+          "$ref": "#/$defs/erpReference",
+          "description": "The originating obligation: a vendor invoice of class erp.vendor-invoice.record in the same placement. The payment may be allocated only to it."
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,17})(\\.[0-9]{1,6})?$",
+          "not": {
+            "pattern": "^0(\\.0+)?$"
+          },
+          "description": "Positive decimal amount executed, in currency units."
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 code."
+        },
+        "executed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the execution authority's observation was verified. Semantic rule (not expressible in JSON Schema): executed_at <= verified_at, and verified_at is not in the future when ERP ingests the record. Consumers must reject evidence that breaks it."
+        },
+        "verified_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Accountable verifier. Never a generic system or automation actor."
+        },
+        "evidence_references": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        }
+      }
+    }
+  }
+}
