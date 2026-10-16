@@ -256,3 +256,27 @@ The 13 October execution order remains a **historical sequence**. The accepted v
 | EA-R06 | Publication and operational certification | Not started |
 
 Code increments may run in parallel. Production activation stays gated on its dependencies.
+
+
+## 16 October 2026 — verified cross-repository implementation delta
+
+This section supersedes stale PR-status claims in the historical 15 October audit **only where the following live PR metadata was checked**. It does not turn merged source into L4 qualification or protected admission.
+
+| Work | Current evidence | Readiness consequence |
+|---|---|---|
+| INT-01 L4-00 | [Infrastructure #34](https://github.com/baobab-platform/infrastructure/pull/34) MERGED | Infrastructure foundation source and Actions proof; a Codespaces live execution remains separately required |
+| Human CP-audience profile | [IAM #116](https://github.com/baobab-platform/baobab-iam/pull/116) MERGED | Dormant, no approved user, secret or protected executive admission |
+| Nabhold G04B-04 | [Nabhold #57](https://github.com/baobab-platform/nabhold/pull/57) MERGED | Fail-closed source guard; concrete accepted CP adapter and INT-03 not complete |
+| INT-02 L4-01 | [Infrastructure #35](https://github.com/baobab-platform/infrastructure/pull/35) OPEN — mandatory acceptance blocked | Real IAM↔CP tests still lack complete required passing receipts; cannot merge on static CI |
+| Trade-0 | [Shared #318](https://github.com/baobab-platform/shared/pull/318), [CP #405](https://github.com/baobab-platform/baobab-cp/pull/405) MERGED | Versioned CP Seller Operating Binding/resolver source; Trade-A through D and real L4 remain |
+| Finance F1 | [ADR-SHARED-033](../adr/ADR-SHARED-033%20%E2%80%94%20Corporate%20Finance%20Capability%20Namespace%20and%20First%20Canonical%20Finance%20Tranches.md) PROPOSED | Keys not registered, no provider certification; F1 contract design may proceed behind steward/ERP approval |
+
+**Gate delta:** EA-INT INT-01 source progressed, INT-02 remains BLOCKED for acceptance, INT-03 NOT PROVEN. EA Gate D/E and production remain NOT AUTHORISED. EA-R03 continues in parallel: Trade-A/D, ERP remaining native coverage, Payments D2, Subscriptions and Trade Docs native execution paths. Do not infer actual legal-actor mandates, issuer grants, merchant PSP credentials or CMS bindings from the above.
+
+
+**16 October engineering checkpoint:** Finance F1 schema work is independent
+of Infrastructure #35. Its review-only PR #319 and canonical DRAFT PR #321
+are separate from provider implementation, live iDempiere, protected L4 and
+activation. Infrastructure #35 at `0f6cbac` has real L4-IAM-02 PASS, while
+L4-IAM-01 and L4-CP-01/02/03 remain BLOCKED; the overall profile still fails.
+No EA Gate D/E or Nabhold release is promoted by the isolated workload proof.
