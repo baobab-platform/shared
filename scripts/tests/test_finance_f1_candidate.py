@@ -10,7 +10,7 @@ import pathlib
 import re
 import unittest
 
-ROOT = pathlib.Path(__file__).resolve().parents[3]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 CANDIDATE = ROOT / "docs/architecture/proposals/finance-f1-candidate.schema.json"
 CATALOGUE = ROOT / "contracts/capability/v1/catalogue.yaml"
 
