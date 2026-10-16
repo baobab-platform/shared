@@ -173,6 +173,12 @@ contracts:
       - payment-execution-evidence.schema.json
       - posting-authority.schema.json
       - posting-operations.yaml
+  - domain: trade
+    version: v2
+    schemas:
+      - order-authority.schema.json
+      - order-operations.yaml
+      - seller-operating-binding.schema.json
   - domain: payments
     version: v2
     schemas:

@@ -23,6 +23,14 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **Trade-0 order authority and CP-owned Seller Operating Bindings (ADR-SHARED-039; EA v2.2 EA-R03).** The platform owner decided Trade on 2026-10-16. Trade enforcement is split into Trade-0, Trade-A, Trade-B, Trade-C and Trade-D.
+  * New `contracts/trade/v2`: a closed catalogue in which every class uses role `SELLER_OF_RECORD` and has its own activity. Only the Trade-A classes are activatable; the Trade-B and Trade-C classes are reserved and denied by name.
+  * The order-authority request and decision use a 30 s lease, bind to one binding version and one native-configuration digest, and grant nothing.
+  * A CP-owned, reusable, versioned Seller Operating Binding: Trade attests its native configuration, then three distinct principals propose, approve and activate it. Suspend, reinstate and revoke follow the same rules, and a lifecycle event is published.
+  * New workload scopes `trade-order-authority:resolve` and `trade-seller-binding:attest`, added to the PROVISIONED Trade staging workload. New human `seller-operating-binding:*` scopes, assigned to no one.
+  * `validate-trade-order-authority-contract.py` runs in CI.
+  * Production stays denied. Engine-local evidence is not EA Gate D and not L4.
+
 * **ERP-B payables recording provenance and deny-by-name (ADR-SHARED-038; EA v2.2 EA-R03).** The platform owner decided ERP-B on 2026-10-16. ERP-B covers only the five ADR-SHARED-037 purchase-side and payables classes, and the `erp/v2` catalogue stays at `version: 2`.
   * New `contracts/erp/v2/payment-execution-evidence.schema.json`. ERP may record a vendor payment only when it is bound to exactly one independently verified execution-evidence record naming the same placement, payee, amount, currency and vendor-invoice obligation.
   * The execution-authority vocabulary is closed at `SYNTHETIC_ENGINE_LOCAL`, so vendor-payment recording stays non-activatable for protected and production placements.
