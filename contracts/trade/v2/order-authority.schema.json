@@ -43,6 +43,7 @@
         "operation_class",
         "seller_operating_binding_reference",
         "native_configuration_digest",
+        "currency",
         "operation_reference"
       ],
       "properties": {
@@ -64,6 +65,9 @@
         },
         "operation_reference": {
           "$ref": "#/$defs/operationReference"
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
         }
       }
     },
@@ -77,6 +81,7 @@
         "operation_class",
         "seller_operating_binding_reference",
         "native_configuration_digest",
+        "currency",
         "operation_reference",
         "outcome",
         "evaluated_at",
@@ -187,6 +192,9 @@
         },
         "provider_permissions_granted": {
           "const": false
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
         }
       },
       "allOf": [
@@ -284,6 +292,37 @@
             "properties": {
               "outcome": {
                 "const": "OPERATION_NOT_ACTIVATED"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "OPERATION_NOT_ACTIVATED"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "operation_class": {
+                "enum": [
+                  "trade.order.edit",
+                  "trade.order.cancel",
+                  "trade.return.accept",
+                  "trade.exchange.accept",
+                  "trade.claim.accept",
+                  "trade.payment-authorization.request",
+                  "trade.payment-capture.request",
+                  "trade.payment-void.request",
+                  "trade.payment-refund.request",
+                  "trade.fulfilment.create",
+                  "trade.shipment.create"
+                ]
               }
             }
           }
@@ -597,7 +636,12 @@
           }
         }
       ],
-      "description": "Semantic rules consumers must also apply: evaluated_at < expires_at <= evaluated_at + 30 seconds; the decision echoes the request exactly; a reserved (non-activatable) class only ever answers OPERATION_NOT_ACTIVATED."
+      "description": "Semantic rules consumers must also apply: evaluated_at < expires_at <= evaluated_at + 30 seconds; the decision echoes the request exactly; a reserved (non-activatable) class only ever answers OPERATION_NOT_ACTIVATED, and only a reserved class may; the currency is in the binding's currency_scope."
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "ISO 4217 currency of this operation, from Trade's server-verified cart, draft or order. CP requires it to be in the binding's currency_scope (otherwise BINDING_SCOPE_MISMATCH) and echoes it; Trade must deny when the committed record's currency differs."
     }
   }
 }

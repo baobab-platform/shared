@@ -156,6 +156,15 @@ def main() -> None:
             assert not decision.is_valid({**not_activated, "operation_class": o["operation_class"],
                                           "outcome": "NO_APPLICABLE_MANDATE"}), o
     assert decision.is_valid({**not_activated, "operation_class": "trade.order.commit", "outcome": "BINDING_NOT_ACTIVE"})
+    # Only a reserved class may answer OPERATION_NOT_ACTIVATED: an enabled one never claims to be unavailable.
+    for o in ops:
+        assert decision.is_valid({**not_activated, "operation_class": o["operation_class"]}) == (not o["activatable"]), o
+    # The decision is bound to the operation currency, which CP checks against the binding's scope.
+    assert authorized["currency"] == good["currency"]
+    for bad_currency in ["ugx", "UG", "USDT", 1]:
+        assert not request.is_valid({**good, "currency": bad_currency}), bad_currency
+        assert not decision.is_valid({**authorized, "currency": bad_currency}), bad_currency
+    assert "currency_scope" in authority["$defs"]["currency"]["description"]
     # The decision echoes the binding version and digest exactly.
     assert authorized["seller_operating_binding_reference"] == good["seller_operating_binding_reference"]
     assert authorized["native_configuration_digest"] == good["native_configuration_digest"]

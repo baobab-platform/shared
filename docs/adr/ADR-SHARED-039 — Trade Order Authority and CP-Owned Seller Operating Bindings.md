@@ -58,7 +58,7 @@ All classes use the role `SELLER_OF_RECORD`. Each class has its own activity, so
 | `trade.fulfilment.create` | `FULFILMENT_INSTRUCTION` | Trade-C | no |
 | `trade.shipment.create` | `SHIPMENT_INSTRUCTION` | Trade-C | no |
 
-**Activatable classes.** CP resolves a class only when it is `activatable`. For every other class it answers `OPERATION_NOT_ACTIVATED` before any mandate lookup, and Trade refuses the route by name. A later increment activates its classes through a versioned catalogue revision.
+**Activatable classes.** CP resolves a class only when it is `activatable`. For every other class it answers `OPERATION_NOT_ACTIVATED` before any mandate lookup, and Trade refuses the route by name. Only a reserved class may receive that answer. A later increment activates its classes through a versioned catalogue revision.
 
 **Catalogued is not supported.** Trade publishes support for a class only once its enforcement, bypass closure and acceptance evidence exist.
 
@@ -101,6 +101,7 @@ CP stores only an opaque `native_configuration_reference` and its SHA-256 `nativ
 
 **Separation of duties.**
 - Maker, checker and operator are three distinct canonical principals.
+- Each command needs its own exact `organisation.seller-operating-binding.*` administrative grant (HIGH risk, ORGANISATION scope, not delegable). These grants are registered but assigned to no profile.
 - Every transition is an immutable history row.
 - CP publishes a versioned `trade.seller-operating-binding.changed` lifecycle event through its transactional outbox, but the event is information, not authority.
 
@@ -127,6 +128,7 @@ CP stores only an opaque `native_configuration_reference` and its SHA-256 `nativ
 - an `operation_class`;
 - a `seller_operating_binding_reference` (`binding_id`, `binding_version`);
 - Trade's current `native_configuration_digest`;
+- the operation's ISO 4217 `currency`, which CP requires to be in the binding's `currency_scope` and echoes back;
 - an opaque `operation_reference`.
 
 The caller can never select a tenant, Organisation, legal entity, mandate, role, activity, market or time.
@@ -136,7 +138,7 @@ The caller can never select a tenant, Organisation, legal entity, mandate, role,
 2. It loads the binding from its own store by id and version.
 3. It requires `ACTIVE` status, the effective period, and no supersession, suspension or revocation.
 4. It requires that tenant, Organisation, market and Trade engine instance all match the binding's scope.
-5. It requires that the digest equals the attested digest.
+5. It requires that the digest equals the attested digest, and that the currency is in the binding's currency scope.
 6. It derives the role and activity from the catalogue, answering `OPERATION_NOT_ACTIVATED` for reserved classes.
 7. It resolves exactly one current, verified `SELLER_OF_RECORD` mandate of the binding's legal entity that covers that activity.
 
