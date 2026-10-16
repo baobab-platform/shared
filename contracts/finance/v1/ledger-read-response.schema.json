@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.baobab-platform.com/finance/v1/ledger-read-response.schema.json",
   "title": "Finance F1 ledger read response",
-  "description": "Canonical DRAFT/EXPERIMENTAL wire shape. Trusted CP context and provider authorisation are out of band. Not an activated provider permission.",
+  "description": "DRAFT/EXPERIMENTAL wire contract. No provider, legal authority, scope allocation or production activation is implied.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -10,78 +10,145 @@
     "completeness",
     "observed_at",
     "data_version",
+    "snapshot_id",
+    "finance_baselines",
+    "view",
+    "posting_state",
     "items"
   ],
   "properties": {
     "scope": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "period_start",
-        "period_end",
-        "as_of",
-        "currency"
-      ],
-      "properties": {
-        "period_start": {
-          "type": "string",
-          "format": "date"
-        },
-        "period_end": {
-          "type": "string",
-          "format": "date"
-        },
-        "as_of": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "currency": {
-          "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
-        }
-      }
+      "$ref": "domain.schema.json#/$defs/scope"
     },
     "completeness": {
-      "enum": [
-        "complete",
-        "partial",
-        "stale",
-        "withheld"
-      ]
+      "$ref": "domain.schema.json#/$defs/completeness"
     },
     "observed_at": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "domain.schema.json#/$defs/timestamp"
     },
     "data_version": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "domain.schema.json#/$defs/dataVersion"
+    },
+    "snapshot_id": {
+      "$ref": "domain.schema.json#/$defs/snapshotId"
+    },
+    "view": {
+      "$ref": "domain.schema.json#/$defs/view"
+    },
+    "posting_state": {
+      "$ref": "domain.schema.json#/$defs/postingState"
     },
     "items": {
       "type": "array",
+      "maxItems": 1000
+    },
+    "next_cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "not": {
+        "pattern": "^\\s*$"
+      }
+    },
+    "finance_baselines": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "uniqueItems": true,
       "items": {
-        "type": "object",
-        "additionalProperties": false,
+        "$ref": "domain.schema.json#/$defs/financeBaseline"
+      },
+      "$comment": "Exact historical approved baseline versions represented by this snapshot; all belong to the CP-authorised legal entity. Several versions may be required across a period. A superseded baseline is not rewritten as today's configuration."
+    }
+  },
+  "$comment": "Completeness describes source quality, not whether pagination is finished. Never derive a grand total from one page; continuation retains the same snapshot and data version.",
+  "allOf": [
+    {
+      "if": {
         "required": [
-          "account_code",
-          "amount"
+          "view"
         ],
         "properties": {
-          "account_code": {
-            "type": "string",
-            "minLength": 1
-          },
-          "amount": {
-            "$ref": "../../erp/v1/domain.schema.json#/$defs/decimal"
-          },
-          "currency": {
-            "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
+          "view": {
+            "const": "chart_of_accounts"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "domain.schema.json#/$defs/chartRow"
+            }
           }
         }
       }
     },
-    "next_cursor": {
-      "type": "string",
-      "minLength": 1
+    {
+      "if": {
+        "required": [
+          "view"
+        ],
+        "properties": {
+          "view": {
+            "const": "balances"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "domain.schema.json#/$defs/balanceRow"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "view"
+        ],
+        "properties": {
+          "view": {
+            "const": "entries"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "domain.schema.json#/$defs/entryRow"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "completeness"
+        ],
+        "properties": {
+          "completeness": {
+            "const": "withheld"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "items": {
+            "maxItems": 0
+          }
+        },
+        "not": {
+          "required": [
+            "next_cursor"
+          ]
+        }
+      }
     }
-  }
+  ]
 }

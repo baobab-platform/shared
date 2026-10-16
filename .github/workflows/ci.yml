@@ -126,6 +126,7 @@ on:
       - "scripts/validate-trade-order-authority-contract.py"
       - "scripts/validate-payments-money-movement-authority-contract.py"
       - "scripts/validate-evidence-contracts.py"
+      - "scripts/validate-finance-contracts.py"
       - "scripts/tests/test_scanner_intake_contract.py"
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
@@ -170,6 +171,7 @@ on:
       - "scripts/validate-trade-order-authority-contract.py"
       - "scripts/validate-payments-money-movement-authority-contract.py"
       - "scripts/validate-evidence-contracts.py"
+      - "scripts/validate-finance-contracts.py"
       - "scripts/tests/test_scanner_intake_contract.py"
       - "scripts/validate-commercial-contracts.py"
       - "scripts/validate-control-plane-contracts.py"
@@ -243,6 +245,12 @@ jobs:
         run: python scripts/tests/test_federation_contracts.py
       - name: Test offline schema reference resolution
         run: python scripts/tests/test_schema_reference_resolution.py
+      - name: Validate Finance F1 DRAFT contracts and examples
+        run: python scripts/validate-finance-contracts.py
+      - name: Test Finance F1 canonical wire invariants
+        run: python scripts/tests/test_finance_f1_canonical.py
+      - name: Test review-only Finance F1 schemas
+        run: python scripts/tests/test_finance_f1_candidate.py
       - name: Validate the platform event registry (ADR-SHARED-008)
         run: python scripts/validate-event-registry.py
       - name: Validate organisation contracts and examples (Draft 2020-12)

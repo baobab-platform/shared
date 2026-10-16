@@ -1,0 +1,10 @@
+{
+  "scope": {
+    "book_ref": "erp_booksynth",
+    "period_start": "2026-01-01",
+    "period_end": "2026-01-31",
+    "as_of": "2026-02-01T00:00:00Z",
+    "currency": "ZAR"
+  },
+  "statement_type": "CASH_FLOW"
+}

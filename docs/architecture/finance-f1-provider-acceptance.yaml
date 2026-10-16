@@ -1,0 +1,32 @@
+schema:
+  name: finance-f1-provider-acceptance-plan
+  version: "1.0"
+status: REQUIRED_NOT_EXECUTED
+owner: baobab-erp
+contract_lifecycle: DRAFT
+source_validation_is_provider_acceptance: false
+# These are future real owner tests, not successful observations. Schema
+# fixtures must never be used as substitutes for any authority or native case.
+required_cases:
+  - id: F1-P01
+    proof: Current CP actor, legal entity, book membership, grant and baseline; wrong Tenant/Organisation/book denied.
+  - id: F1-P02
+    proof: Absent, unavailable or withdrawn current write baseline denied; historical approved baseline lineage preserved on reads.
+  - id: F1-P03
+    proof: Exact decimal balance, currency precision, ordered/open periods and explicit accounting date; closed/unbalanced/wrong-currency commands denied.
+  - id: F1-P04
+    proof: Independent maker/checker authority and current CP/native posting veto at execution and COMMIT; draft never posts.
+  - id: F1-P05
+    proof: Durable scoped replay, changed-payload conflict, concurrent expected-version conflict, crash/retry without duplicate effect.
+  - id: F1-P06
+    proof: Native posted rows immutable; authorised correcting journal and signed historical ledger/reversal facts reconcile.
+  - id: F1-P07
+    proof: Source-proven ledger/trial balance, baseline/version/currency agreement, approved report policy and numerical reconciliation.
+  - id: F1-P08
+    proof: Snapshot-bound continuation rechecks current authority; changed query, expired snapshot, revoked access and cross-book cursor denied.
+  - id: F1-P09
+    proof: Withheld data has no rows; partial/stale responses cannot be labelled certified or complete.
+  - id: F1-P10
+    proof: Owner-approved event contracts, producer/consumer registration, durable outbox/inbox and replay evidence before journal-event publication.
+  - id: F1-P11
+    proof: Protected provider qualification, immutable receipts and independent Finance/operations acceptance before activation.

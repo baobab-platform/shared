@@ -1,0 +1,106 @@
+[
+  {
+    "file": "ledger-chart_of_accounts-request.json",
+    "schema": "ledger-read-request.schema.json"
+  },
+  {
+    "file": "ledger-chart_of_accounts-response.json",
+    "schema": "ledger-read-response.schema.json"
+  },
+  {
+    "file": "ledger-balances-request.json",
+    "schema": "ledger-read-request.schema.json"
+  },
+  {
+    "file": "ledger-balances-response.json",
+    "schema": "ledger-read-response.schema.json"
+  },
+  {
+    "file": "ledger-entries-request.json",
+    "schema": "ledger-read-request.schema.json"
+  },
+  {
+    "file": "ledger-entries-response.json",
+    "schema": "ledger-read-response.schema.json"
+  },
+  {
+    "file": "ledger-next-page-request.json",
+    "schema": "ledger-read-request.schema.json"
+  },
+  {
+    "file": "statement-trial_balance-request.json",
+    "schema": "statement-read-request.schema.json"
+  },
+  {
+    "file": "statement-trial_balance-response.json",
+    "schema": "statement-read-response.schema.json"
+  },
+  {
+    "file": "statement-income_statement-request.json",
+    "schema": "statement-read-request.schema.json"
+  },
+  {
+    "file": "statement-income_statement-response.json",
+    "schema": "statement-read-response.schema.json"
+  },
+  {
+    "file": "statement-balance_sheet-request.json",
+    "schema": "statement-read-request.schema.json"
+  },
+  {
+    "file": "statement-balance_sheet-response.json",
+    "schema": "statement-read-response.schema.json"
+  },
+  {
+    "file": "statement-cash_flow-request.json",
+    "schema": "statement-read-request.schema.json"
+  },
+  {
+    "file": "statement-cash_flow-response.json",
+    "schema": "statement-read-response.schema.json"
+  },
+  {
+    "file": "journal-create_draft-request.json",
+    "schema": "journal-manage-request.schema.json"
+  },
+  {
+    "file": "journal-create_draft-response.json",
+    "schema": "journal-manage-response.schema.json"
+  },
+  {
+    "file": "journal-submit-request.json",
+    "schema": "journal-manage-request.schema.json"
+  },
+  {
+    "file": "journal-submit-response.json",
+    "schema": "journal-manage-response.schema.json"
+  },
+  {
+    "file": "journal-approve-request.json",
+    "schema": "journal-manage-request.schema.json"
+  },
+  {
+    "file": "journal-approve-response.json",
+    "schema": "journal-manage-response.schema.json"
+  },
+  {
+    "file": "journal-post-request.json",
+    "schema": "journal-manage-request.schema.json"
+  },
+  {
+    "file": "journal-post-response.json",
+    "schema": "journal-manage-response.schema.json"
+  },
+  {
+    "file": "journal-reverse-request.json",
+    "schema": "journal-manage-request.schema.json"
+  },
+  {
+    "file": "journal-reverse-response.json",
+    "schema": "journal-manage-response.schema.json"
+  },
+  {
+    "file": "authority-denied-problem.json",
+    "schema": "../../errors/v1/problem-details.schema.json"
+  }
+]

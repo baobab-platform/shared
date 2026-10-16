@@ -17,6 +17,15 @@
 
 ---
 
+## Independent Finance F1 contract engineering
+
+[Finance F1 DRAFT contracts](contracts/finance/v1/README.md) define restricted
+ledger, journal and statement wire shapes without depending on Infrastructure
+#35. The [implementation register](docs/architecture/finance-f1-implementation-register.md)
+separates source progress from ERP native support, Finance approval, live
+integration and activation. ADR-SHARED-033 remains Proposed; no provider or
+production readiness is inferred from DRAFT catalogue registration.
+
 ## Foundation 4 repository baseline
 
 This repository owns the reusable GitHub and contract-compatibility gates used

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.baobab-platform.com/finance/v1/ledger-read-request.schema.json",
   "title": "Finance F1 ledger read request",
-  "description": "Canonical DRAFT/EXPERIMENTAL wire shape. Trusted CP context and provider authorisation are out of band. Not an activated provider permission.",
+  "description": "DRAFT/EXPERIMENTAL wire contract. No provider, legal authority, scope allocation or production activation is implied.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11,50 +11,39 @@
   ],
   "properties": {
     "scope": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "period_start",
-        "period_end",
-        "as_of",
-        "currency"
-      ],
-      "properties": {
-        "period_start": {
-          "type": "string",
-          "format": "date"
-        },
-        "period_end": {
-          "type": "string",
-          "format": "date"
-        },
-        "as_of": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "currency": {
-          "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
-        }
-      }
+      "$ref": "domain.schema.json#/$defs/scope"
     },
     "view": {
-      "enum": [
-        "chart_of_accounts",
-        "balances",
-        "entries"
-      ]
+      "$ref": "domain.schema.json#/$defs/view"
     },
     "posting_state": {
-      "enum": [
-        "POSTED",
-        "DRAFT",
-        "ALL"
-      ]
+      "$ref": "domain.schema.json#/$defs/postingState",
+      "default": "POSTED"
+    },
+    "page_size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
     },
     "cursor": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 512
+      "maxLength": 512,
+      "not": {
+        "pattern": "^\\s*$"
+      }
+    },
+    "snapshot_id": {
+      "$ref": "domain.schema.json#/$defs/snapshotId"
     }
+  },
+  "$comment": "Resume tokens are opaque and bound to the exact scope/view/posting-state and current authority. A new request may not silently change an existing snapshot.",
+  "dependentRequired": {
+    "cursor": [
+      "snapshot_id"
+    ],
+    "snapshot_id": [
+      "cursor"
+    ]
   }
 }

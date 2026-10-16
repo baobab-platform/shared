@@ -2,92 +2,130 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.baobab-platform.com/finance/v1/statement-read-response.schema.json",
   "title": "Finance F1 statement read response",
-  "description": "Canonical DRAFT/EXPERIMENTAL wire shape. Trusted CP context and provider authorisation are out of band. Not an activated provider permission.",
+  "description": "DRAFT/EXPERIMENTAL wire contract. No provider, legal authority, scope allocation or production activation is implied.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "scope",
-    "statement_type",
     "completeness",
     "observed_at",
     "data_version",
+    "snapshot_id",
+    "finance_baselines",
+    "statement_type",
+    "reconciliation",
     "lines"
   ],
   "properties": {
     "scope": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "period_start",
-        "period_end",
-        "as_of",
-        "currency"
-      ],
-      "properties": {
-        "period_start": {
-          "type": "string",
-          "format": "date"
-        },
-        "period_end": {
-          "type": "string",
-          "format": "date"
-        },
-        "as_of": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "currency": {
-          "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
-        }
-      }
-    },
-    "statement_type": {
-      "enum": [
-        "TRIAL_BALANCE",
-        "INCOME_STATEMENT",
-        "BALANCE_SHEET",
-        "CASH_FLOW"
-      ]
+      "$ref": "domain.schema.json#/$defs/scope"
     },
     "completeness": {
-      "enum": [
-        "complete",
-        "partial",
-        "stale",
-        "withheld"
-      ]
+      "$ref": "domain.schema.json#/$defs/completeness"
     },
     "observed_at": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "domain.schema.json#/$defs/timestamp"
     },
     "data_version": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "domain.schema.json#/$defs/dataVersion"
+    },
+    "snapshot_id": {
+      "$ref": "domain.schema.json#/$defs/snapshotId"
+    },
+    "statement_type": {
+      "$ref": "domain.schema.json#/$defs/statementType"
+    },
+    "reconciliation": {
+      "$ref": "domain.schema.json#/$defs/reconciliation"
     },
     "lines": {
       "type": "array",
+      "maxItems": 10000
+    },
+    "finance_baselines": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "uniqueItems": true,
       "items": {
-        "type": "object",
-        "additionalProperties": false,
+        "$ref": "domain.schema.json#/$defs/financeBaseline"
+      },
+      "$comment": "Exact historical approved baseline versions represented by this snapshot; all belong to the CP-authorised legal entity. Several versions may be required across a period. A superseded baseline is not rewritten as today's configuration."
+    }
+  },
+  "$comment": "A complete statement requires reconciliation to an ERP trial-balance version and approved policy. Partial/stale/withheld results are never represented as certified statements.",
+  "allOf": [
+    {
+      "if": {
         "required": [
-          "label",
-          "amount",
-          "currency"
+          "statement_type"
         ],
         "properties": {
-          "label": {
-            "type": "string",
-            "minLength": 1
-          },
-          "amount": {
-            "$ref": "../../erp/v1/domain.schema.json#/$defs/decimal"
-          },
-          "currency": {
-            "$ref": "../../erp/v1/domain.schema.json#/$defs/currency"
+          "statement_type": {
+            "const": "TRIAL_BALANCE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "domain.schema.json#/$defs/trialBalanceLine"
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "domain.schema.json#/$defs/statementLine"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "completeness"
+        ],
+        "properties": {
+          "completeness": {
+            "const": "complete"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reconciliation": {
+            "properties": {
+              "status": {
+                "const": "RECONCILED"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "completeness"
+        ],
+        "properties": {
+          "completeness": {
+            "const": "withheld"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "lines": {
+            "maxItems": 0
           }
         }
       }
     }
-  }
+  ]
 }

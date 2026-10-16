@@ -1,0 +1,8 @@
+{
+  "operation": "REVERSE",
+  "idempotency_key": "synthetic-command-0001",
+  "journal_ref": "erp_journalsynth",
+  "expected_version": 1,
+  "reason": "Synthetic correction",
+  "reversal_date": "2026-01-16"
+}

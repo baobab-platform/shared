@@ -2,23 +2,33 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://contracts.baobab-platform.com/finance/v1/journal-manage-response.schema.json",
   "title": "Finance F1 journal manage response",
-  "description": "Canonical DRAFT/EXPERIMENTAL wire shape. Trusted CP context and provider authorisation are out of band. Not an activated provider permission.",
+  "description": "DRAFT/EXPERIMENTAL wire contract. No provider, legal authority, scope allocation or production activation is implied.",
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "operation",
     "journal_ref",
     "version",
     "status",
-    "observed_at"
+    "accounting_date",
+    "observed_at",
+    "finance_baseline"
   ],
   "properties": {
+    "operation": {
+      "enum": [
+        "CREATE_DRAFT",
+        "SUBMIT",
+        "APPROVE",
+        "POST",
+        "REVERSE"
+      ]
+    },
     "journal_ref": {
-      "type": "string",
-      "minLength": 1
+      "$ref": "domain.schema.json#/$defs/resourceRef"
     },
     "version": {
-      "type": "integer",
-      "minimum": 1
+      "$ref": "domain.schema.json#/$defs/version"
     },
     "status": {
       "enum": [
@@ -29,9 +39,139 @@
         "REVERSED"
       ]
     },
+    "accounting_date": {
+      "$ref": "domain.schema.json#/$defs/date"
+    },
     "observed_at": {
-      "type": "string",
-      "format": "date-time"
+      "$ref": "domain.schema.json#/$defs/timestamp"
+    },
+    "finance_baseline": {
+      "$ref": "domain.schema.json#/$defs/financeBaseline"
+    },
+    "reversal_journal_ref": {
+      "$ref": "domain.schema.json#/$defs/resourceRef"
     }
-  }
+  },
+  "$comment": "The provider returns the original terminal result for a valid idempotent replay. Schema echo checks are not approval, COMMIT proof or a provider certification.",
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "CREATE_DRAFT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "DRAFT"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "SUBMIT"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "SUBMITTED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "APPROVE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "APPROVED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "POST"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "POSTED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "REVERSE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "REVERSED"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "const": "REVERSED"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reversal_journal_ref"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "reversal_journal_ref"
+          ]
+        }
+      }
+    }
+  ]
 }
