@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **Trade-A TA-01 Seller Operating Binding discovery (ADR-SHARED-039 §5; EA v2.2 EA-R03).** The platform owner decided on 2026-10-16 that Trade discovers its binding through a scoped CP lookup, and that Trade-A ships as eight PRs (TA-01 to TA-08).
+  * `trade/v2/seller-operating-binding.schema.json` adds `BindingResolveRequest` and `BindingResolution`. Trade sends only its RUNTIME context, engine instance, opaque configuration reference, current digest and currency. CP derives tenant, Organisation and market from the context.
+  * Closed outcomes: `RESOLVED`, `NO_APPLICABLE_BINDING`, `AMBIGUOUS_BINDING`, `BINDING_NOT_ACTIVE`, `NATIVE_CONFIGURATION_MISMATCH`, `ENGINE_INSTANCE_NOT_BOUND` and `CONTEXT_NOT_USABLE`. Only `RESOLVED` carries a binding reference, and discovery is never authority.
+  * `examples/binding-resolution-vectors.json` pins the precedence; the validator replays it with a reference resolver.
+  * New workload scope `trade-seller-binding:resolve`, added to the PROVISIONED Trade staging workload only. The ADR now requires CP to refuse overlapping in-force binding scopes.
+  * No route is activated. Engine-local evidence is not EA Gate D and not L4.
+
 * **Trade-0 order authority and CP-owned Seller Operating Bindings (ADR-SHARED-039; EA v2.2 EA-R03).** The platform owner decided Trade on 2026-10-16. Trade enforcement is split into Trade-0, Trade-A, Trade-B, Trade-C and Trade-D.
   * New `contracts/trade/v2`: a closed catalogue in which every class uses role `SELLER_OF_RECORD` and has its own activity. Only the Trade-A classes are activatable; the Trade-B and Trade-C classes are reserved and denied by name.
   * The order-authority request and decision use a 30 s lease, bind to one binding version and one native-configuration digest, and grant nothing.

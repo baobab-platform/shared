@@ -23,6 +23,7 @@ BASE = "https://contracts.baobab-platform.com/"
 V2 = CONTRACTS / "trade/v2"
 RESOLVE = "trade-order-authority:resolve"
 ATTEST = "trade-seller-binding:attest"
+DISCOVER = "trade-seller-binding:resolve"
 HUMAN = [f"seller-operating-binding:{a}" for a in ("propose", "approve", "activate", "suspend", "revoke")]
 # Native Medusa identifiers never cross this boundary.
 NATIVE = ("cart_id", "order_id", "sales_channel", "region_id", "medusa", "store_id", "draft_order_id")
@@ -208,9 +209,86 @@ def main() -> None:
                     "native_configuration_digest": active["native_configuration_digest"],
                     "occurred_at": "2026-10-16T05:00:00Z"})
 
+    # --- binding discovery (Trade-A TA-01, ADR-SHARED-039 §5) ------------------------------
+    discover = validator(binding_schema, "BindingResolveRequest", reg)
+    resolution = validator(binding_schema, "BindingResolution", reg)
+    ask = load("binding-resolve-request.json")
+    discover.validate(ask)
+    for forged in ["tenant_id", "operating_organisation_id", "market", "responsible_legal_entity_id", "binding_id",
+                   "binding_reference", "status", "cart_id", "order_id", "sales_channel_id", "region_id",
+                   "currency_scope", "effective_at"]:
+        assert not discover.is_valid({**ask, forged: "forged"}), forged
+    for required in binding_schema["$defs"]["BindingResolveRequest"]["required"]:
+        bad = copy.deepcopy(ask)
+        del bad[required]
+        assert not discover.is_valid(bad), required
+    for bad_value in [{"currency": "ugx"}, {"native_configuration_digest": "ABC"}, {"engine_instance_id": "trade"},
+                      {"native_configuration_reference": "/leading"}, {"context_id": "nope"}]:
+        assert not discover.is_valid({**ask, **bad_value}), bad_value
+    resolved = load("binding-resolution-resolved.json")
+    resolution.validate(resolved)
+    assert {k: resolved[k] for k in ask} == ask, "a resolution echoes the request exactly"
+    outcomes = binding_schema["$defs"]["bindingResolutionOutcome"]["enum"]
+    assert outcomes[0] == "RESOLVED" and len(outcomes) == len(set(outcomes))
+    denied = {k: v for k, v in resolved.items() if k not in {"binding_reference", "status", "effective_from"}}
+    for outcome in outcomes[1:]:
+        resolution.validate({**denied, "outcome": outcome})
+        for leaked in ["binding_reference", "status", "effective_from"]:
+            assert not resolution.is_valid({**denied, "outcome": outcome, leaked: resolved[leaked]}), (outcome, leaked)
+    for missing in ["binding_reference", "status", "effective_from"]:
+        bad = copy.deepcopy(resolved)
+        del bad[missing]
+        assert not resolution.is_valid(bad), missing
+    assert not resolution.is_valid({**resolved, "status": "SUSPENDED"}), "only an ACTIVE binding resolves"
+    assert not resolution.is_valid({**resolved, "provider_permissions_granted": True})
+    assert not resolution.is_valid({**resolved, "decision_id": resolved["resolution_id"]}), "discovery is not a decision"
+
+    def reference_resolve(context: dict, req: dict, bindings: list[dict], at: datetime) -> tuple[str, dict | None]:
+        def when(v):
+            return datetime.fromisoformat(v.replace("Z", "+00:00"))
+        candidates = [x for x in bindings
+                      if x["tenant_id"] == context["tenant_id"]
+                      and x["operating_organisation_id"] == context["operating_organisation_id"]
+                      and x["market"] == context["market"]
+                      and x["trade_engine_instance_id"] == req["engine_instance_id"]
+                      and x["native_configuration_reference"] == req["native_configuration_reference"]
+                      and req["currency"] in x["currency_scope"]]
+        if not candidates:
+            return "NO_APPLICABLE_BINDING", None
+        live = [x for x in candidates if x["status"] == "ACTIVE" and when(x["effective_from"]) <= at
+                and ("effective_to" not in x or at < when(x["effective_to"]))]
+        if not live:
+            return "BINDING_NOT_ACTIVE", None
+        exact = [x for x in live if x["native_configuration_digest"] == req["native_configuration_digest"]]
+        if not exact:
+            return "NATIVE_CONFIGURATION_MISMATCH", None
+        if len(exact) > 1:
+            return "AMBIGUOUS_BINDING", None
+        return "RESOLVED", {"binding_id": exact[0]["binding_id"], "binding_version": exact[0]["binding_version"]}
+
+    golden = load("binding-resolution-vectors.json")
+    at = datetime.fromisoformat(golden["evaluated_at"].replace("Z", "+00:00"))
+    statuses = set(binding_schema["$defs"]["bindingStatus"]["enum"])
+    for x in golden["registry"]:
+        assert x["status"] in statuses, x
+    ids = [v["vector_id"] for v in golden["vectors"]]
+    assert len(ids) == len(set(ids)), "duplicate vector id"
+    seen = set()
+    for v in golden["vectors"]:
+        discover.validate({"context_id": ask["context_id"], **v["request"]})
+        outcome, ref = reference_resolve(v["context"], v["request"], golden["registry"], at)
+        assert outcome == v["expected_outcome"], (v["vector_id"], outcome)
+        assert ref == v.get("expected_binding_reference"), (v["vector_id"], ref)
+        resolution.validate({**denied, **v["request"], "outcome": outcome,
+                             **({"binding_reference": ref, "status": "ACTIVE",
+                                 "effective_from": "2026-10-16T00:00:00Z"} if ref else {})})
+        seen.add(outcome)
+    assert seen == set(outcomes) - {"ENGINE_INSTANCE_NOT_BOUND", "CONTEXT_NOT_USABLE"}, \
+        "every registry-derived outcome needs a golden vector"
+
     # --- scopes and workload ---------------------------------------------------------------------
     scopes = {s["name"]: s for s in yaml.safe_load((CONTRACTS / "authorization/v1/scope-registry.yaml").read_text())["scopes"]}
-    for name in (RESOLVE, ATTEST):
+    for name in (RESOLVE, ATTEST, DISCOVER):
         s = scopes[name]
         assert s["audience"] == ["baobab-control-plane"] and s["allowed_actors"] == ["workload"], name
         assert s["grants_authority"] is False, name
@@ -218,7 +296,7 @@ def main() -> None:
         s = scopes[name]
         assert s["allowed_actors"] == ["human"] and s.get("privileged") is True and s["grants_authority"] is False, name
     workloads = yaml.safe_load((CONTRACTS / "identity/v1/workload-registry.yaml").read_text())["workloads"]
-    for name in (RESOLVE, ATTEST):
+    for name in (RESOLVE, ATTEST, DISCOVER):
         holders = {w for w, d in workloads.items() if name in d.get("allowed_scopes", [])}
         assert holders == {"baobab-trade-legal-actor-assessor-staging"}, (name, holders)
         assert all(workloads[w]["status"] == "PROVISIONED" and workloads[w]["environment"] == "staging" for w in holders)
