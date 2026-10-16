@@ -169,6 +169,41 @@ The caller can never select a tenant, Organisation, legal entity, mandate, role,
 
 Zero matching bindings deny, and so do several. An administrator's choice of seller is only a request. Trade verifies that the principal may act for that Organisation, and CP decides the seller's authority. Native Medusa RBAC never substitutes for it.
 
+**Binding discovery** (Trade-A TA-01, owner decision 2026-10-16).
+
+> Trade SHALL discover an applicable Seller Operating Binding through an authenticated, scope-bound CP resolution operation using Trade's attested native configuration reference and digest.
+>
+> CP SHALL derive canonical tenant, operating Organisation and market from the authenticated runtime context and SHALL return exactly one currently applicable ACTIVE binding reference or deny resolution.
+>
+> Trade SHALL remain authoritative for mapping native carts, drafts, orders, sales channels and regions to the attested configuration. Native Medusa identifiers SHALL NOT be introduced into CP's canonical binding registry.
+>
+> Binding discovery SHALL NOT constitute commercial authority. Every consequential Trade operation SHALL independently obtain a current, operation-specific CP Order Authority decision for the resolved binding version.
+>
+> Event delivery and local projections MAY optimise discovery but SHALL NOT be required for correctness or substitute for current CP authorization.
+
+`POST /internal/trade/v1/seller-operating-bindings/resolve` uses scope `trade-seller-binding:resolve`. It is workload-only, held by the same PROVISIONED staging workload, and grants no authority. Its request (`BindingResolveRequest`) names only:
+- a workload-owned RUNTIME `context_id`;
+- the `engine_instance_id`;
+- Trade's opaque `native_configuration_reference`;
+- Trade's current, independently recomputed `native_configuration_digest`;
+- the ISO 4217 `currency` of the cart, draft or order.
+
+CP evaluates its own registry at the time of the request. Candidates must match the context's tenant, operating Organisation and market, the engine instance, the reference, and have the currency in scope. Then, in order:
+
+| Condition | Outcome |
+|---|---|
+| No candidate | `NO_APPLICABLE_BINDING` |
+| No candidate is ACTIVE and in effect | `BINDING_NOT_ACTIVE` |
+| ACTIVE, in-effect candidates exist, but none was attested under the request digest | `NATIVE_CONFIGURATION_MISMATCH` |
+| More than one ACTIVE, in-effect candidate has the digest | `AMBIGUOUS_BINDING` |
+| Exactly one | `RESOLVED`, with its `binding_reference` |
+
+An unusable context answers `CONTEXT_NOT_USABLE`, and an unbound engine instance `ENGINE_INSTANCE_NOT_BOUND`. Every outcome except `RESOLVED` denies. CP records every resolution immutably before answering. `examples/binding-resolution-vectors.json` pins the precedence.
+
+**No overlapping in-force scopes.** CP SHALL refuse to activate a binding version when another binding of the same tenant, operating Organisation, market and engine instance is in force (ACTIVE or SUSPENDED) for the same native configuration reference with an intersecting currency scope. `AMBIGUOUS_BINDING` remains a defence in depth; it is never a normal state.
+
+**Trade's use of a resolution.** Trade may store the resolved binding version with the cart or draft as provisional attribution and reuse it as the candidate for later operations, only while its current native configuration still produces the same reference and digest. Otherwise it re-resolves. Trade never silently substitutes a different seller or binding, and a stored reference is never permission: each operation still obtains its own order-authority decision.
+
 **Drafts.** Carts and drafts may hold provisional attribution while they remain non-consequential. They cannot become authoritative orders, reserve consequential resources, or start payment or fulfilment without a current binding and a fresh decision. If the seller changes, the provisional attribution is re-evaluated.
 
 **Multiple sellers.** A commitment that involves more than one independent legal seller is denied until a separately governed multi-seller order model exists.

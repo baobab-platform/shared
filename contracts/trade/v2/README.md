@@ -24,8 +24,16 @@ database path starts it. `trade/v1` stays wire-compatible and unchanged.
   versioned Seller Operating Binding: its record, Trade's native-configuration
   attestation, the human lifecycle commands, the immutable transitions and the
   `trade.seller-operating-binding.changed` event payload. A binding is never
-  scoped to a cart.
+  scoped to a cart. It also holds binding discovery (Trade-A TA-01):
+  `BindingResolveRequest`, sent to
+  `/internal/trade/v1/seller-operating-bindings/resolve` with scope
+  `trade-seller-binding:resolve`, and CP's recorded `BindingResolution`.
+  `RESOLVED` names exactly one ACTIVE, in-effect binding version; every other
+  outcome denies. Discovery is never authority.
 - **`examples/`** holds synthetic fixtures for contract shape only.
+  `binding-resolution-vectors.json` pins discovery precedence: zero, ambiguous,
+  stale-digest and inactive matches, tenant and Organisation isolation,
+  currency scope, superseded versions and effective dates.
 
 ## Ownership
 
