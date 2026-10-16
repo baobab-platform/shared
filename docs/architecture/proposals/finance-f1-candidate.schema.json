@@ -87,30 +87,31 @@
       }
     },
     "ledgerReadRequest": {
-      "allOf": [
-        {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "view"
+      ],
+      "properties": {
+        "scope": {
           "$ref": "#/$defs/scope"
         },
-        {
-          "type": "object",
-          "properties": {
-            "view": {
-              "enum": [
-                "chart_of_accounts",
-                "balances",
-                "entries"
-              ]
-            },
-            "posting_state": {
-              "enum": [
-                "draft",
-                "posted",
-                "all"
-              ]
-            }
-          }
+        "view": {
+          "enum": [
+            "chart_of_accounts",
+            "balances",
+            "entries"
+          ]
+        },
+        "posting_state": {
+          "enum": [
+            "draft",
+            "posted",
+            "all"
+          ]
         }
-      ]
+      }
     },
     "statementReadRequest": {
       "type": "object",
@@ -225,7 +226,8 @@
           "minItems": 2,
           "items": {
             "$ref": "#/$defs/journalLine"
-          }
+          },
+          "maxItems": 1000
         },
         "idempotency_key": {
           "type": "string",
@@ -237,7 +239,7 @@
           "maxLength": 128
         }
       },
-      "description": "Server must enforce balanced debit/credit, period-open, exact CP legal actor, scoped idempotency and maker/checker separation; JSON schema alone cannot do so."
+      "description": "Server must enforce balanced debit/credit, period-open, exact CP legal actor, scoped idempotency and maker/checker separation; JSON schema alone cannot do so.. Each line may have a debit OR credit > 0, never both; zero and signed negative values are forbidden on postings."
     },
     "journalTransitionRequest": {
       "type": "object",
