@@ -84,7 +84,7 @@
         "verified_at": {
           "type": "string",
           "format": "date-time",
-          "description": "When the execution authority's observation was verified; never before executed_at."
+          "description": "When the execution authority's observation was verified. Semantic rule (not expressible in JSON Schema): executed_at <= verified_at, and verified_at is not in the future when ERP ingests the record. Consumers must reject evidence that breaks it."
         },
         "verified_by": {
           "type": "string",

@@ -222,6 +222,16 @@ def main() -> None:
     for forged in ["disbursement_instruction", "destination", "bank_account", "provider_permissions_granted",
                    "operation_class", "mandate_id", "decision_id", "c_payment_id", "ad_client_id"]:
         assert not evidence.is_valid({**good_evidence, forged: "forged"}), forged
+    # Semantic rule beyond JSON Schema: verification never precedes execution.
+    def evidence_semantics_hold(record: dict) -> bool:
+        executed = datetime.fromisoformat(record["executed_at"].replace("Z", "+00:00"))
+        verified = datetime.fromisoformat(record["verified_at"].replace("Z", "+00:00"))
+        return evidence.is_valid(record) and executed <= verified
+    assert evidence_semantics_hold(good_evidence), "example must verify after execution"
+    early = {**good_evidence, "verified_at": "2026-10-14T05:57:00Z"}
+    assert evidence.is_valid(early) and not evidence_semantics_hold(early), "verified before executed"
+    assert "executed_at <= verified_at" in evidence_schema["$defs"]["PaymentExecutionEvidence"][
+        "properties"]["verified_at"]["description"]
     assert catalogue["version"] == 2, "ERP-B freezes the catalogue at version 2"
 
     # Workload-only, non-authorising scope, granted to no ACTIVE workload.
