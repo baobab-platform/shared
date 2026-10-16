@@ -644,7 +644,7 @@
     "BindingResolution": {
       "type": "object",
       "additionalProperties": false,
-      "description": "CP's recorded answer. RESOLVED identifies ONE eligible binding version; it is not authorisation. Every consequential operation still needs its own OrderAuthorityDecision for that exact version, and Trade must re-resolve rather than substitute another binding when it changes.",
+      "description": "CP's recorded answer. It echoes context_id, engine_instance_id, native_configuration_reference, native_configuration_digest and currency exactly as requested. A consumer MUST correlate every echoed field with its own originating request and MUST treat any difference (including a resolution that answers another, delayed or replayed request) as a failed resolution: it neither stores the binding nor denies on its outcome. RESOLVED identifies ONE eligible binding version; it is not authorisation. Every consequential operation still needs its own OrderAuthorityDecision for that exact version, and Trade must re-resolve rather than substitute another binding when it changes.",
       "required": [
         "resolution_id",
         "context_id",

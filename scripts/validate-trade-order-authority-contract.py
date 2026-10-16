@@ -228,6 +228,21 @@ def main() -> None:
     resolved = load("binding-resolution-resolved.json")
     resolution.validate(resolved)
     assert {k: resolved[k] for k in ask} == ask, "a resolution echoes the request exactly"
+
+    # Consumers correlate EVERY echoed field with the originating request; a
+    # schema-valid answer to another (delayed, replayed or concurrent) request
+    # is a failed resolution, never a binding and never a denial.
+    def consumer_accepts(sent: dict, answer: dict) -> bool:
+        return resolution.is_valid(answer) and all(answer.get(k) == v for k, v in sent.items())
+    assert "MUST correlate every echoed field" in binding_schema["$defs"]["BindingResolution"]["description"]
+    assert consumer_accepts(ask, resolved)
+    other = {"context_id": "0b1c2d3e-4f5a-4b6c-8d7e-9f0a1b2c3d4e", "engine_instance_id": "ei_tradestaging02",
+             "native_configuration_reference": "trade:seller-config/other/v1",
+             "native_configuration_digest": "2" * 64, "currency": "USD"}
+    for field, value in other.items():
+        swapped = {**resolved, field: value}
+        assert resolution.is_valid(swapped), field  # schema-valid, so only correlation catches it
+        assert not consumer_accepts(ask, swapped), f"uncorrelated {field} accepted"
     outcomes = binding_schema["$defs"]["bindingResolutionOutcome"]["enum"]
     assert outcomes[0] == "RESOLVED" and len(outcomes) == len(set(outcomes))
     denied = {k: v for k, v in resolved.items() if k not in {"binding_reference", "status", "effective_from"}}
