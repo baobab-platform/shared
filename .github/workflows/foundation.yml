@@ -13,11 +13,6 @@ permissions:
   security-events: write
 jobs:
   foundation:
-    permissions:
-      contents: read
-      packages: read
-      actions: read
-      security-events: write
     # Self-consumer: full gate on PR/push; scheduled runs use security-deep so
     # deep monitoring is explicit in the product profile (Phase 4 separation).
     uses: ./.github/workflows/foundation-repository-gates.yml
