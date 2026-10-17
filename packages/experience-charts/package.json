@@ -1,0 +1,37 @@
+{
+  "name": "@baobab-platform/experience-charts",
+  "version": "0.0.0",
+  "private": false,
+  "type": "module",
+  "description": "Authorisation-neutral, evidence-labelled chart presentation and accessible table models (ADR-SHARED-040)",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@baobab-platform/experience-geo-core": "workspace:^"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  },
+  "license": "Apache-2.0"
+}
