@@ -87,7 +87,6 @@ jobs:
         env:
           DOCKERFILE: "${{ inputs.dockerfile }}"
           BUILD_CONTEXT: "${{ inputs.build_context }}"
-        env:
           NODE_AUTH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail

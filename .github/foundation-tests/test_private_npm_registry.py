@@ -51,3 +51,7 @@ assert "docker build" in build["run"]
 assert "--build-arg NODE_AUTH_TOKEN" not in container_text
 assert "--build-arg npm_token" not in container_text
 assert "container-scan" in container_text
+
+# Duplicate YAML mappings invalidate GitHub workflows despite loose parsing.
+assert build["env"]["DOCKERFILE"] == "${{ inputs.dockerfile }}"
+assert build["env"]["BUILD_CONTEXT"] == "${{ inputs.build_context }}"
