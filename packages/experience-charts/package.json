@@ -1,6 +1,6 @@
 {
   "name": "@baobab-platform/experience-charts",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": false,
   "type": "module",
   "description": "Authorisation-neutral, evidence-labelled chart presentation and accessible table models (ADR-SHARED-040)",
