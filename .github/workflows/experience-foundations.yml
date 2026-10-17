@@ -52,6 +52,12 @@ jobs:
           pnpm --filter @baobab-platform/experience-geo-core test
       - name: Build neutral evidence dependency before UI typecheck
         run: pnpm --filter @baobab-platform/experience-geo-core build
+      - name: Validate source-labelled charts and accessible table fallbacks
+        run: |
+          pnpm --filter @baobab-platform/experience-charts lint
+          pnpm --filter @baobab-platform/experience-charts test
+          pnpm --filter @baobab-platform/experience-charts build
+          test -s packages/experience-charts/dist/index.d.ts
       - name: Optional geospatial adapter typecheck and model negatives
         run: |
           pnpm --filter @baobab-platform/experience-ui build
