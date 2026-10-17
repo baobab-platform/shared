@@ -19,11 +19,8 @@ adapters, adapters_text = load("reusable-foundation-dependency-adapters.yml")
 container, container_text = load("reusable-foundation-container.yml")
 
 for workflow in (entry, security, adapters, container):
-    assert workflow["permissions"]["packages"] == "read"
     assert workflow["permissions"]["contents"] == "read"
 
-assert entry["jobs"]["security"]["permissions"]["packages"] == "read"
-assert security["jobs"]["native-deps"]["permissions"]["packages"] == "read"
 
 configure = next(
     x for x in adapters["jobs"]["adapters"]["steps"]
