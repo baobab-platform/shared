@@ -23,6 +23,14 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
+  packages/experience-geo-core:
+    devDependencies:
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+
+  packages/experience-tokens: {}
+
   packages/contracts:
     dependencies:
       '@bufbuild/protobuf':

@@ -1,0 +1,33 @@
+{
+  "name": "@baobab-platform/experience-geo-core",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "Authority-neutral, source-conscious map geometry and location presentation helpers (ADR-SHARED-040)",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}
