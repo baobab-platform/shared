@@ -15,7 +15,7 @@ function Demo(){
   return <><button onClick={()=>setRestricted(true)}>Revoke synthetic visibility</button>
     <EvidenceMap label="Synthetic location evidence" policy={policy} style={style} projection={restricted?{visibility:"restricted",explanation:"Synthetic projection access revoked"}:projection}/></>
 }
-const meta={title:"BXS/Map",parameters:{layout:"fullscreen"}} satisfies Meta
+const meta={title:"BXS/Map",parameters:{layout:"fullscreen",a11y:{manual:true}}} satisfies Meta
 export default meta
 type Story=StoryObj<typeof meta>
 export const Evidence:Story={render:()=> <Demo/>}
