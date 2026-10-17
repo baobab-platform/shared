@@ -7,14 +7,14 @@ import { execFileSync } from "node:child_process"
 import { createHash } from "node:crypto"
 import { verifyExperiencePackage } from "./verify-experience-package.mjs"
 
-function fixture(omit=[]){
+function fixture(omit=[],name="@baobab-platform/experience-ui",extras=[]){
   const root=mkdtempSync(join(tmpdir(),"bxs-verify-"))
   const dir=join(root,"package")
   mkdirSync(join(dir,"dist"),{recursive:true})
-  for(const file of ["dist/index.js","dist/index.d.ts","styles.css"]){
+  for(const file of ["dist/index.js","dist/index.d.ts","styles.css",...extras]){
     if(!omit.includes(file))writeFileSync(join(dir,file),"synthetic local test export")
   }
-  const name="@baobab-platform/experience-ui",version="0.2.0"
+  const version="0.2.0"
   writeFileSync(join(dir,"package.json"),JSON.stringify({
     name,version,private:false,publishConfig:{registry:"https://npm.pkg.github.com"}
   }))
@@ -38,5 +38,18 @@ test("rejects forged name, altered digest, wrong version and missing exports",()
   }finally{
     rmSync(f.root,{recursive:true,force:true})
     rmSync(missing.root,{recursive:true,force:true})
+  }
+})
+
+test("verifies Charts and optional MapLibre exports rather than silently omitting them",()=>{
+  const charts=fixture([],"@baobab-platform/experience-charts")
+  const map=fixture([],"@baobab-platform/experience-geo-maplibre",["dist/model.js","dist/model.d.ts"])
+  const missing=fixture(["dist/model.d.ts"],"@baobab-platform/experience-geo-maplibre",["dist/model.js","dist/model.d.ts"])
+  try{
+    assert.equal(verifyExperiencePackage(charts).artifacts,2)
+    assert.equal(verifyExperiencePackage(map).artifacts,5)
+    assert.throws(()=>verifyExperiencePackage(missing),/Published export missing/)
+  }finally{
+    for(const fixtureValue of [charts,map,missing])rmSync(fixtureValue.root,{recursive:true,force:true})
   }
 })
