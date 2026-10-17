@@ -1,0 +1,53 @@
+{
+  "name": "@baobab-platform/experience-geo-deckgl",
+  "version": "0.0.0",
+  "description": "Optional, source-labelled deck.gl evidence overlays for approved MapLibre maps (ADR-SHARED-040)",
+  "private": false,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@baobab-platform/experience-geo-core": "workspace:^"
+  },
+  "peerDependencies": {
+    "@deck.gl/layers": "^9.4.0",
+    "@deck.gl/maplibre": "^9.4.0",
+    "maplibre-gl": "^6.14.0"
+  },
+  "peerDependenciesMeta": {
+    "@deck.gl/layers": {
+      "optional": true
+    },
+    "@deck.gl/maplibre": {
+      "optional": true
+    },
+    "maplibre-gl": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  },
+  "license": "Apache-2.0"
+}
