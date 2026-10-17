@@ -26,3 +26,8 @@ test("contrast validates mandated text colour pairs",()=>{
   theme.color.foreground.$value="#aaaaaa";
   assert.throws(()=>validateTheme(base,theme),/Insufficient contrast/);
 });
+
+test("brand themes can be scoped to independent component workbench subtrees",()=>{
+  const css=compileTheme(base,readTokens("themes/nabhold.tokens.json"),"nabhold");
+  assert.match(css,/\[data-bx-theme="nabhold"\]\s*\{/);
+});

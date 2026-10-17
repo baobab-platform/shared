@@ -65,5 +65,5 @@ function render(map,selector) {
 export function compileBase(base) { return render(flattenTokens(base),":root"); }
 export function compileTheme(base,theme,name) {
   if(!themeNames.includes(name))throw Error("Unknown theme name");
-  return render(validateTheme(base,theme),':root[data-bx-theme="'+name+'"]');
+  return render(validateTheme(base,theme),':root[data-bx-theme="'+name+'"], [data-bx-theme="'+name+'"]');
 }
