@@ -91,6 +91,32 @@ test("timestamps are exact, chronological and never interpolated or converted to
   }), /Duplicate evidence/);
 });
 
+test("sub-millisecond source instants retain ordering across offsets and duplicate precision", () => {
+  const permitted = {
+    ...projection,
+    frames: [
+      { at: "2026-10-17T12:00:00.0001+02:00", points: [gps] },
+      { at: "2026-10-17T10:00:00.0002Z", points: [gps] },
+      { at: "2026-10-17T10:00:00.001Z", points: [gps] },
+    ],
+  };
+  assert.doesNotThrow(() => validateEvidenceProjection(permitted));
+  assert.throws(() => validateEvidenceProjection({
+    ...permitted,
+    frames: [
+      { at: "2026-10-17T10:00:00.100Z", points: [] },
+      { at: "2026-10-17T12:00:00.10+02:00", points: [] },
+    ],
+  }), /strictly increasing/);
+  assert.throws(() => validateEvidenceProjection({
+    ...permitted,
+    frames: [
+      { at: "2026-10-17T10:00:00.0002Z", points: [] },
+      { at: "2026-10-17T10:00:00.0001Z", points: [] },
+    ],
+  }), /strictly increasing/);
+});
+
 test("estimated points require independent model provenance and confidence", () => {
   const estimated = {
     ...gps, observation: {
