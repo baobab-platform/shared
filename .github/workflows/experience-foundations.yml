@@ -44,6 +44,10 @@ jobs:
         run: |
           pnpm --filter @baobab-platform/experience-tokens test
           pnpm --filter @baobab-platform/experience-geo-core test
+      - name: Accessible UI typecheck and semantic tests
+        run: |
+          pnpm --filter @baobab-platform/experience-ui lint
+          pnpm --filter @baobab-platform/experience-ui test
       - name: Build packages
         run: |
           pnpm --filter @baobab-platform/experience-tokens build
@@ -53,3 +57,5 @@ jobs:
           diff -ru /tmp/experience-first packages/experience-tokens/dist
           test -s packages/experience-tokens/dist/themes/thamani.css
           test -s packages/experience-geo-core/dist/index.d.ts
+          test -s packages/experience-ui/dist/index.js
+          test -s packages/experience-ui/dist/index.d.ts
