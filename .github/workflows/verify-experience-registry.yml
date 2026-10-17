@@ -30,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/bxs-registry"
-          for dirname in experience-tokens experience-ui experience-geo-core experience-geo-maplibre experience-charts; do
+          for dirname in experience-tokens experience-ui experience-geo-core experience-geo-maplibre experience-geo-deckgl experience-charts; do
             # Source-of-truth versions come from checked-in manifests, never
             # a mutable latest tag or user-provided URL.
             name="$(node -p "require('./packages/$dirname/package.json').name")"
