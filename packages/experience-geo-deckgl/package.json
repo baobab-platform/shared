@@ -1,6 +1,6 @@
 {
   "name": "@baobab-platform/experience-geo-deckgl",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Dependency-free optional adapter for consented deck.gl overlays and authority-neutral evidence",
   "private": false,
   "type": "module",
