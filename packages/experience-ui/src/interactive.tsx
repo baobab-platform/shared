@@ -43,7 +43,7 @@ export function ExperienceTabs({label,items,initialTab}:Readonly<{
   }
   if(initialTab!==undefined&&!ids.has(initialTab))throw new TypeError("Unknown initial tab");
   return <BaseTabs.Root defaultValue={initialTab??items[0]?.id} className="bx-tabs">
-    <BaseTabs.List aria-label={label}>{items.map(item=><BaseTabs.Tab key={item.id} value={item.id}>{item.label}</BaseTabs.Tab>)}</BaseTabs.List>
+    <BaseTabs.List activateOnFocus aria-label={label}>{items.map(item=><BaseTabs.Tab key={item.id} value={item.id}>{item.label}</BaseTabs.Tab>)}</BaseTabs.List>
     {items.map(item=><BaseTabs.Panel key={item.id} value={item.id}>{item.content}</BaseTabs.Panel>)}
   </BaseTabs.Root>;
 }
