@@ -44,3 +44,11 @@ stable baseline before pixel-to-pixel comparisons are mandatory. Manual
 screen-reader verification still requires independent review. Mark this
 difference in programme dashboards rather than calling everything production
 certified.
+
+## Reconciled audit, 17 October 2026
+
+0.2.0 publication and registry verification have passed; all four consumers
+have bounded pinned adoption. See the current implementation inventory for
+exact historical receipts and remaining acceptance. The preceding release
+procedure applies again to each subsequent version. Source changes here do
+not update already-published immutable 0.2.0 artifacts.

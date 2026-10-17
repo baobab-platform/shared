@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ActionButton, BreadcrumbTrail, Disclosure, FeedbackPanel, MilestoneTimeline, StatusLabel } from "@baobab-platform/experience-ui"
+import { ActionButton, BreadcrumbTrail, Disclosure, FeedbackPanel, MilestoneTimeline, StatusLabel, ExperienceDialog, ExperienceTabs } from "@baobab-platform/experience-ui"
 
 function ActionDemo() {
   // Clicks are local example UI state, not a domain operation or approval.
@@ -29,3 +29,17 @@ export const Milestones: Story = { render:() => <div style={{maxWidth:600}}>
     {id:"delivery",label:"Arrival pending",state:"pending"},
   ]}/>
 </div> }
+
+function DialogDemo(){
+  const [open,setOpen]=useState(false)
+  return <ExperienceDialog open={open} onOpenChange={setOpen} trigger="Review synthetic evidence"
+    title="Synthetic evidence review" description="Presentation demonstration; no approval is executed.">
+    <label>Review note <input aria-label="Review note" /></label>
+  </ExperienceDialog>
+}
+export const Dialog:Story={render:()=> <DialogDemo/>}
+export const Tabs:Story={render:()=> <ExperienceTabs label="Synthetic evidence views" items={[
+  {id:"tracking",label:"Tracking",content:<p>Source-labelled synthetic observation.</p>},
+  {id:"route",label:"Route",content:<p>Textual route alternative; no live position.</p>},
+  {id:"documents",label:"Documents",content:<p>Authorised metadata demonstration only.</p>},
+]}/>}

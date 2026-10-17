@@ -2,6 +2,9 @@
  * ADR-SHARED-040: source-labelled, authority-neutral map presentation utilities.
  * No SDK, route optimiser, tracking store, tenant resolver or execution logic.
  */
+import { assertEvidenceTimestamp } from "./timestamp.ts";
+export { assertEvidenceTimestamp } from "./timestamp.ts";
+
 export type LonLat = readonly [longitude: number, latitude: number];
 export type LocationKind = "observed-gps" | "carrier-reported" | "milestone-derived" | "estimated";
 export type LocationObservation = Readonly<{
@@ -51,9 +54,12 @@ export function boundsForPositions(points: readonly LonLat[]): MapBounds | null 
   }
   const west=norm(sorted[(index+1)%sorted.length]!);
   const east=norm(sorted[index]!);
+  // Avoid argument spreading: large authorised analytical projections can
+  // exceed the engine's argument limit even when every coordinate is valid.
+  let south=90,north=-90;
+  for(const point of points){south=Math.min(south,point[1]);north=Math.max(north,point[1]);}
   return Object.freeze({
-    west,east,south:Math.min(...points.map(p=>p[1])),
-    north:Math.max(...points.map(p=>p[1])),
+    west,east,south,north,
     crossesAntimeridian:west>east
   });
 }
@@ -68,8 +74,7 @@ export function validateLocationObservation(o: LocationObservation): LocationObs
   if(!Object.hasOwn(names,o.kind)) throw new TypeError("Unknown source kind");
   if(typeof o.source!=="string" || !o.source.trim())throw new TypeError("Missing source attribution");
   if(o.position!==null)assertLonLat(o.position);
-  if(o.observedAt!==null && (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)$/.test(o.observedAt) ||
-     !Number.isFinite(Date.parse(o.observedAt))))throw new TypeError("Expected ISO timestamp with timezone");
+  if(o.observedAt!==null)assertEvidenceTimestamp(o.observedAt);
   if(o.accuracyMeters!=null && (!Number.isFinite(o.accuracyMeters)||o.accuracyMeters<0))throw new RangeError("Invalid accuracy");
   if(o.confidence!=null && (!Number.isFinite(o.confidence)||o.confidence<0||o.confidence>1))throw new RangeError("Invalid confidence");
   return Object.freeze({...o,position:o.position===null?null:Object.freeze([...o.position]) as unknown as LonLat});
