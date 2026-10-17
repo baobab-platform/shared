@@ -22,3 +22,9 @@ fixtures, not production vendor/coverage or legal-border approval.
 
 `./model` is server-import safe. The default entry is a client boundary; do not
 put private positions in SSR/HTML merely because a tab or canvas is hidden.
+
+MapLibre 6 requires an explicitly packaged worker asset. Supply `worker.url`
+with a same-origin path ending `/maplibre-gl-worker.mjs` and a `worker.version`
+matching the SDK. Copy the pinned worker and shared module together. The
+application CSP must approve worker execution; tile/style origins remain a
+separate cookieless resource boundary. No CDN worker is selected by default.

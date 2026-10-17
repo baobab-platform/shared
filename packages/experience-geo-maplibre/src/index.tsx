@@ -4,10 +4,11 @@ import {useEffect,useRef,useState} from "react";
 import {ActionButton} from "@baobab-platform/experience-ui";
 import type {Map as MapInstance,Marker,StyleSpecification} from "maplibre-gl";
 import {locationLabel} from "@baobab-platform/experience-geo-core";
-import {approvedResourceUrl,validatePoints,validateResourcePolicy,type MapPoint,type MapProjection,type MapResourcePolicy} from "./model.js";
-export type {MapPoint,MapProjection,MapResourcePolicy} from "./model.js";
+import {approvedResourceUrl,approvedWorkerUrl,validatePoints,validateResourcePolicy,type MapPoint,type MapProjection,type MapResourcePolicy,type MapWorkerAsset} from "./model.js";
+export type {MapPoint,MapProjection,MapResourcePolicy,MapWorkerAsset} from "./model.js";
 
-export type EvidenceMapProps=Readonly<{projection:MapProjection;policy:MapResourcePolicy;style:StyleSpecification;label:string}>;
+export type EvidenceMapProps=Readonly<{projection:MapProjection;policy:MapResourcePolicy;worker:MapWorkerAsset;style:StyleSpecification;label:string}>;
+let configuredWorker:string|undefined;
 /** Restricted projections unmount the entire renderer and discard its resources. */
 export function EvidenceMap(props:EvidenceMapProps){
   if(props.projection.visibility==="restricted")return <section aria-label={props.label}><p role="alert">{props.projection.explanation}</p></section>;
@@ -22,7 +23,7 @@ export function EvidenceMap(props:EvidenceMapProps){
  * fails, the network is offline, or the user chooses a low-power presentation.
  * This component never fetches shipment projections or requests geolocation.
  */
-function AuthorisedEvidenceMap({points,policy,style,label}:EvidenceMapProps&Readonly<{points:readonly MapPoint[]}>){
+function AuthorisedEvidenceMap({points,policy,worker,style,label}:EvidenceMapProps&Readonly<{points:readonly MapPoint[]}>){
   const [enabled,setEnabled]=useState(false);
   const [phase,setPhase]=useState<"inactive"|"loading"|"ready"|"unavailable">("inactive");
   const [selected,setSelected]=useState<string|null>(null);
@@ -34,6 +35,12 @@ function AuthorisedEvidenceMap({points,policy,style,label}:EvidenceMapProps&Read
     setPhase("loading");
     void import("maplibre-gl").then(library=>{
       if(disposed||!host.current)return;
+      // MapLibre 6 ships a separate module worker. Bundlers cannot infer its
+      // sibling URL after rechunking the SDK; the application must package it
+      // and its shared module under its own CSP-controlled asset origin.
+      const workerUrl=approvedWorkerUrl(worker,window.location.origin,library.getVersion());
+      if(configuredWorker&&configuredWorker!==workerUrl)throw new TypeError("MapLibre worker configuration must remain consistent across active consumers");
+      configuredWorker=workerUrl;library.setWorkerUrl(workerUrl);
       instance=new library.Map({container:host.current,style,center:[20,0],zoom:1,
         attributionControl:false,collectResourceTiming:false,
         transformRequest:(url)=>({url:approvedResourceUrl(url,policy,window.location.origin),credentials:"same-origin"})});
@@ -54,7 +61,7 @@ function AuthorisedEvidenceMap({points,policy,style,label}:EvidenceMapProps&Read
       disposed=true;observer?.disconnect();for(const marker of markers)marker.remove();
       instance?.remove();map.current=null;
     };
-  },[enabled,points,policy,style]);
+  },[enabled,points,policy,worker,style]);
 
   function select(point:MapPoint){
     setSelected(point.id);

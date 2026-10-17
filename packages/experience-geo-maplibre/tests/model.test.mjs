@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {validatePoints,validateResourcePolicy,approvedResourceUrl} from "../dist/model.js";
+import {validatePoints,validateResourcePolicy,approvedResourceUrl,approvedWorkerUrl} from "../dist/model.js";
 const policy={allowedOrigins:["https://maps.example.test"],attribution:"Synthetic blank style",licenceReference:"Internal synthetic fixture; no provider selected"};
 const point={id:"one",label:"Reported hand-off",evidenceReference:"synthetic:one",freshness:"stale",observation:{kind:"carrier-reported",position:[32,0],source:"Synthetic carrier",observedAt:"2026-10-17T10:00:00Z"}};
 test("rejects foreign origins, cookies-in-URL, schemes and donation tile hosts",()=>{
@@ -10,6 +10,12 @@ test("rejects foreign origins, cookies-in-URL, schemes and donation tile hosts",
   assert.throws(()=>validateResourcePolicy({...policy,allowedOrigins:["https://tile.openstreetmap.org"]}));
   assert.throws(()=>validateResourcePolicy({...policy,licenceReference:""}));
   assert.throws(()=>approvedResourceUrl("https://maps.example.test/private",policy,"https://maps.example.test"));
+});
+test("worker code is same-origin and matches the pinned SDK version",()=>{
+  const worker={url:"/maplibre-6.14.0/maplibre-gl-worker.mjs",version:"6.14.0"};
+  assert.match(approvedWorkerUrl(worker,"https://estate.example.test","6.14.0"),/^https:\/\/estate.example.test/);
+  assert.throws(()=>approvedWorkerUrl(worker,"https://estate.example.test","6.15.0"));
+  assert.throws(()=>approvedWorkerUrl({...worker,url:"https://foreign.test/maplibre-gl-worker.mjs"},"https://estate.example.test","6.14.0"));
 });
 test("rejects invalid or duplicate evidence and unproven estimates",()=>{
   assert.doesNotThrow(()=>validatePoints([point]));

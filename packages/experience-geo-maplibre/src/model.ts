@@ -9,6 +9,14 @@ export type MapPoint = Readonly<{
 export type MapProjection = Readonly<{visibility:"restricted";explanation:string}> |
   Readonly<{visibility:"authorised";points:readonly MapPoint[]}>;
 export type MapResourcePolicy = Readonly<{allowedOrigins:readonly string[];attribution:string;licenceReference:string}>;
+export type MapWorkerAsset=Readonly<{url:string;version:string}>;
+
+/** Worker executable code must be a version-matched, application-owned asset. */
+export function approvedWorkerUrl(asset:MapWorkerAsset,applicationOrigin:string,runtimeVersion:string):string {
+  const url=new URL(asset.url,applicationOrigin);
+  if(asset.version!==runtimeVersion||url.origin!==applicationOrigin||url.username||url.password||url.search||url.hash||!url.pathname.endsWith("/maplibre-gl-worker.mjs"))throw new TypeError("A same-origin version-matched MapLibre worker asset is required");
+  return url.href;
+}
 
 /** Data is already redacted by the BFF. Reject unknown metadata, never infer facts. */
 export function validatePoints(points:readonly MapPoint[]):void {
