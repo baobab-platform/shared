@@ -88,8 +88,26 @@ jobs:
         env:
           DOCKERFILE: "${{ inputs.dockerfile }}"
           BUILD_CONTEXT: "${{ inputs.build_context }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
         run: |
-          docker build             --file "$DOCKERFILE"             --build-arg VERSION="0.0.0-ci"             --build-arg REVISION="${{ github.sha }}"             --tag "foundation-scan:${{ github.sha }}"             "$BUILD_CONTEXT"
+          set -euo pipefail
+          # Only same-repository PRs can build consumers needing private
+          # package access. The token is a BuildKit secret, NEVER an ARG.
+          extra_build_args=()
+          if [[ -f "$BUILD_CONTEXT/.npmrc" ]] && grep -Fqx '@baobab-platform:registry=https://npm.pkg.github.com' "$BUILD_CONTEXT/.npmrc"; then
+            if [[ '${{ github.event_name }}' == 'pull_request' && '${{ github.event.pull_request.head.repo.full_name }}' != '${{ github.repository }}' ]]; then
+              echo '::error::Refusing private npm token exposure to forked PR'
+              exit 1
+            fi
+            extra_build_args=(--secret id=npm_token,env=NODE_AUTH_TOKEN)
+          fi
+          docker build "${extra_build_args[@]}" \
+            --file "$DOCKERFILE" \
+            --build-arg VERSION="0.0.0-ci" \
+            --build-arg REVISION="${{ github.sha }}" \
+            --tag "foundation-scan:${{ github.sha }}" \
+            "$BUILD_CONTEXT"
 
       - name: Validate OCI metadata and runtime safety
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-policy'] == null
