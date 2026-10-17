@@ -10,9 +10,11 @@ acceptance require their own receipts.
   exact-time frame selection, text/table fallback and a consent-based client
   MapLibreOverlay adapter via consumer-supplied factories.
 - No direct MapLibre, deck.gl, transport provider or IAM SDK import. Compatible
-  optional peers are `@deck.gl/layers@9.4.0`, `@deck.gl/maplibre@9.4.0`,
+  consumer-owned runtime packages are `@deck.gl/layers@9.4.0`, `@deck.gl/maplibre@9.4.0`,
   and `maplibre-gl@6.14.0`; consumers must separately pin and test them.
-  No runtime package is loaded merely by importing Shared data models.
+  The package manifest deliberately excludes WebGL peer declarations because
+  pnpm 11 auto-installs them. An opt-in consumer explicitly installs the
+  version-pinned deck.gl/MapLibre runtime; Shared remains model-only.
 - Positive and negative tests exercise observed/estimated distinction, unknown
   points, anti-meridian positions, duplicate IDs, impossible dates, frame
   ordering, runtime budgets, restricted-data rejection, consent and cleanup.
