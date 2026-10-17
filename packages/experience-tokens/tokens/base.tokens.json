@@ -1,0 +1,99 @@
+{
+  "$description": "DTCG 2025.10-shaped Baobab semantic base",
+  "color": {
+    "canvas": {
+      "$type": "color",
+      "$value": "#fffdf8"
+    },
+    "foreground": {
+      "$type": "color",
+      "$value": "#11100d"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#ffffff"
+    },
+    "mutedText": {
+      "$type": "color",
+      "$value": "#595650"
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "#163a2c"
+    },
+    "onPrimary": {
+      "$type": "color",
+      "$value": "#ffffff"
+    },
+    "focus": {
+      "$type": "color",
+      "$value": "#9b6200"
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#d8d1c2"
+    }
+  },
+  "space": {
+    "1": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      }
+    },
+    "6": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      }
+    }
+  },
+  "radius": {
+    "control": {
+      "$type": "dimension",
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      }
+    },
+    "panel": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      }
+    }
+  },
+  "duration": {
+    "fast": {
+      "$type": "duration",
+      "$value": {
+        "value": 120,
+        "unit": "ms"
+      }
+    },
+    "normal": {
+      "$type": "duration",
+      "$value": {
+        "value": 220,
+        "unit": "ms"
+      }
+    }
+  }
+}

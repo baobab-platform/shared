@@ -1,0 +1,42 @@
+{
+  "$description": "Source-observed palette; consumer brand approval required before adoption",
+  "$extensions": {
+    "baobab": {
+      "status": "source-observed-not-approved"
+    }
+  },
+  "color": {
+    "canvas": {
+      "$type": "color",
+      "$value": "#f6f7f9"
+    },
+    "foreground": {
+      "$type": "color",
+      "$value": "#1b1f24"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#ffffff"
+    },
+    "mutedText": {
+      "$type": "color",
+      "$value": "#4b5563"
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "#1f5f3f"
+    },
+    "onPrimary": {
+      "$type": "color",
+      "$value": "#ffffff"
+    },
+    "focus": {
+      "$type": "color",
+      "$value": "#175cd3"
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#d0d5dd"
+    }
+  }
+}
