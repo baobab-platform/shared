@@ -1,0 +1,18 @@
+# Baobab Experience System — implementation inventory
+
+Governing [ADR-SHARED-040](../adr/ADR-SHARED-040%20%E2%80%94%20Baobab%20Experience%20System%2C%20Frontend%20Engineering%20and%20Geospatial%20Presentation.md), Accepted 17 October 2026.
+
+| Increment | Repository source status | Production evidence |
+|---|---|---|
+| BXS-01 | Accepted ADR and documented ownership | Architecture only |
+| BXS-02 | experience-tokens: four source-observed palettes, contrast validation, deterministic CSS | Consumer branding/release approval not yet shown |
+| BXS-03 | experience-geo-core: source-labelled coordinates, anti-meridian, negative tests | No real tracking or MapLibre provider |
+| BXS-04 | Future experience-ui components and Storybook | Not implemented |
+| BXS-05 | Nabhold/ZuriBeans pinned adoption | Not implemented |
+| BGX-01 | Thamani synthetic logistics UX | Not implemented |
+| BGX-02+ | TMS/CP/IAM and dynamic map integrations | Not implemented |
+
+Node 24+, pnpm 11.24.0, PostgreSQL 17 for services needing database persistence;
+a pure CSS/geometry package has no database. Run each package's lint/test/build
+or the experience-foundations CI job. Tag-gated Shared Changesets publication
+remains separate from merge. No synthetic fixture conveys domain authority.

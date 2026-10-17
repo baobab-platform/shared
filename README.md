@@ -17,6 +17,10 @@
 
 ---
 
+## Baobab Experience System
+
+[Accepted ADR-SHARED-040](docs/adr/ADR-SHARED-040%20%E2%80%94%20Baobab%20Experience%20System%2C%20Frontend%20Engineering%20and%20Geospatial%20Presentation.md) governs cross-estate frontend standards and authority-neutral package reuse. [BXS implementation inventory](docs/experience/README.md) records source progress without claiming operational acceptance.
+
 ## Independent Finance F1 contract engineering
 
 [Finance F1 DRAFT contracts](contracts/finance/v1/README.md) define restricted
