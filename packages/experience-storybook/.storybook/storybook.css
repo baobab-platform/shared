@@ -1,0 +1,6 @@
+/* Scoped theme — never use estate-owned company styles in Shared. */
+body { margin: 0; font-family: system-ui, sans-serif; }
+.bxs-story-shell { min-height: 100vh; padding: clamp(1rem, 3vw, 2.5rem);
+  background: var(--bx-color-canvas,#fffdf8); color:var(--bx-color-foreground,#11100d); }
+.bxs-story-shell * { box-sizing: border-box; }
+.bxs-story-shell :is(button,summary,a) { max-width:100%; }
