@@ -82,6 +82,27 @@ function observationCopy(value: LocationObservation): LocationObservation {
 }
 
 /**
+ * Date.parse truncates fractional seconds to milliseconds. Source evidence
+ * may carry greater precision; compare UTC whole seconds and the complete
+ * decimal fraction independently rather than rewriting timestamps.
+ * Offset-equivalent instants compare equal. This is ordering, not an ETA.
+ */
+function evidenceInstant(value: string): Readonly<{ seconds: number; fraction: string }> {
+  assertEvidenceTimestamp(value);
+  const parts = /^(.+?)(?:\\.(\\d+))?(Z|[+-]\\d{2}:\\d{2})$/.exec(value);
+  if (!parts) throw new TypeError("Invalid evidence time");
+  const seconds = Date.parse(parts[1]! + parts[3]!) / 1000;
+  return { seconds, fraction: parts[2] ?? "" };
+}
+function instantOrder(a: ReturnType<typeof evidenceInstant>, b: ReturnType<typeof evidenceInstant>): number {
+  if (a.seconds !== b.seconds) return a.seconds < b.seconds ? -1 : 1;
+  const length = Math.max(a.fraction.length, b.fraction.length);
+  const left = a.fraction.padEnd(length, "0");
+  const right = b.fraction.padEnd(length, "0");
+  return left === right ? 0 : left < right ? -1 : 1;
+}
+
+/**
  * One approved projection is a bounded, immutable snapshot. Restricted data
  * must be absent rather than hidden in canvas, text, hit-testing or exports.
  * No source timestamp is silently converted to a "live" status.
@@ -101,12 +122,14 @@ export function validateEvidenceProjection(value: EvidenceProjection): EvidenceP
   if (!Array.isArray(value.frames) || value.frames.length > MAX_FRAMES) {
     throw new RangeError("Evidence frame limit exceeded");
   }
-  let total = 0, previousTime = -Infinity;
+  let total = 0;
+  let previousTime: ReturnType<typeof evidenceInstant> | null = null;
   const frames = value.frames.map((frame: EvidenceFrame) => {
     if (!frame || typeof frame !== "object") throw new TypeError("Invalid evidence frame");
-    assertEvidenceTimestamp(frame.at);
-    const time = Date.parse(frame.at);
-    if (time <= previousTime) throw new RangeError("Frames must have strictly increasing times");
+    const time = evidenceInstant(frame.at);
+    if (previousTime !== null && instantOrder(time, previousTime) <= 0) {
+      throw new RangeError("Frames must have strictly increasing times");
+    }
     previousTime = time;
     if (!Array.isArray(frame.points) || frame.points.length > MAX_POINTS_PER_FRAME) {
       throw new RangeError("Evidence point limit exceeded");
