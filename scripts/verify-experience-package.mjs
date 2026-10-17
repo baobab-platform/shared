@@ -21,6 +21,14 @@ const required={
   "@baobab-platform/experience-geo-core": [
     "package/dist/index.js","package/dist/index.d.ts",
   ],
+  "@baobab-platform/experience-geo-maplibre": [
+    "package/dist/index.js","package/dist/index.d.ts",
+    "package/dist/model.js","package/dist/model.d.ts",
+    "package/styles.css",
+  ],
+  "@baobab-platform/experience-charts": [
+    "package/dist/index.js","package/dist/index.d.ts",
+  ],
 }
 export function verifyExperiencePackage({name,version,tarball,integrity}) {
   assert.ok(Object.hasOwn(required,name),"Unknown BXS package")
