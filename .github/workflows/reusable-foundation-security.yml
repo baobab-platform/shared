@@ -32,6 +32,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   portable:
@@ -90,6 +91,9 @@ jobs:
         run: trivy fs --scanners misconfig --offline-scan --severity HIGH,CRITICAL --exit-code 1 --skip-version-check .
 
   native-deps:
+    permissions:
+      contents: read
+      packages: read
     uses: ./.github/workflows/reusable-foundation-dependency-adapters.yml
     with:
       python: "${{ inputs.python }}"

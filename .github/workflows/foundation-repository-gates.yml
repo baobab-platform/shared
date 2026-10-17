@@ -102,6 +102,7 @@ jobs:
     uses: ./.github/workflows/reusable-foundation-security.yml
     permissions:
       contents: read
+      packages: read
       actions: read
       security-events: write
     with:
