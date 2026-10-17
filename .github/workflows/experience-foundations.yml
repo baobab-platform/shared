@@ -58,6 +58,13 @@ jobs:
           pnpm --filter @baobab-platform/experience-charts test
           pnpm --filter @baobab-platform/experience-charts build
           test -s packages/experience-charts/dist/index.d.ts
+      - name: Optional deck.gl evidence overlay validation and tests
+        run: |
+          pnpm --filter @baobab-platform/experience-geo-deckgl lint
+          pnpm --filter @baobab-platform/experience-geo-deckgl test
+          pnpm --filter @baobab-platform/experience-geo-deckgl build
+          test -s packages/experience-geo-deckgl/dist/index.js
+          test -s packages/experience-geo-deckgl/dist/index.d.ts
       - name: Optional geospatial adapter typecheck and model negatives
         run: |
           pnpm --filter @baobab-platform/experience-ui build
