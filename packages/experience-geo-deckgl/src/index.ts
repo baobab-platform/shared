@@ -89,7 +89,7 @@ function observationCopy(value: LocationObservation): LocationObservation {
  */
 function evidenceInstant(value: string): Readonly<{ seconds: number; fraction: string }> {
   assertEvidenceTimestamp(value);
-  const parts = /^(.+?)(?:\\.(\\d+))?(Z|[+-]\\d{2}:\\d{2})$/.exec(value);
+  const parts = /^(.+?)(?:\.(\d+))?(Z|[+-]\d{2}:\d{2})$/.exec(value);
   if (!parts) throw new TypeError("Invalid evidence time");
   const seconds = Date.parse(parts[1]! + parts[3]!) / 1000;
   return { seconds, fraction: parts[2] ?? "" };
