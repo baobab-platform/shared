@@ -115,7 +115,18 @@ export function validateChartSeries(input: ChartSeriesProjection): ChartSeriesPr
     return Object.freeze({ id: point.id, label: point.label, value: point.value });
   });
 
-  return Object.freeze({ ...input, points: Object.freeze(points) });
+  // Never copy unknown transport properties. A payload can carry privileged
+  // provider data even when its known display fields are valid; an explicit
+  // allowlist prevents these accidental extras reaching browser composition.
+  return Object.freeze({
+    title: input.title,
+    valueLabel: input.valueLabel,
+    unitLabel: input.unitLabel,
+    availability: input.availability,
+    sourceReference: input.sourceReference,
+    asOf: input.asOf,
+    points: Object.freeze(points),
+  });
 }
 
 /**
