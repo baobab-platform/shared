@@ -1,5 +1,11 @@
 # @baobab-platform/experience-geo-core
 
+## 0.3.0
+
+### Minor Changes
+
+- 5063765: Complete additive typography, layout, semantic status, focus, motion and map tokens; reject impossible calendar evidence and unknown milestone states. Preserve existing brand colours and authority boundaries.
+
 ## 0.2.0
 
 ### Minor Changes
