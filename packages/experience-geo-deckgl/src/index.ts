@@ -102,7 +102,7 @@ export function validateEvidenceProjection(value: EvidenceProjection): EvidenceP
     throw new RangeError("Evidence frame limit exceeded");
   }
   let total = 0, previousTime = -Infinity;
-  const frames = value.frames.map(frame => {
+  const frames = value.frames.map((frame: EvidenceFrame) => {
     if (!frame || typeof frame !== "object") throw new TypeError("Invalid evidence frame");
     assertEvidenceTimestamp(frame.at);
     const time = Date.parse(frame.at);
@@ -114,7 +114,7 @@ export function validateEvidenceProjection(value: EvidenceProjection): EvidenceP
     total += frame.points.length;
     if (total > MAX_TOTAL_POINTS) throw new RangeError("Evidence projection budget exceeded");
     const ids = new Set<string>();
-    const points = frame.points.map(point => {
+    const points = frame.points.map((point: EvidencePoint) => {
       if (!point || typeof point !== "object") throw new TypeError("Invalid evidence point");
       required(point.id, "point identifier");
       required(point.label, "point label");
