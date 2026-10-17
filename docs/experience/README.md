@@ -30,3 +30,25 @@ main or a local source alias to manufacture consumer acceptance.
 
 Node 24, pnpm 11.24.0 and PostgreSQL 17 where persistence is required remain
 baobab-dev standards. No presentation package acquires database/domain authority.
+
+## BXS follow-up evidence and planned chart foundation — 17 October 2026
+
+The earlier audit table is a historical source baseline. Later changes are
+independently evidenced rather than retroactively treated as protected go-live:
+
+| Scope | Latest source receipt | Limit |
+|---|---|---|
+| Shared release sources | [Shared #336](https://github.com/baobab-platform/shared/pull/336), merged | Versioned Geo MapLibre 0.2.0 and core tokens/UI 0.3.1; registry publication not established by merge |
+| Nabhold editorial footprint | [Nabhold #66](https://github.com/baobab-platform/nabhold/pull/66), merged; 20 passed checks | Keyboard-equivalent 51-feature Natural Earth map, reviewed screenshots; no legal market or cross-tenant authorisation |
+| Thamani shipment workspace | [Thamani #29](https://github.com/baobab-platform/thamani/pull/29), merged; 24 passed checks | Synthetic desktop/mobile visual acceptance only; no live TMS or production customer route |
+| ZuriBeans B2B navigation/forms | [ZuriBeans #116](https://github.com/baobab-platform/zuribeans/pull/116), merged; 23 passed checks | Base UI selection and real browser tests; no provider or trade authority changes |
+| Chart evidence/table foundation | [Shared #337](https://github.com/baobab-platform/shared/pull/337), under review | New source-only package; no published artifact, charting runtime or production consumer admission |
+
+The proposed Charts module is an optional **presentation model**. It consumes
+already-authorised BFF projections and explicitly rejects hidden restricted
+data, invalid timestamps and non-finite values. Missing data is not zero.
+Nabhold Go-Live v2.0 G12/G15 still requires legitimate CP/context grants,
+independent finance/provider contracts, and authenticated real-service tests
+before executive group reporting can be called operational. The BXS package
+does not calculate portfolio figures, authorise a business relationship or
+activate any release.
