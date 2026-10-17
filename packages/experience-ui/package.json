@@ -1,6 +1,6 @@
 {
   "name": "@baobab-platform/experience-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Accessible SSR-safe Baobab presentation components; ADR-SHARED-040",
   "private": false,
   "type": "module",
