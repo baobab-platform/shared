@@ -14,8 +14,10 @@ to mounting an overlay, using its separately installed, exactly pinned
 `@deck.gl/layers@9.4.0`, `@deck.gl/maplibre@9.4.0` and approved
 `maplibre-gl@6.14.0`. deck.gl is MIT-licensed; transitive licence, security,
 bundle and exact-registered versions must be independently checked by the
-consumer. All three runtime peer dependencies are optional: unused estates
-must not download deck.gl.
+consumer. The three runtime packages are **consumer-owned** and intentionally absent
+from the Shared manifest: pnpm's autoInstallPeers would otherwise install
+WebGL code even for model-only consumers. A real opt-in estate adds, pins and
+locks these dependencies itself; unused estates download none.
 
 An illustrative, consent-gated caller can wire the official factories:
 
