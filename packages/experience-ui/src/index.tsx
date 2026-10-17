@@ -3,6 +3,7 @@
  * Components accept caller-authorised view models. Nothing here grants access.
  */
 import {forwardRef, type ReactNode, type ButtonHTMLAttributes, type DetailsHTMLAttributes} from "react";
+import {Button as BaseButton} from "@base-ui/react/button";
 
 export type ActionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>,"children"> & Readonly<{
   children:ReactNode;
@@ -12,9 +13,9 @@ export type ActionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>,"ch
 /** A click and pending request do not constitute an acknowledged domain action. */
 export const ActionButton=forwardRef<HTMLButtonElement,ActionButtonProps>(
   function ActionButton({intent="primary",pending=false,disabled,type="button",className="",children,...props},ref){
-    return <button {...props} ref={ref} type={type} disabled={Boolean(disabled||pending)}
+    return <BaseButton {...props} ref={ref} type={type} disabled={Boolean(disabled||pending)}
       aria-busy={pending||undefined}
-      className={["bx-button","bx-button--"+intent,className].filter(Boolean).join(" ")}>{children}</button>;
+      className={["bx-button","bx-button--"+intent,className].filter(Boolean).join(" ")}>{children}</BaseButton>;
   }
 );
 

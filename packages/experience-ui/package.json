@@ -40,5 +40,8 @@
     "build": "tsc -p tsconfig.json",
     "lint": "tsc --noEmit -p tsconfig.json",
     "test": "pnpm build && node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.9.0"
   }
 }
