@@ -53,3 +53,17 @@ test("verifies Charts and optional MapLibre exports rather than silently omittin
     for(const fixtureValue of [charts,map,missing])rmSync(fixtureValue.root,{recursive:true,force:true})
   }
 })
+
+test("requires the optional deck.gl package's compiled JS/types and exact source metadata",()=>{
+  const deck=fixture([],"@baobab-platform/experience-geo-deckgl")
+  const noJs=fixture(["dist/index.js"],"@baobab-platform/experience-geo-deckgl")
+  const noTypes=fixture(["dist/index.d.ts"],"@baobab-platform/experience-geo-deckgl")
+  try{
+    assert.equal(verifyExperiencePackage(deck).artifacts,2)
+    assert.throws(()=>verifyExperiencePackage(noJs),/Published export missing/)
+    assert.throws(()=>verifyExperiencePackage(noTypes),/Published export missing/)
+    assert.throws(()=>verifyExperiencePackage({...deck,version:"1.0.0"}),/version differs/)
+  }finally{
+    for(const item of [deck,noJs,noTypes])rmSync(item.root,{recursive:true,force:true})
+  }
+})
