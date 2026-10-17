@@ -1,0 +1,58 @@
+{
+  "name": "@baobab-platform/experience-geo-maplibre",
+  "version": "0.1.0",
+  "description": "Optional consent-activated MapLibre presentation with an accessible evidence list",
+  "private": false,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "files": [
+    "dist",
+    "styles.css",
+    "README.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./model": {
+      "types": "./dist/model.d.ts",
+      "import": "./dist/model.js"
+    },
+    "./styles.css": "./styles.css"
+  },
+  "peerDependencies": {
+    "react": "^19.3.0",
+    "maplibre-gl": "^6.14.0"
+  },
+  "peerDependenciesMeta": {
+    "maplibre-gl": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@baobab-platform/experience-geo-core": "workspace:^",
+    "@baobab-platform/experience-ui": "workspace:^"
+  },
+  "devDependencies": {
+    "react": "19.3.0",
+    "@types/react": "19.3.0",
+    "maplibre-gl": "6.14.0",
+    "typescript": "7.0.2"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "test": "pnpm build && node --test tests/*.test.mjs"
+  },
+  "license": "Apache-2.0"
+}

@@ -52,6 +52,11 @@ jobs:
           pnpm --filter @baobab-platform/experience-geo-core test
       - name: Build neutral evidence dependency before UI typecheck
         run: pnpm --filter @baobab-platform/experience-geo-core build
+      - name: Optional geospatial adapter typecheck and model negatives
+        run: |
+          pnpm --filter @baobab-platform/experience-ui build
+          pnpm --filter @baobab-platform/experience-geo-maplibre lint
+          pnpm --filter @baobab-platform/experience-geo-maplibre test
       - name: Accessible UI typecheck and semantic tests
         run: |
           pnpm --filter @baobab-platform/experience-ui lint
@@ -89,6 +94,7 @@ jobs:
           pnpm --filter @baobab-platform/experience-tokens build
           pnpm --filter @baobab-platform/experience-geo-core build
           pnpm --filter @baobab-platform/experience-ui build
+          pnpm --filter @baobab-platform/experience-geo-maplibre build
       - name: Typecheck Storybook integration
         run: pnpm --filter @baobab-platform/experience-storybook typecheck
       - name: Build Storybook static
