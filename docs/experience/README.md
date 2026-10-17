@@ -1,6 +1,8 @@
 # Baobab Experience System — implementation and acceptance register
 
 Governing decision: Accepted ADR-SHARED-040. Audited 17 October 2026.
+**Current verified audit:** [BXS/BGX evidence register (17 October 2026)](bxs-bgx-evidence-register-2026-10-17.md), covering publication receipts, currently pinned consumer manifests, BGX-01–04, and Nabhold G12/G15/G16. The table below records the earlier source baseline; do not use it as a live release-readiness assertion.
+
 **Gate names below follow §8, the implementation sequence.** Architecture,
 source, package publication, browser CI and protected operation are separate receipts.
 
@@ -42,7 +44,7 @@ independently evidenced rather than retroactively treated as protected go-live:
 | Nabhold editorial footprint | [Nabhold #66](https://github.com/baobab-platform/nabhold/pull/66), merged; 20 passed checks | Keyboard-equivalent 51-feature Natural Earth map, reviewed screenshots; no legal market or cross-tenant authorisation |
 | Thamani shipment workspace | [Thamani #29](https://github.com/baobab-platform/thamani/pull/29), merged; 24 passed checks | Synthetic desktop/mobile visual acceptance only; no live TMS or production customer route |
 | ZuriBeans B2B navigation/forms | [ZuriBeans #116](https://github.com/baobab-platform/zuribeans/pull/116), merged; 23 passed checks | Base UI selection and real browser tests; no provider or trade authority changes |
-| Chart evidence/table foundation | [Shared #337](https://github.com/baobab-platform/shared/pull/337), under review | New source-only package; no published artifact, charting runtime or production consumer admission |
+| Chart evidence/table foundation | [Shared #337](https://github.com/baobab-platform/shared/pull/337) source merged; [#339](https://github.com/baobab-platform/shared/pull/339) 0.1.0 versioned | Neither published artifact nor production consumer acceptance established |
 
 The proposed Charts module is an optional **presentation model**. It consumes
 already-authorised BFF projections and explicitly rejects hidden restricted
