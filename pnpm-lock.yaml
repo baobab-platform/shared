@@ -10,6 +10,16 @@ overrides:
   shell-quote: 1.11.0
 
 importers:
+  packages/experience-geo-deckgl:
+    dependencies:
+      '@baobab-platform/experience-geo-core':
+        specifier: workspace:^
+        version: link:../experience-geo-core
+    devDependencies:
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+
   packages/experience-geo-maplibre:
     dependencies:
       '@baobab-platform/experience-ui':

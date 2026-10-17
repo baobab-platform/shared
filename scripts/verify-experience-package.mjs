@@ -21,6 +21,9 @@ const required={
   "@baobab-platform/experience-geo-core": [
     "package/dist/index.js","package/dist/index.d.ts",
   ],
+  "@baobab-platform/experience-geo-deckgl": [
+    "package/dist/index.js","package/dist/index.d.ts",
+  ],
   "@baobab-platform/experience-geo-maplibre": [
     "package/dist/index.js","package/dist/index.d.ts",
     "package/dist/model.js","package/dist/model.d.ts",
