@@ -44,6 +44,16 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
+  packages/experience-charts:
+    dependencies:
+      '@baobab-platform/experience-geo-core':
+        specifier: workspace:^
+        version: link:../experience-geo-core
+    devDependencies:
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+
   packages/experience-geo-core:
     devDependencies:
       typescript:
