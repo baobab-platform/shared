@@ -1,7 +1,7 @@
 {
   "name": "@baobab-platform/experience-geo-deckgl",
   "version": "0.0.0",
-  "description": "Optional, source-labelled deck.gl evidence overlays for approved MapLibre maps (ADR-SHARED-040)",
+  "description": "Dependency-free optional adapter for consented deck.gl overlays and authority-neutral evidence",
   "private": false,
   "type": "module",
   "engines": {
@@ -29,22 +29,6 @@
   },
   "dependencies": {
     "@baobab-platform/experience-geo-core": "workspace:^"
-  },
-  "peerDependencies": {
-    "@deck.gl/layers": "^9.4.0",
-    "@deck.gl/maplibre": "^9.4.0",
-    "maplibre-gl": "^6.14.0"
-  },
-  "peerDependenciesMeta": {
-    "@deck.gl/layers": {
-      "optional": true
-    },
-    "@deck.gl/maplibre": {
-      "optional": true
-    },
-    "maplibre-gl": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "typescript": "7.0.2"
