@@ -1,30 +1,32 @@
-# Baobab Experience System — implementation inventory
+# Baobab Experience System — implementation and acceptance register
 
-Governing [ADR-SHARED-040](../adr/ADR-SHARED-040%20%E2%80%94%20Baobab%20Experience%20System%2C%20Frontend%20Engineering%20and%20Geospatial%20Presentation.md), Accepted 17 October 2026.
+Governing decision: Accepted ADR-SHARED-040. Audited 17 October 2026.
+**Gate names below follow §8, the implementation sequence.** Architecture,
+source, package publication, browser CI and protected operation are separate receipts.
 
-| Increment | Repository source status | Production evidence |
+| Gate | Source / publication | Remaining acceptance |
 |---|---|---|
-| BXS-01 | Accepted ADR and documented ownership | Architecture only |
-| BXS-02 | experience-tokens: four source-observed palettes, contrast validation, deterministic CSS | Consumer branding/release approval not yet shown |
-| BXS-03 | experience-geo-core: source-labelled coordinates, anti-meridian, negative tests | No real tracking or MapLibre provider |
-| BXS-04 | Accessible primitives and central multi-brand Storybook with Chromium browser acceptance | Browser CI and reviewed visual/assistive-tech evidence required; no golden baselines yet |
-| BXS-05 | Nabhold/ZuriBeans pinned adoption | Not implemented |
-| BGX-01 | Thamani synthetic logistics UX | Not implemented |
-| BGX-02+ | TMS/CP/IAM and dynamic map integrations | Not implemented |
+| BXS-01 architecture | Accepted ADR, ownership, this inventory and migration register | Keep each change tied to its exact PR/head and release |
+| BXS-02 tokens | Published 0.2.0 baseline; this increment adds typography, layout, elevations, layers, focus, semantic statuses, map and motion tokens without replacing brand colours | Updated release and per-consumer visual/contrast acceptance |
+| BXS-03 geography/evidence | Published 0.2.0 baseline; strict calendar validation and large-coordinate bounds hardening in this increment | New exact-version publication; approved estimate/model provenance and real-service source receipts |
+| BXS-04 primitives | Published 0.2.0 baseline; Shared Chromium Storybook; controlled Base UI Dialog/Tabs and strict timelines in this increment | Reviewed visual baselines, manual assistive-technology review and consumer compatibility on the new release |
+| BXS-05 consumers | Nabhold tokens/geo-core, ZuriBeans tokens/UI, CP showcase tokens/UI, Thamani tokens/UI/geo-core all pin 0.2.0 | Bounded adoption is not complete migration; see per-consumer register |
+| BGX-01 synthetic logistics | Thamani main has internal tabs/tracking evidence; PR #28 adds shipment workspace | Actual logistics browser/visual acceptance, approved logistics theme and route composition |
+| BGX-02 map adapters | Not implemented at audited main | Bounded optional renderer, licensed provider/style decision, accessible fallback, attribution and privacy acceptance |
+| BGX-03 real services | Infrastructure main has dependency harness; PR #35 carries IAM/CP qualification | Real IAM/CP acceptance must pass; TMS tracking contracts remain Proposed and no tracking service is implemented |
+| BGX-04 protected operation | Not demonstrated | Protected staging, current authorised providers and independently approved go-live |
 
-Node 24+, pnpm 11.24.0, PostgreSQL 17 for services needing database persistence;
-a pure CSS/geometry package has no database. Run each package's lint/test/build
-or the experience-foundations CI job. Tag-gated Shared Changesets publication
-remains separate from merge. No synthetic fixture conveys domain authority.
+## Verified historical receipts
 
-## BXS-04 remaining acceptance
+- [Publish 0.2.0 packages](https://github.com/baobab-platform/shared/actions/runs/39028924001).
+- [SHA512 and published-export verification](https://github.com/baobab-platform/shared/actions/runs/39029098417).
+- [Shared foundation/browser CI](https://github.com/baobab-platform/shared/actions/runs/39028293510): 10 browser tests at release-source `15c072d2b7a46c70d16aae635ae14e6bd3a7a525`.
+- Consumer audited main: Nabhold `4c90988`, ZuriBeans `5f41021`, CP `35c01d0`, Thamani `1457f81`.
 
-The initial React primitives have semantic SSR/negative tests and opt-in CSS. Portable CSF stories are shipped as source examples; they are not evidence of a running Shared Storybook, visual snapshots or real-browser keyboard/assistive-technology acceptance. Provider-agnostic primitive migration into Nabhold, ZuriBeans, Thamani and CP remains separately gated.
+These receipts cover their recorded source, not subsequent unpublished changes.
+New package APIs require Changesets, source CI, publication, integrity verification
+and separately pinned consumer PRs. Do not replace a registry dependency with Git
+main or a local source alias to manufacture consumer acceptance.
 
-## Base UI refinement
-
-ADR-SHARED-040 §2.4 governs new interactive primitives. See [cross-estate migration register](base-ui-migration.md). This decision does not claim all four applications have migrated.
-
-## BXS-04 browser harness
-
-The new private Storybook workspace builds from the actual versioned package APIs. Chromium verifies keyboard behavior, native focus/activation, automated axe WCAG checks, brand semantic visual contracts, responsive bounds and reduced-motion behavior. Screenshots are preserved for review but **not yet authoritative golden baselines**. Production accessibility and manual screen-reader reviews remain independently gated.
+Node 24, pnpm 11.24.0 and PostgreSQL 17 where persistence is required remain
+baobab-dev standards. No presentation package acquires database/domain authority.

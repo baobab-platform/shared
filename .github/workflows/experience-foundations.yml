@@ -50,6 +50,8 @@ jobs:
         run: |
           pnpm --filter @baobab-platform/experience-tokens test
           pnpm --filter @baobab-platform/experience-geo-core test
+      - name: Build neutral evidence dependency before UI typecheck
+        run: pnpm --filter @baobab-platform/experience-geo-core build
       - name: Accessible UI typecheck and semantic tests
         run: |
           pnpm --filter @baobab-platform/experience-ui lint
@@ -85,6 +87,7 @@ jobs:
       - name: Build Shared tokens and UI
         run: |
           pnpm --filter @baobab-platform/experience-tokens build
+          pnpm --filter @baobab-platform/experience-geo-core build
           pnpm --filter @baobab-platform/experience-ui build
       - name: Typecheck Storybook integration
         run: pnpm --filter @baobab-platform/experience-storybook typecheck
@@ -100,7 +103,8 @@ jobs:
         with:
           name: bxs-storybook-browser-evidence
           retention-days: 14
-          if-no-files-found: ignore
+          if-no-files-found: error
           path: |
             packages/experience-storybook/test-results/
             packages/experience-storybook/playwright-report/
+            packages/experience-storybook/tests/foundations.spec.ts-snapshots/

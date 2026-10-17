@@ -1,13 +1,25 @@
 # Base UI migration register — ADR-SHARED-040 §2.4
 
-Shared engineering selection: @base-ui/react for interactive primitives; Node 24, pnpm 11.24.0. Component migrations are **not** equivalent to a dependency declaration.
+Audited 17 October 2026. @base-ui/react 1.9.0, React 19.3.0 and Node 24
+are the observed common baseline. Package installation alone is not migration.
 
-| Product | Present source implementation | Next migration wave | Acceptance remaining |
-|---|---|---|---|
-| Shared | Native ActionButton, semantic Breadcrumb/Disclosure/Feedback/Timeline | Base UI ActionButton, later interactive forms/dialogs | Build, peer/bundle, SSR, stories, browser focus |
-| Nabhold | Base UI-based shadcn components present; Node 22 package metadata | Audit, adopt Node 24, prove interaction and visual coverage | CI, upgraded runtime, keyboard/axe |
-| ZuriBeans | Native dialog/form controls; standalone Storybook | Dialog and selection interactions using Base UI | Portal/escape/focus and buyer/supplier tests |
-| Thamani | Older retail storefront, no modern interactive primitives | Introduce Base UI as logistics experience is built | Logistics-native flows and tracking provenance; no fake live TMS |
-| CP Console | Radix Slot button, native controlled dialog | Base UI Button/Dialog; remove stale Radix when unused | Role/permission, confirm/cancel, focus/escape/axe |
+| Consumer | Existing implementation | Outstanding family / acceptance |
+|---|---|---|
+| Shared | Base UI ActionButton; native breadcrumbs/disclosure; controlled Dialog/Tabs in current increment | Browser focus, Escape, portal/RTL tests; release and consumer adoption; manual AT review |
+| Nabhold | Base UI shadcn families and Node 24; pinned Shared tokens/geo-core in editorial footprint | Full country-list keyboard equivalence, reviewed map visuals, accessibility/performance budgets and semantic token migration |
+| ZuriBeans | Base UI Button/Dialog; pinned Shared tokens/UI; real browser, axe and landing visual tests | Audit selection/navigation families at real call sites; geography utilities when needed, not a mandatory dynamic map |
+| CP | Base UI shadcn Button; Shared Disclosure/StatusLabel in non-production showcase | Existing native modal, command palette and custom ARIA tabs require family migration with workflow/focus tests |
+| Thamani | Base UI logistics Tabs; published Shared source-labelled tracking evidence | PR #28 workspace validation; real logistics browser tests; future confidential BFF/customer routes and independently approved logistics brand |
 
-The migration procedure is one component family plus real call sites per PR. Record changed API/props, tested keyboard behavior, reduced-motion and screenshot evidence; do not merge a broken conversion. Keep each estate's authorised BFF/domain projections and independent brand themes.
+Native anchors, headings, tables and sufficient native disclosures remain native.
+Custom modal/tab interaction is migrated where Base UI supplies an appropriate
+primitive. Preserve controlled state, focus restoration, Escape, directionality,
+portal layers and all existing authoritative command checks. Navigation retains
+anchor semantics. Remove old dependencies only after their call-site census is empty.
+
+## Release acceptance
+
+For each family, record exact source head and package version, frozen install,
+type/lint/build results, browser keyboard/focus/axe/reduced-motion/viewport tests,
+visual baseline review, and workflow negatives. A historical green run or a
+screenshot attachment does not qualify an edited consumer automatically.

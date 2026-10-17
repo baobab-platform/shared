@@ -10,7 +10,8 @@
     "declaration": true,
     "skipLibCheck": true,
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "rewriteRelativeImportExtensions": true
   },
   "include": [
     "src/**/*.ts"

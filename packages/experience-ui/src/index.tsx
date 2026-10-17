@@ -4,6 +4,8 @@
  */
 import {forwardRef, type ReactNode, type ButtonHTMLAttributes, type DetailsHTMLAttributes} from "react";
 import {Button as BaseButton} from "@base-ui/react/button";
+import {assertEvidenceTimestamp} from "@baobab-platform/experience-geo-core";
+export {ExperienceDialog,ExperienceTabs,type ExperienceTab} from "./interactive.js";
 
 export type ActionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>,"children"> & Readonly<{
   children:ReactNode;
@@ -43,14 +45,14 @@ export function Disclosure({summary,children,className="",...props}:DisclosurePr
   </details>;
 }
 
-export type FeedbackState="empty"|"loading"|"error"|"unavailable"|"restricted";
+export type FeedbackState="empty"|"loading"|"error"|"unavailable"|"restricted"|"stale"|"pending"|"success";
 export type FeedbackPanelProps=Readonly<{
   state:FeedbackState;title:string;description:string;action?:ReactNode;className?:string;
 }>;
 /** Restricted content only displays a prior BFF decision; it is not itself a policy check. */
 export function FeedbackPanel({state,title,description,action,className=""}:FeedbackPanelProps){
   const urgent=state==="error"||state==="restricted";
-  return <section role={urgent?"alert":state==="loading"?"status":undefined}
+  return <section role={urgent?"alert":["loading","pending","success"].includes(state)?"status":undefined}
     aria-busy={state==="loading"||undefined} aria-label={title}
     className={["bx-feedback","bx-feedback--"+state,className].filter(Boolean).join(" ")}>
     <h2 className="bx-feedback__title">{title}</h2><p>{description}</p>
@@ -77,9 +79,13 @@ export type MilestoneTimelineProps=Readonly<{items:readonly MilestoneItem[];labe
 export function MilestoneTimeline({items,label="Progress timeline",className=""}:MilestoneTimelineProps){
   const seen=new Set<string>();
   for(const item of items){
-    if(!item.id||seen.has(item.id))throw new Error("Timeline IDs must be unique and nonempty");
+    if(typeof item.id!=="string"||!item.id.trim()||seen.has(item.id))throw new Error("Timeline IDs must be unique and nonempty");
     seen.add(item.id);
-    if(item.timestamp && !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d/.test(item.timestamp))throw new Error("Timestamp must use ISO format");
+    // Types do not validate JSON at runtime. Never promote unknown source
+    // states or normalised impossible dates into a trustworthy milestone.
+    if(typeof item.label!=="string"||!item.label.trim())throw new TypeError("Milestone label is required");
+    if(!["completed","current","pending","uncertain"].includes(item.state))throw new TypeError("Unknown milestone state");
+    if(item.timestamp!==undefined)assertEvidenceTimestamp(item.timestamp);
   }
   return <section aria-label={label} className={["bx-timeline",className].filter(Boolean).join(" ")}>
     <ol>{items.map(item=><li key={item.id} className={"bx-timeline__item bx-timeline__item--"+item.state}>

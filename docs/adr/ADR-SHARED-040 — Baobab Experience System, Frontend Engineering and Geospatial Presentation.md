@@ -80,7 +80,7 @@ Visual identity MUST include approved, correctly licensed media and provenance; 
 
 PostgreSQL 17 is the approved data-store major for engines and application contexts *that actually require PostgreSQL*. An entirely stateless shared token/map rendering package SHALL NOT acquire a database solely to satisfy a version number. Backend-owned databases remain in their respective engines; frontend packages SHALL have no direct SQL/store access. Java 17 applies only where the Java runtime is required, not to browser bundles. Future baobab-dev changes govern through reviewed image/environment-contract upgrades, with no invented universal upgrades.
 
-Next.js App Router, React, TypeScript, Tailwind v4 and accessible shadcn-style primitives are the preferred first-party web baseline. Server Components are default; client components are isolated for interactions. The approved version set SHALL be pinned per consumer lockfile; Node 24 does not excuse runtime or peer-dependency incompatibilities. CSS, JavaScript and React packages SHALL declare exports/types/peers correctly, avoid duplicate React, and remain tree-shakeable. Shared SHALL NOT impose a wholesale Radix-to-Base-UI or Base-UI-to-Radix migration without measured benefit and per-consumer verification.
+Next.js App Router, React, TypeScript, Tailwind v4 and accessible shadcn-style primitives are the preferred first-party web baseline. Server Components are default; client components are isolated for interactions. The approved version set SHALL be pinned per consumer lockfile; Node 24 does not excuse runtime or peer-dependency incompatibilities. CSS, JavaScript and React packages SHALL declare exports/types/peers correctly, avoid duplicate React, and remain tree-shakeable. The first-party Base UI decision in §2.4 governs interactive primitives. Migration SHALL remain incremental and verified per consumer; it does not require wrapping sufficient native semantic content.
 
 ## 4. Experience quality rules (mandatory)
 
@@ -151,8 +151,8 @@ Thamani **must not** put routing/optimisation algorithms, canonical shipment sta
 |---|---|
 | BXS-01 architecture | This Accepted ADR, implementation inventory, README/ADR index updated; no hidden authority change |
 | BXS-02 tokens | Deterministic source-to-CSS build, brand tokens, schema/alias validation, contrast tests, package and licence manifest |
-| BXS-03 primitives | Keyboard/focus/a11y tests, SSR compatibility, responsive and reduced-motion demos |
-| BXS-04 geography | Coordinate/bounds/accuracy tests, accessible non-map equivalent, data attribution, anti-meridian and no-live-fabrication tests |
+| BXS-04 primitives | Keyboard/focus/a11y tests, SSR compatibility, responsive and reduced-motion demos |
+| BXS-03 geography | Coordinate/bounds/accuracy tests, accessible non-map equivalent, data attribution, anti-meridian and no-live-fabrication tests |
 | BXS-05 consumers | Per-app pinned package adoption, meaningful visual regression, screenshot review, responsive/a11y/performance budgets |
 | BGX-01 Thamani synthetic | Route/milestone/source badges and failure/fallback scenarios under explicitly synthetic fixtures |
 | BGX-02+ real transport | Current IAM/CP/TMS/provider contracts, valid binding/context, negative cross-tenant/expired data proofs, real service receipts |
