@@ -1,8 +1,26 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, type Page } from "@playwright/test"
 import AxeBuilder from "@axe-core/playwright"
 
 const story=(id:string,theme="nabhold")=>
   "/iframe.html?id=bxs-foundations--"+id+"&viewMode=story&globals=theme:"+theme
+
+/**
+ * Storybook's accessibility addon can launch an axe scan during hydration.
+ * Retry only the known concurrent-run condition. Every explicit scan must
+ * eventually complete and pass; unrelated failures and exhausted attempts
+ * remain fatal to the mandatory browser gate.
+ */
+async function auditAxe(page: Page, tags: string[]) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      return await new AxeBuilder({page}).withTags(tags).analyze()
+    } catch (error) {
+      if (!String(error).includes("Axe is already running") || attempt === 3) throw error
+      await page.waitForTimeout(200 * (attempt + 1))
+    }
+  }
+  throw new Error("Accessibility audit failed to complete")
+}
 
 test("Base UI action is keyboard operable and updates local demonstration state",async ({page})=>{
   await page.goto(story("action"))
@@ -30,7 +48,7 @@ test("all primary foundation stories meet automated WCAG 2.2 AA",async ({page})=
   for(const id of ["action","pending","breadcrumbs","native-disclosure","restricted","milestones","tabs"]){
     await page.goto(story(id))
     await expect(page.locator("#storybook-root")).not.toBeEmpty()
-    const {violations}=await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21a","wcag21aa","wcag22aa"]).analyze()
+    const {violations}=await auditAxe(page,["wcag2a","wcag2aa","wcag21a","wcag21aa","wcag22aa"])
     expect(violations,id+": "+JSON.stringify(violations)).toEqual([])
   }
 })
@@ -45,7 +63,7 @@ test("controlled dialog traps focus, closes with Escape and restores its trigger
   await page.getByRole("textbox",{name:"Review note"}).focus()
   await page.keyboard.press("Shift+Tab")
   await expect(dialog.getByRole("button",{name:"Close"})).toBeFocused()
-  const {violations}=await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze()
+  const {violations}=await auditAxe(page,["wcag2a","wcag2aa","wcag21aa","wcag22aa"])
   expect(violations).toEqual([])
   await page.keyboard.press("Escape")
   await expect(dialog).toBeHidden()
