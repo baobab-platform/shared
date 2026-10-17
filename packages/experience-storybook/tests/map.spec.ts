@@ -21,3 +21,19 @@ test("optional map renders real WebGL after activation and cleans up on revocati
   await expect(page.getByRole("list",{name:"Authorised location evidence"})).toHaveCount(0)
   expect(external).toEqual([])
 })
+
+test("failed optional renderer load retains the complete textual evidence",async({page})=>{
+  await page.goto("/iframe.html?id=bxs-map--evidence&viewMode=story")
+  await expect(page.getByRole("list",{name:"Authorised location evidence"})).toBeVisible()
+  let blocked=0
+  // The actual renderer module is lazy. Fail its network load after the
+  // meaningful evidence UI is ready, without mocking the component/library.
+  await page.route("**/*",route=>{
+    if(route.request().resourceType()==="script"){blocked++;return route.abort()}
+    return route.continue()
+  })
+  await page.getByRole("button",{name:"Enable interactive map"}).click()
+  await expect(page.getByRole("status")).toContainText("Map unavailable")
+  await expect(page.getByRole("list",{name:"Authorised location evidence"})).toContainText("Carrier-reported position")
+  expect(blocked).toBeGreaterThan(0)
+})

@@ -13,8 +13,9 @@ let configuredWorker:string|undefined;
 export function EvidenceMap(props:EvidenceMapProps){
   if(props.projection.visibility==="restricted")return <section aria-label={props.label}><p role="alert">{props.projection.explanation}</p></section>;
   if(props.projection.visibility!=="authorised")throw new TypeError("Unknown map visibility");
+  if(!props.projection.projectionReference.trim())throw new TypeError("An opaque authorised projection reference is required");
   validatePoints(props.projection.points);validateResourcePolicy(props.policy);
-  return <AuthorisedEvidenceMap {...props} points={props.projection.points}/>;
+  return <AuthorisedEvidenceMap key={props.projection.projectionReference} {...props} points={props.projection.points}/>;
 }
 
 /**

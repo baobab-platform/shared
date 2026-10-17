@@ -7,7 +7,7 @@ export type MapPoint = Readonly<{
   estimate?:Readonly<{model:string;version:string;generatedAt:string;inputsReference:string}>;
 }>;
 export type MapProjection = Readonly<{visibility:"restricted";explanation:string}> |
-  Readonly<{visibility:"authorised";points:readonly MapPoint[]}>;
+  Readonly<{visibility:"authorised";projectionReference:string;points:readonly MapPoint[]}>;
 export type MapResourcePolicy = Readonly<{allowedOrigins:readonly string[];attribution:string;licenceReference:string}>;
 export type MapWorkerAsset=Readonly<{url:string;version:string}>;
 

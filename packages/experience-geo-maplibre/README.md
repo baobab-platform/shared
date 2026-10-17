@@ -28,3 +28,8 @@ with a same-origin path ending `/maplibre-gl-worker.mjs` and a `worker.version`
 matching the SDK. Copy the pinned worker and shared module together. The
 application CSP must approve worker execution; tile/style origins remain a
 separate cookieless resource boundary. No CDN worker is selected by default.
+
+An authorised projection includes an opaque `projectionReference` supplied by
+the BFF. Change it on context/revision changes: React immediately removes the
+previous canvas and resets activation, while effect cleanup terminates old
+renderer resources. The reference is never interpreted as tenant authority.

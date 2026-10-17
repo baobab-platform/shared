@@ -4,7 +4,7 @@ import {EvidenceMap,type MapProjection} from "@baobab-platform/experience-geo-ma
 import "@baobab-platform/experience-geo-maplibre/styles.css"
 import "maplibre-gl/dist/maplibre-gl.css"
 
-const projection:MapProjection={visibility:"authorised",points:[{
+const projection:MapProjection={visibility:"authorised",projectionReference:"synthetic:view:1",points:[{
   id:"synthetic-one",label:"Synthetic carrier report",evidenceReference:"synthetic:observation:1",freshness:"stale",
   observation:{kind:"carrier-reported",position:[32.5,0.3],source:"Synthetic carrier",observedAt:"2026-10-17T10:00:00Z"},
 }]}
