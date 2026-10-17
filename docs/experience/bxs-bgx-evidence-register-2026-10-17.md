@@ -52,3 +52,65 @@ The absence of a found publication receipt is a **verification gap**, not a cate
 5. **BGX-04 / G16:** protected staging account/roles, provider/market/licence/privacy and operational receipts; only then consider independent EA-09 and G17 production permission.
 
 **Release blocker principle:** neither a code merge, source package version, presentation screenshot, artificial principal, fixture provider or CI pass may be re-labelled as a published tarball, authenticated real-provider proof, protected staging or production GO. No unapproved credentials, bypasses or fake AWS values.
+
+---
+
+## 18 October 2026 — verified publication and consumer rollout
+
+**This addendum supersedes the 17 October publication/consumer statuses above.**
+It does **not** supersede the still-open BGX-02 real renderer, BGX-03
+authoritative TMS or G16 protected staging requirements.
+
+### Published and SHA512-verified Shared artifacts
+
+The approved [Publish Shared Packages run 39073176845](https://github.com/baobab-platform/shared/actions/runs/39073176845)
+completed on `main` commit `83e5a4a5db7111fa4fbd3603559b1ef6136eaae3`.
+The subsequent independent
+[Verify Experience Registry Releases run 39073362603](https://github.com/baobab-platform/shared/actions/runs/39073362603)
+successfully validated published manifests, SHA512 archive digests and required
+compiled exports for **all six** immutable versions:
+
+| Published package | Verified version | Status |
+|---|---|---|
+| `experience-tokens` | 0.3.1 | Published; SHA512 and required exports verified |
+| `experience-ui` | 0.3.1 | Published; SHA512 and required exports verified |
+| `experience-geo-core` | 0.3.1 | Published; SHA512 and required exports verified |
+| `experience-geo-maplibre` | 0.2.0 | Published; SHA512 and required exports verified |
+| `experience-geo-deckgl` | 0.1.0 | Published; SHA512 and required exports verified |
+| `experience-charts` | 0.1.0 | Published; SHA512 and required exports verified |
+
+### Exact consumer adoption and independent acceptance
+
+| Consumer | Merged commit / PR | Approved direct pins | Mandatory acceptance |
+|---|---|---|---|
+| Nabhold | [#67](https://github.com/baobab-platform/nabhold/pull/67), `61ed6789e4204ade7cad4923cf39a209d419a6fb` | Tokens 0.3.1, Geo Core 0.3.1 | 20 successful checks, including map viewport/keyboard/quality/security/Foundation |
+| ZuriBeans | [#117](https://github.com/baobab-platform/zuribeans/pull/117), `1aa32959429ce97b9fb284f26350636a4a54352a` | Tokens 0.3.1, UI 0.3.1 | 22 successful checks, including Storybook, B2B browser/visual/accessibility/security |
+| Thamani | [#32](https://github.com/baobab-platform/thamani/pull/32), `85d60ab2ba6f3d2f51a2b7e37be35b9f12683465` | Tokens/UI/Geo Core 0.3.1 | 23 successful checks, including reviewed mobile/desktop screenshot updates, logistics denial and browser acceptance |
+| Control Plane Console | [#413](https://github.com/baobab-platform/baobab-cp/pull/413), `a0fef3a05718bb7f3f41dc47746521d0bd91921e` | Tokens 0.3.1, UI 0.3.1 | 23 successful checks, including console build, QA, Foundation, security and operations evidence |
+
+The UI package resolves the published Geo Core 0.3.1 transitively where a
+consumer does not import that contract directly. All four lockfiles have
+published SHA512 digests, frozen pnpm 11.24.0 reproducibility, and narrowly
+versioned release-age exceptions. Previous 0.2.0 lockfile records were
+removed. Temporary privileged workflows used for lockfile reconciliation
+removed themselves and are not present in merged `main`.
+
+**No unused consumer dependency was added merely to consume a newly
+published artifact.** MapLibre 0.2.0, deck.gl 0.1.0 and Charts 0.1.0 are
+published but require their own capability-scoped, tested opt-in consumers.
+
+### Gates explicitly still open
+
+1. **BGX-02 operational geography:** consented Thamani MapLibre + deck.gl
+   browser integration, lawful tile/style/worker origins, CSP, degraded-mode
+   text/keyboard alternative, privacy, real provider and performance tests.
+2. **BGX-03:** independently implemented/certified TMS tracking provider with
+   live IAM → CP → TMS PEP, including expiry/revocation/cross-tenant denials;
+   synthetic Thamani admission preflight is not this evidence.
+3. **BGX-04 / Nabhold G12/G15/G16:** protected staging IAM/workload roles,
+   Secrets/KMS/state, source privacy/residency, producer grants, recovery,
+   real provider acceptance and signed G17 go/no-go. No production claim.
+
+[Release-gate issue #344](https://github.com/baobab-platform/shared/issues/344)
+is closed for **published package integrity and baseline exact-version estate
+adoption only**. These three outstanding gates are deliberately not waived.
