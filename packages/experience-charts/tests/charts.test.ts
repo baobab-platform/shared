@@ -71,6 +71,19 @@ test("rejects transport-corrupted IDs, values, statuses and timestamps", () => {
   }), RangeError);
 });
 
+test("unrecognised provider properties never survive the display projection", () => {
+  const polluted = {
+    ...example,
+    privateProviderCredential: "not-for-browser",
+    points: [{ ...example.points[0], hiddenLegalActor: "internal" }],
+  };
+  const safe = validateChartSeries(polluted);
+  assert.equal(Object.hasOwn(safe, "privateProviderCredential"), false);
+  assert.equal(Object.hasOwn(safe.points[0]!, "hiddenLegalActor"), false);
+  const table = toAccessibleChartTable(polluted);
+  assert.equal(Object.hasOwn(table, "privateProviderCredential"), false);
+});
+
 test("validated projections and accessible rows are immutable defensive copies", () => {
   const original = example.points.map((point) => ({ ...point }));
   const source = { ...example, points: original };
