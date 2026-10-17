@@ -1,0 +1,47 @@
+# ADR-SHARED-040 BXS-05. Read-only registry acceptance after an
+# independently authorised Shared package publication. No implicit release.
+name: Verify Experience Registry Releases
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  verify-packages:
+    name: Verify registry SHA512 and published exports
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact release-source main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: GitHub Packages registry and Node 24
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          registry-url: https://npm.pkg.github.com
+          scope: '@baobab-platform'
+      - name: Confirm exact package versions and archive integrity
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bxs-registry"
+          for dirname in experience-tokens experience-ui experience-geo-core; do
+            # Source-of-truth versions come from checked-in manifests, never
+            # a mutable latest tag or user-provided URL.
+            name="$(node -p "require('./packages/$dirname/package.json').name")"
+            version="$(node -p "require('./packages/$dirname/package.json').version")"
+            integrity="$(npm view "$name@$version" dist.integrity --json \
+              --registry=https://npm.pkg.github.com \
+              | node -p "JSON.parse(require('fs').readFileSync(0,'utf8'))")"
+            archive="$(npm pack "$name@$version" --silent \
+              --registry=https://npm.pkg.github.com \
+              --pack-destination "$RUNNER_TEMP/bxs-registry" | tail -n 1)"
+            node scripts/verify-experience-package.mjs \
+              "$name" "$version" "$RUNNER_TEMP/bxs-registry/$archive" "$integrity"
+            echo "- Registry package verified: $name@$version (SHA512; required exports)" >> "$GITHUB_STEP_SUMMARY"
+          done

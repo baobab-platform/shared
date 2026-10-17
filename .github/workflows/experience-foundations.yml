@@ -7,6 +7,8 @@ on:
       - 'docs/experience/**'
       - '.github/workflows/experience-foundations.yml'
       - 'pnpm-lock.yaml'
+      - 'scripts/verify-experience-package*'
+      - '.github/workflows/verify-experience-registry.yml'
   push:
     branches: [main]
     paths:
@@ -14,6 +16,8 @@ on:
       - 'docs/experience/**'
       - '.github/workflows/experience-foundations.yml'
       - 'pnpm-lock.yaml'
+      - 'scripts/verify-experience-package*'
+      - '.github/workflows/verify-experience-registry.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -36,6 +40,8 @@ jobs:
         run: node -e "if(process.versions.node.split('.')[0]!=='24')process.exit(1)"
       - name: Install locked workspace
         run: pnpm install --frozen-lockfile
+      - name: Verify release evidence checker rejects tampered artifacts
+        run: node --test scripts/verify-experience-package.test.mjs
       - name: Lint and validate
         run: |
           pnpm --filter @baobab-platform/experience-tokens lint
