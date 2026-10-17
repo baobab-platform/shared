@@ -31,7 +31,7 @@ export function verifyExperiencePackage({name,version,tarball,integrity}) {
   const paths=new Set(execFileSync("tar",["-tzf",tarball],{encoding:"utf8"})
     .split("\n").filter(Boolean).map(x=>x.replace(/\/$/,"")))
   for(const path of paths){
-    assert.ok(path.startsWith("package/"),"Unexpected archive root")
+    assert.ok(path === "package" || path.startsWith("package/"),"Unexpected archive root")
     assert.ok(!path.split("/").includes(".."),"Unsafe path traversal")
   }
   assert.ok(paths.has("package/package.json"),"Manifest missing")
