@@ -61,6 +61,23 @@ jobs:
           echo "run_rust=${RUST}" >> "$GITHUB_OUTPUT"
           echo "run_infra=${INFRA}" >> "$GITHUB_OUTPUT"
 
+      # pnpm 11 ignores tokens in project .npmrc; only trusted home config
+      # contains read-only registry credentials. Do not disable pnpm audit.
+      - name: Configure trusted GitHub Packages authentication
+        if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_node == 'true' }}
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f .npmrc ]] && grep -Fqx '@baobab-platform:registry=https://npm.pkg.github.com' .npmrc; then
+            if [[ '${{ github.event_name }}' == 'pull_request' && '${{ github.event.pull_request.head.repo.full_name }}' != '${{ github.repository }}' ]]; then
+              echo '::error::Private-registry install disallowed from forked PR'
+              exit 1
+            fi
+            printf '//npm.pkg.github.com/:_authToken=%s\n' "$NODE_AUTH_TOKEN" > "$HOME/.npmrc"
+          fi
+
       - name: Node dependency audit
         if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_node == 'true' }}
         env:
