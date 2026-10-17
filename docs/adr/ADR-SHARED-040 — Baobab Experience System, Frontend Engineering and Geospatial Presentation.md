@@ -1,6 +1,6 @@
 # ADR-SHARED-040 — Baobab Experience System: Cross-Estate Design, Frontend Engineering and Geospatial Presentation
 
-**Status:** Accepted — Normative Cross-Repository Experience Architecture  
+**Status:** Accepted — Normative Cross-Repository Experience Architecture; refined 17 October 2026 (Base UI)  
 **Decision date:** 17 October 2026  
 **Authority:** Baobab Platform Architecture / Platform Owner  
 **Primary repository:** baobab-platform/shared  
@@ -51,6 +51,20 @@ Foundation packages MAY be delivered independently in phases. A planned or empty
 | External consumer | Its own independent frontend or no frontend | Opt-in packages on standard public interfaces; never an admission prerequisite |
 
 Corporate affiliation conveys neither grants nor cross-tenant visibility. A platform operator's CP Console remains a privileged administrative surface, not another generic estate. All leaf UIs receive typed, already-authorised view models from their owning application/BFF; they NEVER resolve tenant/Organisation/LegalActor/market/capability authoritatively in the browser.
+
+### 2.4 Base UI as the first-party interactive primitive standard (Refinement, 17 October 2026)
+
+Baobab SHALL standardise on @base-ui/react as the default interactive primitive engine across Nabhold, ZuriBeans, Thamani, CP Console and subsequent first-party frontends. shadcn/ui continues as the preferred curated component-authoring approach; it is not a competing runtime primitive engine. The platform MUST retain separate company branding, app deployment, independent authority boundaries and consumer-controlled package adoption.
+
+Base UI SHALL underpin newly added or migrated dialogs, menus, tabs, selects, comboboxes, popovers, tooltips and complex interactive components wherever an appropriate accessible primitive exists. Noninteractive native semantic HTML such as anchors, headings, breadcrumbs, tables, ordered milestone lists and disclosure where native behaviour is sufficient SHALL remain native. No artificial Base UI wrapper is required for static content.
+
+Migration SHALL proceed component-family by component-family with audited real call sites, preserved business semantics and shippable intermediate state. Base UI render is NOT a mechanical drop-in for Radix asChild; controlled state, keyboard focus, portal layering, Escape, touch interaction, event handlers and accessibility contracts SHALL be separately verified. Native link semantics may not be replaced by Button semantics. Old libraries MAY coexist temporarily only through an explicit tracked migration inventory; they SHALL be removed only after replacement coverage is proven.
+
+The Shared experience-ui package SHALL depend on Base UI for its interactive primitives, retain React as a peer dependency and avoid mandatory heavyweight client hydration for otherwise server-rendered pages. Both estate-local component implementations and Shared wrappers SHALL follow a Node 24 build/test profile with version-pinned React and Base UI. Actual migration acceptance requires frozen-lockfile CI, type/lint checks, browser keyboard/focus and reduced-motion tests, accessibility scan, viewport visual regression, and protected workflow tests wherever relevant. Merely declaring Base UI in package.json does not qualify a migration.
+
+Do not rewrite IAM, CP, TMS, ERP or legal authority merely because the frontend primitive runtime changes. An accepted UX standard is not protected staging or production acceptance.
+
+---
 
 ### 2.3 Product identity and theming
 

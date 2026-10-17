@@ -20,3 +20,7 @@ remains separate from merge. No synthetic fixture conveys domain authority.
 ## BXS-04 remaining acceptance
 
 The initial React primitives have semantic SSR/negative tests and opt-in CSS. Portable CSF stories are shipped as source examples; they are not evidence of a running Shared Storybook, visual snapshots or real-browser keyboard/assistive-technology acceptance. Provider-agnostic primitive migration into Nabhold, ZuriBeans, Thamani and CP remains separately gated.
+
+## Base UI refinement
+
+ADR-SHARED-040 §2.4 governs new interactive primitives. See [cross-estate migration register](base-ui-migration.md). This decision does not claim all four applications have migrated.
