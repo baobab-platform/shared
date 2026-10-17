@@ -1,0 +1,5 @@
+/* Consumers also import maplibre-gl/dist/maplibre-gl.css in their optional map entry. */
+.bx-map-canvas {height:24rem;min-height:18rem;max-height:60dvh;position:relative;}
+.bx-evidence-map button,.bx-map-marker {font:inherit;min-height:44px;padding:.65rem 1rem;border:1px solid var(--bx-color-border,#d8d1c2);border-radius:var(--bx-radius-control,10px);background:var(--bx-color-surface,#fff);color:var(--bx-color-foreground,#111);}
+.bx-evidence-map button:focus-visible,.bx-map-marker:focus-visible {outline:3px solid var(--bx-color-focus,#9b6200);outline-offset:3px;}
+.bx-evidence-map li {margin-block:1rem;overflow-wrap:anywhere;}

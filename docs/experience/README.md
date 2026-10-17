@@ -11,9 +11,9 @@ source, package publication, browser CI and protected operation are separate rec
 | BXS-03 geography/evidence | Published 0.2.0 baseline; strict calendar validation and large-coordinate bounds hardening in this increment | New exact-version publication; approved estimate/model provenance and real-service source receipts |
 | BXS-04 primitives | Published 0.2.0 baseline; Shared Chromium Storybook; controlled Base UI Dialog/Tabs and strict timelines in this increment | Reviewed visual baselines, manual assistive-technology review and consumer compatibility on the new release |
 | BXS-05 consumers | Nabhold tokens/geo-core, ZuriBeans tokens/UI, CP showcase tokens/UI, Thamani tokens/UI/geo-core all pin 0.2.0 | Bounded adoption is not complete migration; see per-consumer register |
-| BGX-01 synthetic logistics | Thamani main has internal tabs/tracking evidence; PR #28 adds shipment workspace | Actual logistics browser/visual acceptance, approved logistics theme and route composition |
-| BGX-02 map adapters | Not implemented at audited main | Bounded optional renderer, licensed provider/style decision, accessible fallback, attribution and privacy acceptance |
-| BGX-03 real services | Infrastructure main has dependency harness; PR #35 carries IAM/CP qualification | Real IAM/CP acceptance must pass; TMS tracking contracts remain Proposed and no tracking service is implemented |
+| BGX-01 synthetic logistics | Thamani #28 merged shipment workspace, strict evidence validation and real browser keyboard/axe/denial acceptance | Reviewed logistics visual acceptance, approved logistics theme and protected route composition |
+| BGX-02 map adapters | Optional MapLibre presentation source in current increment; explicit activation, licensed-origin policy and full evidence list | Exact-version package/browser qualification, publication and consumer adoption; production provider selection remains separate |
+| BGX-03 real services | Infrastructure main has dependency harness; PR #35 carries IAM/CP qualification | PR #35 passes four scenario groups but deliberately blocks L4-CP-02 until a real currently certified provider is exercised; TMS tracking remains Proposed/unimplemented |
 | BGX-04 protected operation | Not demonstrated | Protected staging, current authorised providers and independently approved go-live |
 
 ## Verified historical receipts

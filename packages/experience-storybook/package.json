@@ -13,12 +13,14 @@
     "node": ">=24 <25"
   },
   "dependencies": {
+    "@baobab-platform/experience-geo-maplibre": "workspace:*",
     "@baobab-platform/experience-ui": "workspace:*",
     "@baobab-platform/experience-tokens": "workspace:*",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "maplibre-gl": "6.14.0",
     "@storybook/react-vite": "10.6.0",
     "@storybook/addon-a11y": "10.6.0",
     "@storybook/addon-docs": "10.6.0",
