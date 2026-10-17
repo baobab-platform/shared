@@ -20,6 +20,9 @@ container, container_text = load("reusable-foundation-container.yml")
 
 for workflow in (entry, security, adapters, container):
     assert workflow["permissions"]["contents"] == "read"
+    assert workflow["permissions"]["packages"] == "read"
+assert entry["jobs"]["security"]["permissions"]["packages"] == "read"
+assert security["jobs"]["native-deps"]["permissions"]["packages"] == "read"
 
 
 configure = next(
