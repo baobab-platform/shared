@@ -1,5 +1,11 @@
 # @baobab-platform/experience-tokens
 
+## 0.3.1
+
+### Patch Changes
+
+- 49c4aea: Include the existing Apache-2.0 repository licence and explicit package metadata in published artifacts. No brand or runtime authority changes.
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @baobab-platform/experience-ui
 
+## 0.3.1
+
+### Patch Changes
+
+- 49c4aea: Include the existing Apache-2.0 repository licence and explicit package metadata in published artifacts. No brand or runtime authority changes.
+- Updated dependencies [49c4aea]
+  - @baobab-platform/experience-geo-core@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
