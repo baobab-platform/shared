@@ -1,6 +1,6 @@
 # INT-02 Pulse provider qualification register
 
-Date: 18 October 2026. Status: BOOTSTRAP APPROVED / QUALIFICATION REQUIRED_NOT_EXECUTED.
+Date: 18 October 2026. Status: QUALIFIED_SYNTHETIC_RUN / ACTIONS SOURCE QUALIFICATION ONLY.
 Authority: Accepted ADR-SHARED-036, ADR-SHARED-032, existing workload lifecycle
 rules, CP ADR-BCP-025 and Pulse ADR-PULSE-018/019. The owner accepted the
 [named proof-bootstrap decision](int02-pulse-proof-bootstrap-decision.md) on 18 October 2026.
@@ -10,7 +10,7 @@ rules, CP ADR-BCP-025 and Pulse ADR-PULSE-018/019. The owner accepted the
 `baobab-int02-pulse-consumer` is an Infrastructure-owned, integration-only,
 ACTIVE named evidence-producing client-credentials ceiling in the canonical `development`
 environment (the executor profile is named INT-02 integration). Its two
-audiences/scopes let a future actual caller resolve its own CP context and
+audiences/scopes let the disposable actual caller resolve its own CP context and
 request evidence search at Pulse. The base search scope has the existing
 CONFIDENTIAL classification ceiling; it is not PUBLIC-only. Restrict fixtures
 to synthetic data, test that RESTRICTED results remain denied, and never infer
@@ -53,11 +53,53 @@ DigitalEstate, binding or provider support is created by this registry row.
    production. Shared stewards evaluate qualification only against the accepted proof
    ceremony and actual evidence, independently of the ACTIVE producer status.
 
-## Current disposition
+## Accepted synthetic run — 18 October 2026
 
-The executable Pulse provider declares IMPLEMENTED evidence search, but the
-existing INT-02 fixture is only a synthetic resolution row. L4-CP-02 remains
-BLOCKED. This allocation removes an absent vocabulary ceiling; it supplies
-no credential or qualification. The accepted proof-bootstrap decision permits
-producing the required evidence. Infrastructure
-#35 must stay open until this and every other mandatory real scenario passes.
+[Infrastructure #35](https://github.com/baobab-platform/infrastructure/pull/35)
+is merged at `03ad3f488e19ad446328ba6827363730e4252409`. [Final-pin Actions run 39108198886](https://github.com/baobab-platform/infrastructure/actions/runs/39108198886)
+passed L4-IAM-01/02 and L4-CP-01/02/03, including 14 actual browser/MFA,
+16 Organisation-isolation, 11 Pulse HTTP, seven native and 19 provider
+qualification checks. Verified TLS and successful teardown are in the receipt.
+The exact executing harness is `d760256a53cb0f80d665c94c24b2cc939e4eba86`; dependency
+baselines remain distinct from that executing source identity.
+
+| Source | Qualified revision |
+|---|---|
+| baobab-cp | `34fc86a5bf276dfb80760710fe32a34d2431558a` |
+| baobab-iam | `9b8b0b4a401139ed9055fd5947ca3b1b7e0f3f8e` |
+| baobab-pulse | `6f4271d7b43db8d9c81e04d4f5dcc4cf50b27172` |
+| shared | `33f1dd6aa7c0db43743dbb02cff16d5dc0802610` |
+
+[Retained artifact 12128983186](https://github.com/baobab-platform/infrastructure/actions/runs/39108198886/artifacts/12128983186) has ZIP digest `sha256:6713419967aadc358194b3e4048746f2c7e05c83960d41d7d54963c1375ee18a`.
+The receipt's self-digest is `sha256:25aa7c08ad07bee0e7cc78df72e0148409117dcc02389b5726d09a58dec032bd`. The frozen provider-proof digest
+is `sha256:9c955a09bf100f0686fcf9c7b3151c96a91d213d5fd7ae963be3ca95ba3a2194` and the image-manifest digest is
+`sha256:c93d1d5ce5a42d81c2de50af9d12dec5f2eef57009068c06e89459b85a17bf1b`. Downloaded artifact verification
+confirmed all four digests, the running image configuration identity,
+`teardown_verified: true`, `passed: true` and `QUALIFIED_SYNTHETIC_RUN`.
+
+Actual owning APIs recorded the source-bound EngineRelease and independent
+ProviderCapabilityCertification, refused recorder self-certification, approved
+the release and activated the provider through reviewed changesets, and tested
+certificate revocation/replacement. Current certification and all three health
+levels were rechecked after actual provider outage and recovery. Missing
+grant/binding, wrong contract/market/instance/isolation and expired health were
+observed independently. CP #415 repaired nested canonical-scope verification;
+CP #416 made isolation-restricted binding eligibility require trusted profile
+evidence. Both merged after their CI and clean reviews.
+
+Health observations were explicitly written to CP's ephemeral canonical table
+from actual HTTPS readiness/search and the actual stopped-provider fault; that
+CP revision has no health-ingestion HTTP endpoint. STANDARD UNKNOWN remains
+eligible under Shared policy, while current HEALTHY evidence is independently
+mandatory for this qualification. Reference embeddings remain deterministic.
+
+This is acceptance of one source-pinned, synthetic-data INT-02 Actions run.
+The run uses the same integration Dev Container and entrypoints as Codespaces;
+an independently observed interactive Codespaces session is not asserted.
+The client, credentials, sessions, databases, vector volume and private network
+were destroyed. Its test certification does not survive as operational
+certification. A changed pin or stale evidence requires a new complete run.
+INT-03 Nabhold/IAM/CP/BFF/CMS consumption is next and remains unaccepted. No
+real enterprise onboarding, legal authority, protected staging or production
+permission follows. Rollback retains the named decision's suspension/revocation
+procedure and reruns the refusal suite; source regressions fail qualification.
