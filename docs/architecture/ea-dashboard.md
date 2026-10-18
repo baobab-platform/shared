@@ -55,8 +55,10 @@ Rules:
 
 ## Readiness summary
 
+INT-02 was reconciled on 18 October 2026. Other rows retain their cited evidence dates.
+
 ```text
-BAOBAB EA v2.2 READINESS                                   2026-10-15
+BAOBAB EA v2.2 READINESS                                   2026-10-18
 ──────────────────────────────────────────────────────────────────────
 EA v2.2 plan                       ACCEPTED (2026-10-15; ADR-SHARED-036 accepted)
 Backend development                SUBSTANTIAL (code merged; not proven live)
