@@ -28,6 +28,23 @@ the caller cannot produce that proof under the current rule. The existing
 FB-05 provisioning-evidence exception names another workload and cannot be
 reused implicitly. This is a lifecycle decision, not a library-version defect.
 
+## Latest concrete real-component result
+
+Infrastructure [run 39090331827](https://github.com/baobab-platform/infrastructure/actions/runs/39090331827),
+harness `ae6dafee1e237f75992b601f8ea75fdbd062827a`, passed all seven native
+Pulse observations: actual persisted vector search, canonical hydration,
+classification/tenant denial, stale projection detection, separate native
+PostgreSQL/Qdrant and verified-HTTPS full semantic readiness. The four
+IAM/CP groups above passed again, with all 14 browser and 16 record-isolation
+checks. TLS passed and all disposable resources were destroyed.
+
+The scrubbed receipt artifact `12122871802` is retained with digest
+`sha256:83896f342f4a0a4e36d7c6c6a7721cfd1750577d049acd3383ad728370e3af90`.
+L4-CP-02 remains BLOCKED and the workflow correctly fails; all other repository
+checks completed (25 success, six applicable skips). This native proof provides
+no HTTP caller/CP qualification or independent provider certification. The
+policy decision below remains PROPOSED and has not been executed.
+
 ## Proposed owner ruling
 
 Authorize one additional **named evidence-producing identity** before its
