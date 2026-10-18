@@ -83,6 +83,30 @@ class ValidatorAudienceRegistrationTests(unittest.TestCase):
         for withheld in ("context:validate", "content:entry:preview", "provider-migration:task"):
             self.assertNotIn(withheld, nabhold["allowed_scopes"])
 
+    def test_int02_exception_rejects_changed_boundary(self):
+        original = copy.deepcopy(self.registry["workloads"]["baobab-int02-pulse-consumer"])
+        self.assertEqual(self.validate().returncode, 0)
+        changes = {
+            "owner": "baobab-platform/baobab-pulse",
+            "repository": "baobab-platform/baobab-pulse",
+            "runtime": "persistent runtime",
+            "environment": "production",
+            "allowed_audiences": ["baobab-control-plane"],
+            "allowed_scopes": ["context:resolve"],
+            "credential_type": "federated_workload_token",
+            "rotation_owner": "baobab-platform/baobab-iam",
+            "status": "PROVISIONED",
+            "unreviewed_authority": True,
+        }
+        for field, value in changes.items():
+            with self.subTest(field=field):
+                changed = copy.deepcopy(original)
+                changed[field] = value
+                self.registry["workloads"]["baobab-int02-pulse-consumer"] = changed
+                self.assertNotEqual(self.validate().returncode, 0)
+        self.registry["workloads"].pop("baobab-int02-pulse-consumer")
+        self.assertNotEqual(self.validate().returncode, 0)
+
     def test_two_validators_for_one_audience(self):
         result = self.validate()
         self.assertEqual(result.returncode, 0, result.stderr)
