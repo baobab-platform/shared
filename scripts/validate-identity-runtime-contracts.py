@@ -64,7 +64,41 @@ def validate_profile(profile):
     return errors
 
 
+def validate_authority_policy():
+    # Transport scopes never confer canonical authority or silently extend the
+    # federation-only permission. Keep the initial allocation explicitly empty.
+    policy = yaml.safe_load((IDENTITY / 'runtime-authority-policy.yaml').read_text())
+    assert policy['transport'] == {
+        'scope': 'identity-runtime:read', 'actors': ['workload'],
+        'audiences': ['baobab-control-plane']}
+    assert policy['facets'] == {
+        'HUMAN_AUTHENTICATION': 'identity.authentication.perform',
+        'WORKLOAD_TOKEN_ISSUANCE': 'identity.workload-token.issue'}
+    scopes = yaml.safe_load((ROOT / 'contracts/authorization/v1/scope-registry.yaml').read_text())['scopes']
+    scope = next(x for x in scopes if x['name'] == policy['transport']['scope'])
+    assert scope['audience'] == policy['transport']['audiences']
+    assert scope['allowed_actors'] == ['workload'] and scope['grants_authority'] is False
+    permissions = yaml.safe_load((ROOT / 'contracts/administration/v1/permission-registry.yaml').read_text())['permissions']
+    permission = next(x for x in permissions if x['key'] == policy['permission'])
+    assert permission['read_only'] is True and permission['delegable'] is False
+    assert permission['risk_class'] == 'LOW'
+    assert permission['scope_levels'] == ['PLATFORM', 'ORGANISATION', 'DIGITAL_ESTATE']
+    assert policy['references']['configuration'] == {
+        'system_namespace': 'baobab_iam', 'engine_id': 'baobab-iam',
+        'native_entity_type': 'identity_runtime_configuration'}
+    assert policy['requirements']['creates_authority'] is False
+    assert policy['requirements']['reference_existence_is_approval'] is False
+    registry = yaml.safe_load((IDENTITY / 'workload-registry.yaml').read_text())
+    # The registry's clients stay unchanged: definition is not activation.
+    for workload in registry['workloads'].values():
+        assert policy['transport']['scope'] not in workload.get('allowed_scopes', [])
+    profiles = yaml.safe_load((ROOT / 'contracts/administration/v1/profile-registry.yaml').read_text())
+    for profile in profiles['profiles']:
+        assert policy['permission'] not in profile.get('permissions', [])
+
+
 def main():
+    validate_authority_policy()
     for name in SCHEMAS:
         schema = json.loads((IDENTITY / name).read_text())
         Draft202012Validator.check_schema(schema)
