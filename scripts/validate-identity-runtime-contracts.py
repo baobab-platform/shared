@@ -68,6 +68,7 @@ def validate_authority_policy():
     # Transport scopes never confer canonical authority or silently extend the
     # federation-only permission. Keep the initial allocation explicitly empty.
     policy = yaml.safe_load((IDENTITY / 'runtime-authority-policy.yaml').read_text())
+    assert policy['permission'] == 'security.identity-runtime.view'
     assert policy['transport'] == {
         'scope': 'identity-runtime:read', 'actors': ['workload'],
         'audiences': ['baobab-control-plane']}
