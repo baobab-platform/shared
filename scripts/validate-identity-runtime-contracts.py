@@ -74,7 +74,18 @@ def validate_authority_policy():
         'audiences': ['baobab-control-plane']}
     assert policy['facets'] == {
         'HUMAN_AUTHENTICATION': 'identity.authentication.perform',
-        'WORKLOAD_TOKEN_ISSUANCE': 'identity.workload-token.issue'}
+        'WORKLOAD_TOKEN_ISSUANCE': 'identity.workload-token.issue',
+        'OAUTH_AUTHORIZATION_SERVER': 'identity.workload-token.issue'}
+    native = policy['composition_requirements']['native_handoff']
+    assert native == {
+        'human_capability': 'identity.authentication.perform',
+        'human_facet': 'HUMAN_AUTHENTICATION',
+        'issuer_capability': 'identity.workload-token.issue',
+        'issuer_facets': ['WORKLOAD_TOKEN_ISSUANCE', 'OAUTH_AUTHORIZATION_SERVER'],
+        'exact_same_issuer_provider_instance_artifact_and_profile_revision': True,
+        'exact_same_organisation_estate_security_domain_and_caller': True,
+        'repeat_checks_before_provider_acceptance': True,
+        'grants_human_resource_audience': False}
     scopes = yaml.safe_load((ROOT / 'contracts/authorization/v1/scope-registry.yaml').read_text())['scopes']
     scope = next(x for x in scopes if x['name'] == policy['transport']['scope'])
     assert scope['audience'] == policy['transport']['audiences']
