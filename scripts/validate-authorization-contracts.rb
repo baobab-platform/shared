@@ -159,6 +159,22 @@ workloads.each do |client_id, entry|
   end
 end
 
+# Owner decision 2026-10-18: one named, disposable development evidence
+# producer may bootstrap its own proof. Exact hash equality also rejects new
+# authority-bearing fields; this does not relax any other workload lifecycle.
+int02_expected = {
+  "repository" => "baobab-platform/infrastructure",
+  "owner" => "baobab-platform/infrastructure",
+  "runtime" => "INT-02 disposable real-component Pulse qualification consumer",
+  "environment" => "development",
+  "allowed_audiences" => %w[baobab-control-plane baobab-pulse],
+  "allowed_scopes" => %w[context:resolve intelligence:evidence:search],
+  "credential_type" => "client_credentials",
+  "rotation_owner" => "baobab-platform/infrastructure",
+  "status" => "ACTIVE"
+}
+fail_contract("INT-02 proof-bootstrap identity must match its exact owner-approved boundary") unless workloads["baobab-int02-pulse-consumer"] == int02_expected
+
 # 5. Every scope an OpenAPI operation requires is registered, and a
 #    Control Plane operation's scope is issued for the Control Plane's
 #    audience (ADR-BCP-022 section 18: the contract never names a scope the

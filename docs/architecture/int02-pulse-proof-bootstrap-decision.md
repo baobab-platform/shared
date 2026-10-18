@@ -1,9 +1,11 @@
-# INT-02 Pulse proof-bootstrap decision request
+# INT-02 Pulse proof-bootstrap decision
 
-**Status: PROPOSED — OWNER DECISION REQUIRED; NOT AN ACTIVATION**  
+**Status: ACCEPTED — NAMED SYNTHETIC EVIDENCE-PRODUCER EXCEPTION; QUALIFICATION PENDING**
 Date: 18 October 2026  
 Scope: Infrastructure #35, L4-CP-02, disposable real-component synthetic-data laboratory only  
 Governing: Accepted ADR-SHARED-036; EA v2.2 mandatory matrix; existing workload lifecycle; ADR-SHARED-032; CP ADR-BCP-025; Pulse ADR-PULSE-018/019.
+
+Owner approval: [18 October 2026](https://github.com/baobab-platform/shared/pull/346#issuecomment-6244904207), also explicitly approved in the implementation session.
 
 ## Problem and actual evidence
 
@@ -21,7 +23,7 @@ These are necessary observations, not caller authentication, CP authority,
 resource-server acceptance or certification. Reference embeddings are
 deterministic; no production model-quality claim follows.
 
-The canonical `baobab-int02-pulse-consumer` ceiling exists but is PROVISIONED.
+Before this decision, the canonical `baobab-int02-pulse-consumer` ceiling was PROVISIONED.
 CP correctly refuses its tokens. The workload promotion rule requires actual
 resource-server acceptance and caller-bound CP validation before ACTIVE, so
 the caller cannot produce that proof under the current rule. The existing
@@ -43,14 +45,14 @@ The scrubbed receipt artifact `12122871802` is retained with digest
 L4-CP-02 remains BLOCKED and the workflow correctly fails; all other repository
 checks completed (25 success, six applicable skips). This native proof provides
 no HTTP caller/CP qualification or independent provider certification. The
-policy decision below remains PROPOSED and has not been executed.
+accepted exception below permits producing the missing proof; that proof remains pending.
 
-## Proposed owner ruling
+## Accepted owner ruling
 
 Authorize one additional **named evidence-producing identity** before its
 end-to-end proof, solely to produce INT-02 synthetic qualification evidence:
 
-| Field | Exact requested boundary |
+| Field | Exact accepted boundary |
 |---|---|
 | Client | Existing `baobab-int02-pulse-consumer`; no wildcard or general qualification class |
 | Owner | baobab-platform/infrastructure |
@@ -65,16 +67,38 @@ end-to-end proof, solely to produce INT-02 synthetic qualification evidence:
 | Duration | Client, sessions, keys, volumes and network destroyed on success/failure |
 | Exclusions | No mutation, validator, provisioning, deployment observation, provider administration or certification scope |
 
-After explicit owner acceptance, a separate implementation change would make
-**only that existing registry row ACTIVE under this named exception**, with
-Shared validators pinning every field above. No other PROVISIONED workload is
-promoted, and the default lifecycle rule remains unchanged. This proposal
-itself changes no registry status and creates no credential, grant or binding.
+Only that existing registry row is ACTIVE under this named exception. Shared's
+contract validator pins the entire row, including the absence of additional
+fields. No other PROVISIONED workload is promoted; the default lifecycle rule
+remains unchanged. Registry acceptance creates no credential, grant or binding.
 
-ACTIVE under this exception would mean **permitted to produce the synthetic
-proof**, not that the proof has passed or that Pulse is qualified for any
-real tenant, protected staging or production. The receipt must state that
-distinction and identify the owner decision and exact Shared revision.
+### Bootstrap and qualification states
+
+The initial state is **BOOTSTRAP / REQUIRED_NOT_EXECUTED**. In each disposable
+run, the named client may obtain its two audience-limited credentials and use
+explicit synthetic grants to produce the first proof. Missing first proof is
+not an IAM issuance or CP context denial in this state. No CP certification or
+provider-health gate is bypassed: these are separate facts that the harness
+must establish through owning APIs before it may report qualification.
+
+The bootstrap window starts when the run creates its client and ends on
+success, failure or the 75-minute live-job timeout. Teardown always destroys
+the client, sessions, credentials, database volumes and network. A new run
+starts a new bootstrap window with new credentials; it never inherits a green
+receipt or an expired certification from another run.
+
+Only after all mandatory checks on the final exact pins, current scoped
+certification/health, independent maker/checker and teardown pass may that run
+report **QUALIFIED_SYNTHETIC_RUN**. Missing, stale or revoked proof then
+invalidates that run's qualification result. A source/pin change requires a
+fresh complete run. This is an evidence acceptance rule, not an additional CP
+runtime policy or a durable real-tenant activation. In both states, unexpected
+scope/owner/issuer/environment or absent explicit authority fails closed.
+
+ACTIVE means **permitted to produce synthetic proof**. It never establishes
+that Pulse is qualified for a real tenant, protected staging or production.
+Receipts must identify this decision, the exact Shared revision and the
+per-run qualification state independently of workload ACTIVE status.
 
 ## Engineering required after acceptance
 
@@ -104,7 +128,7 @@ distinction and identify the owner decision and exact Shared revision.
    sanitized evidence and fail the workflow for any FAIL/BLOCKED/missing case.
    Demonstrate teardown. Only then consider Infrastructure #35 merge.
 
-## Alternative without a named exception
+## Considered alternative (not selected)
 
 Design a canonical, human-sponsored, expiring qualification-lease/context
 protocol in Shared/CP/IAM that permits a PROVISIONED identity to produce proof
@@ -116,11 +140,11 @@ named evidence-producing exception.
 
 ## Exit and rollback
 
-Owner acceptance must identify this exact identity/boundary and its decision
-date before the registry/issuance change is activated. If rejected, the row
-stays PROVISIONED and #35 stays BLOCKED while the alternative is designed.
-After acceptance, any extra scope, changed owner, production credential,
-untrusted issuer, missing cleanup or absent current proof fails closed.
-Rollback suspends/revokes the named canonical row, disables the disposable
-client, destroys its credentials/runtime and reruns the refusal tests. No
-real enterprise or production access is created by this decision.
+The owner accepted the exact identity and boundary on 18 October 2026. Any
+extra scope, changed owner, production credential, untrusted issuer or missing
+cleanup fails closed. An absent first proof keeps bootstrap unqualified; after
+a successful qualification, absent/current-proof failure invalidates that
+qualification as described above. Infrastructure #35 remains blocked until all
+mandatory real scenarios pass. Rollback suspends/revokes the canonical row,
+disables the disposable client, destroys its credentials/runtime and reruns
+refusal tests. This decision creates no real enterprise or production access.
