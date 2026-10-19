@@ -13,7 +13,7 @@ test("private image pinned to publisher v1.4.4 digest and prebuild contains no r
   assert.match(config.updateContentCommand,/node --test/);
   assert.doesNotMatch(config.updateContentCommand,/install|private-npm|bootstrap/);
   assert.match(config.postCreateCommand,/bootstrap\.mjs/);
-  assert.equal(config.portsAttributes["3000"]?.visibility,"private");
+  assert.deepEqual(config.forwardPorts,[]); // Shared publishes packages and contracts; no network listener to forward.
   assert.equal(config.otherPortsAttributes.visibility,"private");
   assert.equal(config.containerEnv.GITHUB_TOKEN,undefined);
   assert.equal(config.containerEnv.BAOBAB_PACKAGES_READ_TOKEN,undefined);
