@@ -1,11 +1,43 @@
 {
-  "name": "Baobab Shared Contracts",
-  "image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend",
+  "name": "Baobab Shared Contracts — governed development",
+  "image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
-  "updateContentCommand": "pnpm install --frozen-lockfile --ignore-scripts",
-  "postCreateCommand": "baobab-verify --contract && pnpm lint",
+  "init": true,
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "containerEnv": {
+    "TZ": "Africa/Johannesburg",
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0",
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "forwardPorts": [],
+  "portsAttributes": {},
+  "otherPortsAttributes": {
+    "visibility": "private",
+    "onAutoForward": "silent"
+  },
+  "updateContentCommand": "node --test scripts/codespaces/*.node.mjs",
+  "postCreateCommand": "node scripts/codespaces/bootstrap.mjs && baobab-verify --contract",
+  "postStartCommand": "node scripts/codespaces/private-npm.mjs",
+  "waitFor": "updateContentCommand",
   "customizations": {
+    "codespaces": {
+      "repositories": {
+        "baobab-platform/baobab-dev": {
+          "permissions": {
+            "contents": "read",
+            "packages": "read"
+          }
+        }
+      },
+      "openFiles": [
+        "README.md"
+      ]
+    },
     "vscode": {
       "extensions": [
         "davidanson.vscode-markdownlint",
