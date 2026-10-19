@@ -1395,3 +1395,13 @@ P0-04B ERP posting-authority resolution is defined in [erp/v2](contracts/erp/v2/
 records the PROVISIONED, nonproduction read-only test-consumer ceiling and the
 remaining owner-governed proof bootstrap. No ACTIVE workload, provider
 certification, tenant entitlement or production permission is inferred.
+
+## GitHub Codespaces
+
+This repository now uses the exact digest-pinned Baobab v1.4.4 development
+image and an offline-first lifecycle. See
+[Codespaces access and verification](docs/development/codespaces-registry-access.md)
+for the GHCR **Codespaces** ACL, independently managed **Actions** ACL,
+read-only package/repository permissions, token handling and onboarding.
+Creating a **new** Codespace is necessary to approve changed repository
+permissions; pulling `main` into an old Codespace does not grant them.
