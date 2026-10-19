@@ -331,7 +331,9 @@ C4-03/C4-04 protected acceptance. IAM #126 is merged after the gofmt repair and
 46 final-head checks (success/applicable skips), as bounded evidence/readiness
 source only. Nabhold #71–74 are reviewed/merged after final-head checks; recent
 Codespaces/registry controls remain intact. IAM #127 and Infrastructure #36
-advance subject-profile and private-handoff source preparation. CMS #38 contains
-a paired Vitest/coverage repair awaiting mandatory CI. Source candidates confer
+advance subject-profile and private-handoff source preparation. CMS #38 merged after paired Vitest/coverage repair and mandatory checks; #37
+is superseded. Ready-triggered #126 review arrived after merge; corrective IAM
+#128 hardens CA inode ownership and checksum/JSON snapshot identity, with local
+focused/race tests passing and mandatory CI/completed review still required. Source candidates confer
 no provider certification, Principal, grant, binding or real release authority.
 INT-03, EA Gates D/E, protected staging and production remain unaccepted.
