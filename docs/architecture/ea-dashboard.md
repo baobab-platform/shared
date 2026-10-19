@@ -111,7 +111,7 @@ EA v2.0–v2.2 do not define EA-07 or EA-08 as workstreams like the others, so t
 |---|---|---|---|---|---|---|---|---|---|
 | **EA-INT / INT-01** Codespaces/Actions L4 runner | YES | PART | YES | N/A | YES | N/A | N/A | NO | [Infrastructure #34](https://github.com/baobab-platform/infrastructure/pull/34) merged (`09d3774`), [final-head Actions L4 real-process run](https://github.com/baobab-platform/infrastructure/actions/runs/38719421668) **PASS**; PostgreSQL, RabbitMQ and Redis image digests pinned, L4-MAN-01–04 and negative source checks green. **Codespaces interactive run not separately demonstrated**; INT-02 source/Actions qualification is recorded below, while INT-03 and remaining engine profiles stay open. No protected staging claimed. |
 | **INT-02** IAM↔CP real-process tests | YES | YES | YES | N/A | YES | NO | N/A | NO | [Infrastructure #35](https://github.com/baobab-platform/infrastructure/pull/35) merged (`03ad3f488e19`); [final-pin run 39108198886](https://github.com/baobab-platform/infrastructure/actions/runs/39108198886) passes all five mandatory groups, actual governed Pulse qualification and teardown. [Verified receipt/pins](int02-pulse-qualification-register.md). Synthetic Actions source qualification only; protected staging and operational certification remain unaccepted. |
-| **INT-03** Nabhold IAM/CP/BFF/CMS | YES | PART | NO | N/A | NO | NO | NO | NO | Nabhold [#55](https://github.com/baobab-platform/nabhold/pull/55) merged, IAM [#116](https://github.com/baobab-platform/baobab-iam/pull/116) **merged** (`49aa42c`), CMS code merged; no single-pinned IAM↔CP↔Nabhold↔CMS real execution. |
+| **INT-03** Nabhold IAM/CP/BFF/CMS | YES | PART | NO | N/A | NO | NO | NO | NO | Existing Nabhold OIDC/TLS Redis/current-identity + smoke/receipt source is merged; IAM #116 dormant source merged. [19 October audit](nabhold-int03-dependency-audit-2026-10-19.md): IAM #126 repaired/reviewed/merged for C4-03E integrity-only verification and C4-04A observation; #127 subject-mapper/persistent-client repair and Infrastructure #36 private handoff are source candidates. No connected pinned BFF/CMS proof, protected native C4 acceptance or staging acceptance. |
 | **INT-04** Thamani B2B/B2C logistics | YES | PART | NO | N/A | NO | NO | N/A | NO | Owner ADR B2B/B2C reconciliation and qualified services required before profile source acceptance. |
 | **INT-05** ZuriBeans B2B | YES | PART | NO | N/A | NO | NO | N/A | NO | Buyer/supplier, corridor, quotations and relevant Trade/ERP providers need real integrated test. |
 | **INT-06** Equator & Estate Co. | YES | PART | NO | N/A | NO | NO | EXT | NO | Domain capabilities and responsible actor to be qualified; no fabricated property/finance success. |
@@ -321,3 +321,17 @@ legal/provider acceptance, Gate B/D/E or production activation is promoted.
 ## 18 October 2026 — INT-02 synthetic qualification accepted
 
 The [verified qualification register](int02-pulse-qualification-register.md) supersedes earlier INT-02 allocation/BLOCKED checkpoints for the qualified source set only. Infrastructure #35 and CP #415/#416 are merged after required checks/reviews. All five mandatory groups and all required provider checks pass in the final-pin Actions run, with verified artifacts and teardown. Shared #346 records the owner-approved named bootstrap exception; ACTIVE producer status remains independent of acceptance. INT-03 Nabhold/IAM/CP/BFF/CMS is now the next integration dependency. EA Gate D/E, protected staging, legal/operational certification and production remain unaccepted.
+
+
+## 19 October 2026 — Nabhold INT-03 dependency reconciliation
+
+[Fresh dependency audit](nabhold-int03-dependency-audit-2026-10-19.md) preserves
+INT-02's exact frozen source qualification and separates it from current native
+C4-03/C4-04 protected acceptance. IAM #126 is merged after the gofmt repair and
+46 final-head checks (success/applicable skips), as bounded evidence/readiness
+source only. Nabhold #71–74 are reviewed/merged after final-head checks; recent
+Codespaces/registry controls remain intact. IAM #127 and Infrastructure #36
+advance subject-profile and private-handoff source preparation. CMS #38 contains
+a paired Vitest/coverage repair awaiting mandatory CI. Source candidates confer
+no provider certification, Principal, grant, binding or real release authority.
+INT-03, EA Gates D/E, protected staging and production remain unaccepted.
