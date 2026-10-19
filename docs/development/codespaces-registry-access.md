@@ -1,6 +1,6 @@
 # Baobab Shared Contracts: secure Codespaces environment
 Use the v1.4.4 [baobab-dev published image](https://github.com/baobab-platform/baobab-dev/releases/tag/v1.4.4),
-pinned to the full multi-language image digest `sha256:9603f0e7402aa85771e904db1c20f2ecc02f705131b266cb4ec3d1c24ea58ae4`. Before creating
+pinned to the frontend-publisher profile digest `sha256:9603f0e7402aa85771e904db1c20f2ecc02f705131b266cb4ec3d1c24ea58ae4`. Before creating
 the Codespace, an organisation package owner must add `baobab-platform/shared` to the
 **Manage Codespaces access** permission on the GHCR **baobab-dev** package
 (or verify inherited access). **Manage Actions access** is separate and
