@@ -61,7 +61,6 @@ class AcceptedV23Governance(unittest.TestCase):
         self.assertIn("EA Implementation Plan v2.2", old_plan)
         self.assertIn("**Status:** ACCEPTED", old_plan)
         self.assertIn("**Status:** Accepted programme acceptance companion", matrix)
-        self.assertIn("no unreviewed", PLAN.read_text(encoding="utf-8").lower()) if False else None
 
     def test_register_and_indexes_promote_v23_without_false_operations(self):
         dashboard = DASHBOARD.read_text(encoding="utf-8")
