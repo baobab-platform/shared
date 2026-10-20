@@ -31,7 +31,7 @@
 | `equator-estate` | `5c43dcedc6f43cd2f9cafdecb446f2decca3cac5` | 9 | Legacy Django estate; README retains pre-rename `nabhold/shared` and `.nabhold/environment.yaml`, baobab-dev 1.2.6 reference; adoption/authority/modernisation audit required before INT-06 |
 | `engine-template` | `61c0ccf3449543772a9e8bbd0e9887ac8e5af3e6` | 1 | Onboarding template, example manifests and placeholder instructions; adopt Shared ADR-041 and current canonical Foundation/baobab-dev baselines before creating new active engines |
 
-**Counts:** 20 discovered repositories; open PR counts at this API snapshot total 82, including many Dependabot/toolchain updates and explicitly unmerged implementation candidates. This count is a **listing**, not a verification that every PR's CI passed. Never infer progress from PR count, branch existence, or directory presence.
+**Counts:** 20 discovered repositories; open PR counts at this API snapshot total 81, including many Dependabot/toolchain updates and explicitly unmerged implementation candidates. This count is a **listing**, not a verification that every PR's CI passed. Never infer progress from PR count, branch existence, or directory presence.
 
 ## 2. Material findings requiring v2.3 corrections
 
