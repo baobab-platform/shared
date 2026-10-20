@@ -17,6 +17,14 @@
 
 ---
 
+## Platform-wide engineering philosophy — all first-party repositories
+
+**[Accepted ADR-SHARED-041](docs/adr/ADR-SHARED-041%20%E2%80%94%20Baobab%20Platform%20Engineering%20Philosophy%20and%20African%20Enterprise%20Product%20Excellence.md) applies to every current and future first-party `baobab-*` repository, Shared, Infrastructure and Group Digital Estates.**
+
+> Learn from established products. Reuse what is proven. Question what is inadequate. Re-engineer what must improve. Build what Africa needs.
+
+Teams shall evaluate proven reuse against the needs of African enterprise users, refactor/re-engineer or develop original software where evidence justifies it, preserve canonical authority and licence/IP boundaries, and demonstrate production-grade maintainability, security, tests, interoperability and market-specific compliance. **[Engineering review checklist](docs/governance/engineering-philosophy-review.md)** provides proportionate decision evidence for material work. This normative adoption does not assert that every repository has yet completed a local migration or certified a deployment.
+
 ## Baobab Experience System
 
 [Accepted ADR-SHARED-040](docs/adr/ADR-SHARED-040%20%E2%80%94%20Baobab%20Experience%20System%2C%20Frontend%20Engineering%20and%20Geospatial%20Presentation.md) governs cross-estate frontend standards and authority-neutral package reuse. [BXS implementation inventory](docs/experience/README.md) records source progress without claiming operational acceptance.
