@@ -58,7 +58,7 @@ class AcceptedV23Governance(unittest.TestCase):
         old_plan = OLD.read_text(encoding="utf-8")
         self.assertIn("single authoritative registry", matrix)
         self.assertIn("ea-v2.2-integration-acceptance-matrix.md", matrix)
-        self.assertIn("EA Implementation Plan v2.2", old_plan)
+        self.assertIn("# Baobab Platform Enterprise Architecture Implementation Plan v2.2", old_plan)
         self.assertIn("**Status:** ACCEPTED", old_plan)
         self.assertIn("**Status:** Accepted programme acceptance companion", matrix)
 
