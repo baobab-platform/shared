@@ -1,4 +1,47 @@
-# EA Implementation Register (v2.2)
+# EA Implementation Register (v2.3 — live)
+
+**Active governing plan:** [Accepted EA Implementation Plan v2.3 (20 October 2026)](EA-implementation-plan-v2.3-2026-10-20.md), superseding v2.2 **only for active execution ordering and freshness of programme status**. Its source baseline is the [20-repository audit](ea-v2.3-cross-repository-evidence-audit-2026-10-20.md), and the new [product / engineering acceptance delta](ea-v2.3-acceptance-and-adoption-matrix.md) supplements—but does not replace—the [v2.2 canonical L4 scenario matrix](ea-v2.2-integration-acceptance-matrix.md).
+**Last authoritative rebaseline:** 20 October 2026. **Status:** Accepted programme architecture; downstream code, live legal/identity, statutory/provider and production gates remain independently unaccepted as specified below.
+**Active philosophy:** [Accepted ADR-SHARED-041](../adr/ADR-SHARED-041%20%E2%80%94%20Baobab%20Platform%20Engineering%20Philosophy%20and%20African%20Enterprise%20Product%20Excellence.md): **Learn from established products. Reuse what is proven. Question what is inadequate. Re-engineer what must improve. Build what Africa needs.**
+
+This header and the current v2.3 sections **supersede older 'current' claims in the historical v2.2 material below**. Every dated prior claim remains useful as a record of what was known *then*, not as live source state. See exact 20 repository main SHAs, open PR candidates and limitations in the audit. No environment/account/PSP/carrier/legal/employee activation is created here.
+
+## v2.3 current gate decisions (20 October 2026)
+
+| Item | Current verified assessment | Next exit and authority |
+| --- | --- | --- |
+| EA v2.3 programme | **ACCEPTED architecture**, active schedule only after Shared PR merge and mandatory checks | Shared Platform Owner; source/publication CI not runtime certification |
+| EA-INT INT-01 | Frozen real-component synthetic Actions source qualification **PASS**; interactive Codespaces real run not independently observed | Infrastructure — same exact profile observed in Codespaces; new pins requalify |
+| EA-INT INT-02 | Frozen real IAM/CP/Pulse synthetic Actions profile **PASS**, Infra #35 merged | IAM/CP/Pulse/Infrastructure — C4 protected native Ory and later source pins separate |
+| **EA-INT INT-03** | **OPEN / P0 critical path**; real connected Nabhold BFF ↔ IAM ↔ CP ↔ CMS not accepted | Infrastructure #37, Nabhold #77 candidates; owner-positive AND negative L4/NAB receipts |
+| EA-INT INT-04 | **OPEN**: Thamani is **Accepted B2B logistics** (ADR-THA-0018); TMS Foundation-0 | Thamani/TMS/Docs/Regulations — real sourced provider before commercial logistics claims |
+| EA-INT INT-05/06 | **OPEN**: ZuriBeans B2B and Equator legacy estate have separately unproven source/legal/domain readiness | ZuriBeans/Trade/ERP/CP; Equator Foundation/identity/role migration |
+| **EA-INT INT-07** | **OPEN mandatory** unrelated external API-only client with zero DigitalEstate | CP/IAM/Infra/provider current real-component synthetic profile |
+| EA-INT INT-08 | **PARTIAL** domain-local financial and regulatory reference suites; platform L4 mesh unproven | Trade/ERP/Payments/Subscriptions/Docs/Regulations/Pulse owners |
+| EA-R02 | **BLOCKED** on independently accepted founding legal cases, actual mandates, protected source/custody and current identity | CP/legal/IAM/Infrastructure |
+| EA-R03 | **PARTIAL** native Trade/ERP/Payments source; deferred ERP bank/cash/other protected families still denied; PSP D2 missing | Domain PEP owners and independent financial/provider reviewers |
+| FIN F1 | **PROPOSED** ADR-SHARED-033; DRAFT wire/source code is not accepted certified provider | Shared/ERP/Finance actual contract/GL and native acceptance |
+| EA-BXS | **PARTIAL** Shared source/packages and first consumers; not blanket real browser/a11y/production acceptance | Shared Experience and each estate; published package and pinned consumer release |
+| EA-ENG | **ADR-SHARED-041 Accepted globally**; repo-local ENG-01–05 rollout still open | All first-party repo owners / Shared Foundation; audit and proportionate evidence |
+| EA-PRODUCT / People | ERP ADR-023 and PG17 defaults **PR #110 UNMERGED**; mandatory Gate D failed (permission denied / exit 126), no CDSoftware iDempiere13 runtime or statutory pack proof | ERP BP-00/01 then separate Shared People contracts and ZA/UG experts |
+| EA-PRODUCT / TMS | Foundation-0, ADR-0001/0002 Accepted, ADR-0003..0019 Proposed; no running provider | TMS engineering; accepted tech, Shared contracts and source-backed tracking |
+| EA-PRODUCT / SCF | Foundation-0, 35 Proposed ADRs, no operating licensed funder/bank | Conditional legal/funder viability; **not** R0/INT-03 prerequisite |
+| EA-R05/06 and Gates D/E | **NOT ACCEPTED / PRODUCTION NOT AUTHORISED** | Actual protected AWS identity/secrets/data, official legal/PSP/vendor review, provider-specific certification, recovery and signed GO |
+
+**At this source freeze:** 20 repositories discovered through organisation search; exact main baselines and a PR-state count of **81 open candidate PRs** are recorded in the v2.3 audit. Most are dependency/toolchain candidates. Open PR heads, even CI-green, are NOT merged code. No individual CI status is inferred here except where exact evidence is cited.
+
+## v2.3 critical dependency order (current)
+
+1. **INT-03**, with private real issued issuer/CP current Principal/tenant and qualified CMS/BFF, complete negative/revoke/failure/teardown; qualify in an actual selected synthetic lab before protected staging.
+2. **Parallel EA-R02/R03** legal/mandate/official evidence and native Trade/ERP/payments authorisation; finance and Subscriptions/Docs provider/legal responsibility remain separate.
+3. **INT-07** unrelated external API-only user with **zero** Baobab DigitalEstate.
+4. **ENG-01/02/03 and BXS** exact published Shared package, consumer/browsers, CMS Node 24, Equator legacy links, engine-template and toolchain/data-upgrade risk.
+5. **ERP BP-00/01** fix #110 runner failure then select CDSoftware source reuse/re-engineering path; **TMS Foundation** for Thamani B2B, other qualified customer profiles.
+6. **EA-R05/R06** protected actually observed AWS source/provider/legal/certification and independently signed releases, once eligible.
+
+No 'Africa compliant' or global production flag; admission remains tenant/legal actor/market/capability/provider/version scoped. Continue nondependent engineering while waiting for external protected credentials.
+
+## Historical v2.2 live register — retained below as dated evidence, not active authority
 
 **Governing plan:** [EA Implementation Plan v2.2](EA-implementation-plan-v2.2-ADR-SHARED-036-integration-reconciliation.md), **ACCEPTED 2026-10-15** under [ADR-SHARED-036](../adr/ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) (**ACCEPTED**, Shared [#310](https://github.com/baobab-platform/shared/pull/310)). [EA v2.1](EA-implementation-plan-v2.1-ADR-BCP-026-027-reconciliation.md), Accepted 2026-10-13, remains the prior execution baseline with its substantive 026/027 decisions retained; [EA v2.0](../adr/Baobab%20Platform%20Enterprise%20Architecture%20Implementation%20Plan%20%E2%80%94%20Revised%202026-09-30.md) retains earlier unchanged workstream scope only.  
 **Last updated:** **2026-10-18** — INT-02 Actions synthetic qualification accepted with verified final-pin evidence and teardown. INT-03 and an independently observed interactive Codespaces session remain open. Earlier dated checkpoints retain their historical scope.
