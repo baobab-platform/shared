@@ -45,7 +45,7 @@ class EngineeringPhilosophyGovernanceTests(unittest.TestCase):
         adr = ADR_PATH.read_text(encoding="utf-8")
         self.assertIn("individual repository adoption", adr)
         self.assertIn("Existing code is not retroactively claimed noncompliant", adr)
-        self.assertIn("not a current certification", adr) if "not a current certification" in adr else self.assertIn("not a current certification, ranking or marketing claim", adr)
+        self.assertIn("not a current certification, ranking or marketing claim", adr)
         self.assertIn("protected production", adr.lower())
 
 
