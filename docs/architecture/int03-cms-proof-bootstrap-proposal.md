@@ -20,8 +20,11 @@ It names `baobab-int02-pulse-consumer`, not a CMS caller. Its audience,
 scope, ownership and lifecycle exception must not be reused for CMS.
 
 The existing CMS validator `baobab-cms-workload` is ACTIVE with CP audience
-and `validates_audiences: [baobab-cms]`. That validator is not the Nabhold
+and `validates_audiences: [baobab-cms]`. That production validator cannot authenticate in this development run: the
+registry forbids cross-environment credential use. It is also not the Nabhold
 consumer and grants no authority to read content or act for another Principal.
+This proposal therefore needs **two separately named development identities**;
+approving the caller alone cannot enable proof production.
 The CMS declaration remains PARTIAL and non-production; a registry ceiling
 is neither provider qualification nor permission to broaden support.
 
@@ -41,14 +44,15 @@ promotion or runtime bootstrap implementation:
 | Caller | New separately named `baobab-int03-cms-consumer`; do not activate or change `nabhold-backend` |
 | Owner / executor | Infrastructure, with Nabhold/CMS/IAM/CP scenario owners |
 | Canonical environment | development; isolated INT-03 synthetic integration only |
-| Audiences | CP and CMS only, using independently audience-limited tokens |
+| Audiences | `baobab-control-plane` and `baobab-cms` only, using independently audience-limited tokens |
 | Scopes | `context:resolve` only at CP; `content:entry:resolve` only at CMS |
 | Data ceiling | PUBLIC synthetic institutional content only; no personal, legal, payroll or business records |
-| Credential | New OS-random confidential client secret per run; no product secret or static shared credential |
+| Credentials | Two distinct OS-random confidential client secrets per run, one per named development identity; no product secret, shared secret or production credential |
 | Context | Current CP-issued RUNTIME context belonging to the same verified workload Principal; no supplied subject impersonation |
 | Synthetic authority | Separate explicit synthetic Organisation/Tenant/estate/grants; corporate relationships confer no access |
 | Provider | Actual source-built CMS, PostgreSQL and declared content/v1 route; retain current PARTIAL/non-production semantics |
-| Validation | CMS's own independently authenticated validator presents the caller token as subject evidence under unchanged canonical constraints |
+| Validator | Separate `baobab-int03-cms-validator`, owner CMS, environment development; audience `baobab-control-plane`, scope `context:validate`, `validates_audiences: [baobab-cms]` only; no context:resolve, content, provisioning, migration or administration scope |
+| Validation | This separate development validator presents the caller token as subject evidence; it never becomes the caller or receives content-read authority |
 | Window | One disposable run, at most the existing 90-minute INT-03 job timeout; no inherited proof or durable client |
 | Destruction | On success/failure/interruption, destroy clients, secrets, sessions, containers, volumes, network and per-run keys |
 
@@ -61,19 +65,24 @@ Preview/draft requests must be denied to this read-only caller. Any later
 positive preview/editorial flow requires its own explicitly authorised actor,
 scope and CP/domain permission; it cannot silently widen this proposal.
 
-Reuse of the existing CMS validator is permitted only if its actual issued
-credential satisfies its unchanged canonical owner/environment/audience/scope
-constraints. A new validator environment or identity needs a separate owner
-decision. Do not rewrite a materialised registry snapshot, set a production
-client ACTIVE, disable lifecycle checks, mint a token or borrow the Pulse caller.
+**Both named development identities require explicit owner acceptance before
+runtime work.** The caller exception alone is insufficient: without the separate
+development validator, caller-bound CP context redemption is BLOCKED. The
+existing production `baobab-cms-workload` row and credentials remain unchanged
+and cannot be used here. The proposed validator gets no business authority and
+may validate only the CMS audience; independent wrong-audience, wrong-owner,
+wrong-environment and swapped-identity negatives must pass. Do not rewrite a
+materialised registry snapshot, set a production client ACTIVE, disable
+lifecycle checks, mint a token or borrow the Pulse caller.
 
 ## Engineering and qualification order after an accepted decision
 
 1. Converge CMS's Node 22 drift with the reviewed Node 24 toolchain while
    preserving maintained Payload/Next package compatibility and Codespaces.
    Source checks are not runtime/provider acceptance.
-2. Implement the narrowly accepted registration/fixture using IAM-owned
-   provisioning, exact read-back and ephemeral credentials. Preserve the
+2. Only after **both** named development identity decisions are accepted,
+   implement their registration/fixture using IAM-owned provisioning, exact
+   read-back and independent ephemeral credentials. Preserve the
    canonical registry's unmodified approved snapshot and fail-closed lifecycle.
 3. Adapt maintained confidential client-credentials acquisition and CP context
    issuance/refresh into the existing Nabhold ports. Independently scoped tokens
