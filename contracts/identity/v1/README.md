@@ -80,37 +80,44 @@ Keycloak realm URLs. Run `python scripts/tests/test_buyer_identity_handoff.py`.
 These are static checks; signature, expiry, client allowlisting, canonical
 Principal resolution and membership remain runtime obligations.
 
-## Delegated human Principal resolution — ZuriBeans ZB-G03 step 3
+## Delegated human Principal resolution — ADR-SHARED-042 (CAA-01)
 
-`principal-resolution.openapi.yaml` and `principal-resolution.schema.json`
+`principal-resolution.openapi.yaml` (v1.1) and `principal-resolution.schema.json`
 define how a registered workload acting for an authenticated human obtains
-that human's canonical Principal from the Control Plane. This follows the
-platform owner's decision of 2026-10-21.
+that human's canonical Principal from the Control Plane. They implement
+ADR-SHARED-042 sections 3 and 4.
 
 - **Two credentials, never merged:** the caller authenticates with its own
-  `baobab-control-plane` workload token. The human's IAM access token,
-  audience-bound to the caller's own resource (`baobab-trade` for Trade), is
+  `baobab-control-plane` workload token. The human's IAM access token is
   carried in the body only as subject evidence.
+- **A registered validator relationship.** The subject audience CP accepts
+  from a caller is the caller's `subject_principal_audiences` entry in
+  `workload-registry.yaml` (`baobab-trade` for Trade). CP never infers it from
+  `allowed_audiences`, and a request cannot choose it.
 - **The Control Plane verifies the evidence itself.** It checks the signature
   and issuer against its own issuer trust, then actor type, audience, scope,
   authorised party and expiry, and the token's current status by
   introspection. The caller cannot assert issuer, subject, Principal, email or
   customer identifiers.
-- **`identity.principal.resolve@1`**
+- **`resolveDelegatedHumanPrincipal`**
   (`POST /internal/identity/v1/principals/resolve`, scope
   `identity:principal:resolve`) is read-only. An unknown identity is
   `IDENTITY_NOT_RESOLVED` and creates nothing.
-- **`identity.principal.register.buyer@1`**
+- **`registerBuyerPrincipal`**
   (`POST /internal/identity/v1/principals/register-buyer`, scope
   `identity:principal:register-buyer`) is governed just-in-time registration
-  of an eligible first-time buyer. It is idempotent per (issuer, subject) and
-  establishes identity only.
+  of an eligible first-time buyer. The request declares `purpose:
+  BUYER_ONBOARDING`, which must be approved for the BFF client. CP refuses an
+  identity-link conflict (`IDENTITY_LINK_CONFLICT`; never resolved by email)
+  and enforces abuse limits (`REGISTRATION_RATE_LIMITED`). It writes the
+  Principal, ExternalIdentity, audit record and a
+  `com.baobab-platform.identity.created.v1` outbox event in one transaction.
+  It is idempotent per (issuer, subject) and establishes identity only.
 - **A resolution carries no authority.** No tenant, Organisation membership,
-  role, market or purchasing authority comes with it. Trade still binds the
-  canonical Organisation and checks an active buyer membership on every
-  operation.
+  role, market or purchasing authority comes with it. Trade binds those in
+  `trade/v2` `buyer-execution-context.schema.json`.
 
-Both scopes are workload-only, `grants_authority: false` and allocated to no
-workload. The capability keys are named here for the Control Plane
-implementation. They enter the canonical catalogue only through the EA-02
-candidate review. Run `python scripts/tests/test_principal_resolution.py`.
+These are operations, not catalogued capabilities: no capability key is
+registered for them. Both scopes are workload-only, `grants_authority: false`
+and allocated to no workload. Run
+`python scripts/tests/test_principal_resolution.py`.

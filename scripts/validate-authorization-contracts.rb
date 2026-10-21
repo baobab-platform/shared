@@ -129,6 +129,24 @@ workloads.each do |client_id, entry|
   elsif !validates.nil?
     fail_contract("workload #{client_id} lists validates_audiences but does not allow context:validate")
   end
+  # ADR-SHARED-042 section 3: delegated human Principal resolution needs a registered validator relationship scoped to the
+  # expected human audience. Required of exactly the workloads holding a principal-resolution scope, and nobody else.
+  principal_scopes = %w[identity:principal:resolve identity:principal:register-buyer]
+  subject_audiences = entry["subject_principal_audiences"]
+  if (entry.fetch("allowed_scopes") & principal_scopes).any?
+    unless subject_audiences.is_a?(Array) && !subject_audiences.empty? && subject_audiences.uniq.size == subject_audiences.size &&
+           subject_audiences.all? { |a| a.is_a?(String) && !a.strip.empty? }
+      fail_contract("workload #{client_id} allows a principal-resolution scope, so it must list subject_principal_audiences (distinct, non-empty)")
+    end
+    subject_audiences.each do |audience|
+      fail_contract("workload #{client_id} subject_principal_audiences must not include baobab-control-plane") if audience == "baobab-control-plane"
+      unless scopes.values.any? { |scope| Array(scope["audience"]).include?(audience) && Array(scope["allowed_actors"]) == ["human"] }
+        fail_contract("workload #{client_id} subject audience #{audience} is not one any human-only registered scope is issued for")
+      end
+    end
+  elsif !subject_audiences.nil?
+    fail_contract("workload #{client_id} lists subject_principal_audiences but holds no principal-resolution scope")
+  end
   # docs/architecture/context-authority-for-workloads.md section 13: a context purpose other than the implicit RUNTIME is
   # explicit, distinct and known. TENANT_PROVISIONING (pre-activation provisioning authority) belongs to a provisioner that
   # can never also be a runtime resolver or a validator, and that has no client secret to leak.

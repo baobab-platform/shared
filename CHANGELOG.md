@@ -23,6 +23,20 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ADR-SHARED-042 CAA-01, first part: commercial actor contracts.** This aligns the delegated Principal contracts (#358) with the Accepted ADR-SHARED-042 and adds the buyer execution context.
+  * New `trade/v2/buyer-execution-context.schema.json`: `TradeBuyerExecutionContext` and `BuyerOperationDecision` per ADR-SHARED-042 section 7.
+    * Human actor only; an operation catalogue for buyer operations.
+    * Market, transaction and seller-of-record binding are required where the operation needs them.
+    * Closed outcomes (`ALLOW`, `APPROVAL_REQUIRED`, `SELECTION_REQUIRED`, `DENY`, `UNAVAILABLE`) and closed reasons; ALLOW carries no reasons.
+    * Two examples and a test that also enforces the 60-second ceiling.
+  * `identity/v1/principal-resolution` v1.1:
+    * registration declares `purpose: BUYER_ONBOARDING`;
+    * new `IDENTITY_LINK_CONFLICT` (409) and `REGISTRATION_RATE_LIMITED` (429) denials;
+    * registration writes a `com.baobab-platform.identity.created.v1` outbox event in the same transaction;
+    * capability-key names removed: these are operations, not catalogued capabilities.
+  * New `workload-registry.yaml` field `subject_principal_audiences`: the registered validator relationship for subject evidence (section 3). `validate-authorization-contracts.rb` requires it of exactly the workloads holding a principal-resolution scope, and only with human-only audiences. No workload holds it.
+  * Still CAA-01 work, not delivered here: the buyer-authority receipt (with CAA-06) and the machine-mandate delegation profile. No route, grant or capability is activated.
+
 * **Delegated human Principal resolution (ZB-G03 step 3; platform owner decision of 2026-10-21).** Trade obtains a buyer's canonical Principal from the Control Plane. Trade authenticates with its own workload token and carries the buyer's Trade-audience IAM access token as subject evidence, which the Control Plane verifies itself.
   * New private `identity/v1/principal-resolution.openapi.yaml`:
     * `POST /internal/identity/v1/principals/resolve` is read-only; an unknown identity is `IDENTITY_NOT_RESOLVED`.
