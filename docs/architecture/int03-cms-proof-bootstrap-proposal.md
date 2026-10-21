@@ -1,10 +1,12 @@
-# INT-03 CMS proof-bootstrap proposal
+# INT-03 CMS proof-bootstrap decision
 
-**Status: PROPOSED — NOT AUTHORISING**  
-Date: 20 October 2026  
-Owners for decision: Shared architecture, IAM, CP, CMS, Infrastructure and Security  
-Execution lane: Accepted EA v2.3 P0-A; retained v2.2 INT-03/NAB matrix  
-No registry, credential, grant, binding, provider support or release is changed by this proposal.
+**Status: ACCEPTED — NAMED SYNTHETIC EVIDENCE-PRODUCER EXCEPTIONS; QUALIFICATION PENDING**
+Proposed: 20 October 2026; accepted: 21 October 2026
+Acceptance owners: Shared architecture, IAM, CP, CMS, Infrastructure and Security
+Execution lane: Accepted EA v2.3 P0-A; retained v2.2 INT-03/NAB matrix
+This decision authorises the bounded engineering below. This documentation change itself creates no registry row, credential, grant, binding, provider support or release.
+
+Owner acceptance: [explicit Platform Owner approval](https://github.com/baobab-platform/shared/pull/354#issuecomment-6307263681), reaffirmed in the 21 October implementation session. Both named development identities below are accepted within the stated limits.
 
 ## Concrete blocker
 
@@ -23,7 +25,7 @@ The existing CMS validator `baobab-cms-workload` is ACTIVE with CP audience
 and `validates_audiences: [baobab-cms]`. That production validator cannot authenticate in this development run: the
 registry forbids cross-environment credential use. It is also not the Nabhold
 consumer and grants no authority to read content or act for another Principal.
-This proposal therefore needs **two separately named development identities**;
+This decision therefore requires **two separately named development identities**;
 approving the caller alone cannot enable proof production.
 The CMS declaration remains PARTIAL and non-production; a registry ceiling
 is neither provider qualification nor permission to broaden support.
@@ -34,12 +36,11 @@ workload-token provider; automatic current-context issuance/refresh and actual
 provider execution remain engineering tasks. Reimplementing these ports or
 using the human identity token as a workload would evade the real blocker.
 
-## Proposed owner decision, not an accepted exception
+## Accepted owner decision
 
-Approve or reject this finite evidence-producing boundary before any registry
-promotion or runtime bootstrap implementation:
+Authorise exactly this finite evidence-producing boundary:
 
-| Field | Proposed limit |
+| Field | Accepted limit |
 |---|---|
 | Caller | New separately named `baobab-int03-cms-consumer`; do not activate or change `nabhold-backend` |
 | Owner / executor | Infrastructure, with Nabhold/CMS/IAM/CP scenario owners |
@@ -65,23 +66,55 @@ Preview/draft requests must be denied to this read-only caller. Any later
 positive preview/editorial flow requires its own explicitly authorised actor,
 scope and CP/domain permission; it cannot silently widen this proposal.
 
-**Both named development identities require explicit owner acceptance before
-runtime work.** The caller exception alone is insufficient: without the separate
+**Both named development identities are accepted for this bounded proof.** The caller exception alone is insufficient: without the separate
 development validator, caller-bound CP context redemption is BLOCKED. The
 existing production `baobab-cms-workload` row and credentials remain unchanged
-and cannot be used here. The proposed validator gets no business authority and
+and cannot be used here. The development validator gets no business authority and
 may validate only the CMS audience; independent wrong-audience, wrong-owner,
 wrong-environment and swapped-identity negatives must pass. Do not rewrite a
 materialised registry snapshot, set a production client ACTIVE, disable
-lifecycle checks, mint a token or borrow the Pulse caller.
+lifecycle checks, mint a token outside the accepted fixture or borrow the Pulse caller.
 
-## Engineering and qualification order after an accepted decision
+## Bounded pre-proof lifecycle exceptions
+
+When implemented in the canonical registry, **only**
+`baobab-int03-cms-consumer` and `baobab-int03-cms-validator` may be `ACTIVE`
+before first proof under this decision. ACTIVE means permitted to produce
+synthetic evidence, never provider qualification or durable product activation.
+This is an explicit exception to the pre-proof PROVISIONED rule for both named
+identities; neither needs the proof it is being created to produce. The
+production `nabhold-backend` remains PROVISIONED and the production CMS
+validator remains unchanged. No wildcard/bootstrap class is introduced.
+
+The implementation SHALL pin each complete registry row with contract validation,
+including exact owner, development environment, audience, scopes and absence of
+extra authority-bearing fields. IAM-owned fixture provisioning SHALL consume the
+unmodified approved registry, create two independent per-run secrets, read back
+the exact client ceilings and forbid ordinary production bootstrap issuance.
+A reviewed registry change is required before either identity can authenticate;
+this document does not alter a materialised snapshot or bypass lifecycle checks.
+
+Each disposable run begins in **BOOTSTRAP / REQUIRED_NOT_EXECUTED** when its
+clients are created. Lack of first proof does not itself deny this bounded
+bootstrap. The window closes on success, failure, interruption or the existing
+90-minute job timeout, whichever occurs first. Always destroy clients, sessions,
+secrets, keys, volumes, containers and network. A new run uses new secrets and
+cannot inherit qualification or certification from an earlier run.
+
+Only a scenario-complete receipt at exact final pins, current independent
+maker/checker certification, health/binding and successful teardown may report
+**QUALIFIED_SYNTHETIC_RUN**. Missing/stale/revoked evidence invalidates that
+qualification. Unexpected issuer, environment, scope, owner or missing explicit
+tenant authority fails closed in both states. No EngineRelease, certification,
+health or binding gate is bypassed. Receipts SHALL identify this decision, exact
+Shared revision and per-run qualification state separately from ACTIVE status.
+
+## Engineering and qualification order
 
 1. Converge CMS's Node 22 drift with the reviewed Node 24 toolchain while
    preserving maintained Payload/Next package compatibility and Codespaces.
    Source checks are not runtime/provider acceptance.
-2. Only after **both** named development identity decisions are accepted,
-   implement their registration/fixture using IAM-owned provisioning, exact
+2. Implement their registration/fixture using IAM-owned provisioning, exact
    read-back and independent ephemeral credentials. Preserve the
    canonical registry's unmodified approved snapshot and fail-closed lifecycle.
 3. Adapt maintained confidential client-credentials acquisition and CP context
@@ -101,13 +134,12 @@ lifecycle checks, mint a token or borrow the Pulse caller.
    teardown. Keep identity-only smoke, local synthetic integration, protected
    staging and production as separate facts.
 
-The normal lifecycle still applies unless this precise proposal is independently
-accepted and implemented. A decision alone would permit producing synthetic
-proof; it would not establish proof, provider acceptance, full INT-03, protected
+The normal lifecycle remains binding outside these two named exceptions. This
+decision permits producing synthetic proof; it does not establish proof, provider acceptance, full INT-03, protected
 native Kratos/Hydra C4, legal onboarding, protected staging or R0–R3/production GO.
 Nabhold remains a non-trading holding/platform estate; subsidiaries remain
 autonomous and independently isolated.
 
-Rollback before acceptance is deletion of this proposal. After any future
-accepted implementation, revert the named lab exception and disable its profile;
+Rollback suspends/revokes both named lab identities, disables their profile and
+destroys disposable credentials and runtime resources;
 retain historical receipts without extending their scope.
