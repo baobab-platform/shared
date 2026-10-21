@@ -23,6 +23,15 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **Delegated human Principal resolution (ZB-G03 step 3; platform owner decision of 2026-10-21).** Trade obtains a buyer's canonical Principal from the Control Plane. Trade authenticates with its own workload token and carries the buyer's Trade-audience IAM access token as subject evidence, which the Control Plane verifies itself.
+  * New private `identity/v1/principal-resolution.openapi.yaml`:
+    * `POST /internal/identity/v1/principals/resolve` is read-only; an unknown identity is `IDENTITY_NOT_RESOLVED`.
+    * `POST /internal/identity/v1/principals/register-buyer` is governed just-in-time registration that establishes identity only.
+  * New `principal-resolution.schema.json`. Requests carry only the subject token, its RFC 8693 type and a correlation ID; no issuer, subject, Principal, email or customer identifier can be asserted. The resolution is an ACTIVE human Principal with no tenant, membership, role, market or purchasing authority. Denial codes are closed.
+  * New workload-only scopes `identity:principal:resolve` and `identity:principal:register-buyer` (`baobab-control-plane`, `grants_authority: false`), allocated to no workload.
+  * `validate-authorization-contracts.rb` also checks the new API's operation scopes.
+  * Static contract only: no grant, issuer trust, CP endpoint or Trade consumer is added.
+
 * **ZuriBeans buyer identity handoff (ZB-G03; IAM ADR-0010 section 0).** On the platform owner's 2026-10-21 ruling, Ory Kratos authenticates buyers and Ory Hydra issues tokens through a confidential estate BFF; Keycloak stays the federation and transition provider, and Medusa is never platform identity authority.
   * New `identity/v1/buyer-identity-handoff.schema.json`: the human, `baobab-trade`-audience, `trade:buy` access-token claims Trade accepts, and the non-authoritative request (`requested_organisation_id`, `requested_country_code`, `correlation_id`). Provider organisation claims are never buyer-membership evidence.
   * New scope `trade:buy` (human only, `baobab-trade`, `grants_authority: false`), already named by `trade/v1` and now registered. Granted to no client.
