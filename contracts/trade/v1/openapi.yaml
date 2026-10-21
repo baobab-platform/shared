@@ -177,10 +177,10 @@ components:
       content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } }
   securitySchemes:
     humanOidc:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://iam.baobab-platform.com/realms/baobab-platform/protocol/openid-connect/auth
-          tokenUrl: https://iam.baobab-platform.com/realms/baobab-platform/protocol/openid-connect/token
-          scopes:
-            trade:buy: Request B2B buying operations; domain authority is still evaluated by Trade
+      # Provider-neutral (ADR-IAM-0033): endpoints come from the IAM issuer's
+      # discovery document, whichever runtime serves it. A confidential estate
+      # BFF obtains the token and presents it server-to-server; the claims Trade
+      # validates are identity/v1 buyer-identity-handoff.schema.json. trade:buy
+      # requests buying operations; Trade still evaluates domain authority.
+      type: openIdConnect
+      openIdConnectUrl: https://iam.baobab-platform.com/.well-known/openid-configuration

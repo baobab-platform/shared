@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ZuriBeans buyer identity handoff (ZB-G03; IAM ADR-0010 section 0).** On the platform owner's 2026-10-21 ruling, Ory Kratos authenticates buyers and Ory Hydra issues tokens through a confidential estate BFF; Keycloak stays the federation and transition provider, and Medusa is never platform identity authority.
+  * New `identity/v1/buyer-identity-handoff.schema.json`: the human, `baobab-trade`-audience, `trade:buy` access-token claims Trade accepts, and the non-authoritative request (`requested_organisation_id`, `requested_country_code`, `correlation_id`). Provider organisation claims are never buyer-membership evidence.
+  * New scope `trade:buy` (human only, `baobab-trade`, `grants_authority: false`), already named by `trade/v1` and now registered. Granted to no client.
+  * `trade/v1` `humanOidc` is now provider-neutral `openIdConnect` discovery instead of Keycloak realm URLs. Operations and wire shapes are unchanged.
+  * `validate-authorization-contracts.rb` now also checks that every `trade/v1` operation scope is registered and issued for `baobab-trade`; it previously checked only the Control Plane API, which is how the unregistered scope went unnoticed.
+  * Static contract only: no client, grant, CP mapping or Trade validation is added.
+
 * **Trade-A TA-01 Seller Operating Binding discovery (ADR-SHARED-039 §5; EA v2.2 EA-R03).** The platform owner decided on 2026-10-16 that Trade discovers its binding through a scoped CP lookup, and that Trade-A ships as eight PRs (TA-01 to TA-08).
   * `trade/v2/seller-operating-binding.schema.json` adds `BindingResolveRequest` and `BindingResolution`. Trade sends only its RUNTIME context, engine instance, opaque configuration reference, current digest and currency. CP derives tenant, Organisation and market from the context.
   * Closed outcomes: `RESOLVED`, `NO_APPLICABLE_BINDING`, `AMBIGUOUS_BINDING`, `BINDING_NOT_ACTIVE`, `NATIVE_CONFIGURATION_MISMATCH`, `ENGINE_INSTANCE_NOT_BOUND` and `CONTEXT_NOT_USABLE`. Only `RESOLVED` carries a binding reference, and discovery is never authority.

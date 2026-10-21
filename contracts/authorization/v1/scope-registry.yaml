@@ -780,6 +780,19 @@ scopes:
     allowed_actors: ["workload"]
     grants_authority: false
 
+  - name: "trade:buy"
+    description: >-
+      Requests B2B buying operations from Trade on behalf of the authenticated
+      human, through a confidential Digital Estate BFF (identity/v1
+      buyer-identity-handoff.schema.json; IAM ADR-0010 section 0). It grants no
+      authority: Trade still resolves the canonical Principal and current
+      context through the Control Plane and requires an active buyer
+      membership with the needed role for every operation. Already named by
+      trade/v1 openapi.yaml. Defined here; granted to no client.
+    audience: ["baobab-trade"]
+    allowed_actors: ["human"]
+    grants_authority: false
+
   # P0-04B Trade-0 (ADR-SHARED-039): CP legal authority for ONE catalogued
   # consequential Trade operation against ONE CP-owned Seller Operating
   # Binding version. AUTHORIZED is a 30-second fact, never a grant, provider

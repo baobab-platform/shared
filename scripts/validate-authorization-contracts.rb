@@ -179,11 +179,17 @@ fail_contract("INT-02 proof-bootstrap identity must match its exact owner-approv
 #    Control Plane operation's scope is issued for the Control Plane's
 #    audience (ADR-BCP-022 section 18: the contract never names a scope the
 #    registry does not govern).
-{ "contracts/control-plane/v1/openapi.yaml" => "baobab-control-plane" }.each do |path, audience|
-  load_yaml(path).fetch("paths").each do |route, item|
+# Trade's B2B API declares its requirement once at the top level, which every
+# operation without its own `security` inherits (OpenAPI 3.1).
+{ "contracts/control-plane/v1/openapi.yaml" => "baobab-control-plane",
+  "contracts/trade/v1/openapi.yaml" => "baobab-trade" }.each do |path, audience|
+  document = load_yaml(path)
+  document.fetch("paths").each do |route, item|
     item.each do |method, operation|
-      next unless operation.is_a?(Hash) && operation.key?("security")
-      operation.fetch("security").each do |requirement|
+      next unless operation.is_a?(Hash)
+      security = operation.fetch("security", document["security"])
+      next if security.nil?
+      security.each do |requirement|
         requirement.each_value do |required|
           required.each do |name|
             scope = scopes[name]
