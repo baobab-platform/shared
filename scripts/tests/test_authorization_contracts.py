@@ -107,6 +107,59 @@ class ValidatorAudienceRegistrationTests(unittest.TestCase):
         self.registry["workloads"].pop("baobab-int02-pulse-consumer")
         self.assertNotEqual(self.validate().returncode, 0)
 
+    def test_int03_caller_and_validator_have_independent_least_privilege(self):
+        caller = self.registry["workloads"]["baobab-int03-cms-consumer"]
+        validator = self.registry["workloads"]["baobab-int03-cms-validator"]
+        self.assertEqual(caller["status"], "ACTIVE")
+        self.assertEqual(validator["status"], "ACTIVE")
+        self.assertEqual(caller["environment"], "development")
+        self.assertEqual(validator["environment"], "development")
+        self.assertEqual(caller["allowed_audiences"], ["baobab-control-plane", "baobab-cms"])
+        self.assertEqual(caller["allowed_scopes"], ["context:resolve", "content:entry:resolve"])
+        self.assertNotIn("validates_audiences", caller)
+        self.assertEqual(validator["allowed_audiences"], ["baobab-control-plane"])
+        self.assertEqual(validator["allowed_scopes"], ["context:validate"])
+        self.assertEqual(validator["validates_audiences"], ["baobab-cms"])
+        self.assertNotEqual(caller["owner"], validator["owner"])
+        self.assertEqual(self.registry["workloads"]["nabhold-backend"]["status"], "PROVISIONED")
+        self.assertEqual(self.registry["workloads"]["baobab-cms-workload"]["environment"], "production")
+        self.assertEqual(self.validate().returncode, 0)
+
+    def test_int03_complete_rows_reject_boundary_changes_or_removal(self):
+        for client_id in ("baobab-int03-cms-consumer", "baobab-int03-cms-validator"):
+            original = copy.deepcopy(self.registry["workloads"][client_id])
+            changes = {
+                "owner": "baobab-platform/baobab-iam",
+                "repository": "baobab-platform/baobab-iam",
+                "runtime": "persistent product runtime",
+                "environment": "production",
+                "allowed_audiences": ["baobab-cms"],
+                "allowed_scopes": ["content:entry:preview"],
+                "credential_type": "federated_workload_token",
+                "rotation_owner": "baobab-platform/baobab-iam",
+                "status": "PROVISIONED",
+                "context_purposes": ["RUNTIME"],
+                "unreviewed_authority": True,
+                "validates_audiences": ["baobab-pulse"],
+            }
+            for field, value in changes.items():
+                with self.subTest(client=client_id, field=field):
+                    changed = copy.deepcopy(original)
+                    changed[field] = value
+                    self.registry["workloads"][client_id] = changed
+                    self.assertNotEqual(self.validate().returncode, 0)
+            self.registry["workloads"].pop(client_id)
+            self.assertNotEqual(self.validate().returncode, 0)
+            self.registry["workloads"][client_id] = original
+
+    def test_int03_does_not_promote_the_product_caller(self):
+        product = self.registry["workloads"]["nabhold-backend"]
+        for field, value in (("status", "ACTIVE"), ("environment", "development")):
+            original = product[field]
+            product[field] = value
+            self.assertNotEqual(self.validate().returncode, 0)
+            product[field] = original
+
     def test_two_validators_for_one_audience(self):
         result = self.validate()
         self.assertEqual(result.returncode, 0, result.stderr)

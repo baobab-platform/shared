@@ -155,6 +155,11 @@
 # docs/architecture/int02-pulse-proof-bootstrap-decision.md. It may produce
 # synthetic proof only during a disposable development INT-02 run; ACTIVE is
 # not qualification. validate-authorization-contracts.rb pins its entire row.
+# baobab-int03-cms-consumer and baobab-int03-cms-validator are independently
+# accepted development-only evidence producers (owner decision 2026-10-21):
+# docs/architecture/int03-cms-proof-bootstrap-proposal.md. ACTIVE permits only
+# disposable synthetic proof with separate secrets and finite run deadlines;
+# it is not qualification. Exact complete rows are pinned by the same validator.
 
 schema:
   name: baobab-platform-workload-registry
@@ -173,6 +178,32 @@ workloads:
     allowed_scopes: ["context:resolve", "intelligence:evidence:search"]
     credential_type: client_credentials
     rotation_owner: baobab-platform/infrastructure
+    status: ACTIVE
+
+  # The two named development exceptions are distinct from product workloads.
+  # Only the disposable IAM-owned fixture may issue them. Never add these to
+  # ordinary production bootstrap, borrow credentials, or widen their ceilings.
+  baobab-int03-cms-consumer:
+    repository: baobab-platform/infrastructure
+    owner: baobab-platform/infrastructure
+    runtime: "INT-03 disposable real-component CMS qualification consumer"
+    environment: development
+    allowed_audiences: ["baobab-control-plane", "baobab-cms"]
+    allowed_scopes: ["context:resolve", "content:entry:resolve"]
+    credential_type: client_credentials
+    rotation_owner: baobab-platform/infrastructure
+    status: ACTIVE
+
+  baobab-int03-cms-validator:
+    repository: baobab-platform/baobab-cms
+    owner: baobab-platform/baobab-cms
+    runtime: "INT-03 disposable real-component CMS context validator"
+    environment: development
+    allowed_audiences: ["baobab-control-plane"]
+    allowed_scopes: ["context:validate"]
+    validates_audiences: ["baobab-cms"]
+    credential_type: client_credentials
+    rotation_owner: baobab-platform/baobab-cms
     status: ACTIVE
 
   baobab-cms-workload:

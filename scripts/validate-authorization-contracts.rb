@@ -175,6 +175,42 @@ int02_expected = {
 }
 fail_contract("INT-02 proof-bootstrap identity must match its exact owner-approved boundary") unless workloads["baobab-int02-pulse-consumer"] == int02_expected
 
+# Owner decision 2026-10-21 (Shared #354): only these two independent
+# development identities may produce CMS proof before qualification. Pin the
+# complete rows, including absence of any unreviewed authority-bearing field.
+# Registry registration creates no credential, grant, binding or certification.
+int03_expected = {
+  "baobab-int03-cms-consumer" => {
+    "repository" => "baobab-platform/infrastructure",
+    "owner" => "baobab-platform/infrastructure",
+    "runtime" => "INT-03 disposable real-component CMS qualification consumer",
+    "environment" => "development",
+    "allowed_audiences" => %w[baobab-control-plane baobab-cms],
+    "allowed_scopes" => %w[context:resolve content:entry:resolve],
+    "credential_type" => "client_credentials",
+    "rotation_owner" => "baobab-platform/infrastructure",
+    "status" => "ACTIVE"
+  },
+  "baobab-int03-cms-validator" => {
+    "repository" => "baobab-platform/baobab-cms",
+    "owner" => "baobab-platform/baobab-cms",
+    "runtime" => "INT-03 disposable real-component CMS context validator",
+    "environment" => "development",
+    "allowed_audiences" => %w[baobab-control-plane],
+    "allowed_scopes" => %w[context:validate],
+    "validates_audiences" => %w[baobab-cms],
+    "credential_type" => "client_credentials",
+    "rotation_owner" => "baobab-platform/baobab-cms",
+    "status" => "ACTIVE"
+  }
+}
+int03_expected.each do |client_id, expected|
+  fail_contract("INT-03 CMS proof identity #{client_id} must match its exact owner-approved boundary") unless workloads[client_id] == expected
+end
+# The accepted exception cannot silently promote or alter the product caller
+# or expand the production validator as a substitute for the lab identities.
+fail_contract("Nabhold product caller must remain PROVISIONED in production") unless workloads.dig("nabhold-backend", "status") == "PROVISIONED" && workloads.dig("nabhold-backend", "environment") == "production"
+
 # 5. Every scope an OpenAPI operation requires is registered, and a
 #    Control Plane operation's scope is issued for the Control Plane's
 #    audience (ADR-BCP-022 section 18: the contract never names a scope the
