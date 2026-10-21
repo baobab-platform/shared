@@ -97,7 +97,14 @@ this document does not alter a materialised snapshot or bypass lifecycle checks.
 Each disposable run begins in **BOOTSTRAP / REQUIRED_NOT_EXECUTED** when its
 clients are created. Lack of first proof does not itself deny this bounded
 bootstrap. The window closes on success, failure, interruption or the existing
-90-minute job timeout, whichever occurs first. Compute an immutable absolute run\ndeadline at client creation. Every access token SHALL have `exp` no later than\nthat deadline; reject issuance/refresh after closure and reject any issuance\nresponse exceeding the remaining window. Deleting a client/secret alone does\nnot revoke an already signed bearer token. On early closure, revoke outstanding\ntokens through enforced current introspection/revocation, or destroy the isolated\nper-run issuer trust and all accepting runtimes so no surviving verifier accepts\nthose tokens. Never rely on client deletion as JWT revocation. Always destroy clients, sessions,
+90-minute job timeout, whichever occurs first. Compute an immutable absolute run
+deadline at client creation. Every access token SHALL have `exp` no later than
+that deadline; reject issuance/refresh after closure and reject any issuance
+response exceeding the remaining window. Deleting a client/secret alone does
+not revoke an already signed bearer token. On early closure, revoke outstanding
+tokens through enforced current introspection/revocation, or destroy the isolated
+per-run issuer trust and all accepting runtimes so no surviving verifier accepts
+those tokens. Never rely on client deletion as JWT revocation. Always destroy clients, sessions,
 secrets, keys, volumes, containers and network. A new run uses new secrets and
 cannot inherit qualification or certification from an earlier run.
 
