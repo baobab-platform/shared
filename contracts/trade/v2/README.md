@@ -69,3 +69,34 @@ Trade must:
 A Trade decision is never money-movement authority (`payments/v2`) and never
 ERP posting authority (`erp/v2`). This contract activates no workload and
 certifies no commerce. Production stays denied.
+
+## Buyer execution context — ADR-SHARED-042 (CAA-01)
+
+`buyer-execution-context.schema.json` is the `TradeBuyerExecutionContext`
+Trade derives on the server for one buyer operation, and its
+`BuyerOperationDecision`. It records the verified chain behind the decision:
+
+- the CP human Principal and its ExternalIdentity;
+- the selected, CP-attested canonical Organisation, and the Trade
+  BuyerOrganisation that maps to it;
+- the current BuyerMembership and its revision;
+- Trade's own CP context and, for order commitment, the seller of record;
+- the exact operation, resource version and transaction digest;
+- the policy revision, approvals and decision.
+
+Rules:
+- **Server-built only.** No client, browser, Medusa customer JWT or job may
+  submit it as a source of truth.
+- **Human actors only.** Machine procurement needs its own versioned
+  delegation profile (ADR-SHARED-042 section 8) before activation.
+- **Bounded lifetime.** At most 60 seconds, and never later than the earliest
+  evidence it rests on.
+- **Not executable on its own.** `APPROVAL_REQUIRED` is not purchase
+  permission. Buyer `ALLOW` executes nothing without the seller decision
+  (`order-authority.schema.json`) and a native fence.
+- **No probing.** Reasons about an Organisation the actor cannot act for are
+  never more specific than `BUYER_NOT_AUTHORISED`.
+
+Not yet defined, and still CAA-01 work: the buyer-authority receipt consumed at
+native commit (coupled to CAA-06) and the machine-mandate delegation profile.
+Run `python scripts/tests/test_buyer_execution_context.py`.

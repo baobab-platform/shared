@@ -1,12 +1,13 @@
 openapi: 3.1.0
 info:
   title: Private delegated human Principal resolution
-  version: 1.0.0
+  version: 1.1.0
   description: >-
     Control Plane private, workload-only operations through which a
     registered workload acting for an authenticated human obtains that
-    human's canonical Principal (ZB-G03 step 3; platform owner decision of
-    2026-10-21). The caller authenticates with its own Control
+    human's canonical Principal (ADR-SHARED-042 sections 3-4, work package
+    CAA-01). These are operations, not catalogued capabilities: no capability
+    key is registered for them. The caller authenticates with its own Control
     Plane-audience workload token. The human's IAM access token travels in
     the body as subject evidence, never as the caller credential.
 
@@ -16,8 +17,10 @@ info:
     and the operation scope; (2) verify the subject token's signature and
     issuer against its own registered issuer trust, never a caller-supplied
     key or URL; (3) require actor_type human, an audience equal to the
-    resource audience registered for the calling workload (a Trade token
-    for the Trade workload, and so on), the scope that audience requires
+    subject audience registered for the calling workload in identity/v1
+    workload-registry.yaml subject_principal_audiences (the registered
+    validator relationship; never inferred from allowed_audiences or chosen
+    by the request), the scope that audience requires
     (trade:buy for baobab-trade), an authorised-party client allowlisted for
     that audience, and an unexpired token; and (4) confirm the token is
     currently active by the issuer's introspection. Any failure denies.
@@ -27,7 +30,7 @@ paths:
   /internal/identity/v1/principals/resolve:
     post:
       operationId: resolveDelegatedHumanPrincipal
-      summary: Resolve an authenticated human's canonical Principal (identity.principal.resolve@1)
+      summary: Resolve an authenticated human's canonical Principal
       description: >-
         Read-only. Resolves the verified exact (issuer, subject) to an ACTIVE
         human Principal with an ACTIVE ExternalIdentity. An unknown pair is
@@ -85,7 +88,7 @@ paths:
   /internal/identity/v1/principals/register-buyer:
     post:
       operationId: registerBuyerPrincipal
-      summary: Governed just-in-time buyer Principal registration (identity.principal.register.buyer@1)
+      summary: Governed just-in-time buyer Principal registration
       description: >-
         For an eligible first-time buyer, atomically creates an ACTIVE human
         Principal and its ACTIVE ExternalIdentity for the verified exact
@@ -96,7 +99,15 @@ paths:
         PRINCIPAL_NOT_ACTIVE and is never re-created. Eligibility is the
         Control Plane's buyer provisioning policy, which additionally
         requires the issuer and authorised-party client to be registered for
-        buyer registration (REGISTRATION_NOT_ELIGIBLE otherwise).
+        buyer registration with the declared purpose approved
+        (REGISTRATION_NOT_ELIGIBLE otherwise), no identity-link conflict
+        (IDENTITY_LINK_CONFLICT) and the caller, client and issuer within
+        abuse limits (REGISTRATION_RATE_LIMITED). The Principal, its
+        ExternalIdentity, an audit record and a
+        com.baobab-platform.identity.created.v1 event (identity-events/v1,
+        external_subject omitted) are written to the durable store and
+        outbox in one transaction: a concurrent request produces no
+        duplicate event.
         Registration creates no Organisation, membership, tenant, market,
         role, purchasing authority or commerce-customer mapping.
       security:
@@ -135,6 +146,18 @@ paths:
             CALLER_NOT_PERMITTED, SUBJECT_TOKEN_INVALID,
             SUBJECT_TOKEN_NOT_CURRENT, SUBJECT_TOKEN_NOT_FOR_CALLER,
             PRINCIPAL_NOT_ACTIVE or REGISTRATION_NOT_ELIGIBLE.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "409":
+          description: IDENTITY_LINK_CONFLICT. Nothing is created.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "429":
+          description: REGISTRATION_RATE_LIMITED. Retry later; nothing is created.
           content:
             application/problem+json:
               schema:

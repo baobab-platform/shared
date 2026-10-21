@@ -1,0 +1,43 @@
+{
+  "context_id": "5b1e9c3a-7d2f-4a6e-9b1c-3e5f7a9d1b20",
+  "decision_id": "8c2f4a6e-1b3d-4e5f-9a7c-0d1e2f3a4b5c",
+  "correlation_id": "0b6f2c1e-6d0a-4f43-9c1a-2f1d6b1e9a40",
+  "actor_type": "HUMAN",
+  "actor_principal_id": "019a0915-a8c0-7000-8000-000000000001",
+  "external_identity_id": "019a0915-a8c0-7000-8000-000000000002",
+  "tenant_id": "tn_synthetic01",
+  "digital_estate_id": "zuribeans",
+  "market_id": "zuribeans_ug",
+  "engine_instance_id": "ei_tradestaging01",
+  "canonical_organisation_id": "2c8e4f6a-1b3d-4e5f-8a7c-9d0e1f2a3b4c",
+  "buyer_organisation_id": "b2borg_synthetic01",
+  "buyer_membership_id": "b2bmem_synthetic01",
+  "membership_revision": 3,
+  "roles": [
+    "BUYER"
+  ],
+  "seller_legal_entity_id": "SYNTHETIC-LE-01",
+  "seller_binding_reference": {
+    "binding_id": "3f9a1c2e-7b4d-4e8a-9c1f-2d6e5b4a3c21",
+    "binding_version": 2
+  },
+  "cp_context_id": "6f1c2a9e-4b7d-4c1e-9a3f-2d5e8b7c1a40",
+  "operation": "trade.order.commit",
+  "resource_id": "cart_synthetic01",
+  "resource_version": 4,
+  "transaction_digest": "sha256:9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e",
+  "amount_minor": 1250000,
+  "currency": "UGX",
+  "policy_revision": "trade-buyer-policy:2026-10-21.1",
+  "approval_references": [],
+  "decision": {
+    "outcome": "ALLOW",
+    "reasons": []
+  },
+  "evaluated_at": "2026-10-21T12:00:00Z",
+  "expires_at": "2026-10-21T12:00:30Z",
+  "evidence_references": [
+    "synthetic:cp-principal-resolution/01",
+    "synthetic:cp-organisation-attestation/01"
+  ]
+}

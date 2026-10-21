@@ -59,14 +59,22 @@ def resolution(**change):
 
 class PrincipalResolution(unittest.TestCase):
     def test_requests_carry_only_subject_evidence(self):
-        for definition in ("PrincipalResolveRequest", "BuyerPrincipalRegistrationRequest"):
+        for definition, extra in (("PrincipalResolveRequest", {}), ("BuyerPrincipalRegistrationRequest", {"purpose": "BUYER_ONBOARDING"})):
             with self.subTest(definition=definition):
-                self.assertEqual([], errors(definition, request()))
+                self.assertEqual([], errors(definition, request(**extra)))
                 # The caller can assert no identity of its own.
                 for key, value in [("issuer", "https://iam.example.test/"), ("subject", "s"),
                                    ("principal_id", "p"), ("email", "buyer@example.test"),
                                    ("customer_id", "cus_1"), ("organisation_id", "o"), ("tenant_id", "t")]:
-                    self.assertNotEqual([], errors(definition, request(**{key: value})), key)
+                    self.assertNotEqual([], errors(definition, request(**extra, **{key: value})), key)
+
+    def test_registration_declares_its_approved_purpose(self):
+        self.assertNotEqual([], errors("BuyerPrincipalRegistrationRequest", request()))
+        for purpose in ["SUPPLIER_ONBOARDING", "buyer_onboarding", "ADMIN"]:
+            with self.subTest(purpose=purpose):
+                self.assertNotEqual([], errors("BuyerPrincipalRegistrationRequest", request(purpose=purpose)))
+        # Resolution is read-only and declares no purpose.
+        self.assertNotEqual([], errors("PrincipalResolveRequest", request(purpose="BUYER_ONBOARDING")))
 
     def test_only_a_compact_access_token_is_evidence(self):
         for change in [{"subject_token_type": "urn:ietf:params:oauth:token-type:id_token"},
@@ -100,6 +108,18 @@ class PrincipalResolution(unittest.TestCase):
                                  {"clientCredentials"})
         self.assertNotIn("201", paths["/internal/identity/v1/principals/resolve"]["post"]["responses"])
         self.assertIn("404", paths["/internal/identity/v1/principals/resolve"]["post"]["responses"])
+        register = paths["/internal/identity/v1/principals/register-buyer"]["post"]["responses"]
+        self.assertLessEqual({"200", "201", "409", "429", "503"}, set(register))
+        # Operations, not catalogued capabilities (ADR-SHARED-042: no unregistered capability key).
+        self.assertNotIn("identity.principal.", (CONTRACTS / "identity/v1/principal-resolution.openapi.yaml").read_text())
+
+    def test_subject_audience_is_a_registered_validator_relationship(self):
+        workloads = yaml.safe_load((CONTRACTS / "identity/v1/workload-registry.yaml").read_text())["workloads"]
+        scopes = {"identity:principal:resolve", "identity:principal:register-buyer"}
+        for name, entry in workloads.items():
+            with self.subTest(workload=name):
+                holds = bool(scopes & set(entry["allowed_scopes"]))
+                self.assertEqual(holds, "subject_principal_audiences" in entry)
 
     def test_scopes_are_workload_only_grant_nothing_and_are_allocated_to_no_workload(self):
         scopes = {s["name"]: s for s in yaml.safe_load(
@@ -117,7 +137,7 @@ class PrincipalResolution(unittest.TestCase):
         self.assertEqual(set(SCHEMA["$defs"]["PrincipalResolutionDenialCode"]["enum"]), {
             "CALLER_NOT_PERMITTED", "SUBJECT_TOKEN_INVALID", "SUBJECT_TOKEN_NOT_CURRENT",
             "SUBJECT_TOKEN_NOT_FOR_CALLER", "IDENTITY_NOT_RESOLVED", "PRINCIPAL_NOT_ACTIVE",
-            "REGISTRATION_NOT_ELIGIBLE", "RESOLUTION_UNAVAILABLE"})
+            "REGISTRATION_NOT_ELIGIBLE", "IDENTITY_LINK_CONFLICT", "REGISTRATION_RATE_LIMITED", "RESOLUTION_UNAVAILABLE"})
 
 
 if __name__ == "__main__":
