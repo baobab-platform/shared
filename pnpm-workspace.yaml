@@ -11,6 +11,10 @@ overrides:
   # GHSA-pqg4-j6r4-53mv (critical); reached only through the build-time
   # @changesets/cli > launch-editor chain. Fixed in shell-quote 1.11.0.
   shell-quote: 1.11.0
+  # GHSA-587h-7wmj-h5pm: retain supplier Vitest's supported Vite major;
+  # patch the Windows editor-launch bypass in each dependency line.
+  'vite@>=7.0.0 <8': 7.3.7
+  launch-editor: 2.14.2
 allowBuilds:
   '@bufbuild/buf': true
   esbuild: true
