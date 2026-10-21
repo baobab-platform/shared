@@ -52,3 +52,30 @@ all declared workload scopes against the real schema and reject malformed
 segments, whitespace, wildcards, duplicate/excess scopes and provider leakage.
 IAM must update its pinned schema and lexical validator together before this
 corrected contract is considered consumed by the issuer.
+
+## Buyer identity handoff — ZuriBeans ZB-G03
+
+`buyer-identity-handoff.schema.json` is the provider-neutral evidence a
+confidential Digital Estate BFF presents to Trade for a B2B buyer operation
+(IAM ADR-0010 section 0; ADR-IAM-0023 sections 39–45; ADR-IAM-0033). The BFF
+holds the IAM tokens server-side and the browser holds only an opaque session
+cookie.
+
+- **Token:** a human (`actor_type: human`) IAM access token audience-bound to
+  `baobab-trade`, with scope `trade:buy` and the BFF client as `azp`. Trade
+  verifies signature and issuer against the IAM issuer metadata; the issuing
+  runtime (Hydra first) is not named. Provider organisation, group, role,
+  tenant or email claims are never buyer-membership evidence.
+- **Request:** `requested_organisation_id` and `requested_country_code` are
+  requests to be attested by the Control Plane and then checked against an
+  active Trade buyer membership, never proofs. No tenant, principal,
+  membership or role may be asserted.
+- A commerce-engine (Medusa) customer token alone authorises no commerce
+  operation.
+
+`trade:buy` is registered human-only for `baobab-trade` with
+`grants_authority: false`, and is granted to no client. Trade `v1`'s
+`humanOidc` scheme now names the issuer's discovery document instead of
+Keycloak realm URLs. Run `python scripts/tests/test_buyer_identity_handoff.py`.
+These are static checks; signature, expiry, client allowlisting, canonical
+Principal resolution and membership remain runtime obligations.

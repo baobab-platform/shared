@@ -1,0 +1,22 @@
+{
+  "access_token_claims": {
+    "iss": "https://iam.example.invalid/",
+    "sub": "6f2b9c1e-3d4a-4e8f-9b7c-1a2d3e4f5a6b",
+    "aud": ["baobab-trade"],
+    "exp": 1792600900,
+    "iat": 1792600600,
+    "jti": "f1e2d3c4-b5a6-4978-8a9b-0c1d2e3f4a5b",
+    "scope": "openid trade:buy",
+    "actor_type": "human",
+    "azp": "zuribeans-bff",
+    "sid": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
+    "acr": "aal1",
+    "amr": ["pwd"],
+    "auth_time": 1792600590
+  },
+  "request": {
+    "requested_organisation_id": "org_synthetic_buyer_01",
+    "requested_country_code": "ZA",
+    "correlation_id": "0b8f7c2e-5d1a-4c3b-9e8f-7a6b5c4d3e2f"
+  }
+}

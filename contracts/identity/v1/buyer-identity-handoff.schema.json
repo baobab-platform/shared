@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/buyer-identity-handoff.schema.json",
+  "title": "Buyer identity handoff from a confidential estate BFF to Trade",
+  "description": "Provider-neutral evidence a Digital Estate BFF presents to Trade for a B2B buyer operation (IAM ADR-0010 section 0, ADR-IAM-0023 sections 39-45, ADR-IAM-0033). The BFF carries authenticated evidence server-to-server; it never creates identity, context or authority. Trade validates the access token itself, resolves the canonical Principal and current context through the Control Plane, and independently checks an active buyer membership on every operation. A commerce-engine customer token alone authorises nothing. Validating against this schema is necessary, never sufficient.",
+  "type": "object",
+  "$defs": {
+    "TradeBuyerAccessTokenClaims": {
+      "type": "object",
+      "description": "The decoded claims of the IAM access token Trade accepts for a buyer operation. Trade verifies the signature and issuer against the IAM issuer's published metadata; the issuer runtime (Hydra first, per ADR-IAM-0033) is not named here. Provider organisation, group, role, tenant or email claims are provider-local and are never buyer-membership or purchasing evidence: Trade derives no authority from them.",
+      "required": ["iss", "sub", "aud", "exp", "iat", "jti", "scope", "actor_type", "azp"],
+      "properties": {
+        "iss": { "type": "string", "format": "uri", "description": "Together with sub, the stable external-identity key (identity/v1 ExternalIdentity). Must equal the configured IAM issuer exactly." },
+        "sub": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "aud": {
+          "description": "Audience-bound to Trade (ADR-IAM-0023 section 43). A token for another audience is refused.",
+          "oneOf": [
+            { "const": "baobab-trade" },
+            { "type": "array", "contains": { "const": "baobab-trade" }, "items": { "type": "string" }, "uniqueItems": true }
+          ]
+        },
+        "exp": { "type": "integer" },
+        "nbf": { "type": "integer" },
+        "iat": { "type": "integer" },
+        "jti": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "scope": {
+          "type": "string",
+          "description": "Space-separated; must include trade:buy, which requests buying operations and grants no authority by itself.",
+          "pattern": "^(?:[^ ]+ )*trade:buy(?: [^ ]+)*$"
+        },
+        "actor_type": { "const": "human" },
+        "azp": { "type": "string", "minLength": 1, "maxLength": 255, "description": "The registered confidential BFF client that obtained the token. Trade accepts only clients allowlisted for buyer operations." },
+        "sid": { "type": "string", "minLength": 1, "maxLength": 255, "description": "IAM session reference, for revocation and logout correlation." },
+        "acr": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "amr": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 64 }, "uniqueItems": true },
+        "auth_time": { "type": "integer" }
+      }
+    },
+    "BuyerOperationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Non-authoritative request metadata the BFF sends alongside the token. Every field is a request to be resolved and attested (ADR-IAM-0023 section 63), never a proof. In particular the requested Organisation is checked by the Control Plane and then against an active Trade buyer membership; it is never the ZuriBeans tenant's own PRIMARY Organisation by default.",
+      "required": ["correlation_id"],
+      "properties": {
+        "requested_organisation_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalEntityId", "description": "The buyer company the person asks to act for, as a canonical Organisation identifier. Absent when the person has not selected one." },
+        "requested_country_code": { "$ref": "../../control-plane/v1/platform-context.schema.json#/$defs/countryCode", "description": "The market the person asks to trade in. Resolved against the tenant's ACTIVE market participation; never trusted as given." },
+        "correlation_id": { "type": "string", "format": "uuid", "description": "Bare UUID, as control-plane/v1 requires." }
+      }
+    }
+  },
+  "required": ["access_token_claims", "request"],
+  "additionalProperties": false,
+  "properties": {
+    "access_token_claims": { "$ref": "#/$defs/TradeBuyerAccessTokenClaims" },
+    "request": { "$ref": "#/$defs/BuyerOperationRequest" }
+  }
+}
