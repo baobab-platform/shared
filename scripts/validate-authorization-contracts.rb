@@ -181,7 +181,9 @@ fail_contract("INT-02 proof-bootstrap identity must match its exact owner-approv
 #    registry does not govern).
 # Trade's B2B API declares its requirement once at the top level, which every
 # operation without its own `security` inherits (OpenAPI 3.1).
+# The private identity/v1 Principal resolution API is a Control Plane surface.
 { "contracts/control-plane/v1/openapi.yaml" => "baobab-control-plane",
+  "contracts/identity/v1/principal-resolution.openapi.yaml" => "baobab-control-plane",
   "contracts/trade/v1/openapi.yaml" => "baobab-trade" }.each do |path, audience|
   document = load_yaml(path)
   document.fetch("paths").each do |route, item|

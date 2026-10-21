@@ -79,3 +79,38 @@ cookie.
 Keycloak realm URLs. Run `python scripts/tests/test_buyer_identity_handoff.py`.
 These are static checks; signature, expiry, client allowlisting, canonical
 Principal resolution and membership remain runtime obligations.
+
+## Delegated human Principal resolution — ZuriBeans ZB-G03 step 3
+
+`principal-resolution.openapi.yaml` and `principal-resolution.schema.json`
+define how a registered workload acting for an authenticated human obtains
+that human's canonical Principal from the Control Plane. This follows the
+platform owner's decision of 2026-10-21.
+
+- **Two credentials, never merged:** the caller authenticates with its own
+  `baobab-control-plane` workload token. The human's IAM access token,
+  audience-bound to the caller's own resource (`baobab-trade` for Trade), is
+  carried in the body only as subject evidence.
+- **The Control Plane verifies the evidence itself.** It checks the signature
+  and issuer against its own issuer trust, then actor type, audience, scope,
+  authorised party and expiry, and the token's current status by
+  introspection. The caller cannot assert issuer, subject, Principal, email or
+  customer identifiers.
+- **`identity.principal.resolve@1`**
+  (`POST /internal/identity/v1/principals/resolve`, scope
+  `identity:principal:resolve`) is read-only. An unknown identity is
+  `IDENTITY_NOT_RESOLVED` and creates nothing.
+- **`identity.principal.register.buyer@1`**
+  (`POST /internal/identity/v1/principals/register-buyer`, scope
+  `identity:principal:register-buyer`) is governed just-in-time registration
+  of an eligible first-time buyer. It is idempotent per (issuer, subject) and
+  establishes identity only.
+- **A resolution carries no authority.** No tenant, Organisation membership,
+  role, market or purchasing authority comes with it. Trade still binds the
+  canonical Organisation and checks an active buyer membership on every
+  operation.
+
+Both scopes are workload-only, `grants_authority: false` and allocated to no
+workload. The capability keys are named here for the Control Plane
+implementation. They enter the canonical catalogue only through the EA-02
+candidate review. Run `python scripts/tests/test_principal_resolution.py`.
