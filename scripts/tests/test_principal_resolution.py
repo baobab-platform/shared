@@ -109,7 +109,7 @@ class PrincipalResolution(unittest.TestCase):
         self.assertNotIn("201", paths["/internal/identity/v1/principals/resolve"]["post"]["responses"])
         self.assertIn("404", paths["/internal/identity/v1/principals/resolve"]["post"]["responses"])
         register = paths["/internal/identity/v1/principals/register-buyer"]["post"]["responses"]
-        self.assertTrue({"200", "201", "409", "429", "503"} <= set(register))
+        self.assertLessEqual({"200", "201", "409", "429", "503"}, set(register))
         # Operations, not catalogued capabilities (ADR-SHARED-042: no unregistered capability key).
         self.assertNotIn("identity.principal.", (CONTRACTS / "identity/v1/principal-resolution.openapi.yaml").read_text())
 
