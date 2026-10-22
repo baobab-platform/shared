@@ -169,3 +169,22 @@ currency's minor units (`buyer_commitment_amount_minor`).
   change is a new valuation, digest and authorization evaluation.
 
 Run `python scripts/tests/test_buyer_commitment_valuation.py`.
+
+### Native commitment classification (`native-commitment-classification.schema.json`)
+
+ADR-SHARED-042 section 14, Decision 8. Trade's immutable record of whether a
+native commitment (cart, quotation, draft order or order) is B2B or B2C,
+derived from a current CP estate commerce profile attestation
+(`control-plane/v1/estate-commerce-profile.schema.json`) and verified against
+Trade's own buyer relationship.
+
+- **B2B** names a BuyerOrganisation with a membership or an approved machine
+  mandate; **B2C** names a consumer context under its own governed policy.
+  A missing Organisation is never proof of B2C, and there is no `MIXED`.
+- **The fence** selects the regime from this record: B2B needs the buyer
+  receipt, the seller receipt and the spend reservation in the order's own
+  transaction; B2C needs the seller receipt and its own controls.
+  `classificationRefusal` lists the closed refusals. No known classification
+  means no native order commitment.
+
+Run `python scripts/tests/test_estate_commerce_classification.py`.

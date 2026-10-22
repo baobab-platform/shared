@@ -313,3 +313,33 @@ Commercial authority is **derived and verified, never inferred, inherited or man
      - test the direct API, native workflow, callback, background job, duplicate request, concurrent commit and raw-SQL bypass paths.
 
    An absent, stale, mismatched or unverifiable authority or valuation SHALL prevent commitment.
+
+**Decision record (22 October 2026) — Decision 8: authoritative classification of B2B and B2C native commitments.** Decision authority: Baobab Platform Owner. Status: Accepted (ADR-SHARED-042 CAA-06). The Control Plane SHALL own the governed commercial-experience classification of a Digital Estate. Trade SHALL own the immutable classification and provenance of each native commercial commitment, derived from that CP authority and verified against Trade's actual buyer relationship. Neither infers a classification from sales-channel names, domains, currency, engine customer type or caller-supplied flags. The two existing authorities are extended; no third registry is created, and the seller binding stays independently authoritative for seller of record and legal operating permission.
+
+1. **CP Estate Commerce Profile** (`control-plane/v1/estate-commerce-profile.schema.json`). A governed, versioned `EstateCommerceProfile` extends Digital Estate governance, never a free-form estate metadata string. It names the Digital Estate, Tenant, Trade engine instance, `commerce_model` (`B2B` or `B2C`), Market scope, status (`ACTIVE`, `SUSPENDED`, `REVOKED`), a CP-controlled monotonic revision, the effective interval and its approval and evidence provenance. It is established during governed onboarding and independently approved before activation.
+   - **Initial registrations:** the ZuriBeans buyer estate is intended B2B and the Thamani consumer estate B2C. These are requirements for their governed registration, not evidence CP has registered them; runtime enforcement uses CP records, never estate names.
+   - **Uniqueness:** exactly one ACTIVE commerce model applies to an estate within one engine instance and Market. A future hybrid estate needs separately governed, unambiguous native commitment bindings; there is no implicit `MIXED` fallback.
+2. **CP attestation.** A workload-authorized, read-only `resolveEstateCommerceProfile` (`estate-commerce-profile.openapi.yaml`, scope `estate:commerce-profile:resolve`, allocated to no workload) verifies the estate, Tenant, engine instance, Market, status, interval and classification, and attests the model, profile ID and revision, scope, issue and expiry times (at most 60 seconds, and never beyond the profile's effective end) and provenance.
+   - **Estate provenance:** for a BFF-initiated transaction it is the CP estate-client binding attestation. For direct administrative orders, scheduled jobs and other non-BFF operations it is a separately governed workload or native-resource assignment; Trade never invents a BFF identity.
+   - **Scope of the fact:** the estate-client binding says which estate a BFF serves, not whether a commitment is B2B or B2C; the profile supplies that missing fact.
+3. **Trade NativeCommitmentClassification** (`trade/v2/native-commitment-classification.schema.json`). An immutable Trade record identifying:
+   - the native resource and its type (cart, quotation, draft order or order);
+   - the canonical Digital Estate, Tenant, Trade engine instance and Market;
+   - the CP-attested model, profile and revision;
+   - the seller binding and native operation lineage: an origin of `DIRECT`, `CONVERTED` or `REPLACEMENT`, where a conversion or replacement must name its parent, so a converted commitment carries its reservation forward instead of acquiring a second one;
+   - the buyer-account model with its authoritative buyer reference, and the evidence, validity, revision and status.
+
+   **Buyer relationship:** B2B positively establishes the matching BuyerOrganisation and its membership or a separately approved machine mandate. B2C positively establishes a consumer transaction context under a separately governed B2C authorization policy. The absence of a BuyerOrganisation or membership is never proof of B2C.
+
+   **Agreement:** the CP classification and Trade's buyer-account classification must agree; a contradiction denies rather than letting either system silently override the other.
+4. **Native database fence.** The fence selects the regime from the persisted classification and requires its authoritative evidence to remain current: B2B requires the buyer receipt, seller receipt and spend reservation (Decisions 6 and 7); B2C requires the seller receipt and the applicable consumer and payment controls.
+   - **Refusals:** classification absent or unregistered, a suspended or revoked profile, or a CP/Trade disagreement denies. A classification changed after cart creation invalidates authority until governed reconciliation and reauthorization. Unavailable CP evidence is UNAVAILABLE with no commit. Missing B2B buyer authority denies and is never reinterpreted as B2C.
+   - **Immutability:** normal Store and Admin operations cannot edit a classification. Changing a transaction's business model is a governed replacement that preserves the audit trail.
+
+   No known classification means no native order commitment.
+5. **Implementation order.**
+   1. **Shared:** this record and the versioned profile, attestation and classification contracts.
+   2. **CP:** the governed profile registry, lifecycle, approvals, revision handling and read-only attestation.
+   3. **Trade:** the immutable classification reference on native seller/cart binding and direct-order and draft lineage, verified against the native buyer relationship.
+   4. **CAA-06 fence:** require an explicitly qualified B2B or B2C classification before selecting controls, composing the B2B receipts and reservation in the order's own database transaction.
+   5. **CAA-08:** prove cross-estate denial, absent-profile denial, forged B2C classification, direct-order bypass, stale revisions, revoked profiles, concurrent commits and legacy-cart quarantine against real components.

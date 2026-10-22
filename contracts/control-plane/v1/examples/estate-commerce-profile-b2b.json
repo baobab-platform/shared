@@ -1,0 +1,15 @@
+{
+  "commerce_profile_id": "9a1b2c3d-4e5f-4a6b-8c7d-0e1f2a3b4c5d",
+  "digital_estate_id": "zuribeans",
+  "tenant_id": "tn_synthetic01",
+  "trade_engine_instance_id": "ei_tradestaging01",
+  "commerce_model": "B2B",
+  "market_scope": [
+    "zuribeans_ug"
+  ],
+  "status": "ACTIVE",
+  "revision": 2,
+  "effective_from": "2026-10-01T00:00:00Z",
+  "approval_reference": "approval-decision:synthetic-0002",
+  "evidence_reference": "changeset:synthetic-0002"
+}

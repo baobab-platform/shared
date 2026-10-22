@@ -1,0 +1,111 @@
+openapi: 3.1.0
+info:
+  title: Private estate commerce profile resolution
+  version: 1.0.0
+  description: >-
+    Control Plane private, workload-only operation through which a
+    registered Trade workload learns the governed commerce model (B2B or
+    B2C) of the Digital Estate a native commitment belongs to, on its own
+    engine instance and in the commitment's Market (ADR-SHARED-042 section
+    14, Decision 8, Platform Owner ruling of 22 October 2026). This is an
+    operation, not a catalogued capability: no capability key is registered
+    for it. The caller authenticates with its own Control Plane-audience
+    workload token.
+
+
+    For every request the Control Plane MUST: (1) verify the caller's
+    workload token, its registered ACTIVE workload and the operation scope;
+    (2) verify the stated estate provenance for that caller, never trusting
+    it as asserted; (3) select profiles only by the verified estate, the
+    calling engine instance and the Market; and (4) attest exactly one
+    ACTIVE, currently effective profile, or deny. Ambiguity is never
+    resolved by order and there is no default model. An attestation
+    classifies the estate only; it grants no seller, buyer, market or
+    purchasing authority.
+paths:
+  /internal/estate/v1/commerce-profiles/resolve:
+    post:
+      operationId: resolveEstateCommerceProfile
+      summary: Attest the governed commerce model of a Digital Estate for one Trade engine instance and Market
+      description: >-
+        Read-only. Returns an EstateCommerceProfileAttestation valid for at
+        most 60 seconds.
+      security:
+        - EstateCommerceWorkload: ["estate:commerce-profile:resolve"]
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: estate-commerce-profile.schema.json#/$defs/EstateCommerceProfileResolveRequest
+      responses:
+        "200":
+          description: Attested.
+          headers:
+            Cache-Control:
+              description: private, no-store
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: estate-commerce-profile.schema.json#/$defs/EstateCommerceProfileAttestation
+        "400":
+          $ref: "#/components/responses/Problem"
+        "401":
+          description: The caller's own workload token is missing or invalid.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "403":
+          description: >-
+            CALLER_NOT_PERMITTED, ESTATE_PROVENANCE_INVALID,
+            PROFILE_NOT_ACTIVE or ENGINE_INSTANCE_NOT_PERMITTED.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "404":
+          description: PROFILE_NOT_REGISTERED.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "409":
+          description: PROFILE_AMBIGUOUS. Several profiles apply; nothing is attested.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "503":
+          description: RESOLUTION_UNAVAILABLE. Never a fallback model.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+components:
+  parameters:
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: true
+      description: Must equal the body correlation_id.
+      schema: { type: string, format: uuid }
+  responses:
+    Problem:
+      description: Malformed request (unknown field or correlation mismatch).
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../../errors/v1/problem-details.schema.json
+  securitySchemes:
+    EstateCommerceWorkload:
+      type: oauth2
+      description: A Baobab workload token issued for audience baobab-control-plane.
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth2/token
+          scopes:
+            "estate:commerce-profile:resolve": Read-only estate commerce profile attestation.
