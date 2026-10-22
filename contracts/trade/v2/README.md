@@ -30,6 +30,23 @@ database path starts it. `trade/v1` stays wire-compatible and unchanged.
   `trade-seller-binding:resolve`, and CP's recorded `BindingResolution`.
   `RESOLVED` names exactly one ACTIVE, in-effect binding version; every other
   outcome denies. Discovery is never authority.
+- **`buyer-spend-budget.schema.json`** (ADR-SHARED-042 §14, Decision 5) is
+  Trade's commercial spending-control ledger:
+  - `BuyerSpendBudgetPolicy`: a versioned budget. Scopes are the mandatory
+    calendar-month `MEMBERSHIP` budget, plus `AGREEMENT` (the agreement's
+    term) and `ORGANISATION` (calendar-month, shared by members) wherever
+    configured. Every applicable ceiling, and the per-transaction
+    `SpendLimit`, must pass independently.
+  - `BudgetPeriod`: start inclusive, end exclusive, local midnight on the 1st
+    in the governing IANA zone (UTC by default).
+  - `SpendLedgerEntry`: append-only `RESERVE`, `COMMIT` (conversion, never
+    added consumption) and `RELEASE` (unused portion only), each idempotent
+    and bound to one immutable purchase.
+  - `BudgetCapacity`: available = limit − committed − reserved.
+
+  ERP stays the accounting authority and Payments the funds-movement
+  authority. `scripts/tests/test_buyer_spend_budget.py` holds the reference
+  model of period and capacity rules.
 - **`examples/`** holds synthetic fixtures for contract shape only.
   `binding-resolution-vectors.json` pins discovery precedence: zero, ambiguous,
   stale-digest and inactive matches, tenant and Organisation isolation,

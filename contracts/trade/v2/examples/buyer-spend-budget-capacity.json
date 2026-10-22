@@ -1,0 +1,15 @@
+{
+  "budget_policy_id": "b2bbud_synthetic0001",
+  "policy_revision": 1,
+  "period": {
+    "period_kind": "CALENDAR_MONTH",
+    "timezone": "Africa/Johannesburg",
+    "starts_at": "2026-10-01T00:00:00+02:00",
+    "ends_at": "2026-11-01T00:00:00+02:00"
+  },
+  "currency": "ZAR",
+  "limit_minor": 10000000,
+  "committed_minor": 5500000,
+  "reserved_minor": 3000000,
+  "available_minor": 1500000
+}

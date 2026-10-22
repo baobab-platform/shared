@@ -1,0 +1,24 @@
+{
+  "ledger_entry_id": "b2bled_synthetic0001",
+  "entry_kind": "RESERVE",
+  "reservation_id": "b2bres_synthetic0001",
+  "budget_policy_id": "b2bbud_synthetic0001",
+  "policy_revision": 1,
+  "period": {
+    "period_kind": "CALENDAR_MONTH",
+    "timezone": "Africa/Johannesburg",
+    "starts_at": "2026-10-01T00:00:00+02:00",
+    "ends_at": "2026-11-01T00:00:00+02:00"
+  },
+  "tenant_id": "tn_synthetic01",
+  "buyer_organisation_id": "b2borg_synthetic0001",
+  "buyer_membership_id": "b2bmem_synthetic0001",
+  "market_id": "mkt_za",
+  "currency": "ZAR",
+  "amount_minor": 3000000,
+  "transaction_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "resource_version": 3,
+  "idempotency_key": "submit:b2bres_synthetic0001:v3",
+  "actor_principal_id": "019a0915-a8c0-7000-8000-00000000a011",
+  "occurred_at": "2026-10-22T12:00:00Z"
+}
