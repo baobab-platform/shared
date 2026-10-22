@@ -227,6 +227,41 @@ int02_expected = {
 }
 fail_contract("INT-02 proof-bootstrap identity must match its exact owner-approved boundary") unless workloads["baobab-int02-pulse-consumer"] == int02_expected
 
+# Accepted INT-03C proof-bootstrap exception is exactly TWO development-only
+# identities. Unlike a normal resource-server validator, the issuer verifier
+# needs only independent OAuth introspection at IAM and NO context:validate
+# privilege. Extra registry powers require a new explicit architecture decision.
+int03c_expected = {
+  "baobab-int03c-issuer-owner" => {
+    "repository" => "baobab-platform/infrastructure",
+    "owner" => "baobab-platform/infrastructure",
+    "runtime" => "INT-03C supervised disposable issuer proof owner",
+    "environment" => "development",
+    "allowed_audiences" => %w[baobab-control-plane],
+    "allowed_scopes" => %w[context:resolve],
+    "credential_type" => "client_credentials",
+    "rotation_owner" => "baobab-platform/infrastructure",
+    "status" => "ACTIVE"
+  },
+  "baobab-int03c-issuer-verifier" => {
+    "repository" => "baobab-platform/infrastructure",
+    "owner" => "baobab-platform/infrastructure",
+    "runtime" => "INT-03C independent disposable issuer verifier",
+    "environment" => "development",
+    "allowed_audiences" => %w[baobab-control-plane],
+    "allowed_scopes" => %w[context:resolve],
+    "credential_type" => "client_credentials",
+    "rotation_owner" => "baobab-platform/infrastructure",
+    "status" => "ACTIVE"
+  }
+}
+int03c_expected.each do |name, expected|
+  fail_contract("INT-03C proof-bootstrap identity #{name} exceeds approved ceiling") unless workloads[name] == expected
+end
+int03c_actual = workloads.keys.grep(/\Abaobab-int03c-/)
+fail_contract("INT-03C identity count exceeds the two named proof clients") unless int03c_actual.sort == int03c_expected.keys.sort
+
+
 # 5. Every scope an OpenAPI operation requires is registered, and a
 #    Control Plane operation's scope is issued for the Control Plane's
 #    audience (ADR-BCP-022 section 18: the contract never names a scope the
