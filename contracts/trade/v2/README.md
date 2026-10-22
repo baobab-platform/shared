@@ -124,8 +124,9 @@ counterpart of the ADR-SHARED-039 seller order-authority receipt, never a
 replacement for it.
 
 - **`BuyerAuthorityReceipt`:** the immutable fact Trade records when the
-  buyer decision is `ALLOW` for `trade.order.commit` or
-  `trade.draft-order.finalize`. It copies the context's actor, Organisation,
+  buyer decision is `ALLOW` for `trade.order.commit`, `trade.order.create`
+  or `trade.draft-order.finalize` (Decision 6: every binding B2B order
+  commitment). It copies the context's actor, Organisation,
   membership revision, Market, resource version, digest, amount, currency,
   policy revision and seller of record, and names the operation reference
   the seller decision is bound to and the Decision 5 spend reservation at
@@ -146,3 +147,25 @@ Rules:
 - **Activates nothing.** No route, capability or grant is registered.
 
 Run `python scripts/tests/test_buyer_authority_receipt.py`.
+
+### Buyer commitment valuation (`buyer-commitment-valuation.schema.json`)
+
+ADR-SHARED-042 section 14, Decision 7. The amount spend control reserves and
+commits: the complete, finalised buyer purchase obligation in the transaction
+currency's minor units (`buyer_commitment_amount_minor`).
+
+- **Components** are merchandise, item and order discounts (zero or
+  negative, deducted once), shipping, handling, insurance, service charges,
+  tax, duties and import charges billed through the seller, and refundable
+  deposits charged as part of the obligation. Tender (gift cards, wallet,
+  store credit, payment already collected, credit terms) is never a
+  component.
+- **Basis** is `FINAL_PRICED`, or `GOVERNED_MAXIMUM` with the separately
+  governed maximum-price commitment it rests on. An estimate never
+  authorises a commitment.
+- **Binding.** The amount populates `amount_minor` of the execution context,
+  the buyer receipt and the spend reservation, and its `valuation_digest`
+  (canonical SHA-256 of the binding fields) is bound into each. Any material
+  change is a new valuation, digest and authorization evaluation.
+
+Run `python scripts/tests/test_buyer_commitment_valuation.py`.

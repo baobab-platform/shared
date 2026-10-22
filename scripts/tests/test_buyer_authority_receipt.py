@@ -30,10 +30,11 @@ CONSUMPTION = json.loads((EXAMPLES / "buyer-authority-consumption.json").read_te
 BOUND = (
     "context_id", "decision_id", "correlation_id", "operation", "actor_principal_id", "tenant_id",
     "canonical_organisation_id", "buyer_organisation_id", "buyer_membership_id", "membership_revision",
-    "market_id", "resource_id", "resource_version", "transaction_digest", "amount_minor", "currency",
+    "market_id", "resource_id", "resource_version", "transaction_digest", "amount_minor", "currency", "valuation_digest",
     "policy_revision", "seller_legal_entity_id", "seller_binding_reference",
 )
-NATIVE = ("resource_id", "resource_version", "transaction_digest", "amount_minor", "currency", "market_id")
+NATIVE = ("resource_id", "resource_version", "transaction_digest", "amount_minor", "currency", "market_id",
+          "valuation_digest")
 
 
 def registry():
@@ -72,7 +73,7 @@ def issuable(context, receipt):
     """A receipt may exist only for an ALLOW, committing context and must copy it exactly."""
     if context["decision"]["outcome"] != "ALLOW":
         return False
-    if context["operation"] not in ("trade.order.commit", "trade.draft-order.finalize"):
+    if context["operation"] not in ("trade.order.commit", "trade.order.create", "trade.draft-order.finalize"):
         return False
     if any(receipt.get(k) != context.get(k) for k in BOUND):
         return False
@@ -136,6 +137,7 @@ class BuyerAuthorityReceipt(unittest.TestCase):
         for change in ({"operation": "trade.rfq.submit"}, {"operation": "trade.purchase-approval.decide"},
                        {"spend_reservation_id": None}, {"spend_reservation_id": "res_1"},
                        {"spend_hold_revision": None}, {"spend_hold_revision": 0},
+                       {"valuation_digest": None}, {"valuation_digest": "sha256:abc"},
                        {"amount_minor": 0}, {"seller_binding_reference": None}, {"operation_reference": None},
                        {"transaction_digest": "md5:abc"}, {"outcome": "ALLOW"}):
             with self.subTest(change=change):

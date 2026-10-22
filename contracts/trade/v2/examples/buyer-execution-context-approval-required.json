@@ -27,6 +27,7 @@
   "resource_version": 4,
   "transaction_digest": "sha256:9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e",
   "amount_minor": 98000000,
+  "valuation_digest": "sha256:ef80b1a300089e29170a3559ad916fb9e777e0cf13cd2325727e48c03cd1f841",
   "currency": "UGX",
   "policy_revision": "trade-buyer-policy:2026-10-21.1",
   "approval_references": [],
