@@ -148,6 +148,39 @@ workloads.each do |client_id, entry|
   elsif !subject_audiences.nil?
     fail_contract("workload #{client_id} lists subject_principal_audiences but holds no principal-resolution scope")
   end
+  # ADR-SHARED-042 section 14 (CAA-03/CAA-04): a confidential estate BFF that obtains human buyer tokens registers the human
+  # resource scopes and audiences it may request as human_token_profile, and holds trade:buyer-handoff so it can authenticate
+  # to Trade as itself when presenting them. Neither is held without the other, and only a confidential client qualifies.
+  human_profile = entry["human_token_profile"]
+  holds_handoff = entry.fetch("allowed_scopes").include?("trade:buyer-handoff")
+  if human_profile.nil?
+    fail_contract("workload #{client_id} holds trade:buyer-handoff but registers no human_token_profile") if holds_handoff
+  else
+    unless human_profile.is_a?(Hash) && human_profile.keys.sort == %w[audiences purpose scopes]
+      fail_contract("workload #{client_id} human_token_profile must name exactly purpose, audiences and scopes")
+    end
+    fail_contract("workload #{client_id} human_token_profile purpose must be ESTATE_BFF_BUYER") unless human_profile["purpose"] == "ESTATE_BFF_BUYER"
+    fail_contract("workload #{client_id} human_token_profile requires a client_credentials (confidential) client") unless entry["credential_type"] == "client_credentials"
+    fail_contract("workload #{client_id} human_token_profile requires trade:buyer-handoff") unless holds_handoff
+    profile_audiences, profile_scopes = human_profile["audiences"], human_profile["scopes"]
+    [profile_audiences, profile_scopes].each do |values|
+      unless values.is_a?(Array) && !values.empty? && values.uniq.size == values.size && values.all? { |v| v.is_a?(String) && !v.strip.empty? }
+        fail_contract("workload #{client_id} human_token_profile audiences and scopes must be distinct, non-empty lists")
+      end
+    end
+    fail_contract("workload #{client_id} human_token_profile must not include baobab-control-plane") if profile_audiences.include?("baobab-control-plane")
+    profile_scopes.each do |name|
+      scope = scopes[name]
+      unless scope && Array(scope["allowed_actors"]) == ["human"] && (Array(scope["audience"]) & profile_audiences).any?
+        fail_contract("workload #{client_id} human_token_profile scope #{name} is not a human-only scope issued for its audiences")
+      end
+    end
+    profile_audiences.each do |audience|
+      unless profile_scopes.any? { |name| Array(scopes[name] && scopes[name]["audience"]).include?(audience) }
+        fail_contract("workload #{client_id} human_token_profile audience #{audience} has no human scope")
+      end
+    end
+  end
   # docs/architecture/context-authority-for-workloads.md section 13: a context purpose other than the implicit RUNTIME is
   # explicit, distinct and known. TENANT_PROVISIONING (pre-activation provisioning authority) belongs to a provisioner that
   # can never also be a runtime resolver or a validator, and that has no client secret to leak.

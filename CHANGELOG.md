@@ -23,6 +23,11 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ADR-SHARED-042 CAA-01, third part: the estate BFF human token profile.** A new optional `workload-registry.yaml` field, `human_token_profile` (`purpose: ESTATE_BFF_BUYER`, `audiences`, `scopes`), declares the human resource audiences and human-only scopes a confidential estate BFF may request for a buyer.
+  * `validate-authorization-contracts.rb` requires the profile of exactly the holders of `trade:buyer-handoff`, and the scope of exactly the holders of the profile.
+  * Only a `client_credentials` client qualifies. `baobab-control-plane` is never a profile audience, and every profile audience must have a human-only scope.
+  * Extended `test_authorization_contracts.py`. No workload holds a profile.
+
 * **ADR-SHARED-042 CAA-01, second part: estate binding, BFF caller authentication and buyer assurance (Platform Owner ruling of 2026-10-22).** The ruling is recorded in ADR-SHARED-042 §14.
   * New `control-plane/v1/estate-client-binding.schema.json` and `.openapi.yaml` (CAA-04):
     * the governed, versioned binding of an estate BFF client to its Digital Estate, Tenant, Trade instance, environment and deployment;
