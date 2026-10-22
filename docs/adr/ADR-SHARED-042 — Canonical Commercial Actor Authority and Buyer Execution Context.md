@@ -217,3 +217,35 @@ Commercial authority is **derived and verified, never inferred, inherited or man
    - missing or downgraded assurance.
 
    The derived buyer decision never exceeds 60 seconds or its earliest evidence.
+
+**Decision record (22 October 2026) — CAA-05 buyer operation policy ruling.** Decision authority: Baobab Platform Owner. Status: Accepted for implementation. It authorises implementation only; no protected buyer operation is activated. The absence of a financial or scope restriction is never evidence of permission.
+
+1. **Spend authority.** `trade.order.commit`, `trade.draft-order.finalize` and `trade.quotation.accept` SHALL be denied unless an explicit, active and applicable spend authority exists for the seller Tenant, buyer Organisation, canonical Principal and membership, operation, Market and currency.
+   - A missing, inactive, expired or inapplicable record, a `NULL` or a zero is never unlimited authority: `DENY` with `SPEND_POLICY_NOT_CONFIGURED`.
+   - An amount above an applicable limit is `DENY` with `SPEND_LIMIT_EXCEEDED`, or `APPROVAL_REQUIRED` only where an independently configured, active approval policy explicitly permits escalation. Missing spend configuration never escalates to approval.
+   - Broader organisational policy applies only through an explicit, versioned and governed inheritance rule. A future `NO_PER_TRANSACTION_CAP` mode requires its own documented governance and never overrides credit, budget, legal or seller controls.
+   - A Market or currency switch cannot bypass a limit. The evaluator accounts for applicable cumulative or outstanding commitments, concurrent purchases cannot exceed an available balance, and native commit revalidates the authority and transaction version. An unavailable spend-policy source is `UNAVAILABLE`.
+2. **Role matrix.** Roles are necessary, never sufficient, and there is no implicit hierarchy: `SENIOR_BUYER` is not an `APPROVER` and `ACCOUNT_ADMIN` holds only its listed permissions. Unknown roles, unsupported operations and missing permissions are `DENY` (`ROLE_NOT_PERMITTED`).
+
+   | Operation | Permitted roles |
+   |---|---|
+   | `trade.buyer-context.resolve`, `trade.private-catalogue.view`, `trade.contract-price.view` | All six roles (contract price also subject to its visibility policy) |
+   | `trade.rfq.submit`, `trade.quotation.accept`, `trade.cart.modify`, `trade.order.commit`, `trade.draft-order.finalize` | `BUYER`, `SENIOR_BUYER`, `PROCUREMENT_MANAGER`, `ACCOUNT_ADMIN` |
+   | `trade.purchase-approval.decide` | `APPROVER`, `PROCUREMENT_MANAGER`, `ACCOUNT_ADMIN` |
+   | `trade.buyer-member.manage` | `ACCOUNT_ADMIN` only |
+   | `trade.buyer-invitation.accept` | The verified invitation recipient; no existing role required |
+
+   Separation of duties is mandatory: no Principal approves a transaction they initiated, whatever roles they hold. Granting elevated roles, changing spend or approval policy, or removing the last active administrator requires additional governance, including independent approval where applicable.
+3. **Role-bound Site and Market scope.** Trade owns explicit grants bound to the role assignment, not merely to the membership: a Market grant per role and a Site grant per role, each with status, effective interval, revision, granting Principal, provenance and revocation.
+   - No grant, `NULL` or an empty set never means all Markets or all Sites: `MARKET_NOT_PERMITTED` / `SITE_NOT_PERMITTED`, never more specific than `BUYER_NOT_AUTHORISED` for a foreign Organisation.
+   - The same role assignment SHALL satisfy the operation, Market and Site; permissions are never composed across roles.
+   - A Site belongs to the selected ACTIVE buyer Organisation, is active, is associated with the operation's Market and respects its shipping and billing capabilities. Site and Market grants never imply each other, and new Sites or Markets grant no existing member access.
+   - CP remains the Market authority: Trade verifies that the Market is active and permitted for the seller-side Tenant and buyer relationship. Legacy `market_key` values require a governed, exact mapping to canonical CP Market identifiers; names, currencies and country codes are not substitutes.
+   - Grant changes atomically advance the membership revision and invalidate derived contexts. Existing memberships receive no scope by migration; legacy access stays unavailable for protected transactions until reconciled through a governed workflow.
+   - Market grants are required for every operation except context resolution; Site grants wherever the operation references, selects or binds a Site, including approval of a Site-bound transaction.
+4. **Approver authority.** Approval requires an explicit, active and applicable approval limit for the approver's Principal, membership, role, Organisation, Market, currency and operation.
+   - Missing, `NULL`, expired or revoked: `DENY` with `APPROVAL_AUTHORITY_NOT_CONFIGURED`, never `APPROVAL_REQUIRED`.
+   - An amount above a valid limit, or self-approval, is `DENY` (`APPROVAL_THRESHOLD_EXCEEDED`, `SEPARATION_OF_DUTIES`). No currency conversion or other Market's limit substitutes without a separately approved policy.
+   - The limit is revalidated when the decision is made, and the approval is checked for continued applicability before native commit. An unavailable approval-authority source is `UNAVAILABLE`.
+
+`SPEND_POLICY_NOT_CONFIGURED` and `APPROVAL_AUTHORITY_NOT_CONFIGURED` are registered in `trade/v2` `decisionReason` by this record.

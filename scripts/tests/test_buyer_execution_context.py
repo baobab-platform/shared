@@ -32,6 +32,7 @@ def registry():
     return result
 
 
+CONTEXT_REASONS = json.loads((CONTRACTS / "trade/v2/buyer-execution-context.schema.json").read_text())["$defs"]["decisionReason"]["enum"]
 VALIDATOR = Draft202012Validator({"$ref": SCHEMA_ID}, registry=registry(), format_checker=FormatChecker())
 
 
@@ -109,6 +110,18 @@ class BuyerExecutionContext(unittest.TestCase):
                          {"outcome": "DENY", "reasons": ["SEPARATION_OF_DUTIES"]}]:
             with self.subTest(decision=decision):
                 self.assertEqual([], errors(changed(decision=decision)))
+
+    def test_missing_policy_is_distinct_from_an_exceeded_one(self):
+        # ADR-SHARED-042 section 14, CAA-05 ruling: an absent spend or approver
+        # limit is never unlimited authority, and is reported apart from an
+        # applicable limit that the amount exceeds.
+        reasons = CONTEXT_REASONS
+        for missing, exceeded in (("SPEND_POLICY_NOT_CONFIGURED", "SPEND_LIMIT_EXCEEDED"),
+                                  ("APPROVAL_AUTHORITY_NOT_CONFIGURED", "APPROVAL_THRESHOLD_EXCEEDED")):
+            self.assertIn(missing, reasons)
+            self.assertIn(exceeded, reasons)
+            self.assertEqual([], errors(changed(decision={"outcome": "DENY", "reasons": [missing]})))
+            self.assertNotEqual([], errors(changed(decision={"outcome": "ALLOW", "reasons": [missing]})))
 
     def test_lifetime_ceiling_is_sixty_seconds(self):
         self.assertFalse(lifetime_ok(changed(expires_at="2026-10-21T12:01:01Z")))
