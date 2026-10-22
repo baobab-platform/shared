@@ -128,7 +128,8 @@ replacement for it.
   `trade.draft-order.finalize`. It copies the context's actor, Organisation,
   membership revision, Market, resource version, digest, amount, currency,
   policy revision and seller of record, and names the operation reference
-  the seller decision is bound to and the Decision 5 spend reservation.
+  the seller decision is bound to and the Decision 5 spend reservation at
+  its exact hold revision (a rollover makes the receipt stale).
 - **`BuyerAuthorityConsumption`:** its one consumption, written in the same
   native transaction that commits the order, consumes the seller receipt and
   converts the reservation. Unique per receipt.

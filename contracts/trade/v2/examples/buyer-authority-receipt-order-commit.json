@@ -20,6 +20,7 @@
   "policy_revision": "trade-buyer-policy:2026-10-21.1",
   "approval_references": [],
   "spend_reservation_id": "b2bres_synthetic0001",
+  "spend_hold_revision": 1,
   "seller_legal_entity_id": "SYNTHETIC-LE-01",
   "seller_binding_reference": {
     "binding_id": "3f9a1c2e-7b4d-4e8a-9c1f-2d6e5b4a3c21",
@@ -27,5 +28,8 @@
   },
   "evaluated_at": "2026-10-21T12:00:00Z",
   "expires_at": "2026-10-21T12:00:30Z",
-  "evidence_references": ["synthetic:cp-principal-resolution/01", "synthetic:cp-organisation-attestation/01"]
+  "evidence_references": [
+    "synthetic:cp-principal-resolution/01",
+    "synthetic:cp-organisation-attestation/01"
+  ]
 }

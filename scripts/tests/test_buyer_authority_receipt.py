@@ -102,6 +102,8 @@ class Fence:
         if (reservation is None or reservation["id"] != receipt["spend_reservation_id"]
                 or reservation["status"] != "ACTIVE" or now >= reservation["expires_at"]):
             return "RESERVATION_NOT_CURRENT"
+        if reservation["hold_revision"] != receipt["spend_hold_revision"]:
+            return "TRANSACTION_MISMATCH"
         self.consumed[receipt["receipt_id"]] = now
         return "CONSUMED"
 
@@ -115,7 +117,7 @@ class BuyerAuthorityReceipt(unittest.TestCase):
             "now": at(RECEIPT["evaluated_at"]) + timedelta(seconds=10),
             "native": self.native(),
             "seller_receipt": {"operation_reference": RECEIPT["operation_reference"]},
-            "reservation": {"id": RECEIPT["spend_reservation_id"], "status": "ACTIVE",
+            "reservation": {"id": RECEIPT["spend_reservation_id"], "status": "ACTIVE", "hold_revision": 1,
                             "expires_at": at(RECEIPT["evaluated_at"]) + timedelta(days=1)},
             "membership_revision": RECEIPT["membership_revision"],
             "organisation_id": RECEIPT["buyer_organisation_id"],
@@ -133,6 +135,7 @@ class BuyerAuthorityReceipt(unittest.TestCase):
     def test_only_committing_operations_with_a_reservation_carry_a_receipt(self):
         for change in ({"operation": "trade.rfq.submit"}, {"operation": "trade.purchase-approval.decide"},
                        {"spend_reservation_id": None}, {"spend_reservation_id": "res_1"},
+                       {"spend_hold_revision": None}, {"spend_hold_revision": 0},
                        {"amount_minor": 0}, {"seller_binding_reference": None}, {"operation_reference": None},
                        {"transaction_digest": "md5:abc"}, {"outcome": "ALLOW"}):
             with self.subTest(change=change):
@@ -174,9 +177,14 @@ class BuyerAuthorityReceipt(unittest.TestCase):
         for expected, change in cases.items():
             with self.subTest(expected=expected):
                 self.assertEqual(expected, self.consume(Fence(), **change))
-        expired_hold = {"id": RECEIPT["spend_reservation_id"], "status": "ACTIVE", "expires_at": at(RECEIPT["evaluated_at"])}
+        rolled = {"id": RECEIPT["spend_reservation_id"], "status": "ACTIVE", "hold_revision": 2,
+                  "expires_at": late + timedelta(days=1)}
+        self.assertEqual("TRANSACTION_MISMATCH", self.consume(Fence(), reservation=rolled))
+        expired_hold = {"id": RECEIPT["spend_reservation_id"], "status": "ACTIVE", "hold_revision": 1,
+                        "expires_at": at(RECEIPT["evaluated_at"])}
         self.assertEqual("RESERVATION_NOT_CURRENT", self.consume(Fence(), reservation=expired_hold))
-        committed = {"id": RECEIPT["spend_reservation_id"], "status": "COMMITTED", "expires_at": late + timedelta(days=1)}
+        committed = {"id": RECEIPT["spend_reservation_id"], "status": "COMMITTED", "hold_revision": 1,
+                     "expires_at": late + timedelta(days=1)}
         self.assertEqual("RESERVATION_NOT_CURRENT", self.consume(Fence(), reservation=committed))
 
     def test_every_refusal_is_a_registered_reason(self):

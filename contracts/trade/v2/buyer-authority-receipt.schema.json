@@ -35,6 +35,7 @@
         "currency",
         "policy_revision",
         "spend_reservation_id",
+        "spend_hold_revision",
         "seller_legal_entity_id",
         "seller_binding_reference",
         "evaluated_at",
@@ -85,6 +86,11 @@
           "$ref": "buyer-spend-budget.schema.json#/$defs/reservationId",
           "description": "The ACTIVE reservation (Decision 5) that must convert to committed consumption in the same native transaction as the order. An evaluator ALLOW without it never commits."
         },
+        "spend_hold_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The reservation's hold revision the decision was made against. A rollover that moves a hold (month boundary, budget revision or retirement) advances it, so this receipt and any approval bound to the former hold go stale and must be re-decided."
+        },
         "seller_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalLegalEntityId" },
         "seller_binding_reference": { "$ref": "seller-operating-binding.schema.json#/$defs/bindingReference" },
         "evaluated_at": { "type": "string", "format": "date-time" },
@@ -129,7 +135,7 @@
     },
     "consumptionRefusal": {
       "type": "string",
-      "description": "Why a native commit fence refused to consume a buyer receipt. Each maps to a decisionReason: RECEIPT_EXPIRED, RECEIPT_CONSUMED and MEMBERSHIP_REVISED to CONTEXT_NOT_USABLE; TRANSACTION_MISMATCH to TRANSACTION_CHANGED; SELLER_RECEIPT_ABSENT to SELLER_AUTHORITY_ABSENT; RESERVATION_NOT_CURRENT to CONTEXT_NOT_USABLE (or SPEND_LIMIT_EXCEEDED when reacquisition fails); FOREIGN_RECEIPT to BUYER_NOT_AUTHORISED.",
+      "description": "Why a native commit fence refused to consume a buyer receipt. Each maps to a decisionReason: RECEIPT_EXPIRED, RECEIPT_CONSUMED and MEMBERSHIP_REVISED to CONTEXT_NOT_USABLE; TRANSACTION_MISMATCH (including a changed spend hold revision) to TRANSACTION_CHANGED; SELLER_RECEIPT_ABSENT to SELLER_AUTHORITY_ABSENT; RESERVATION_NOT_CURRENT to CONTEXT_NOT_USABLE (or SPEND_LIMIT_EXCEEDED when reacquisition fails); FOREIGN_RECEIPT to BUYER_NOT_AUTHORISED.",
       "enum": [
         "RECEIPT_EXPIRED",
         "RECEIPT_CONSUMED",
