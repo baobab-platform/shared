@@ -212,6 +212,38 @@ workloads:
     rotation_owner: baobab-platform/infrastructure
     status: ACTIVE
 
+  # Accepted named INT-03C development-only proof-bootstrap exception.
+  # ACTIVE permits ephemeral IAM/CP proof production, not qualification,
+  # access to CMS, human/production accounts, or persistent tenant authority.
+  # Each identity is recreated with unique credentials only inside a single
+  # bounded disposable test run and destroyed before completion.
+  baobab-int03c-issuer-owner:
+    repository: baobab-platform/infrastructure
+    owner: baobab-platform/infrastructure
+    runtime: "INT-03C supervised disposable issuer proof owner"
+    environment: development
+    allowed_audiences: ["baobab-control-plane"]
+    allowed_scopes: ["context:resolve"]
+    credential_type: client_credentials
+    rotation_owner: baobab-platform/infrastructure
+    status: ACTIVE
+
+  # Distinct credential and issuer client, used only to independently
+  # introspect the owner's current token state and observe revocation.
+  # No context:validate, administration, identity-registration or tenant
+  # provisioning powers. The existing verifier runner must not conflate
+  # this entry with either of the held Shared #354 CMS identities.
+  baobab-int03c-issuer-verifier:
+    repository: baobab-platform/infrastructure
+    owner: baobab-platform/infrastructure
+    runtime: "INT-03C independent disposable issuer verifier"
+    environment: development
+    allowed_audiences: ["baobab-control-plane"]
+    allowed_scopes: ["context:resolve"]
+    credential_type: client_credentials
+    rotation_owner: baobab-platform/infrastructure
+    status: ACTIVE
+
   baobab-cms-workload:
     repository: baobab-platform/baobab-cms
     owner: baobab-platform/baobab-cms
