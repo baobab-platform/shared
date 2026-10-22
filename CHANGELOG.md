@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ADR-SHARED-042 buyer-authority receipt (CAA-01, coupled to CAA-06).** New `trade/v2/buyer-authority-receipt.schema.json`:
+  * `BuyerAuthorityReceipt`: the immutable, at most 60-second fact recorded for an `ALLOW` buyer decision on `trade.order.commit` or `trade.draft-order.finalize`, bound to the seller decision's operation reference and the Decision 5 spend reservation;
+  * `BuyerAuthorityConsumption`: its single consumption in the native commit transaction, together with the seller receipt and the reservation's conversion;
+  * `consumptionRefusal`: closed fence refusals, each mapped to a decision reason.
+
+  Two synthetic examples and `scripts/tests/test_buyer_authority_receipt.py` (reference model of issuance, lifetime and one-time consumption) are added and wired into CI. Contract only: nothing is activated.
+
 * **ADR-SHARED-042 Decision 5: cumulative buyer spending authority (Platform Owner, 2026-10-22).** Recorded in ADR-SHARED-042 §14.
   * New `trade/v2/buyer-spend-budget.schema.json` with four definitions:
     * `BuyerSpendBudgetPolicy`: versioned budgets with mandatory calendar-month `MEMBERSHIP` scope, plus `AGREEMENT` and `ORGANISATION` scopes where configured;
