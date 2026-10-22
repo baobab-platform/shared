@@ -131,7 +131,8 @@ workloads.each do |client_id, entry|
   end
   # ADR-SHARED-042 section 3: delegated human Principal resolution needs a registered validator relationship scoped to the
   # expected human audience. Required of exactly the workloads holding a principal-resolution scope, and nobody else.
-  principal_scopes = %w[identity:principal:resolve identity:principal:register-buyer]
+  # The estate client binding resolution (CAA-04) verifies the BFF's evidence for the same audience, so it needs it too.
+  principal_scopes = %w[identity:principal:resolve identity:principal:register-buyer estate:client-binding:resolve]
   subject_audiences = entry["subject_principal_audiences"]
   if (entry.fetch("allowed_scopes") & principal_scopes).any?
     unless subject_audiences.is_a?(Array) && !subject_audiences.empty? && subject_audiences.uniq.size == subject_audiences.size &&
@@ -199,9 +200,10 @@ fail_contract("INT-02 proof-bootstrap identity must match its exact owner-approv
 #    registry does not govern).
 # Trade's B2B API declares its requirement once at the top level, which every
 # operation without its own `security` inherits (OpenAPI 3.1).
-# The private identity/v1 Principal resolution API is a Control Plane surface.
+# The private identity/v1 Principal resolution and control-plane/v1 estate binding APIs are Control Plane surfaces.
 { "contracts/control-plane/v1/openapi.yaml" => "baobab-control-plane",
   "contracts/identity/v1/principal-resolution.openapi.yaml" => "baobab-control-plane",
+  "contracts/control-plane/v1/estate-client-binding.openapi.yaml" => "baobab-control-plane",
   "contracts/trade/v1/openapi.yaml" => "baobab-trade" }.each do |path, audience|
   document = load_yaml(path)
   document.fetch("paths").each do |route, item|

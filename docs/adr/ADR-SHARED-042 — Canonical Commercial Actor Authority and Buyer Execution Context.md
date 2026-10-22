@@ -1,7 +1,7 @@
 # ADR-SHARED-042 — Canonical Commercial Actor Authority and Buyer Execution Context
 
 **Status:** **Accepted — Normative Cross-Engine Identity, Commercial Authorization and Execution Architecture**
-**Decision date:** 2026-10-21
+**Decision date:** 2026-10-21 (implementation ruling on CAA-03/CAA-04 recorded 2026-10-22, §14)
 **Decision authority:** Baobab Platform Owner (explicit approval, 21 October 2026)
 **Authority home:** `baobab-platform/shared/docs/adr`
 **Scope:** All first-party and governed external consumers of Baobab Trade; first adopter ZuriBeans B2B. B2C-specific policies remain independent.
@@ -190,3 +190,30 @@ Commercial authority is **derived and verified, never inferred, inherited or man
 - OAuth 2.0 Token Exchange (RFC 8693) and OAuth 2.0 Security Best Current Practice (RFC 9700) guide optional delegated token transport. No token-exchange capability is assumed active.
 
 **Decision record (21 October 2026):** Platform Owner explicitly directed **Accepted** status and publication by PR, with merge only after mandatory CI/reviews pass. Architectural acceptance authorizes implementation planning, **not** provisional buyer or seller trading activation.
+
+**Decision record (22 October 2026) — CAA-03 and CAA-04 implementation ruling.** Decision authority: Baobab Platform Owner. Status: Accepted for architectural implementation. It authorises implementation only: no protected buyer operation is activated, ADR-SHARED-039 seller authority is unchanged, and no draft PR is thereby ready to merge.
+
+1. **CAA-04 — Digital Estate binding.** The Digital Estate behind a buyer request SHALL be established only by a Control Plane attestation of a governed, versioned binding between the confidential estate BFF's registered OAuth client and the estate it serves. The binding holds issuer, `bff_client_id`, `digital_estate_id`, `tenant_id`, `engine_instance_id`, `environment`, `deployment_reference`, status (ACTIVE, SUSPENDED, REVOKED), a monotonic revision, an effective interval and evidence provenance.
+   - `azp` identifies the OAuth client. It never, by itself, establishes estate, tenant, environment or Trade instance.
+   - Several estates per client are allowed only where each binding is separately governed. An ambiguous match is never resolved by choosing the first record.
+   - A client-supplied estate identifier may narrow a selection but never establishes one.
+   - The BFF SHALL authenticate to Trade as itself, independently of the human token, so that a stolen buyer token cannot let another caller act as the BFF.
+   - Until the contract and its CP implementation exist, a route that needs the Digital Estate returns `UNAVAILABLE`. No environment variable, request header, hostname or commerce session is a substitute.
+   - This extends CP's estate-aware context resolution. It is not a second estate registry.
+   - Contracts: `control-plane/v1/estate-client-binding.schema.json` and `.openapi.yaml` (scope `estate:client-binding:resolve`), and `identity/v1/buyer-identity-handoff` v1.1 (`BffCallerTokenClaims`, `BuyerOperationHandoffRequest`, scope `trade:buyer-handoff`). Both scopes are allocated to no workload.
+2. **CAA-03 — assurance.** Shared publishes the versioned, provider-neutral buyer assurance policy (`identity/v1/assurance-policy.schema.json`). IAM owns the verified evidence and the meaning of its `acr`/`amr` values.
+   - A policy is scoped to one trusted issuer and the Trade audience.
+   - `acr` values match exactly; no ordering between strings is assumed.
+   - Required methods and authentication freshness are enforced where a profile sets them.
+   - The operation-to-profile mapping is canonical, so no policy can downgrade an operation.
+   - Until the policy and IAM's issuer-backed values are qualified, Trade MAY enforce a configured `acr` allowlist as a strict interim verifier: fail closed, scoped to one issuer and to the operations of a single approved profile, and only with security-approved values backed by IAM evidence. It is never a permissive default.
+   - The BFF cannot raise assurance by supplying claims.
+   - Missing configuration, unverified evidence or an unavailable authoritative source prevents protected buyer execution.
+   - Meeting a profile never by itself establishes permission to buy.
+3. **Sequence.** Shared contracts (this record), then IAM assurance normalisation and BFF registration, then CP estate binding resolution, then Trade enforcement, then ZuriBeans BFF handoff and company/Market selection, then Infrastructure real-component acceptance. Tests SHALL prove that each of the following is refused:
+   - a wrong estate or environment;
+   - a revoked binding;
+   - an ambiguous binding;
+   - missing or downgraded assurance.
+
+   The derived buyer decision never exceeds 60 seconds or its earliest evidence.

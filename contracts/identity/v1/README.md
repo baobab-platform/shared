@@ -121,3 +121,37 @@ These are operations, not catalogued capabilities: no capability key is
 registered for them. Both scopes are workload-only, `grants_authority: false`
 and allocated to no workload. Run
 `python scripts/tests/test_principal_resolution.py`.
+
+## Buyer handoff v1.1 and buyer assurance policy (ADR-SHARED-042 CAA-03/CAA-04)
+
+These follow the Platform Owner ruling of 22 October 2026 (ADR-SHARED-042 §14).
+
+- **The BFF authenticates as itself.** In `buyer-identity-handoff.schema.json`
+  v1.1, the estate BFF presents its own IAM workload token to Trade as the
+  caller credential (`BffCallerTokenClaims`: actor `workload`, audience
+  `baobab-trade`, scope `trade:buyer-handoff`). It carries the human access
+  token in the body as subject evidence (`BuyerOperationHandoffRequest`).
+  The BFF client must equal the human token's `azp`. Trade forwards the BFF
+  token to the Control Plane as client evidence for the estate binding
+  (`control-plane/v1/estate-client-binding`). The v1.0 shape authorises no
+  operation that needs the Digital Estate.
+- **`assurance-policy.schema.json`** is the versioned buyer assurance policy.
+  - It is scoped to one trusted issuer and the Trade audience.
+  - It has three canonical profiles: `BUYER_SESSION`, `BUYER_COMMITMENT` and
+    `BUYER_ADMINISTRATION`. The operation-to-profile mapping is fixed by the
+    contract, so no policy can downgrade an operation.
+  - `acr` values match exactly, with no ordering. Required methods and
+    authentication freshness apply where a profile sets them; a future
+    `auth_time` is not fresh.
+  - Only an `APPROVED` policy within its effective interval is enforced.
+    Anything else denies with `OPERATION_NOT_ACTIVATED`. Evidence that fails a
+    profile is `ASSURANCE_INSUFFICIENT`.
+  - IAM owns the values and their evidence. The example is synthetic and a
+    `DRAFT`.
+
+  This policy is distinct from `administration/v1/assurance-policy.yaml`, which
+  ranks the workforce realm for administrative authority.
+
+Neither scope is allocated to any workload, and nothing is activated. Run
+`python scripts/tests/test_buyer_identity_handoff.py` and
+`python scripts/tests/test_assurance_policy.py`.

@@ -1,0 +1,42 @@
+{
+  "policy_id": "buyer-assurance.synthetic",
+  "policy_version": 1,
+  "status": "DRAFT",
+  "issuer": "https://iam.example.test",
+  "audience": "baobab-trade",
+  "approval_reference": "synthetic: not a security approval",
+  "effective_from": "2026-10-22T00:00:00Z",
+  "profiles": {
+    "BUYER_SESSION": {
+      "accepted_acr_values": ["urn:example.test:acr:synthetic-session"],
+      "step_up_required": false
+    },
+    "BUYER_COMMITMENT": {
+      "accepted_acr_values": ["urn:example.test:acr:synthetic-strong"],
+      "required_methods": ["hwk"],
+      "max_authentication_age_seconds": 900,
+      "step_up_required": true,
+      "phishing_resistant_required": true
+    },
+    "BUYER_ADMINISTRATION": {
+      "accepted_acr_values": ["urn:example.test:acr:synthetic-strong"],
+      "required_methods": ["hwk"],
+      "max_authentication_age_seconds": 300,
+      "step_up_required": true,
+      "phishing_resistant_required": true
+    }
+  },
+  "operation_profiles": {
+    "trade.buyer-context.resolve": "BUYER_SESSION",
+    "trade.private-catalogue.view": "BUYER_SESSION",
+    "trade.contract-price.view": "BUYER_SESSION",
+    "trade.cart.modify": "BUYER_SESSION",
+    "trade.rfq.submit": "BUYER_COMMITMENT",
+    "trade.quotation.accept": "BUYER_COMMITMENT",
+    "trade.purchase-approval.decide": "BUYER_COMMITMENT",
+    "trade.order.commit": "BUYER_COMMITMENT",
+    "trade.draft-order.finalize": "BUYER_COMMITMENT",
+    "trade.buyer-invitation.accept": "BUYER_COMMITMENT",
+    "trade.buyer-member.manage": "BUYER_ADMINISTRATION"
+  }
+}

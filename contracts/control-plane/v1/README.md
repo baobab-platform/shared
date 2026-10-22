@@ -29,6 +29,38 @@ operations. CP must preserve the nonproduction feature gate until IAM sessions,
 independent maker/checker, source verification, database migration, encryption,
 retention, and protected live staging tests have passed.
 
+## Estate client binding (ADR-SHARED-042 CAA-04)
+
+[`estate-client-binding.schema.json`](estate-client-binding.schema.json) and
+[`estate-client-binding.openapi.yaml`](estate-client-binding.openapi.yaml)
+define how the Control Plane attests which Digital Estate, Tenant and
+deployment a confidential estate BFF client serves, for one buyer request.
+
+- **The binding record** (`EstateClientBinding`) holds:
+  - the issuer and BFF client;
+  - the estate, Tenant and Trade engine instance;
+  - the environment and deployment reference;
+  - its status, revision, effective interval and approval provenance.
+
+  It changes only through the reviewed CP registry process.
+- **`resolveEstateClientBinding`** (`POST /internal/estate/v1/client-bindings/resolve`,
+  scope `estate:client-binding:resolve`, allocated to no workload) is called
+  by Trade with its own workload token.
+  - The BFF's own IAM workload token travels as `client_evidence`, and the
+    Control Plane verifies it itself.
+  - The request can name the Trade instance and environment, and optionally
+    narrow to one estate. It cannot name a tenant, binding, deployment or
+    revision.
+- **Exactly one ACTIVE, effective binding is attested, or the request is
+  denied.** Several valid bindings is `BINDING_AMBIGUOUS` and is never
+  resolved by order.
+- **An attestation lasts at most 60 seconds** and never outlives the client
+  evidence.
+
+`azp` alone never establishes an estate. Until a consumer holds a current
+attestation, an operation that needs the Digital Estate is `UNAVAILABLE`.
+Run `python scripts/tests/test_estate_client_binding.py`.
+
 ## How to publish a contract change
 
 1. Change Shared OpenAPI and JSON Schema together, with relevant

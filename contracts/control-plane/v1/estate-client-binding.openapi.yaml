@@ -1,0 +1,120 @@
+openapi: 3.1.0
+info:
+  title: Private estate client binding resolution
+  version: 1.0.0
+  description: >-
+    Control Plane private, workload-only operation through which a
+    registered Trade workload learns, for one buyer request, which Digital
+    Estate, Tenant and deployment the confidential estate BFF behind that
+    request is authorised to serve (ADR-SHARED-042 CAA-04, Platform Owner
+    ruling of 22 October 2026). The request is purpose-bound
+    (BUYER_OPERATION). This is an operation, not a catalogued
+    capability: no capability key is registered for it. The caller
+    authenticates with its own Control Plane-audience workload token. The
+    BFF's own IAM workload token travels in the body as client evidence,
+    never as the caller credential.
+
+
+    For every request the Control Plane MUST: (1) verify the caller's
+    workload token, its registered ACTIVE workload and the operation scope;
+    (2) verify the client evidence's signature and issuer against its own
+    registered issuer trust, never a caller-supplied key or URL; (3)
+    require actor_type workload, an audience equal to a subject audience
+    registered for the calling workload in identity/v1
+    workload-registry.yaml subject_principal_audiences, the scope
+    trade:buyer-handoff, a registered ACTIVE client, an unexpired token, and
+    a client equal to subject_authorised_party; (4) select bindings only by
+    the verified issuer and client, the deployment CP holds for that
+    client, the calling engine instance and the environment, narrowed by
+    requested_digital_estate_id where given; and (5) attest exactly one
+    ACTIVE, currently effective binding, or deny. Ambiguity is never
+    resolved by order. An attestation grants no buyer, membership, market or
+    purchasing authority.
+paths:
+  /internal/estate/v1/client-bindings/resolve:
+    post:
+      operationId: resolveEstateClientBinding
+      summary: Attest the Digital Estate binding of an authenticated estate BFF client
+      description: >-
+        Read-only. Returns an EstateBindingAttestation valid for at most 60
+        seconds and never beyond the client evidence.
+      security:
+        - EstateBindingWorkload: ["estate:client-binding:resolve"]
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: estate-client-binding.schema.json#/$defs/EstateBindingResolveRequest
+      responses:
+        "200":
+          description: Attested.
+          headers:
+            Cache-Control:
+              description: private, no-store
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                $ref: estate-client-binding.schema.json#/$defs/EstateBindingAttestation
+        "400":
+          $ref: "#/components/responses/Problem"
+        "401":
+          description: The caller's own workload token is missing or invalid.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "403":
+          description: >-
+            CALLER_NOT_PERMITTED, CLIENT_EVIDENCE_INVALID,
+            CLIENT_NOT_FOR_SUBJECT, BINDING_NOT_ACTIVE, ENVIRONMENT_MISMATCH
+            or ENGINE_INSTANCE_NOT_PERMITTED.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "404":
+          description: BINDING_NOT_FOUND.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "409":
+          description: BINDING_AMBIGUOUS. Several bindings are valid; nothing is attested.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+        "503":
+          description: RESOLUTION_UNAVAILABLE (issuer trust or binding store unavailable). Never a fallback estate.
+          content:
+            application/problem+json:
+              schema:
+                $ref: ../../errors/v1/problem-details.schema.json
+components:
+  parameters:
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: true
+      description: Must equal the body correlation_id.
+      schema: { type: string, format: uuid }
+  responses:
+    Problem:
+      description: Malformed request (unknown field, malformed token or correlation mismatch).
+      content:
+        application/problem+json:
+          schema:
+            $ref: ../../errors/v1/problem-details.schema.json
+  securitySchemes:
+    EstateBindingWorkload:
+      type: oauth2
+      description: A Baobab workload token issued for audience baobab-control-plane.
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth2/token
+          scopes:
+            "estate:client-binding:resolve": Read-only estate client binding attestation.
