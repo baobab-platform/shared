@@ -1,0 +1,16 @@
+{
+  "budget_policy_id": "b2bbud_synthetic0001",
+  "revision": 1,
+  "status": "ACTIVE",
+  "scope": "MEMBERSHIP",
+  "tenant_id": "tn_synthetic01",
+  "buyer_organisation_id": "b2borg_synthetic0001",
+  "buyer_membership_id": "b2bmem_synthetic0001",
+  "market_id": "mkt_za",
+  "currency": "ZAR",
+  "period_kind": "CALENDAR_MONTH",
+  "timezone": "Africa/Johannesburg",
+  "limit_minor": 10000000,
+  "effective_from": "2026-10-01T00:00:00+02:00",
+  "evidence_reference": "changeset:synthetic-budget-0001"
+}

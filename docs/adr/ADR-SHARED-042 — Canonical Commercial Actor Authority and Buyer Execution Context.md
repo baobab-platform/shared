@@ -249,3 +249,37 @@ Commercial authority is **derived and verified, never inferred, inherited or man
    - The limit is revalidated when the decision is made, and the approval is checked for continued applicability before native commit. An unavailable approval-authority source is `UNAVAILABLE`.
 
 `SPEND_POLICY_NOT_CONFIGURED` and `APPROVAL_AUTHORITY_NOT_CONFIGURED` are registered in `trade/v2` `decisionReason` by this record.
+
+**Decision record (22 October 2026) — Decision 5: cumulative buyer spending authority and reservations.** Decision authority: Baobab Platform Owner. Status: Accepted for CAA-05/CAA-06 implementation. It authorises the next engineering increment only; it neither activates purchasing nor certifies the native runtime.
+
+1. **Layered ceilings.** Every applicable ceiling SHALL pass independently, and no role, `ACCOUNT_ADMIN` included, may disregard a cumulative budget:
+   - the per-transaction limit (`order_limit_minor`, mandatory, meaning unchanged);
+   - a mandatory calendar-month cumulative budget per membership, the baseline for every Baobab Trade deployment;
+   - an agreement-specific ceiling, binding when configured;
+   - an organisation-wide shared budget, binding when configured.
+
+   A governed escalation policy MAY let an independently authorised approval exceed the per-transaction cap only. Approving one purchase never raises a budget, so a cumulative shortfall is `DENY` (`SPEND_LIMIT_EXCEEDED`), never `APPROVAL_REQUIRED`.
+2. **Reservations.** A purchase formally submitted for approval SHALL reserve its full applicable amount from submission. Drafts and unsubmitted quotations reserve nothing.
+   - **Holding:** the reservation is held while approval is pending and after approval until commit.
+   - **Commit:** at order commit it converts atomically into committed consumption, never counted twice.
+   - **Release:** only the verified unused portion is released, on rejection, cancellation, governed expiry or reduction. An increase atomically acquires additional capacity.
+   - **Expiry:** an expired hold never authorises commitment.
+   - **No restoration:** refunds, returns and historical adjustments do not restore capacity without a separately approved reversal policy.
+3. **Period and accounting.**
+   - **The period** is a calendar month, never a rolling interval. It has an explicit start, an exclusive end, currency, Market, membership, revision and governing time zone; UTC is the default unless the policy names an IANA zone.
+   - **Available capacity** = monthly limit − committed − active reservations. Consumption is authorised purchasing commitment, not cash or invoice settlement. ERP remains the accounting authority and Payments the funds-movement authority; Trade owns the spending-control ledger.
+   - **Crossing a month boundary:** a reservation never silently becomes authority in the new month. Trade atomically releases the old-period hold and acquires new-period capacity, and any approval bound to the former period or policy is revalidated.
+4. **Engineering model.**
+   - **Policy and ledger:** `SpendLimit` is extended, not redefined. A separate versioned budget policy and an append-only reservation and commitment ledger identify the tenant, buyer Organisation, membership, Market, currency, period, transaction digest, resource version, reservation or commitment reference and idempotency key.
+   - **Concurrency:** capacity is reserved and the balance updated in one PostgreSQL transaction under database-enforced locking or serializable control. Commands are idempotent, and every applicable member, agreement and organisation ceiling is enforced atomically.
+   - **Binding:** reservations bind to one immutable purchase and never move between buyers, Markets or currencies.
+   - **Execution fence:** the native Medusa fence verifies a current reservation and the exact transaction before commit; a standalone evaluator ALLOW is insufficient.
+   - **Fail closed:** missing policy, ledger balance, canonical Market mapping or transactional guarantee is refused. Missing mandatory budget configuration is `SPEND_POLICY_NOT_CONFIGURED`, insufficient capacity is `SPEND_LIMIT_EXCEEDED`, and an unavailable authoritative source is `SOURCE_UNAVAILABLE`.
+5. **Sequencing.**
+   - **Shared:** the versioned budget-period, reservation and commitment contracts (`trade/v2/buyer-spend-budget.schema.json`).
+   - **Trade, CAA-05 extension:** monthly and agreement budget evaluation, capacity calculation and migrations.
+   - **Trade, CAA-06:** atomic reservation and commit transitions, buyer/seller composition and native fences.
+   - **CP:** the governed `market_key` → canonical Market mapping and Market attestation.
+   - **CAA-08:** real PostgreSQL 17 concurrency, retry, cancellation, rollover, revocation and direct-workflow bypass tests.
+
+   No migration backfills a monthly limit from `order_limit_minor`. Existing members need explicitly governed budget allocation before cumulative-budget-controlled operations are activated.

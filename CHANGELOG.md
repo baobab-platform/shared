@@ -23,6 +23,14 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ADR-SHARED-042 Decision 5: cumulative buyer spending authority (Platform Owner, 2026-10-22).** Recorded in ADR-SHARED-042 §14.
+  * New `trade/v2/buyer-spend-budget.schema.json` with four definitions:
+    * `BuyerSpendBudgetPolicy`: versioned budgets with mandatory calendar-month `MEMBERSHIP` scope, plus `AGREEMENT` and `ORGANISATION` scopes where configured;
+    * `BudgetPeriod`: calendar month in an IANA zone, end exclusive;
+    * `SpendLedgerEntry`: append-only, idempotent `RESERVE`, `COMMIT` and `RELEASE`;
+    * `BudgetCapacity`: limit − committed − reserved.
+  * New `test_buyer_spend_budget.py` holds a reference model of periods, capacity, conversion without double counting and release of the unused portion only. It is wired into CI. Nothing is activated.
+
 * **ADR-SHARED-042 CAA-05 buyer operation policy ruling (Platform Owner, 2026-10-22).** Recorded in ADR-SHARED-042 §14: fail-closed spend and approver authority, the buyer operation role matrix with mandatory separation of duties, and role-bound Site and Market grants.
   * `trade/v2` `decisionReason` gains `SPEND_POLICY_NOT_CONFIGURED` and `APPROVAL_AUTHORITY_NOT_CONFIGURED`, distinguishing an absent limit (never unlimited authority) from an exceeded one. Additive; existing values are unchanged.
   * Extended `test_buyer_execution_context.py`. Nothing is activated.
