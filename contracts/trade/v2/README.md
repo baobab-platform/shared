@@ -114,6 +114,35 @@ Rules:
 - **No probing.** Reasons about an Organisation the actor cannot act for are
   never more specific than `BUYER_NOT_AUTHORISED`.
 
-Not yet defined, and still CAA-01 work: the buyer-authority receipt consumed at
-native commit (coupled to CAA-06) and the machine-mandate delegation profile.
-Run `python scripts/tests/test_buyer_execution_context.py`.
+Not yet defined, and still CAA-01 work: the machine-mandate delegation
+profile. Run `python scripts/tests/test_buyer_execution_context.py`.
+
+### Buyer-authority receipt (`buyer-authority-receipt.schema.json`)
+
+ADR-SHARED-042 sections 9 and 12 (CAA-01, coupled to CAA-06). The buyer
+counterpart of the ADR-SHARED-039 seller order-authority receipt, never a
+replacement for it.
+
+- **`BuyerAuthorityReceipt`:** the immutable fact Trade records when the
+  buyer decision is `ALLOW` for `trade.order.commit` or
+  `trade.draft-order.finalize`. It copies the context's actor, Organisation,
+  membership revision, Market, resource version, digest, amount, currency,
+  policy revision and seller of record, and names the operation reference
+  the seller decision is bound to and the Decision 5 spend reservation at
+  its exact hold revision (a rollover makes the receipt stale).
+- **`BuyerAuthorityConsumption`:** its one consumption, written in the same
+  native transaction that commits the order, consumes the seller receipt and
+  converts the reservation. Unique per receipt.
+- **`consumptionRefusal`:** why a fence refused, each mapped to a closed
+  decision reason.
+
+Rules:
+- **Server-built only**, and only for `ALLOW`. No other outcome produces a
+  receipt.
+- **Bounded lifetime.** At most 60 seconds, never later than its context.
+- **Consumed once**, only with a seller receipt for the same operation
+  reference, only while every bound fact equals the native record and the
+  membership revision is unchanged, and only with a current reservation.
+- **Activates nothing.** No route, capability or grant is registered.
+
+Run `python scripts/tests/test_buyer_authority_receipt.py`.

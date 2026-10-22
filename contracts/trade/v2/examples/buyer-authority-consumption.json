@@ -1,0 +1,8 @@
+{
+  "receipt_id": "7d3e5f1a-2b4c-4d6e-8f0a-1b2c3d4e5f60",
+  "operation_reference": "trade/trade.order.commit/cart_synthetic01/4/1",
+  "seller_receipt_id": "synthetic-seller-receipt-01",
+  "spend_reservation_id": "b2bres_synthetic0001",
+  "commitment_reference": "order_synthetic01",
+  "consumed_at": "2026-10-21T12:00:12Z"
+}

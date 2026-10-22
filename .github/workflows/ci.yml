@@ -253,6 +253,8 @@ jobs:
         run: python scripts/tests/test_buyer_execution_context.py
       - name: Test Trade buyer spend budget and reservation ledger (ADR-SHARED-042 Decision 5)
         run: python scripts/tests/test_buyer_spend_budget.py
+      - name: Test Trade buyer-authority receipt and consumption (ADR-SHARED-042 CAA-01/CAA-06)
+        run: python scripts/tests/test_buyer_authority_receipt.py
       - name: Test estate client binding boundary (ADR-SHARED-042 CAA-04)
         run: python scripts/tests/test_estate_client_binding.py
       - name: Test buyer assurance policy (ADR-SHARED-042 CAA-03)
