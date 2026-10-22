@@ -1,0 +1,14 @@
+{
+  "outcome": "ATTESTED",
+  "attestation_id": "1f2e3d4c-5b6a-4978-8a9b-0c1d2e3f4a5b",
+  "commerce_profile_id": "9a1b2c3d-4e5f-4a6b-8c7d-0e1f2a3b4c5d",
+  "profile_revision": 2,
+  "digital_estate_id": "zuribeans",
+  "tenant_id": "tn_synthetic01",
+  "trade_engine_instance_id": "ei_tradestaging01",
+  "market_id": "zuribeans_ug",
+  "commerce_model": "B2B",
+  "issued_at": "2026-10-21T11:59:50Z",
+  "expires_at": "2026-10-21T12:00:50Z",
+  "evidence_reference": "changeset:synthetic-0002"
+}

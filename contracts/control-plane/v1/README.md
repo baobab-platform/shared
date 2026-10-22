@@ -61,6 +61,30 @@ deployment a confidential estate BFF client serves, for one buyer request.
 attestation, an operation that needs the Digital Estate is `UNAVAILABLE`.
 Run `python scripts/tests/test_estate_client_binding.py`.
 
+
+## Estate commerce profile (ADR-SHARED-042 Decision 8)
+
+[`estate-commerce-profile.schema.json`](estate-commerce-profile.schema.json) and
+[`estate-commerce-profile.openapi.yaml`](estate-commerce-profile.openapi.yaml)
+define the Control Plane's governed classification of a Digital Estate's
+commerce model, and its attestation for one Trade workload request.
+
+- **The profile** (`EstateCommerceProfile`) names the estate, Tenant, Trade
+  engine instance, `commerce_model` (`B2B` or `B2C`), Market scope, status,
+  CP-controlled revision, effective interval and approval provenance. It is
+  established during governed onboarding and approved before activation.
+  Exactly one ACTIVE model applies per estate, engine instance and Market;
+  there is no `MIXED` fallback.
+- **The attestation** lasts at most 60 seconds and classifies the estate
+  only. Trade classifies each native commitment itself
+  (`trade/v2/native-commitment-classification.schema.json`). The estate
+  provenance is an estate-client binding attestation for a BFF request, or a
+  separately governed resource assignment otherwise; CP re-verifies it.
+- **The operation** `resolveEstateCommerceProfile` needs the scope
+  `estate:commerce-profile:resolve`, which is allocated to no workload.
+  Nothing is inferred from a sales channel, domain, currency or estate name.
+
+Run `python scripts/tests/test_estate_commerce_classification.py`.
 ## How to publish a contract change
 
 1. Change Shared OpenAPI and JSON Schema together, with relevant

@@ -23,6 +23,11 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ADR-SHARED-042 Decision 8: authoritative B2B/B2C classification of native commitments (Platform Owner, 2026-10-22).** Recorded in ADR-SHARED-042 §14.
+  * New `control-plane/v1/estate-commerce-profile.schema.json` and `.openapi.yaml`: the CP-governed `EstateCommerceProfile` (one ACTIVE `B2B` or `B2C` model per estate, engine instance and Market; no `MIXED`), its resolve request and its at most 60-second attestation. The read-only `resolveEstateCommerceProfile` operation uses the new scope `estate:commerce-profile:resolve`, which is allocated to no workload.
+  * New `trade/v2/native-commitment-classification.schema.json`: Trade's immutable per-commitment classification, positively established for B2B and B2C, with closed fence refusals.
+  * Synthetic examples and `scripts/tests/test_estate_commerce_classification.py` (8 tests, including the fence decision table) are added and wired into CI. Contract and decision record only: nothing is activated or registered.
+
 * **ADR-SHARED-042 Decisions 6 and 7: native buyer-commitment coverage and spend valuation (Platform Owner, 2026-10-22).** Recorded in ADR-SHARED-042 §14.
   * `trade.order.create` joins the buyer-operation catalogue (`trade/v2/buyer-execution-context.schema.json`), the buyer receipt's consumable operations and the buyer assurance mapping (`identity/v1/assurance-policy.schema.json`, `BUYER_COMMITMENT`). This is a strengthening, additive change: consumers re-pin, and any DRAFT assurance policy adds the new mapping. No APPROVED policy exists yet.
   * New `trade/v2/buyer-commitment-valuation.schema.json`: the complete buyer obligation (`buyer_commitment_amount_minor`) with typed components, a final or governed-maximum basis and a canonical `valuation_digest`. Tender is never a component.
