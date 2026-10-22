@@ -23,6 +23,11 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ADR-SHARED-042 Decisions 6 and 7: native buyer-commitment coverage and spend valuation (Platform Owner, 2026-10-22).** Recorded in ADR-SHARED-042 §14.
+  * `trade.order.create` joins the buyer-operation catalogue (`trade/v2/buyer-execution-context.schema.json`), the buyer receipt's consumable operations and the buyer assurance mapping (`identity/v1/assurance-policy.schema.json`, `BUYER_COMMITMENT`). This is a strengthening, additive change: consumers re-pin, and any DRAFT assurance policy adds the new mapping. No APPROVED policy exists yet.
+  * New `trade/v2/buyer-commitment-valuation.schema.json`: the complete buyer obligation (`buyer_commitment_amount_minor`) with typed components, a final or governed-maximum basis and a canonical `valuation_digest`. Tender is never a component.
+  * The execution context (for order commitments) and the buyer receipt now require `valuation_digest`. Examples are updated and `scripts/tests/test_buyer_commitment_valuation.py` (7 tests) is wired into CI. Contract and decision record only: nothing is activated.
+
 * **ADR-SHARED-042 buyer-authority receipt (CAA-01, coupled to CAA-06).** New `trade/v2/buyer-authority-receipt.schema.json`:
   * `BuyerAuthorityReceipt`: the immutable, at most 60-second fact recorded for an `ALLOW` buyer decision on `trade.order.commit` or `trade.draft-order.finalize`, bound to the seller decision's operation reference and the Decision 5 spend reservation;
   * `BuyerAuthorityConsumption`: its single consumption in the native commit transaction, together with the seller receipt and the reservation's conversion;

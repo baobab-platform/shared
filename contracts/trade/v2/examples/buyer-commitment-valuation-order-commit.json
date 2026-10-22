@@ -1,0 +1,37 @@
+{
+  "valuation_id": "4e2a6c8d-0f1b-4c3d-9e5f-7a8b9c0d1e2f",
+  "resource_id": "cart_synthetic01",
+  "resource_version": 4,
+  "transaction_digest": "sha256:9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e9f2c4e6a8b0d1f3e",
+  "currency": "UGX",
+  "basis": "FINAL_PRICED",
+  "components": [
+    {
+      "component_kind": "MERCHANDISE",
+      "amount_minor": 1100000,
+      "determination": "FINAL",
+      "source_reference": "line_synthetic01"
+    },
+    {
+      "component_kind": "ORDER_DISCOUNT",
+      "amount_minor": -50000,
+      "determination": "FINAL",
+      "source_reference": "adjustment_synthetic01"
+    },
+    {
+      "component_kind": "SHIPPING",
+      "amount_minor": 50000,
+      "determination": "FINAL",
+      "source_reference": "shipping_method_synthetic01"
+    },
+    {
+      "component_kind": "TAX",
+      "amount_minor": 150000,
+      "determination": "FINAL",
+      "source_reference": "tax_line_synthetic01"
+    }
+  ],
+  "buyer_commitment_amount_minor": 1250000,
+  "valued_at": "2026-10-21T11:59:58Z",
+  "valuation_digest": "sha256:ec293faad4e8175b85ec59a2fffe99035860b132d9f2b8d811619ec27c4cc429"
+}
