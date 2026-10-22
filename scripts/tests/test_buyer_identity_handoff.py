@@ -29,7 +29,8 @@ def registry():
     return result
 
 
-VALIDATOR = Draft202012Validator({"$ref": SCHEMA_ID}, registry=registry(), format_checker=FormatChecker())
+REGISTRY = registry()
+VALIDATOR = Draft202012Validator({"$ref": SCHEMA_ID}, registry=REGISTRY, format_checker=FormatChecker())
 
 
 def errors(document):
@@ -108,6 +109,53 @@ class BuyerIdentityHandoff(unittest.TestCase):
         self.assertTrue(scheme["openIdConnectUrl"].endswith("/.well-known/openid-configuration"))
         self.assertNotIn("realms/", json.dumps(scheme))
         self.assertEqual(api["security"], [{"humanOidc": ["trade:buy"]}])
+
+
+def definition_errors(name, document):
+    validator = Draft202012Validator({"$ref": f"{SCHEMA_ID}#/$defs/{name}"}, registry=REGISTRY,
+                                     format_checker=FormatChecker())
+    return list(validator.iter_errors(document))
+
+
+BFF_CLAIMS = {"iss": "https://iam.example.test", "sub": "synthetic-estate-bff", "aud": "baobab-trade", "exp": 1792670460,
+              "iat": 1792670400, "jti": "synthetic-jti", "scope": "trade:buyer-handoff", "actor_type": "workload",
+              "client_id": "synthetic-estate-bff"}
+# Shape only: three base64url segments, deliberately not a decodable JWT.
+HANDOFF = {"subject_token": ".".join(["synthetic-header", "synthetic-payload", "synthetic-signature"]),
+           "subject_token_type": "urn:ietf:params:oauth:token-type:access_token",
+           "correlation_id": "0b6f2c1e-6d0a-4f43-9c1a-2f1d6b1e9a40"}
+
+
+class BuyerIdentityHandoffV11(unittest.TestCase):
+    """v1.1: the BFF authenticates as itself; the human token is subject evidence."""
+
+    def test_bff_caller_token_is_a_trade_audience_workload_token_for_buyer_handoff(self):
+        self.assertEqual([], definition_errors("BffCallerTokenClaims", BFF_CLAIMS))
+        for key, value in [("actor_type", "human"), ("aud", "baobab-control-plane"), ("scope", "trade:buy"),
+                           ("client_id", None), ("jti", None)]:
+            document = dict(BFF_CLAIMS)
+            if value is None:
+                document.pop(key)
+            else:
+                document[key] = value
+            with self.subTest(key=key):
+                self.assertNotEqual([], definition_errors("BffCallerTokenClaims", document))
+
+    def test_handoff_body_carries_subject_evidence_and_requests_only(self):
+        self.assertEqual([], definition_errors("BuyerOperationHandoffRequest", HANDOFF))
+        self.assertEqual([], definition_errors("BuyerOperationHandoffRequest",
+                                               dict(HANDOFF, requested_digital_estate_id="estate_synthetic",
+                                                    requested_organisation_id="2c8e4f6a-1b3d-4e5f-8a7c-9d0e1f2a3b4c")))
+        for key, value in [("principal_id", "p"), ("tenant_id", "tn_x"), ("digital_estate_id", "estate_x"),
+                           ("subject_token_type", "urn:ietf:params:oauth:token-type:id_token"),
+                           ("subject_token", "opaque")]:
+            with self.subTest(key=key):
+                self.assertNotEqual([], definition_errors("BuyerOperationHandoffRequest", dict(HANDOFF, **{key: value})))
+        for key in ["subject_token", "subject_token_type", "correlation_id"]:
+            document = dict(HANDOFF)
+            document.pop(key)
+            with self.subTest(missing=key):
+                self.assertNotEqual([], definition_errors("BuyerOperationHandoffRequest", document))
 
 
 if __name__ == "__main__":

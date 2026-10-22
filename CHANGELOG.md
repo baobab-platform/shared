@@ -23,6 +23,21 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ADR-SHARED-042 CAA-01, second part: estate binding, BFF caller authentication and buyer assurance (Platform Owner ruling of 2026-10-22).** The ruling is recorded in ADR-SHARED-042 §14.
+  * New `control-plane/v1/estate-client-binding.schema.json` and `.openapi.yaml` (CAA-04):
+    * the governed, versioned binding of an estate BFF client to its Digital Estate, Tenant, Trade instance, environment and deployment;
+    * the private `resolveEstateClientBinding` attestation, at most 60 seconds, with closed denials including `BINDING_AMBIGUOUS` (409);
+    * new scope `estate:client-binding:resolve`, allocated to no workload.
+  * `identity/v1/buyer-identity-handoff` v1.1:
+    * the BFF authenticates to Trade with its own workload token (`BffCallerTokenClaims`, new scope `trade:buyer-handoff`, allocated to no workload);
+    * the human token travels in the body as subject evidence (`BuyerOperationHandoffRequest`).
+  * New `identity/v1/assurance-policy.schema.json` (CAA-03):
+    * issuer-scoped buyer assurance policy with canonical profiles and a fixed operation mapping;
+    * exact `acr` matching, required methods and freshness;
+    * a synthetic `DRAFT` example.
+  * `validate-authorization-contracts.rb`: `subject_principal_audiences` is also required of holders of `estate:client-binding:resolve`, and the new OpenAPI is scope-checked.
+  * Tests: `test_estate_client_binding.py`, `test_assurance_policy.py` and extended `test_buyer_identity_handoff.py`. No route, grant, workload allocation or protected operation is activated.
+
 * **ADR-SHARED-042 CAA-01, first part: commercial actor contracts.** This aligns the delegated Principal contracts (#358) with the Accepted ADR-SHARED-042 and adds the buyer execution context.
   * New `trade/v2/buyer-execution-context.schema.json`: `TradeBuyerExecutionContext` and `BuyerOperationDecision` per ADR-SHARED-042 section 7.
     * Human actor only; an operation catalogue for buyer operations.

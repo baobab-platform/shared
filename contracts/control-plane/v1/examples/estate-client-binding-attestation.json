@@ -1,0 +1,15 @@
+{
+  "outcome": "ATTESTED",
+  "binding_id": "5d2c7f0e-3b1a-4c6d-9e8f-0a1b2c3d4e5f",
+  "revision": 3,
+  "issuer": "https://iam.example.test",
+  "bff_client_id": "synthetic-estate-bff",
+  "digital_estate_id": "estate_synthetic",
+  "tenant_id": "tn_synthetic01",
+  "engine_instance_id": "ei_synthetic01",
+  "environment": "staging",
+  "deployment_reference": "deployment.synthetic-estate.staging",
+  "attested_at": "2026-10-22T12:00:00Z",
+  "expires_at": "2026-10-22T12:01:00Z",
+  "evidence_reference": "changeset:synthetic-0001"
+}
