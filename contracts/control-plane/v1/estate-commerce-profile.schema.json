@@ -88,7 +88,7 @@
     "EstateCommerceProfileAttestation": {
       "type": "object",
       "additionalProperties": false,
-      "description": "CP's attestation that exactly one ACTIVE, currently effective profile matches the estate, the calling Trade instance and the Market. expires_at is at most 60 seconds after issued_at; a consumer re-resolves outside that window and rejects any revision older than one it has seen. It classifies the estate only.",
+      "description": "CP's attestation that exactly one ACTIVE, currently effective profile matches the estate, the calling Trade instance and the Market. expires_at is at most 60 seconds after issued_at and never later than the profile's effective_until, which the attestation carries when the profile has one, so no consumer can rely on a classification after the profile stops being effective. A consumer re-resolves outside that window and rejects any revision older than one it has seen. It classifies the estate only.",
       "required": [
         "outcome",
         "attestation_id",
@@ -115,6 +115,11 @@
         "commerce_model": { "$ref": "#/$defs/commerceModel" },
         "issued_at": { "type": "string", "format": "date-time" },
         "expires_at": { "type": "string", "format": "date-time" },
+        "profile_effective_until": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The profile's effective_until, present whenever the profile has one. expires_at never exceeds it."
+        },
         "evidence_reference": { "$ref": "#/$defs/evidenceReference" }
       }
     },

@@ -27,6 +27,7 @@
         "classification_id",
         "resource_type",
         "resource_id",
+        "origin",
         "digital_estate_id",
         "tenant_id",
         "trade_engine_instance_id",
@@ -58,11 +59,16 @@
           "$ref": "seller-operating-binding.schema.json#/$defs/bindingReference",
           "description": "The seller binding stays independently authoritative for seller of record and legal operating permission; it is referenced, never conflated with the estate classification."
         },
+        "origin": {
+          "type": "string",
+          "enum": ["DIRECT", "CONVERTED", "REPLACEMENT"],
+          "description": "DIRECT: a commitment begun on this resource. CONVERTED: it continues another classified commitment (for example a binding quotation or a draft becoming an order) and must carry that commitment's reservation forward, never acquire a second one. REPLACEMENT: a governed replacement of another classification (for example a changed business model). A fence treats a missing or contradictory origin as CLASSIFICATION_ABSENT."
+        },
         "lineage": {
           "type": "object",
           "additionalProperties": false,
           "required": ["parent_classification_id", "relation"],
-          "description": "The classification this commitment continues (for example a binding quotation converted to an order), so a reservation is carried forward, never taken twice.",
+          "description": "The classification this commitment continues (for example a binding quotation converted to an order), so a reservation is carried forward, never taken twice. Required for CONVERTED and REPLACEMENT, forbidden for DIRECT, and its relation must match the origin.",
           "properties": {
             "parent_classification_id": { "type": "string", "format": "uuid" },
             "relation": { "type": "string", "enum": ["CONVERTED_FROM", "REPLACES"] }
@@ -94,6 +100,17 @@
         }
       },
       "allOf": [
+        {
+          "description": "A conversion or replacement always names its parent with the matching relation; a direct commitment names none.",
+          "if": { "properties": { "origin": { "const": "DIRECT" } } },
+          "then": { "not": { "required": ["lineage"] } },
+          "else": {
+            "required": ["lineage"],
+            "if": { "properties": { "origin": { "const": "CONVERTED" } } },
+            "then": { "properties": { "lineage": { "properties": { "relation": { "const": "CONVERTED_FROM" } } } } },
+            "else": { "properties": { "lineage": { "properties": { "relation": { "const": "REPLACES" } } } } }
+          }
+        },
         {
           "description": "B2B is a positively established buyer Organisation with a membership or an approved machine mandate, never a consumer.",
           "if": { "properties": { "commerce_model": { "const": "B2B" } } },

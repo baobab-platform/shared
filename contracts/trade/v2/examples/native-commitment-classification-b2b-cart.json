@@ -2,6 +2,7 @@
   "classification_id": "6c5b4a39-2817-4f6e-9d8c-7b6a5f4e3d2c",
   "resource_type": "cart",
   "resource_id": "cart_synthetic01",
+  "origin": "DIRECT",
   "digital_estate_id": "zuribeans",
   "tenant_id": "tn_synthetic01",
   "trade_engine_instance_id": "ei_tradestaging01",

@@ -65,6 +65,15 @@ def at(text):
     return datetime.fromisoformat(text.replace("Z", "+00:00"))
 
 
+def bounded(attestation):
+    """expires_at is within 60 seconds and never after the profile stops being effective."""
+    issued, expires = at(attestation["issued_at"]), at(attestation["expires_at"])
+    ceiling = issued + timedelta(seconds=60)
+    if "profile_effective_until" in attestation:
+        ceiling = min(ceiling, at(attestation["profile_effective_until"]))
+    return issued < expires <= ceiling
+
+
 B2C = changed(CLASSIFICATION, commerce_model="B2C", buyer_account_model="CONSUMER", consumer_reference="consumer_synthetic01",
               buyer_organisation_id=None, buyer_membership_id=None)
 
@@ -107,6 +116,11 @@ class EstateCommerceClassification(unittest.TestCase):
     def test_attestation_is_short_lived_estate_context_only(self):
         issued, expires = at(ATTESTATION["issued_at"]), at(ATTESTATION["expires_at"])
         self.assertTrue(issued < expires <= issued + timedelta(seconds=60))
+        self.assertTrue(bounded(ATTESTATION))
+        ending = changed(ATTESTATION, profile_effective_until="2026-10-21T12:00:10Z")
+        self.assertEqual([], errors(CP_ID, "EstateCommerceProfileAttestation", ending))
+        self.assertFalse(bounded(ending))  # expires_at 12:00:50 outlives the profile
+        self.assertTrue(bounded(changed(ending, expires_at="2026-10-21T12:00:10Z")))
         for key in CP_SCHEMA["$defs"]["EstateCommerceProfileAttestation"]["required"]:
             with self.subTest(missing=key):
                 self.assertNotEqual([], errors(CP_ID, "EstateCommerceProfileAttestation", changed(ATTESTATION, **{key: None})))
@@ -133,6 +147,20 @@ class EstateCommerceClassification(unittest.TestCase):
         self.assertNotEqual([], errors(CP_ID, "EstateCommerceProfileResolveRequest", changed(request, estate_provenance=None)))
         self.assertNotEqual([], errors(CP_ID, "EstateCommerceProfileResolveRequest",
                                        {**request, "estate_provenance": {"kind": "SALES_CHANNEL", "reference": "zuribeans"}}))
+
+    def test_conversions_and_replacements_name_their_parent(self):
+        parent = {"parent_classification_id": "0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a", "relation": "CONVERTED_FROM"}
+        converted = changed(CLASSIFICATION, resource_type="order", resource_id="order_synthetic01", origin="CONVERTED", lineage=parent)
+        self.assertEqual([], errors(TRADE_ID, "NativeCommitmentClassification", converted))
+        replacement = changed(converted, origin="REPLACEMENT", lineage={**parent, "relation": "REPLACES"})
+        self.assertEqual([], errors(TRADE_ID, "NativeCommitmentClassification", replacement))
+        for document in (changed(converted, lineage=None), changed(replacement, lineage=None),
+                         changed(converted, lineage={**parent, "relation": "REPLACES"}),
+                         changed(replacement, lineage=parent),
+                         changed(CLASSIFICATION, lineage=parent),  # a direct commitment names no parent
+                         changed(CLASSIFICATION, origin=None), changed(CLASSIFICATION, origin="IMPORTED")):
+            with self.subTest(origin=document.get("origin"), lineage=document.get("lineage")):
+                self.assertNotEqual([], errors(TRADE_ID, "NativeCommitmentClassification", document))
 
     def test_b2b_and_b2c_are_positively_established_never_inferred(self):
         refused = [
