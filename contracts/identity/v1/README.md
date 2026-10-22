@@ -155,3 +155,23 @@ These follow the Platform Owner ruling of 22 October 2026 (ADR-SHARED-042 §14).
 Neither scope is allocated to any workload, and nothing is activated. Run
 `python scripts/tests/test_buyer_identity_handoff.py` and
 `python scripts/tests/test_assurance_policy.py`.
+
+## Estate BFF human token profile (ADR-SHARED-042 CAA-03/CAA-04)
+
+A confidential estate BFF that obtains human buyer tokens registers a
+`human_token_profile` on its `workload-registry.yaml` entry:
+
+- `purpose: ESTATE_BFF_BUYER`;
+- `audiences`: the human resource audiences it may request;
+- `scopes`: human-only scopes issued for those audiences.
+
+IAM grants a buyer token no audience or scope outside the profile, and only
+after authentication.
+
+The profile and the `trade:buyer-handoff` scope are always held together, so
+the BFF that obtains a buyer token is also the client that authenticates to
+Trade when presenting it. Only a `client_credentials` (confidential) client
+qualifies, and `baobab-control-plane` is never a profile audience.
+
+`validate-authorization-contracts.rb` enforces all of this, and no workload
+holds a profile yet. Run `python scripts/tests/test_authorization_contracts.py`.

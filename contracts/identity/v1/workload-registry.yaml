@@ -110,6 +110,23 @@
 #                              estate-client-binding.openapi.yaml). Trade
 #                              would list baobab-trade; no workload holds it
 #                              yet.
+#   human_token_profile     -- optional; required of exactly the workloads
+#                              that hold trade:buyer-handoff, and nobody else
+#                              (ADR-SHARED-042 section 14, CAA-03/CAA-04). A
+#                              confidential estate BFF (client_credentials)
+#                              that also obtains human buyer tokens through
+#                              the authorization code flow registers here the
+#                              human resource audiences and human-only scopes
+#                              it may request for the person:
+#                                purpose: ESTATE_BFF_BUYER
+#                                audiences: [baobab-trade]
+#                                scopes: [trade:buy]
+#                              IAM grants a human token no audience or scope
+#                              outside it, and only after authentication. The
+#                              same client presents its own trade:buyer-handoff
+#                              token to Trade, so the buyer token's azp always
+#                              names a registered BFF. Never baobab-control-
+#                              plane. No workload holds it yet.
 #   context_purposes        -- optional. The Control Plane context authority
 #                              purposes (control-plane/v1 ContextAuthorityPurpose)
 #                              a context owned by this workload may carry.
