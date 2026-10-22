@@ -8,7 +8,7 @@ only the unused portion. Trade's implementation must agree with this model; a
 schema-valid entry is never authority by itself.
 """
 import copy
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 from pathlib import Path
 import unittest
