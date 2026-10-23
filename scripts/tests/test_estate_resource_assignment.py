@@ -193,6 +193,18 @@ class EstateResourceAssignment(unittest.TestCase):
                          api[RESOLVE_PATH]["post"]["security"])
         self.assertEqual([{"adminOidc": ["estate:resource-assignment:write"]}],
                          api["/v1/estate/resource-assignments"]["post"]["security"])
+        approval = api["/v1/estate/resource-assignments/{assignment_id}/approval-transitions"]["post"]
+        restriction = api["/v1/estate/resource-assignments/{assignment_id}/restriction-transitions"]["post"]
+        self.assertEqual([{"adminOidc": ["estate:resource-assignment:approve"]}], approval["security"])
+        self.assertEqual([{"adminOidc": ["estate:resource-assignment:write"]}], restriction["security"])
+        self.assertEqual({"APPROVE", "REINSTATE"},
+                         set(approval["requestBody"]["content"]["application/json"]["schema"]["allOf"][1]
+                             ["properties"]["action"]["enum"]))
+        self.assertEqual({"SUSPEND", "REVOKE"},
+                         set(restriction["requestBody"]["content"]["application/json"]["schema"]["allOf"][1]
+                             ["properties"]["action"]["enum"]))
+        self.assertNotIn("/v1/estate/resource-assignments/{assignment_id}/transitions", api)
+
         for name in NEW_SCOPES:
             with self.subTest(scope=name):
                 self.assertIn(name, SCOPES)
