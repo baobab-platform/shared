@@ -403,3 +403,8 @@ Development runtime PASS is separate from protected acceptance. Missing engine
 implementations remain explicit blockers. This amendment supersedes earlier
 INT-03C/#354/#49 development execution holds; it does not retroactively promote
 historical receipts or activate production workloads.
+
+
+### EA-DEV delivery companion — proposed 23 October 2026
+
+The [EA-DEV implementation plan](ea-v2.3-development-enablement-implementation-plan-2026-10-23.md) proposes dependency-ordered implementation packages DEV-00..DEV-13 and measurable developer-experience acceptance. It operationalises already-Accepted ADR-SHARED-043 without modifying protected human/security/legal approval requirements or historic audit baselines. Its execution schedule is **proposed pending Shared review, CI and merge**; no source, runtime or stage result follows from publication.
