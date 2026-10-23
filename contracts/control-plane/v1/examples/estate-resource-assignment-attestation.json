@@ -1,0 +1,15 @@
+{
+  "outcome": "ATTESTED",
+  "attestation_id": "8c7b6a5d-4e3f-4a2b-9c1d-0e9f8a7b6c5d",
+  "assignment_id": "4b3a2c1d-0e9f-4a8b-9c7d-6e5f4a3b2c1d",
+  "assignment_revision": 2,
+  "scope": "NATIVE_RESOURCE",
+  "digital_estate_id": "estate_synthetic",
+  "tenant_id": "tn_synthetic01",
+  "trade_engine_instance_id": "ei_tradestaging01",
+  "market_id": "market_synthetic",
+  "operation": "trade.order.commit",
+  "issued_at": "2026-10-23T11:59:50Z",
+  "expires_at": "2026-10-23T12:00:50Z",
+  "evidence_reference": "changeset:synthetic-assign-0001"
+}

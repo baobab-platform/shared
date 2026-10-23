@@ -85,6 +85,31 @@ commerce model, and its attestation for one Trade workload request.
   Nothing is inferred from a sales channel, domain, currency or estate name.
 
 Run `python scripts/tests/test_estate_commerce_classification.py`.
+
+## Estate resource assignment (ADR-SHARED-042 Decision 9)
+
+[`estate-resource-assignment.schema.json`](estate-resource-assignment.schema.json) and
+[`estate-resource-assignment.openapi.yaml`](estate-resource-assignment.openapi.yaml)
+define how CP proves the Digital Estate of a native commitment that does not
+arrive through a governed BFF.
+
+- **The assignment** (`EstateResourceAssignment`) is a governed CP record:
+  - `WORKLOAD` scope assigns an authenticated server application, by its IAM
+    workload identity, to one estate.
+  - `NATIVE_RESOURCE` scope assigns one Trade native seller configuration, as
+    Trade attested it under Trade-0, to one estate.
+  - It is proposed by one human and approved by another (four-eyes),
+    revisioned, suspendable and revocable; REVOKED is terminal.
+- **The attestation** lasts at most 60 seconds and establishes estate
+  provenance only. Its `attestation_id` is the `GOVERNED_RESOURCE_ASSIGNMENT`
+  reference for `resolveEstateCommerceProfile`, which CP re-verifies.
+- **Never provenance:** a Medusa key, sales channel, domain or asserted
+  estate.
+- **Scopes:** `estate:resource-assignment:resolve`,
+  `estate:resource-assignment:write`, `estate:resource-assignment:approve`
+  and `trade:native-commitment:submit` are allocated to no workload or role.
+
+Run `python scripts/tests/test_estate_resource_assignment.py`.
 ## How to publish a contract change
 
 1. Change Shared OpenAPI and JSON Schema together, with relevant

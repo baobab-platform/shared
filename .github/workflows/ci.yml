@@ -259,6 +259,8 @@ jobs:
         run: python scripts/tests/test_buyer_commitment_valuation.py
       - name: Test estate commerce profile and native commitment classification (ADR-SHARED-042 Decision 8)
         run: python scripts/tests/test_estate_commerce_classification.py
+      - name: Test governed estate resource assignment (ADR-SHARED-042 Decision 9)
+        run: python scripts/tests/test_estate_resource_assignment.py
       - name: Test estate client binding boundary (ADR-SHARED-042 CAA-04)
         run: python scripts/tests/test_estate_client_binding.py
       - name: Test buyer assurance policy (ADR-SHARED-042 CAA-03)

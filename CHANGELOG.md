@@ -23,6 +23,13 @@ Changes that have been merged but have not yet been included in a released versi
 
 ## Changed
 
+* **ADR-SHARED-042 Decision 9: governed estate resource assignment and the universal native commit fence (Platform Owner, 2026-10-23).** Recorded in ADR-SHARED-042 §14.
+  * New `control-plane/v1/estate-resource-assignment.schema.json` and `.openapi.yaml`: the CP-governed `EstateResourceAssignment` (`WORKLOAD` or `NATIVE_RESOURCE` scope), its four-eyes lifecycle and its at most 60-second attestation, which is the `GOVERNED_RESOURCE_ASSIGNMENT` provenance for `resolveEstateCommerceProfile`.
+  * New scopes `estate:resource-assignment:resolve`, `estate:resource-assignment:write`, `estate:resource-assignment:approve` and `trade:native-commitment:submit`, allocated to no workload or role.
+  * Decision 8's intended Thamani B2C registration is superseded by ADR-THA-0018.
+  * The universal native commit fence is specified behind an inactive enforcement gate; nothing is activated, registered or allocated.
+  * Synthetic examples and `scripts/tests/test_estate_resource_assignment.py` are added and wired into CI.
+
 * **ADR-SHARED-042 Decision 8: authoritative B2B/B2C classification of native commitments (Platform Owner, 2026-10-22).** Recorded in ADR-SHARED-042 §14.
   * New `control-plane/v1/estate-commerce-profile.schema.json` and `.openapi.yaml`: the CP-governed `EstateCommerceProfile` (one ACTIVE `B2B` or `B2C` model per estate, engine instance and Market; no `MIXED`), its resolve request and its at most 60-second attestation. The read-only `resolveEstateCommerceProfile` operation uses the new scope `estate:commerce-profile:resolve`, which is allocated to no workload.
   * New `trade/v2/native-commitment-classification.schema.json`: Trade's immutable per-commitment classification, positively established for B2B and B2C, with closed fence refusals.
