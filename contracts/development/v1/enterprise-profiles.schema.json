@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.baobab-platform.dev/development/v1/enterprise-profiles.schema.json",
+  "$id": "https://contracts.baobab-platform.com/development/v1/enterprise-profiles.schema.json",
   "title": "Isolated synthetic development enterprise profiles",
   "type": "object",
   "additionalProperties": false,
