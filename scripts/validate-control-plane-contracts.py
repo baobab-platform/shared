@@ -439,7 +439,7 @@ def check_platform_context_validation() -> None:
         for client, entry in registry["workloads"].items()
         if "context:validate" in entry["allowed_scopes"]
     )
-    expected_holders = ["baobab-cms-workload", "baobab-erp-workload", "baobab-pulse-workload"]
+    expected_holders = ["baobab-cms-workload", "baobab-erp-workload", "baobab-int03-cms-validator", "baobab-pulse-workload"]
     if holders != expected_holders:
         fail(
             "context:validate may be allowed only to the registered CMS, ERP and Pulse "
@@ -454,6 +454,7 @@ def check_platform_context_validation() -> None:
         "baobab-cms-workload": ["baobab-cms"],
         "baobab-erp-workload": ["baobab-erp"],
         "baobab-pulse-workload": ["baobab-pulse"],
+        "baobab-int03-cms-validator": ["baobab-cms"],
     }
     if declared != expected_validators:
         fail(
