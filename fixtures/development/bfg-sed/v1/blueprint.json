@@ -1,0 +1,890 @@
+{
+  "schema": "baobab.fixture.bfg-sed.v1",
+  "kind": "DEVELOPMENT_SCENARIO_BLUEPRINT_ONLY",
+  "synthetic_only": true,
+  "protected_acceptance": false,
+  "real_data": false,
+  "source_of_canonical_ids": "CONTROL_PLANE_ONLY",
+  "reference_date": "2026-10-23",
+  "lease_max_seconds": 86400,
+  "external_pharma_is_independent": true,
+  "country_codes_standard": "ISO_3166_1_ALPHA2",
+  "markets": [
+    {
+      "code": "ZA",
+      "name": "South Africa",
+      "currency": "ZAR",
+      "locale": "en-ZA",
+      "timezone": "Africa/Johannesburg"
+    },
+    {
+      "code": "UG",
+      "name": "Uganda",
+      "currency": "UGX",
+      "locale": "en-UG",
+      "timezone": "Africa/Kampala"
+    },
+    {
+      "code": "NG",
+      "name": "Nigeria",
+      "currency": "NGN",
+      "locale": "en-NG",
+      "timezone": "Africa/Lagos"
+    },
+    {
+      "code": "KE",
+      "name": "Kenya",
+      "currency": "KES",
+      "locale": "en-KE",
+      "timezone": "Africa/Nairobi"
+    },
+    {
+      "code": "ET",
+      "name": "Ethiopia",
+      "currency": "ETB",
+      "locale": "am-ET",
+      "timezone": "Africa/Addis_Ababa"
+    },
+    {
+      "code": "TZ",
+      "name": "Tanzania",
+      "currency": "TZS",
+      "locale": "sw-TZ",
+      "timezone": "Africa/Dar_es_Salaam"
+    },
+    {
+      "code": "AO",
+      "name": "Angola",
+      "currency": "AOA",
+      "locale": "pt-AO",
+      "timezone": "Africa/Luanda"
+    },
+    {
+      "code": "CO",
+      "name": "Colombia",
+      "currency": "COP",
+      "locale": "es-CO",
+      "timezone": "America/Bogota"
+    },
+    {
+      "code": "VN",
+      "name": "Vietnam",
+      "currency": "VND",
+      "locale": "vi-VN",
+      "timezone": "Asia/Ho_Chi_Minh"
+    },
+    {
+      "code": "EG",
+      "name": "Egypt",
+      "currency": "EGP",
+      "locale": "ar-EG",
+      "timezone": "Africa/Cairo"
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "currency": "EUR",
+      "locale": "de-DE",
+      "timezone": "Europe/Berlin"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "currency": "GBP",
+      "locale": "en-GB",
+      "timezone": "Europe/London"
+    },
+    {
+      "code": "GH",
+      "name": "Ghana",
+      "currency": "GHS",
+      "locale": "en-GH",
+      "timezone": "Africa/Accra"
+    },
+    {
+      "code": "MZ",
+      "name": "Mozambique",
+      "currency": "MZN",
+      "locale": "pt-MZ",
+      "timezone": "Africa/Maputo"
+    },
+    {
+      "code": "DJ",
+      "name": "Djibouti",
+      "currency": "DJF",
+      "locale": "fr-DJ",
+      "timezone": "Africa/Djibouti"
+    },
+    {
+      "code": "SZ",
+      "name": "Eswatini (formerly Swaziland)",
+      "currency": "SZL",
+      "locale": "en-SZ",
+      "timezone": "Africa/Mbabane"
+    },
+    {
+      "code": "CN",
+      "name": "China",
+      "currency": "CNY",
+      "locale": "zh-CN",
+      "timezone": "Asia/Shanghai"
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "currency": "INR",
+      "locale": "en-IN",
+      "timezone": "Asia/Kolkata"
+    }
+  ],
+  "enterprises": [
+    {
+      "key": "nabhold",
+      "name": "Synthetic Nabhold Group Africa",
+      "profile": "nabhold",
+      "business_model": "NON_TRADING_HOLDING",
+      "primary_market": "ZA",
+      "operating_markets": [
+        "ZA"
+      ],
+      "footprint_markets": [
+        "UG",
+        "NG",
+        "KE"
+      ],
+      "source_markets": [],
+      "estate": "nabhold-development",
+      "legal_model": "DECLARED_HOLDING_UNVERIFIED_FOR_TEST",
+      "roles": [
+        "group_admin",
+        "corporate_legal_reviewer",
+        "executive_reader",
+        "finance_analyst",
+        "cms_editor"
+      ],
+      "capability_requests": [
+        "content.entry.resolve",
+        "finance.ledger.read",
+        "intelligence.evidence.search",
+        "billing.subscription.manage"
+      ],
+      "scenario_intents": [
+        "governance",
+        "group_consolidation_read",
+        "representative_footprint_due_diligence"
+      ]
+    },
+    {
+      "key": "zuribeans",
+      "name": "Synthetic ZuriBeans",
+      "profile": "zuribeans",
+      "business_model": "B2B_TRADE",
+      "primary_market": "ZA",
+      "operating_markets": [
+        "ZA"
+      ],
+      "footprint_markets": [
+        "KE",
+        "ET",
+        "TZ",
+        "UG",
+        "AO",
+        "CO",
+        "VN"
+      ],
+      "source_markets": [
+        "KE",
+        "ET",
+        "TZ",
+        "UG",
+        "AO",
+        "CO",
+        "VN"
+      ],
+      "estate": "zuribeans-development",
+      "legal_model": "OPERATING_ORGANISATION_NO_SEPARATE_INCORPORATION",
+      "roles": [
+        "buyer",
+        "supplier",
+        "sourcing_manager",
+        "quality_reviewer",
+        "trade_approver"
+      ],
+      "capability_requests": [
+        "commercial.rfq.manage",
+        "commercial.quotation.manage",
+        "customer.buyer-application.manage",
+        "inventory.availability.query",
+        "content.entry.resolve",
+        "regulations.requirement.resolve"
+      ],
+      "scenario_intents": [
+        "commodity_origin",
+        "cross_border_quote",
+        "buyer_registration",
+        "quality_evidence",
+        "legal_actor_mandate"
+      ]
+    },
+    {
+      "key": "thamani",
+      "name": "Synthetic Thamani Global",
+      "profile": "thamani",
+      "business_model": "B2B_LOGISTICS",
+      "primary_market": "ZA",
+      "operating_markets": [
+        "ZA",
+        "EG",
+        "DE",
+        "GB",
+        "UG",
+        "KE",
+        "TZ",
+        "GH",
+        "MZ",
+        "AO",
+        "NG",
+        "ET",
+        "DJ",
+        "SZ"
+      ],
+      "footprint_markets": [],
+      "source_markets": [],
+      "estate": "thamani-development",
+      "legal_model": "DECLARED_SEPARATELY_INCORPORATED_UNVERIFIED_FOR_TEST",
+      "roles": [
+        "logistics_customer",
+        "dispatcher",
+        "carrier_partner",
+        "freight_quote_approver",
+        "operations_controller",
+        "claims_assessor"
+      ],
+      "capability_requests": [
+        "content.entry.resolve",
+        "payment.intent.create",
+        "payment.payment.authorize",
+        "finance.ledger.read",
+        "regulations.requirement.resolve"
+      ],
+      "scenario_intents": [
+        "logistics_quote",
+        "shipment_booking",
+        "multimodal_tracking",
+        "carrier_vetting",
+        "customs_corridor",
+        "temperature_monitoring"
+      ]
+    },
+    {
+      "key": "equator-estate",
+      "name": "Synthetic Equator & Estate Co.",
+      "profile": "equator-estate",
+      "business_model": "PROPERTY",
+      "primary_market": null,
+      "operating_markets": [
+        "UG",
+        "ZA"
+      ],
+      "footprint_markets": [],
+      "source_markets": [],
+      "estate": "equator-estate-development",
+      "legal_model": "OPERATING_ORGANISATION_NO_SEPARATE_INCORPORATION",
+      "roles": [
+        "property_manager",
+        "leasing_officer",
+        "contractor",
+        "maintenance_coordinator",
+        "finance_reviewer"
+      ],
+      "capability_requests": [
+        "content.entry.resolve",
+        "finance.journal.manage",
+        "finance.ledger.read",
+        "intelligence.evidence.search"
+      ],
+      "scenario_intents": [
+        "leases",
+        "maintenance",
+        "construction_milestones",
+        "property_documentary_evidence",
+        "legal_actor_mandate"
+      ]
+    },
+    {
+      "key": "external-client",
+      "name": "Synthetic Lake Meridian Pharmaceutical Imports",
+      "profile": "external-client",
+      "business_model": "EXTERNAL_CLIENT",
+      "primary_market": "UG",
+      "operating_markets": [
+        "UG"
+      ],
+      "footprint_markets": [],
+      "source_markets": [
+        "CN",
+        "IN"
+      ],
+      "estate": null,
+      "legal_model": "INDEPENDENT_EXTERNAL_ORGANISATION_REGISTRATION_UNVERIFIED",
+      "roles": [
+        "pharma_import_coordinator",
+        "quality_assurance",
+        "regulatory_reviewer",
+        "procurement_manager",
+        "warehouse_operator"
+      ],
+      "capability_requests": [
+        "regulations.requirement.resolve",
+        "regulations.evidence.assess",
+        "payment.intent.create",
+        "intelligence.evidence.search"
+      ],
+      "scenario_intents": [
+        "pharmaceutical_import",
+        "qualified_supplier",
+        "batch_traceability",
+        "temperature_excursion",
+        "import_licence_missing",
+        "consignment_verification_missing",
+        "product_registration_unverified"
+      ]
+    }
+  ],
+  "products": {
+    "zuribeans": [
+      [
+        "ZB-001",
+        "Arabica green coffee",
+        "COFFEE",
+        "kg",
+        "UG"
+      ],
+      [
+        "ZB-002",
+        "Robusta green coffee",
+        "COFFEE",
+        "kg",
+        "UG"
+      ],
+      [
+        "ZB-003",
+        "Washed Arabica coffee",
+        "COFFEE",
+        "kg",
+        "ET"
+      ],
+      [
+        "ZB-004",
+        "Roasted Arabica coffee",
+        "COFFEE",
+        "kg",
+        "CO"
+      ],
+      [
+        "ZB-005",
+        "Vanilla pods",
+        "SPICES",
+        "kg",
+        "UG"
+      ],
+      [
+        "ZB-006",
+        "Cocoa beans",
+        "COCOA",
+        "kg",
+        "TZ"
+      ],
+      [
+        "ZB-007",
+        "Sesame seed",
+        "OILSEEDS",
+        "kg",
+        "TZ"
+      ],
+      [
+        "ZB-008",
+        "Dried ginger",
+        "SPICES",
+        "kg",
+        "KE"
+      ],
+      [
+        "ZB-009",
+        "Cardamom",
+        "SPICES",
+        "kg",
+        "ET"
+      ],
+      [
+        "ZB-010",
+        "Vietnamese Robusta green coffee",
+        "COFFEE",
+        "kg",
+        "VN"
+      ],
+      [
+        "ZB-011",
+        "Dried hibiscus",
+        "BOTANICAL",
+        "kg",
+        "AO"
+      ],
+      [
+        "ZB-012",
+        "Shea butter",
+        "NATURAL_INGREDIENT",
+        "kg",
+        "KE"
+      ]
+    ],
+    "thamani": [
+      [
+        "TH-001",
+        "Regional road freight",
+        "TRANSPORT_SERVICE",
+        "shipment",
+        "ZA"
+      ],
+      [
+        "TH-002",
+        "Air freight forwarding",
+        "TRANSPORT_SERVICE",
+        "shipment",
+        "EG"
+      ],
+      [
+        "TH-003",
+        "Sea freight coordination",
+        "TRANSPORT_SERVICE",
+        "container",
+        "MZ"
+      ],
+      [
+        "TH-004",
+        "Cross-border customs coordination",
+        "DOCUMENTARY_SERVICE",
+        "consignment",
+        "DJ"
+      ],
+      [
+        "TH-005",
+        "Temperature-controlled transport",
+        "COLD_CHAIN_SERVICE",
+        "consignment",
+        "KE"
+      ],
+      [
+        "TH-006",
+        "Warehouse receiving",
+        "WAREHOUSE_SERVICE",
+        "pallet",
+        "GH"
+      ],
+      [
+        "TH-007",
+        "Final-mile B2B delivery",
+        "DELIVERY_SERVICE",
+        "shipment",
+        "SZ"
+      ],
+      [
+        "TH-008",
+        "Project cargo coordination",
+        "TRANSPORT_SERVICE",
+        "project",
+        "AO"
+      ],
+      [
+        "TH-009",
+        "Multimodal exception monitoring",
+        "CONTROL_TOWER",
+        "consignment",
+        "GB"
+      ]
+    ],
+    "equator-estate": [
+      [
+        "EQ-001",
+        "Synthetic Kampala mixed-use building",
+        "COMMERCIAL_PROPERTY",
+        "unit",
+        "UG"
+      ],
+      [
+        "EQ-002",
+        "Synthetic Jinja warehouse property",
+        "INDUSTRIAL_PROPERTY",
+        "unit",
+        "UG"
+      ],
+      [
+        "EQ-003",
+        "Synthetic Cape Town retail unit",
+        "RETAIL_PROPERTY",
+        "unit",
+        "ZA"
+      ],
+      [
+        "EQ-004",
+        "Synthetic Gauteng residential block",
+        "RESIDENTIAL_PROPERTY",
+        "unit",
+        "ZA"
+      ],
+      [
+        "EQ-005",
+        "Synthetic Uganda renovation project",
+        "CONSTRUCTION_PROJECT",
+        "milestone",
+        "UG"
+      ],
+      [
+        "EQ-006",
+        "Synthetic South Africa maintenance portfolio",
+        "FACILITY_SERVICE",
+        "ticket",
+        "ZA"
+      ]
+    ],
+    "external-client": [
+      [
+        "PH-001",
+        "Fictional non-controlled oral formulation A",
+        "FICTIONAL_PHARMACEUTICAL",
+        "case",
+        "IN"
+      ],
+      [
+        "PH-002",
+        "Fictional non-controlled oral formulation B",
+        "FICTIONAL_PHARMACEUTICAL",
+        "case",
+        "CN"
+      ],
+      [
+        "PH-003",
+        "Fictional temperature-sensitive formulation C",
+        "FICTIONAL_PHARMACEUTICAL",
+        "case",
+        "IN"
+      ],
+      [
+        "PH-004",
+        "Fictional topical formulation D",
+        "FICTIONAL_PHARMACEUTICAL",
+        "case",
+        "CN"
+      ],
+      [
+        "PH-005",
+        "Fictional medical consumables kit E",
+        "MEDICAL_SUPPLIES",
+        "case",
+        "IN"
+      ],
+      [
+        "PH-006",
+        "Fictional diagnostic consumables F",
+        "MEDICAL_SUPPLIES",
+        "case",
+        "CN"
+      ],
+      [
+        "PH-007",
+        "Fictional packaging components G",
+        "PHARMA_PACKAGING",
+        "case",
+        "IN"
+      ],
+      [
+        "PH-008",
+        "Fictional cold-chain shipping packaging H",
+        "PHARMA_PACKAGING",
+        "case",
+        "CN"
+      ]
+    ]
+  },
+  "scenario_inputs": [
+    {
+      "key": "NAB-REP-UG",
+      "enterprise_key": "nabhold",
+      "origin": "ZA",
+      "destination": "UG",
+      "scenario_type": "EXECUTIVE_FOOTPRINT_VIEW",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_AND_DATA_SCOPE_PROVEN"
+    },
+    {
+      "key": "NAB-REP-NG",
+      "enterprise_key": "nabhold",
+      "origin": "ZA",
+      "destination": "NG",
+      "scenario_type": "EXECUTIVE_FOOTPRINT_VIEW",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_AND_DATA_SCOPE_PROVEN"
+    },
+    {
+      "key": "NAB-REP-KE",
+      "enterprise_key": "nabhold",
+      "origin": "ZA",
+      "destination": "KE",
+      "scenario_type": "CORPORATE_RELATIONSHIP_READ",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_AND_DATA_SCOPE_PROVEN"
+    },
+    {
+      "key": "NAB-GROUP-DENY",
+      "enterprise_key": "nabhold",
+      "origin": "ZA",
+      "destination": "ZA",
+      "scenario_type": "CROSS_TENANT_EXECUTIVE_READ",
+      "expected_precondition": "DENY"
+    },
+    {
+      "key": "ZB-UG-ZA-COFFEE",
+      "enterprise_key": "zuribeans",
+      "origin": "UG",
+      "destination": "ZA",
+      "scenario_type": "COFFEE_B2B_RFQ_QUOTE",
+      "expected_precondition": "CONDITIONAL_DOMAIN_PEP"
+    },
+    {
+      "key": "ZB-UG-ZA-VANILLA",
+      "enterprise_key": "zuribeans",
+      "origin": "UG",
+      "destination": "ZA",
+      "scenario_type": "VANILLA_BATCH_DOCUMENTARY",
+      "expected_precondition": "CONDITIONAL_DOMAIN_PEP"
+    },
+    {
+      "key": "ZB-ET-ZA-COFFEE",
+      "enterprise_key": "zuribeans",
+      "origin": "ET",
+      "destination": "ZA",
+      "scenario_type": "ETHIOPIA_COFFEE_ORIGIN",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_PROVIDER"
+    },
+    {
+      "key": "ZB-TZ-ZA-SESAME",
+      "enterprise_key": "zuribeans",
+      "origin": "TZ",
+      "destination": "ZA",
+      "scenario_type": "CROSS_BORDER_QUOTATION",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_PROVIDER"
+    },
+    {
+      "key": "ZB-KE-ZA-SPICES",
+      "enterprise_key": "zuribeans",
+      "origin": "KE",
+      "destination": "ZA",
+      "scenario_type": "SUPPLIER_APPROVAL",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_PROVIDER"
+    },
+    {
+      "key": "ZB-AO-ZA-HIBISCUS",
+      "enterprise_key": "zuribeans",
+      "origin": "AO",
+      "destination": "ZA",
+      "scenario_type": "PORTUGUESE_LOCALE_QUOTE",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_PROVIDER"
+    },
+    {
+      "key": "ZB-CO-ZA-ARABICA",
+      "enterprise_key": "zuribeans",
+      "origin": "CO",
+      "destination": "ZA",
+      "scenario_type": "CROSS_CONTINENT_ORIGIN_TRACE",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_PROVIDER"
+    },
+    {
+      "key": "ZB-VN-ZA-ROBUSTA",
+      "enterprise_key": "zuribeans",
+      "origin": "VN",
+      "destination": "ZA",
+      "scenario_type": "ASIAN_ORIGIN_TRACE",
+      "expected_precondition": "BLOCK_UNTIL_MARKET_PROVIDER"
+    },
+    {
+      "key": "TH-UG-KE-ROAD",
+      "enterprise_key": "thamani",
+      "origin": "UG",
+      "destination": "KE",
+      "scenario_type": "ROAD_FREIGHT_QUOTES",
+      "expected_precondition": "BLOCK_UNTIL_TMS_PROVIDER"
+    },
+    {
+      "key": "TH-EG-DE-AIR",
+      "enterprise_key": "thamani",
+      "origin": "EG",
+      "destination": "DE",
+      "scenario_type": "AIR_FREIGHT_EU_BOUNDARY",
+      "expected_precondition": "BLOCK_UNTIL_TMS_AND_PRIVACY_SCOPE"
+    },
+    {
+      "key": "TH-GB-GH-SEA",
+      "enterprise_key": "thamani",
+      "origin": "GB",
+      "destination": "GH",
+      "scenario_type": "OCEAN_FREIGHT_MULTICURRENCY",
+      "expected_precondition": "BLOCK_UNTIL_TMS_PROVIDER"
+    },
+    {
+      "key": "TH-DJ-ET-TRANSIT",
+      "enterprise_key": "thamani",
+      "origin": "DJ",
+      "destination": "ET",
+      "scenario_type": "HORN_OF_AFRICA_TRANSIT",
+      "expected_precondition": "BLOCK_UNTIL_TMS_PROVIDER"
+    },
+    {
+      "key": "TH-MZ-ZA-PORT",
+      "enterprise_key": "thamani",
+      "origin": "MZ",
+      "destination": "ZA",
+      "scenario_type": "SEA_PORT_HANDOFF",
+      "expected_precondition": "BLOCK_UNTIL_TMS_PROVIDER"
+    },
+    {
+      "key": "TH-SZ-ZA-ROAD",
+      "enterprise_key": "thamani",
+      "origin": "SZ",
+      "destination": "ZA",
+      "scenario_type": "ESWATINI_ROAD_CROSS_BORDER",
+      "expected_precondition": "BLOCK_UNTIL_TMS_PROVIDER"
+    },
+    {
+      "key": "TH-AO-NG-PROJECT",
+      "enterprise_key": "thamani",
+      "origin": "AO",
+      "destination": "NG",
+      "scenario_type": "HEAVY_PROJECT_FREIGHT",
+      "expected_precondition": "BLOCK_UNTIL_TMS_PROVIDER"
+    },
+    {
+      "key": "TH-TZ-KE-COLD",
+      "enterprise_key": "thamani",
+      "origin": "TZ",
+      "destination": "KE",
+      "scenario_type": "COLD_CHAIN_TEMP_EXCURSION",
+      "expected_precondition": "BLOCK_UNTIL_TMS_PROVIDER"
+    },
+    {
+      "key": "TH-DE-GB-AIR",
+      "enterprise_key": "thamani",
+      "origin": "DE",
+      "destination": "GB",
+      "scenario_type": "EU_UK_CUSTOMS_AND_DSL",
+      "expected_precondition": "BLOCK_UNTIL_TMS_AND_PRIVACY_SCOPE"
+    },
+    {
+      "key": "EQ-UG-LEASE",
+      "enterprise_key": "equator-estate",
+      "origin": "UG",
+      "destination": "UG",
+      "scenario_type": "LEASE_DRAFT_RESPONSIBLE_ACTOR",
+      "expected_precondition": "CONDITIONAL_DOMAIN_PEP"
+    },
+    {
+      "key": "EQ-ZA-MAINT",
+      "enterprise_key": "equator-estate",
+      "origin": "ZA",
+      "destination": "ZA",
+      "scenario_type": "CONTRACTOR_MAINTENANCE",
+      "expected_precondition": "CONDITIONAL_DOMAIN_PEP"
+    },
+    {
+      "key": "EQ-UG-ZA-FINANCE",
+      "enterprise_key": "equator-estate",
+      "origin": "UG",
+      "destination": "ZA",
+      "scenario_type": "PROPERTY_AGGREGATE_CURRENCY",
+      "expected_precondition": "BLOCK_UNTIL_AUTHORITY_AND_FX"
+    },
+    {
+      "key": "PH-CN-UG-IMPORT",
+      "enterprise_key": "external-client",
+      "origin": "CN",
+      "destination": "UG",
+      "scenario_type": "PHARMA_IMPORT_LICENCE_AND_BATCH",
+      "expected_precondition": "DENY_WITHOUT_REQUIRED_NDA_EVIDENCE"
+    },
+    {
+      "key": "PH-IN-UG-IMPORT",
+      "enterprise_key": "external-client",
+      "origin": "IN",
+      "destination": "UG",
+      "scenario_type": "PHARMA_PRODUCT_REGISTRATION",
+      "expected_precondition": "DENY_WITHOUT_REQUIRED_NDA_EVIDENCE"
+    },
+    {
+      "key": "PH-CN-UG-COLD",
+      "enterprise_key": "external-client",
+      "origin": "CN",
+      "destination": "UG",
+      "scenario_type": "PHARMA_COLD_CHAIN_EXCURSION",
+      "expected_precondition": "DENY_ON_TEMPERATURE_EXCEPTION"
+    },
+    {
+      "key": "PH-IN-UG-RECALL",
+      "enterprise_key": "external-client",
+      "origin": "IN",
+      "destination": "UG",
+      "scenario_type": "PHARMA_SERIAL_BATCH_RECALL",
+      "expected_precondition": "ISOLATED_TRACEABILITY_ONLY"
+    },
+    {
+      "key": "EXT-ZB-DENY",
+      "enterprise_key": "external-client",
+      "origin": "UG",
+      "destination": "ZA",
+      "scenario_type": "CROSS_TENANT_EVIDENCE_READ",
+      "expected_precondition": "DENY"
+    },
+    {
+      "key": "TH-NAB-DENY",
+      "enterprise_key": "thamani",
+      "origin": "ZA",
+      "destination": "ZA",
+      "scenario_type": "GROUP_AFFILIATION_ACCESS",
+      "expected_precondition": "DENY"
+    },
+    {
+      "key": "ZB-MANDATE-EXPIRED",
+      "enterprise_key": "zuribeans",
+      "origin": "ZA",
+      "destination": "ZA",
+      "scenario_type": "OPERATING_LEGAL_ACTOR_EXPIRED",
+      "expected_precondition": "DENY"
+    },
+    {
+      "key": "EQ-LEGAL-PERMIT",
+      "enterprise_key": "equator-estate",
+      "origin": "ZA",
+      "destination": "ZA",
+      "scenario_type": "PROPERTY_TITLE_OR_BUILD_PERMIT_UNVERIFIED",
+      "expected_precondition": "DENY"
+    },
+    {
+      "key": "TH-PAYMENT-SIM",
+      "enterprise_key": "thamani",
+      "origin": "ZA",
+      "destination": "ZA",
+      "scenario_type": "SIMULATED_PAYMENT_INTENT",
+      "expected_precondition": "SIMULATED_ONLY"
+    },
+    {
+      "key": "PH-SUPPLIER-IDEMP",
+      "enterprise_key": "external-client",
+      "origin": "IN",
+      "destination": "UG",
+      "scenario_type": "PHARMA_ORDER_DUPLICATE_REPLAY",
+      "expected_precondition": "DENY_DUPLICATE_MUTATION"
+    }
+  ],
+  "fixture_notes": [
+    "Markets beyond ZA/UG are scenarios only; current CP development/v1 bootstrap remains ZA/UG and cannot be bypassed",
+    "No generated objects are legal identities, true provider registration or permission grants",
+    "Pharmaceutical licences, verification certificates, import permits and batch documents are MISSING/UNVERIFIED, never authentic",
+    "Use reserved .invalid domains and run-scoped fixture references, not IAM subjects, PrincipalIDs or Entity UUIDs",
+    "All business outputs have simulated status and money_moved=false"
+  ]
+}
