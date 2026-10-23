@@ -6,6 +6,12 @@
 
 This header and the current v2.3 sections **supersede older 'current' claims in the historical v2.2 material below**. Every dated prior claim remains useful as a record of what was known *then*, not as live source state. See exact 20 repository main SHAs, open PR candidates and limitations in the audit. No environment/account/PSP/carrier/legal/employee activation is created here.
 
+
+
+**23 October 2026 programme execution addition (active when present on `shared/main` after reviewed CI merge):** [EA-DEV implementation plan](ea-v2.3-development-enablement-implementation-plan-2026-10-23.md) establishes planned DEV-00..DEV-15 packages to implement the Accepted ADR-SHARED-043 development route, including [headless engine onboarding](ea-dev-reusable-engine-onboarding-2026-10-23.md) for Pulse and Payments through IAM/CP, without requiring CMS. The programme is a **work queue, not runtime evidence**: CP #433 bootstrap source exists, while integrated seven-case INT-03C and fourteen-case NAB-03 runtime qualification remain unproven; Infrastructure #49 optional independent-development worksheet is not a standing development hold. Protected staging and production are independently gated. Update individual case statuses only with exact fresh evidence; the 20 October table below remains a dated baseline.
+
+**23 October 2026 protected release sequence (active work queue when present on `shared/main` after reviewed CI merge):** [EA-REL progressive production-release programme](ea-v2.3-progressive-production-release-programme-2026-10-23.md) defines **CP/IAM as the first candidate production foundation** with infrastructure/ops and separately witnessed staging and production evidence; other CMS/estate and headless engines may be added independently only with their exact tested provider/contract and tenant-market operation eligibility. All protected environment, statutory, provider, independent approver and live operations gates remain **NOT ACCEPTED** until actual evidence is recorded. The current dated gate table below is not silently overwritten by this planning note.
+
 ## v2.3 current gate decisions (20 October 2026)
 
 | Item | Current verified assessment | Next exit and authority |
