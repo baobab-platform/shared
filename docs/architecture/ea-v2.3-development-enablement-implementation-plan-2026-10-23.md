@@ -1,12 +1,67 @@
 # EA v2.3 — Development Enablement and Environment Assurance Implementation Plan
 ## EA-DEV-01: integrated proving ground, developer experience and protected promotion
 
-**Status:** Platform Owner-directed **implementation programme**, publication-effective upon merge to `shared/main` after required checks. An unmerged PR is a candidate; the merged plan is an active **engineering work queue**, **not** a new Accepted ADR or evidence that runtimes are qualified.  
+**Status:** **ACCEPTED — Authoritative EA-DEV Programme and Delivery Obligations**, approved by explicit Platform Owner direction on 23 October 2026 and published through merged Shared PR #373. Acceptance authorises the engineering programme and its dependencies; **it does not mean the individual work packages, providers, integration cases, protected staging, or production operations have passed**.  
 **Date:** 23 October 2026 (Africa/Johannesburg)  
 **Owner:** Shared Platform Architecture / Platform Engineering; implementation remains owned by each repository.  
 **Authority:** [EA v2.3](EA-implementation-plan-v2.3-2026-10-20.md); [Accepted ADR-SHARED-043](../adr/ADR-SHARED-043-Development-Provisioning-and-Environment-Approval-Boundaries.md); Shared ADR-036/015, CP ADR-017/020/021/023/026/027, IAM ADR-0033, Infrastructure ADR-0002/0020/0021, and applicable domain ADRs.  
 **Canonical case IDs:** The [v2.2 integration matrix](ea-v2.2-integration-acceptance-matrix.md) remains the sole registry for L4/INT/NAB scenarios. This document neither changes case meanings nor deletes mandatory cases.  
 **Scope:** EA-DEV is an execution lane within EA-INT, EA-ENG, EA-05 and EA-09, not a second Control Plane, engine, legal authority or production admission pathway.
+
+## 0. Accepted executive mandate — outcome, rules and accountability
+
+**Platform Owner ruling (23 October 2026): EA-DEV is ACCEPTED.** Every first-party Baobab engine, Digital Estate, Shared library, developer-tooling component and Infrastructure integration adopter SHALL follow this programme as its **engineering delivery baseline**, subject to more specific Accepted owner ADRs and immutable canonical contract authority. The already-Accepted ADR-SHARED-043 governs the removal of unnecessary *development-only independent-human approval holds*; it **does not** remove a real enforcement check, security rule, legal obligation or protected-environment approval.
+
+### 0.1 Required outcomes and why this programme exists
+
+EA-DEV SHALL make the following outcomes normal rather than exceptional:
+
+1. **Self-service synthetic enterprise development.** One named developer or CI job can prepare a disposable, correctly isolated synthetic Organisation/Tenant/Market/role/mandate scenario, issue **real** IAM test identities and use CP-governed capabilities without waiting for a human staging/production approval. The CP guarded bootstrap is development-only, private, time-bounded and incapable of authorising real operations.
+2. **One reusable path for any eligible engine.** IAM and CP form the common identity/tenant/context/capability integration spine; each engine brings its *own* domain adapter, database/migrations, providers and native execution vetoes. CMS, Payments, ERP or TMS are **not universal prerequisites**. The DEV-14 profile contract and DEV-15 Pulse/Payments exemplars are the adoption reference, not a bespoke Nabhold-only integration route.
+3. **Visible capability and integration progress.** No executive, maintainer or developer should reconstruct platform readiness from dozens of GitHub PRs. A current source- and evidence-linked programme register SHALL show, for each required engine/capability/scenario: owner, deployed environment, current code/CI, actual integration, blocked reason, next action and separately authorised production state.
+4. **Predictable, efficient inner development loop.** Every supported Codespaces/Actions profile SHALL have deterministic tool/source locks, a diagnostic preflight, selective services/tests, actual health observations, reproducible synthetic fixtures, private logs and idempotent reset/teardown. Full-platform build or independent protected approval SHALL NOT be required to edit and locally test one unrelated engine.
+5. **Proven boundaries, not mock confidence.** Synthetic facts can exercise real IAM/CP/engine implementations; mocked issuers, fabricated JWTs, static CSS prototypes and source-only tests can never PASS an L4 real-component gate. Every applicable tenant, role, audience, market, legal actor, revocation, dependency-failure and cleanup negative case SHALL retain its original required meaning.
+6. **Independent production promotion.** After protected acceptance of a genuinely supportable IAM/CP common foundation, mature providers may be independently deployed and granted to **specified** Tenants, Organisations, Markets, capabilities and legal actors. Business/regulated operation permission remains separate from deployment. The [EA-REL programme](ea-v2.3-progressive-production-release-programme-2026-10-23.md) governs the delivery sequence and never supplants EA-09, Infrastructure or domain authority.
+
+**Success is measured by the existence and reproducibility of the developer workflows and real test receipts, not by the number of ADRs, scaffolded repos, pull requests, declared capabilities, containers or green source-only workflows.**
+
+### 0.2 Normative acceptance language and precedence
+
+- **SHALL/MUST** indicates a condition for completing the relevant *work package* or qualifying a release. **SHOULD** indicates the default improvement expectation, with documented owner-specific alternatives when defensible. **MAY** indicates optional engineering choice.
+- **Accepted programme** means this implementation plan and its work packages are approved for delivery. **SOURCE_MERGED** means reviewed code is on the owning repo main. **REAL_COMPONENT_SYNTHETIC_DATA** means exact observed live-component assertions with synthetic data. **PROTECTED_STAGING** requires its separately approved topology, actual test execution and human evidence custody. **PRODUCTION_DEPLOYED** means observed running production artifacts, not service eligibility. **LIVE_OPERATION_AUTHORISED** requires exact current CP grant/mandate, native PEP and applicable business/legal/provider approval. No status silently implies the next.
+- EA-DEV **SHALL NOT** grant CP/IAM roles or decide certification, change legal incorporation rules, define a capability outside Shared, activate an absent provider, override an owner-native financial veto, mutate another engine's database, or erase a historical receipt. The owning Accepted ADR prevails on domain semantics.
+- **One operator can drive distinct synthetic maker/checker Principals in development**, but the *same Principal* approving its own consequential change must still be rejected. Protected staging and production apply independently authorised real-person separation where required.
+- Staging/production SHALL use **separate protected accounts/roles, secrets, identities, databases, release artifacts and evidence**. Infrastructure SHALL prevent the development bootstrap command, test issuer, synthetic data and optional-development approval shortcuts from appearing in protected runtimes.
+- A missing engine adapter may block **its own** integration profile/capability. It SHALL NOT become a new platform-wide prohibition on continued unrelated source engineering or a substitute for the required missing-provider status.
+
+### 0.3 Assigned responsibilities (not a new approval authority)
+
+| Accountable source owner | Mandatory implementation contribution | What the owner cannot self-assert |
+| --- | --- | --- |
+| **Shared Platform Architecture / Foundation** | Closed contract semantics; accepted cross-repo programme IDs; authoritative capability catalogue; scenario/evidence registry; drift and consumer-pin visibility | A source declaration is an EA-09 certification or CP ACTIVE binding |
+| **Infrastructure / Platform Engineering** | Private profile orchestration; source/image lock; lifecycle and teardown; composed L4 receipt and environment isolation; protected release manifests, operational readiness evidence | An isolated dev run approves protected staging or production |
+| **baobab-dev** | Compatible Codespaces toolchains and package/registry access, deterministic installs, developer diagnostics, documented engine onboarding and rollback of upgrades | The installed runtime image makes the native engine/service operational |
+| **IAM** | Genuine issuer, test clients, token audience, signature, scopes, subject mapping, revocation/deactivation and protected identity operations | IAM authentication creates a CP Tenant grant or legal actor mandate |
+| **Control Plane** | Canonical Tenant/Organisation/Principal/Market/capability context, guarded disposable bootstrap, governed effective grants/bindings/legal-actor policies and fail-closed resolution | A synthetic company becomes officially registered or an absent provider certified |
+| **Each engine (Pulse, Payments, CMS, Trade, ERP, TMS, etc.)** | Its domain service/API, persistence and migrations, adapter/implementation evidence, authoritative native policy enforcement and positive/negative integration cases | The engine may bypass IAM/CP or authorise its own native finance/merchant/carrier state against owner policy |
+| **Digital Estate owners** | Browser and journey contract, confidential BFF/client authority as applicable, current backend capability consumption, accessibility and truthful published feature exposure | A public website grants market or PSP legitimacy |
+| **Independent protected approvers** | Actual authorised staging/production plan, security, operations, legal/provider and business GO for the exact protected scope | Development source-review or synthetic PASS alone satisfies protected acceptance |
+
+### 0.4 Delivery and executive reporting contract
+
+Every DEV-00..DEV-15 package **SHALL** keep one current register row with: **owning repo/person or accountable team; dependencies; source branch/head/merge SHA; mandatory CI result; real-component case IDs and results; environment and evidence class; blockers and explicit next action; source and receipt freshness; target and actual completion date; and production/protected acceptance as an independent field**. The current dashboard is a **read model**, never an alternative CP authority.
+
+Progress SHALL use truthful states: NOT_STARTED → SOURCE_IN_PROGRESS → SOURCE_MERGED → LOCAL_TESTED → REAL_COMPONENT_SYNTHETIC_DATA, with actual failures/BLOCKED tracked per mandatory scenario. Staging and production are **separate progression axes**, not steps implicitly obtained by checking the development columns. The register MUST distinguish **not yet implemented**, **implemented but not tested**, **runtime failed**, **missing external input**, **not approved**, and **accepted**. A stale status SHALL display its observation date rather than pretend to be current.
+
+**No global release hostage:** unrelated safe work proceeds in parallel. A blocked protected account/PSP/carrier prevents only the protected or provider-dependent activity, while CP/IAM/CMS/Pulse and other supported source/test work continues on controlled synthetic profiles.
+
+### 0.5 Mandatory work-package exit rules
+
+Each package DEV-00..DEV-15 requires (a) source/ADR/contract reconciliation, (b) reviewed merged code or authoritative documentation as specified for that package, (c) applicable positive and negative automated tests, (d) **actual** running component evidence for every L4-related acceptance, (e) redacted issuer/CP/engine/source and image provenance, (f) lease/credential/container/database cleanup where relevant, (g) owner runbook and security guidance, and (h) dashboard status/remaining blocker update. Required tests may report BLOCKED/FAIL but may never be omitted and counted PASS.
+
+The original **seven INT-03C** and **fourteen NAB-03** case meanings remain mandatory and governed separately. The **2 January 2027** corporate websites objective is conditional on actual site/CMS/BFF/publication acceptance; live payments, trade commitments, carrier fulfilment, statutory finance or payroll remain separately scoped, regardless of website launch.
+
+**Exit for the EA-DEV programme as a whole:** an engineer can select an eligible tenant/engine scenario, run genuine IAM + CP + the required native engine services in Codespaces/CI, exercise granted and denied capability operations, diagnose failures, preserve true receipts and tear down safely **without per-run independent staging/production appointments**; Pulse and Payments prove headless adoption without CMS; future engines follow the same contract without creating parallel IAM/CP authorities. Only *actual* execution can satisfy this exit. **EA-DEV status remains ACCEPTED while work-package completion remains independently partial/open until evidenced.**
 
 ## 1. Decision and source-grounded baseline
 
