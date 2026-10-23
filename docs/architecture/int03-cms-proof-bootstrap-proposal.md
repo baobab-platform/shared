@@ -8,6 +8,18 @@ This decision authorises the bounded engineering below. This documentation chang
 
 Owner acceptance: [explicit Platform Owner approval](https://github.com/baobab-platform/shared/pull/354#issuecomment-6307263681), reaffirmed in the 21 October implementation session. Both named development identities below are accepted within the stated limits.
 
+## 23 October 2026 — superseding development authorisation
+
+Accepted [ADR-SHARED-043](../adr/ADR-SHARED-043-Development-Provisioning-and-Environment-Approval-Boundaries.md)
+lifts the named **development-only** CMS activation hold and permits automated
+synthetic enterprise/identity/content provisioning without independently appointed
+people or official legal verification. The exact caller/validator ceilings and
+normal current-context enforcement remain. Distinct synthetic workflow actors
+may be controlled by one developer or CI job. Actual observed NAB-03 cases may
+report development PASS; missing cases remain BLOCKED. Protected staging and
+production retain independent approval and acceptance. Production identities
+remain unchanged. This amendment controls conflicting development gates below.
+
 ## Concrete blocker
 
 At Shared `ba5b4523ffc82cbf1b1d804b4d88ab69be04843a`, the canonical

@@ -262,6 +262,122 @@ int03c_actual = workloads.keys.grep(/\Abaobab-int03c-/)
 fail_contract("INT-03C identity count exceeds the two named proof clients") unless int03c_actual.sort == int03c_expected.keys.sort
 
 
+# ADR-SHARED-043: these isolated development callers are exact ceilings,
+# not a production activation or a wildcard administrative bootstrap.
+development_expected = JSON.parse(<<~JSON)
+{
+  "baobab-int03-cms-consumer": {
+    "repository": "baobab-platform/infrastructure",
+    "owner": "baobab-platform/infrastructure",
+    "runtime": "ADR-SHARED-043 disposable development baobab-int03-cms-consumer",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-cms"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "content:entry:resolve"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/infrastructure",
+    "status": "ACTIVE"
+  },
+  "baobab-int03-cms-validator": {
+    "repository": "baobab-platform/baobab-cms",
+    "owner": "baobab-platform/baobab-cms",
+    "runtime": "ADR-SHARED-043 disposable development baobab-int03-cms-validator",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane"
+    ],
+    "allowed_scopes": [
+      "context:validate"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-cms",
+    "status": "ACTIVE",
+    "validates_audiences": [
+      "baobab-cms"
+    ]
+  },
+  "baobab-dev-nabhold-estate": {
+    "repository": "baobab-platform/nabhold",
+    "owner": "baobab-platform/nabhold",
+    "runtime": "ADR-SHARED-043 disposable development baobab-dev-nabhold-estate",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-cms"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "content:entry:resolve"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/nabhold",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-zuribeans-estate": {
+    "repository": "baobab-platform/zuribeans",
+    "owner": "baobab-platform/zuribeans",
+    "runtime": "ADR-SHARED-043 disposable development baobab-dev-zuribeans-estate",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-cms"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "content:entry:resolve"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/zuribeans",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-thamani-estate": {
+    "repository": "baobab-platform/thamani",
+    "owner": "baobab-platform/thamani",
+    "runtime": "ADR-SHARED-043 disposable development baobab-dev-thamani-estate",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-cms"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "content:entry:resolve"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/thamani",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-equator-estate-estate": {
+    "repository": "baobab-platform/equator-estate",
+    "owner": "baobab-platform/equator-estate",
+    "runtime": "ADR-SHARED-043 disposable development baobab-dev-equator-estate-estate",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-cms"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "content:entry:resolve"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/equator-estate",
+    "status": "ACTIVE"
+  }
+}
+JSON
+development_expected.each do |name, expected|
+  fail_contract("development identity #{name} exceeds its exact ADR-043 ceiling") unless workloads[name] == expected
+end
+unless workloads.keys.grep(/\Abaobab-dev-/).sort == development_expected.keys.grep(/\Abaobab-dev-/).sort
+  fail_contract("unregistered development estate identity")
+end
+
 # 5. Every scope an OpenAPI operation requires is registered, and a
 #    Control Plane operation's scope is issued for the Control Plane's
 #    audience (ADR-BCP-022 section 18: the contract never names a scope the

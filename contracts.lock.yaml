@@ -197,3 +197,8 @@ contracts:
       - statement-read-request.schema.json
       - statement-read-response.schema.json
       - capabilities.yaml
+
+  - domain: development
+    version: v1
+    schemas:
+      - enterprise-profiles.schema.json

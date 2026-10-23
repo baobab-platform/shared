@@ -389,3 +389,17 @@ The Platform Owner's strategic expectation is exacting: **learn from the best, b
 ---
 
 **Approval record:** Accepted on 20 October 2026 by the Platform Owner's explicit direction to revise and adopt EA v2.3; the GitHub PR merge is the repository publication and CI-conformance event. The source audit is dated, not a claim of real-time current operation. No downstream capability is activated by this document.
+
+
+## 23 October 2026 — accepted development provisioning amendment
+
+[ADR-SHARED-043](../adr/ADR-SHARED-043-Development-Provisioning-and-Environment-Approval-Boundaries.md)
+governs development provisioning across all engines and estates. Disposable
+synthetic integration has standing authorisation and a CP-owned bootstrap;
+independent human approvals apply when readying protected staging/production,
+not before normal development runs. Distinct synthetic maker/checker identities
+may be automated by one operator; runtime authorization mechanisms remain tested.
+Development runtime PASS is separate from protected acceptance. Missing engine
+implementations remain explicit blockers. This amendment supersedes earlier
+INT-03C/#354/#49 development execution holds; it does not retroactively promote
+historical receipts or activate production workloads.

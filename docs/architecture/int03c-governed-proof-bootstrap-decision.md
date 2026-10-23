@@ -11,6 +11,21 @@ canonical CP Principal-deactivation authority, and actual seven-case real
 IAM ↔ CP disposable qualification. The authorisation does **not** certify a
 run, register CMS proof clients, or authorise staging/production issuance.
 
+## 23 October 2026 — development execution amendment
+
+Accepted [ADR-SHARED-043](../adr/ADR-SHARED-043-Development-Provisioning-and-Environment-Approval-Boundaries.md)
+supersedes the human approval/certification requirements below **for isolated
+synthetic development only**. CP-owned bootstrap may establish synthetic actors
+and enterprise state. One operator/CI job may drive distinct maker/checker
+Principals; the same Principal must still be denied self-approval. Actual IAM
+issuance and the seven runtime assertions may execute without Infrastructure
+#49's independent human gate. Development results may be PASS with retained
+real-component synthetic evidence and no protected acceptance claim. Independent
+people, external custody and protected go/no-go apply when readying staging and
+production. The CMS development hold is lifted within ADR-043's scope. The text
+below remains the protected workflow/mechanism reference, not a prerequisite
+for normal development provisioning.
+
 ## Exact identity ceilings
 
 Two *and only two* new canonical workspaces are allowed:
