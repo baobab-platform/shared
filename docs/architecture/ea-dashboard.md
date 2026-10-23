@@ -8,7 +8,7 @@ This header and the current v2.3 sections **supersede older 'current' claims in 
 
 
 
-**23 October 2026 proposed execution addition:** [EA-DEV implementation plan](ea-v2.3-development-enablement-implementation-plan-2026-10-23.md) establishes planned DEV-00..DEV-13 packages to implement the Accepted ADR-SHARED-043 development route. On this proposal branch this is **planning only**: CP #433 bootstrap source exists, while integrated seven-case INT-03C and fourteen-case NAB-03 runtime qualification remain unproven; Infrastructure #49 optional independent-development worksheet is not a standing development hold. Protected staging and production are independently gated. Update individual case statuses only with exact fresh evidence; the 20 October table below remains a dated baseline.
+**23 October 2026 proposed execution addition:** [EA-DEV implementation plan](ea-v2.3-development-enablement-implementation-plan-2026-10-23.md) establishes planned DEV-00..DEV-15 packages to implement the Accepted ADR-SHARED-043 development route, including [headless engine onboarding](ea-dev-reusable-engine-onboarding-2026-10-23.md) for Pulse and Payments through IAM/CP, without requiring CMS. On this proposal branch this is **planning only**: CP #433 bootstrap source exists, while integrated seven-case INT-03C and fourteen-case NAB-03 runtime qualification remain unproven; Infrastructure #49 optional independent-development worksheet is not a standing development hold. Protected staging and production are independently gated. Update individual case statuses only with exact fresh evidence; the 20 October table below remains a dated baseline.
 
 ## v2.3 current gate decisions (20 October 2026)
 
