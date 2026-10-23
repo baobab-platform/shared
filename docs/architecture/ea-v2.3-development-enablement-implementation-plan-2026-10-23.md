@@ -94,9 +94,15 @@ Inputs: DEV-01/02. Deliver: migrate from fresh and supported previous engine sch
 **DEV-13 — Independent staging/production entry (protected; Infrastructure + Security/Ops + legal/domain owners).**
 Inputs: applicable qualifying DEV-04..12 and actual approved account/roles. Deliver: protected source/image manifests, authorised distinct people, secret/issuer/network controls, independently reviewed legal/provider evidence where relevant, recovery/rollback, release signoff. Exit: actual observed protected acceptance for a scoped capability/tenant/market/legal actor; development CLI/keys are unusable there; production requires separate GO.
 
+**DEV-14 — Reusable engine onboarding framework (P0-enabling; Shared + Infrastructure + baobab-dev + engine-template).**
+Inputs: DEV-01/02/03 and existing Shared environment, capability-provider and synthetic-enterprise contracts. Deliver a **fourth, separate integration-run descriptor** with a closed schema, minimal dependency graph, IAM/CP setup reuse, isolated native stores, selected test cases and truthful evidence. The descriptor composes, but never replaces, the three existing owner contracts; it cannot grant access or certify providers. Initial reference implementations are Pulse and Payments. Exit: a new engine can integrate with actual IAM/CP without copying Nabhold-specific BFF/CMS workflow or building a new identity bootstrap. CMS is **optional** for headless engines. See the [detailed engine-onboarding specification](ea-dev-reusable-engine-onboarding-2026-10-23.md).
+
+**DEV-15 — Pulse/Payments first-adopter runtime profiles (P0 parallel after DEV-03; Infrastructure + baobab-pulse + baobab-payments + IAM/CP).**
+Inputs: DEV-14 descriptor adoption and genuine IAM-issued workload/CP context. Deliver (a) the Pulse intelligence evidence search/research-mission flow against actual Pulse PostgreSQL/Qdrant, with classification, projection and tenant-denial tests; and (b) Payments sandbox intent/cancel/authorise/capture/refund against a real Rust Payments service and genuine caller authority. Payments must always mark **simulated** outcomes; no actual funds, HyperSwitch or PSP certification is implied. Exit: current issuer→CP→engine requests, capability + negative-case receipts, cross-tenant denial, safe cleanup and exact BLOCKED codes for unimplemented native/financial paths, independently of Nabhold CMS DEV-05.
+
 ### Cross-repository precedence
 
-DEV-00→01/02→03→04→05 is the initial connected Nabhold path. DEV-06 can proceed once 03 exists. DEV-07/08/09 proceed in parallel as providers mature. DEV-10/11/12 are parallel enablers, not general freezes. Protected DEV-13 is a **later promotion gate**, never a gate on doing ordinary source development. Do not create one infrastructure stack per legal entity where secure pooled engine instances suffice.
+DEV-00→01/02→03→04→05 is the initial connected Nabhold path. **DEV-14 composes reusable engine profiles once DEV-01/02/03 are available; DEV-15 (Pulse and Payments) proceeds in parallel with DEV-04/05 and does not wait for CMS.** DEV-06 can proceed once 03 exists. DEV-07/08/09 proceed in parallel as providers mature. DEV-10/11/12 are parallel enablers, not general freezes. Protected DEV-13 is a **later promotion gate**, never a gate on doing ordinary source development. Do not create one infrastructure stack per legal entity where secure pooled engine instances suffice.
 
 ## 5. Golden reference profiles and acceptance
 
@@ -109,6 +115,8 @@ DEV-00→01/02→03→04→05 is the initial connected Nabhold path. DEV-06 can 
 | Equator | Independent operating Organisation, separate tenant, legal actor scope | property rights, title and building licences |
 | External API-only | unrelated headless client, **zero estate rows**, current binding and denial | not a first-party IAM tenant |
 | Finance | scoped ledger/accounting and native class veto | not a disbursement, credit or tax certification |
+| Pulse headless intelligence | real IAM/CP workload → baobab-pulse PostgreSQL canonical evidence + Qdrant projections → classification-scoped search/mission | not a CMS dependency or LLM/regulatory certification |
+| Payments simulated sandbox | real IAM/CP authorised workload → Rust baobab-payments payment lifecycle with all outcomes simulated | not HyperSwitch/PSP, live money transfer, payment readiness or production entitlement |
 
 Every supported profile tests own-tenant success; sibling/external denial; missing grant; issuer/audience mismatch; expiry/revocation; wrong activity/market/legal actor; dependency failure/recovery; idempotency/replay; bounded clean teardown; claim truth. A missing mandatory scenario is FAIL/BLOCKED, not NOT_APPLICABLE. Preserve evidence categories: SOURCE, LOCAL_TESTED, REAL_COMPONENT_SYNTHETIC_DATA, PROTECTED_STAGING, EXTERNAL_CERTIFICATION and PRODUCTION_ACCEPTANCE independently.
 
@@ -124,6 +132,30 @@ Every supported profile tests own-tenant success; sibling/external denial; missi
 8. **Safe parallel engineering.** A source/code PR checks directly affected profiles; main/nightly test larger integration matrix; a release candidate must pass all required cases. Unavailable TMS/payments/payroll must not block safe unrelated CMS or frontend development.
 9. **Toolchain change control.** baobab-dev pinned pnpm 11.24.0 is the observed baseline, not a claim that pnpm 12 is supported. Upgrade in a separate compatibility PR: exact published release/security advisory, packageManager/Corepack, lockfile, TS/Next/Vitest/Medusa compatibility, CI, image digest, roll-forward/back.
 10. **Supportability, security and cost.** CODEOWNERS/runbooks/example adapters, least-privilege private registries, short-lived secrets, image/SBOM pinning, automatic orphan sweep, scoped CPU/RAM profiles, a11y/keyboard and low-bandwidth/mobile test pathways.
+
+
+### 6A. Developer throughput and correctness improvements — prioritised proposals
+
+These improve daily engineering beyond provisioning. They create **no additional independent approval gate** and must not become mandatory work on unrelated engines. They are testable follow-up tasks under DEV-10/11/12/14, sequenced by observed friction:
+
+| Priority | Experience improvement | First implementation owner | Concrete exit |
+| --- | --- | --- | --- |
+| **P0** | **Cross-repository dependency/contract impact planning** | Shared + Infrastructure | A PR change planner identifies affected engine contracts and minimal profile tests from actual imports, contract-lock SHAs and execution paths; when unsure, conservatively tests more |
+| **P0** | **Stable error vocabulary and runnable policy explanations** | CP/IAM + Shared + consumer owners | Denied capability reports a redacted reason category such as missing grant, invalid audience, wrong tenant/market, stale mandate or provider unavailable; never disclose other-tenant existence |
+| **P0** | **Reusable scenario data factories and deterministic time** | Shared + CP + engine owners | Seed/clock/run IDs vary by disposable run; controlled time tests expiring grants, evidence, tokens, retries and dates; replay produces same expected outputs with new isolated identifiers |
+| **P0** | **Contract compatibility and consumer-driven cross-version tests** | Shared + engines | Producer/consumer pinned-current contract pairs pass bidirectional old/new compatibility where specified, with deprecation windows and clear migration evidence; no silent release break |
+| **P1** | **Domain-local mocks separated from real L4 providers** | Each engine + Infrastructure | Fast component test uses explicit fakes, but isolated L4 profile cannot pass unless genuine required component/issuer/CP request was observed; simulated PSP marked separately |
+| **P1** | **Replayable event flows and outbox/inbox inspector** | Infrastructure + event owners | A developer can trace a synthetic event across producer, broker and consumer, replay it safely and observe idempotency, duplicate, wrong-context, stale-schema and dead-letter behavior |
+| **P1** | **Local observability bundle and cross-engine trace search** | Infrastructure + Shared | One private correlation ID links issuer → CP → engine → event consumer; token/PII redaction and retention tests demonstrably pass |
+| **P1** | **Recovery + migration rehearsal and chaos scenarios** | Infrastructure + engine owners | Kill/restart provider/broker/DB under a run profile; verify bounded retries, canonical idempotency, stable recoverability and no lingering disposable resources |
+| **P1** | **Developer onboarding guide and per-engine self-service template** | engine-template + baobab-dev | An unfamiliar engineer can follow one documented path to generate a profile, start an engine, run first real own-tenant/denial tests, diagnose and destroy it |
+| **P2** | **Lightweight engineering status portal** | Shared + Infrastructure | Read-only status page groups required checks, provider readiness, exact source pins, current failed run and links to GitHub artifacts; **no duplicate registry or CP authority** |
+| **P2** | **Cost- and connectivity-aware profiles** | baobab-dev + Infrastructure | Baseline low-resource/offline-friendly contract tests, selective large L4 suites, warm caches, private GHCR package mirror policy and South Africa/UG realistic high-latency tests; log runner cost |
+| **P2** | **Automated dependency/toolchain upgrade rehearsals** | baobab-dev + affected repos | Tool upgrades (including pnpm major versions) use trial branch, exact image/lock pins, clean Codespaces startup, contract/runtime suites, rollback, and observed compatibility—not an automatic fleet-wide bump |
+
+**Observability must not become a privacy leak**: logs/explain messages are authenticated, tenant-filtered, private, redacted, bounded and cannot reveal another tenant's grants, documents or identities. **Component mocks remain valuable for speed**; only evidence-class claims are restricted. Synthetic data may model ZA/UG market needs, local-language formatting, multi-currency, interruptions and low-bandwidth connectivity without falsely claiming any legal compliance certification.
+
+**Suggested adoption order:** first deliver DEV-14/15 plus P0 dependency impact, scenario factories and diagnostic codes, then measure Codespaces/CI friction; select P1/P2 from observed operational bottlenecks. Avoid a platform-wide process freeze or adding a new authority service as the implementation shortcut.
 
 ## 7. Target windows (not a promise of completion)
 
@@ -153,5 +185,7 @@ Measured scorecard: verified clean profile starts; zero unneeded dev-human appro
 - Repository owners deliver separate narrow implementation PRs with current Shared pins; reconcile merged status and mandatory CI before dependent changes.
 - Rollback disables the failing disposable profile, revokes generated credentials, removes owned volumes/containers and restores prior version pins. Never roll back by enabling unguarded bootstrap, inventing provider support or reopening obsolete general human approval holds.
 - Any change of *legal authority semantics* or *domain permission* needs its own owning ADR/Shared contract review, not a convenient plan edit.
+
+**Done also requires the first two headless engine adopter profiles (Pulse and Payments) to publish truthfully scoped runtime outcomes without CMS, and an accessible onboarding template for subsequent engines.**
 
 **Done means:** Every supported enterprise journey starts, executes positive and negative real-component tests and tears down repeatably under a single developer's control with truthful evidence; unavailable capabilities remain visibly BLOCKED; production and staging remain independently and appropriately governed.
