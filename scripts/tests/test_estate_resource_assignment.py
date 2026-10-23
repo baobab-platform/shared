@@ -210,7 +210,11 @@ class EstateResourceAssignment(unittest.TestCase):
         self.assertIn("Decision 9: governed estate resource assignment and the universal native commit fence", ADR)
         self.assertIn("ADR-THA-0018", ADR)
         self.assertIn("inactive enforcement gate", ADR)
-        self.assertIn("Amended by Decision 9 (5)", ADR)
+        self.assertIn("Thamani is a B2B integrated logistics Digital Estate", ADR)
+        self.assertIn("there is no intended Thamani B2C registration", ADR)
+        self.assertNotIn("Thamani consumer estate B2C. These are requirements", ADR)
+        profile_contract = json.loads((ROOT / "contracts/control-plane/v1/estate-commerce-profile.schema.json").read_text())
+        self.assertIn("Thamani B2B integrated logistics", profile_contract["description"])
 
 
 if __name__ == "__main__":
