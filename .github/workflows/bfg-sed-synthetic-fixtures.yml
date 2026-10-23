@@ -1,0 +1,65 @@
+# BFG-SED offline scenario-only verification, separate from CP/IAM L4 acceptance.
+# No official identities, registries, regulated imports, PSPs or cloud credentials.
+name: BFG-SED — deterministic synthetic fixtures
+
+on:
+  pull_request:
+    paths:
+      - "fixtures/development/bfg-sed/**"
+      - "scripts/development/generate_bfg_sed.py"
+      - "tests/development/test_generate_bfg_sed.py"
+      - ".github/workflows/bfg-sed-synthetic-fixtures.yml"
+  push:
+    branches: [main]
+    paths:
+      - "fixtures/development/bfg-sed/**"
+      - "scripts/development/generate_bfg_sed.py"
+      - "tests/development/test_generate_bfg_sed.py"
+      - ".github/workflows/bfg-sed-synthetic-fixtures.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fixtures:
+    name: Fixture validity, safety and determinism
+    runs-on: ubuntu-26.04
+    timeout-minutes: 12
+    env:
+      BAOBAB_ENVIRONMENT: development
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 (Shared-pinned)
+      - name: Validate source JSON
+        run: python3 -m json.tool fixtures/development/bfg-sed/v1/blueprint.json > /dev/null
+      - name: Run Python stdlib validation tests
+        run: python3 -m unittest discover -s tests/development -p 'test_generate_bfg_sed.py' -v
+      - name: Verify same seed produces identical data across independent runs
+        run: |
+          set -euo pipefail
+          python3 scripts/development/generate_bfg_sed.py --scale medium --seed 20261023 \
+            --run-id 0123456789abcdef0123456789abcdef --output "$RUNNER_TEMP/a.json"
+          python3 scripts/development/generate_bfg_sed.py --scale medium --seed 20261023 \
+            --run-id 0123456789abcdef0123456789abcdef --output "$RUNNER_TEMP/b.json"
+          cmp "$RUNNER_TEMP/a.json" "$RUNNER_TEMP/b.json"
+          python3 scripts/development/generate_bfg_sed.py --scale large --seed 20261023 \
+            --run-id 0123456789abcdef0123456789abcdef --output "$RUNNER_TEMP/large.json"
+          python3 - "$RUNNER_TEMP/large.json" <<'PY'
+          import json
+          import sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert data["counts"]["scenario_transactions"] == 1360
+          assert data["counts"]["organisations"] == 5
+          assert not data["protected_acceptance"]
+          assert not data["can_promote_to_staging_or_production"]
+          PY
+      - name: Confirm production environment refuses generation
+        run: |
+          set -euo pipefail
+          if BAOBAB_ENVIRONMENT=production python3 scripts/development/generate_bfg_sed.py --scale small \
+             --output "$RUNNER_TEMP/must-not-exist.json"; then
+            echo "Unsafe generator: production marker unexpectedly allowed" >&2
+            exit 1
+          fi
+          test ! -e "$RUNNER_TEMP/must-not-exist.json"
