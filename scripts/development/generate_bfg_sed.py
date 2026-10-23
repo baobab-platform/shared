@@ -109,6 +109,8 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
 
     orgs: list[dict[str, Any]] = []
     people: list[dict[str, Any]] = []
+    facilities: list[dict[str, Any]] = []
+    counterparties: list[dict[str, Any]] = []
     items: list[dict[str, Any]] = []
     transactions: list[dict[str, Any]] = []
     evidence: list[dict[str, Any]] = []
@@ -137,6 +139,41 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
             "canonical_organisation_id": None,
             "canonical_legal_entity_id": None,
         })
+        # Scenario market presence is not a CP Market record, approved branch,
+        # legal incorporation, market grant or commercial operational right.
+        market_repeats = 1 if scale == "small" else (2 if scale == "medium" else 10)
+        for country in e["operating_markets"]:
+            for n in range(market_repeats):
+                facilities.append({
+                    "fixture_ref": fixture_ref(seed, "site", e["key"] + country, n),
+                    "enterprise_fixture_key": e["key"],
+                    "market_scenario": country,
+                    "display_name": f"Synthetic {e['key']} Site {country}-{n:02d}",
+                    "address": None,  # Never generate a plausible real address.
+                    "geocodable": False,
+                    "actual_location_verified": False,
+                    "market_activated": False,
+                    "engine_site_id": None,
+                })
+        # Source and footprint countries create prospective counterparties,
+        # not local legal entities or automatic cross-market authority.
+        for country in sorted(set(e["source_markets"] + e["footprint_markets"])):
+            for n in range(market_repeats):
+                role = ("supplier" if e["key"] in {"zuribeans", "external-client"} else
+                        "prospective_business_partner")
+                counterparties.append({
+                    "fixture_ref": fixture_ref(seed, "counterparty", e["key"] + country, n),
+                    "customer_tenant_fixture_ref": enterprise_refs[e["key"]],
+                    "display_name": f"Synthetic {markets[country]['name']} {role.replace('_', ' ').title()} {n+1}",
+                    "relationship_type": role,
+                    "country_scenario": country,
+                    "email": f"counterparty-{e['key']}-{country.lower()}-{n}@example.invalid",
+                    "cp_organisation_id": None,
+                    "legal_entity_verified": False,
+                    "market_granted": False,
+                    "provider_qualified": False,
+                    "pharmaceutical_supplier_gmp_verified": False if e["key"] == "external-client" else None,
+                })
         for role in e["roles"]:
             for n in range(person_repeat):
                 username = f"{e['key']}-{role}-{n}".replace("_", "-")
@@ -248,12 +285,15 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
         "engine_capability_status": "REQUEST_ONLY_NOT_ACTIVATED",
         "organisations": orgs,
         "personas": people,
+        "facilities": facilities,
+        "counterparties": counterparties,
         "catalogue_items": items,
         "scenario_transactions": transactions,
         "documentary_evidence_inputs": evidence,
         "test_case_expectations": observations,
         "counts": {
             "organisations": len(orgs), "personas": len(people),
+            "facilities": len(facilities), "counterparties": len(counterparties),
             "catalogue_items": len(items),
             "scenario_transactions": len(transactions),
             "documentary_evidence_inputs": len(evidence),
