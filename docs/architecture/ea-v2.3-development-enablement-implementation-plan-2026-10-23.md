@@ -1,7 +1,7 @@
 # EA v2.3 — Development Enablement and Environment Assurance Implementation Plan
 ## EA-DEV-01: integrated proving ground, developer experience and protected promotion
 
-**Status:** Proposed EA v2.3 execution companion, pending Shared review, CI and merge. **Not** a new Accepted ADR or evidence that runtimes are qualified.  
+**Status:** Platform Owner-directed **implementation programme**, publication-effective upon merge to `shared/main` after required checks. An unmerged PR is a candidate; the merged plan is an active **engineering work queue**, **not** a new Accepted ADR or evidence that runtimes are qualified.  
 **Date:** 23 October 2026 (Africa/Johannesburg)  
 **Owner:** Shared Platform Architecture / Platform Engineering; implementation remains owned by each repository.  
 **Authority:** [EA v2.3](EA-implementation-plan-v2.3-2026-10-20.md); [Accepted ADR-SHARED-043](../adr/ADR-SHARED-043-Development-Provisioning-and-Environment-Approval-Boundaries.md); Shared ADR-036/015, CP ADR-017/020/021/023/026/027, IAM ADR-0033, Infrastructure ADR-0002/0020/0021, and applicable domain ADRs.  
@@ -187,7 +187,7 @@ The EA-REL dashboard reports independent **source, runtime, stage, deployed-heal
 
 ## 9. Publication, adoption and rollback
 
-- Link this proposed implementation companion from the existing EA v2.3 23 October amendment and the current live EA dashboard. After review/CI/merge, use EA-DEV as a new **execution lane** while leaving all existing accepted ADRs, stage human approvals, production gates, scenario IDs and historical receipts authoritative.
+- Publication rule: when this document is present on `shared/main` after reviewed required CI, EA-DEV is the active **execution lane**. On an unmerged PR branch it remains a candidate. Neither publication nor programme activation changes any Accepted ADR, stage-human approval, production gate, scenario ID or historical receipt.
 - Repository owners deliver separate narrow implementation PRs with current Shared pins; reconcile merged status and mandatory CI before dependent changes.
 - Rollback disables the failing disposable profile, revokes generated credentials, removes owned volumes/containers and restores prior version pins. Never roll back by enabling unguarded bootstrap, inventing provider support or reopening obsolete general human approval holds.
 - Any change of *legal authority semantics* or *domain permission* needs its own owning ADR/Shared contract review, not a convenient plan edit.
