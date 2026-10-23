@@ -1,7 +1,7 @@
 # EA-DEV — Reusable Engine Development Onboarding
 ## DEV-14/15 delivery specification and first two reference profiles
 
-**Status:** Proposed EA-DEV engineering delivery specification. It describes the next implementation, **not** a shipped engine-onboarding CLI, new authoritative contract, running integrated service or certified capability.  
+**Status:** EA-DEV **implementation specification** on `shared/main` after reviewed required CI/merge (candidate beforehand). This approves a delivery backlog, **not** a shipped engine-onboarding CLI, a new capability authority, running integrated service or certified capability.  
 **Date:** 23 October 2026  
 **Parent:** [EA-DEV-01 implementation plan](ea-v2.3-development-enablement-implementation-plan-2026-10-23.md) and Accepted [EA v2.3](EA-implementation-plan-v2.3-2026-10-20.md).  
 **Governs within:** Accepted ADR-SHARED-043 (development approval), -036 (L4), -017 (provider lifecycle and implementation evidence), -015 (provisioning); CP BCP-026/027 and IAM ADR-0033; owners' existing security and domain ADRs.  
