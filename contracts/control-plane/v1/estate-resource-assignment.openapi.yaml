@@ -129,20 +129,13 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
-  /v1/estate/resource-assignments/{assignment_id}/transitions:
+  /v1/estate/resource-assignments/{assignment_id}/approval-transitions:
     post:
-      operationId: transitionEstateResourceAssignment
-      summary: Approve, suspend, reinstate or revoke an assignment
+      operationId: approveOrReinstateEstateResourceAssignment
+      summary: Approve or reinstate an assignment after independent four-eyes review
       description: >-
-        Applies one governed transition to the stated current revision
-        (REVISION_CONFLICT, 409, otherwise). APPROVE and REINSTATE require
-        estate:resource-assignment:approve and a caller who is not the
-        proposer (SELF_APPROVAL, 403); an activation that would overlap
-        another ACTIVE assignment is ASSIGNMENT_OVERLAP (409). SUSPEND and
-        REVOKE require estate:resource-assignment:write and stop attestation
-        at once. REVOKED is terminal.
+        APPROVE and REINSTATE only. Requires approval scope, current revision, independent human approver and a nonoverlapping assignment; REVOKED is terminal.
       security:
-        - adminOidc: ["estate:resource-assignment:write"]
         - adminOidc: ["estate:resource-assignment:approve"]
       parameters:
         - $ref: "#/components/parameters/AssignmentId"
@@ -153,7 +146,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: estate-resource-assignment.schema.json#/$defs/EstateResourceAssignmentTransition
+              allOf:
+                - $ref: estate-resource-assignment.schema.json#/$defs/EstateResourceAssignmentTransition
+                - type: object
+                  properties:
+                    action: { enum: [APPROVE, REINSTATE] }
       responses:
         "200":
           $ref: "#/components/responses/Assignment"
@@ -166,7 +163,42 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
         "409":
-          $ref: "#/components/responses/Conflict"
+          $ref: "#/components/responses/Conflict
+  /v1/estate/resource-assignments/{assignment_id}/restriction-transitions:
+    post:
+      operationId: suspendOrRevokeEstateResourceAssignment
+      summary: Suspend or revoke an assignment to stop future attestations
+      description: >-
+        SUSPEND and REVOKE only. Requires write scope and current revision; revoked is terminal. The status change makes future attestations unavailable immediately.
+      security:
+        - adminOidc: ["estate:resource-assignment:write"]
+      parameters:
+        - $ref: "#/components/parameters/AssignmentId"
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: estate-resource-assignment.schema.json#/$defs/EstateResourceAssignmentTransition
+                - type: object
+                  properties:
+                    action: { enum: [SUSPEND, REVOKE] }
+      responses:
+        "200":
+          $ref: "#/components/responses/Assignment"
+        "400":
+          $ref: "#/components/responses/Problem"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict
 components:
   parameters:
     CorrelationId:
