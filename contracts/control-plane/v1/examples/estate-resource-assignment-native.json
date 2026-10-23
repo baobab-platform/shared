@@ -1,0 +1,21 @@
+{
+  "assignment_id": "4b3a2c1d-0e9f-4a8b-9c7d-6e5f4a3b2c1d",
+  "scope": "NATIVE_RESOURCE",
+  "native_resource": {
+    "native_configuration_reference": "trade/native-seller-configuration/synthetic-01",
+    "native_configuration_digest": "5d41402abc4b2a76b9719d911017c5925d41402abc4b2a76b9719d911017c592"
+  },
+  "digital_estate_id": "estate_synthetic",
+  "tenant_id": "tn_synthetic01",
+  "trade_engine_instance_id": "ei_tradestaging01",
+  "market_scope": ["market_synthetic"],
+  "permitted_operations": ["trade.order.commit", "trade.draft-order.finalize"],
+  "status": "ACTIVE",
+  "revision": 2,
+  "effective_from": "2026-10-23T00:00:00Z",
+  "proposed_by": "0d9c8b7a-6f5e-4d3c-8b2a-1f0e9d8c7b6a",
+  "approved_by": "7a6b5c4d-3e2f-4a1b-9c8d-7e6f5a4b3c2d",
+  "proposal_reference": "changeset:synthetic-assign-0001",
+  "approval_reference": "approval:synthetic-assign-0001",
+  "evidence_reference": "changeset:synthetic-assign-0001"
+}

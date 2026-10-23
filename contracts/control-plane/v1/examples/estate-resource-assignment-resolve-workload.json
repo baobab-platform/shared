@@ -1,0 +1,10 @@
+{
+  "scope": "WORKLOAD",
+  "workload_evidence": "synthetic-header.synthetic-payload.synthetic-signature",
+  "workload_evidence_type": "urn:ietf:params:oauth:token-type:access_token",
+  "digital_estate_id": "estate_synthetic",
+  "engine_instance_id": "ei_tradestaging01",
+  "market_id": "market_synthetic",
+  "operation": "trade.order.commit",
+  "correlation_id": "0b6f2c1e-6d0a-4f43-9c1a-2f1d6b1e9a40"
+}
