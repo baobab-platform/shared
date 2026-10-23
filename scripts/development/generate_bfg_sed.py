@@ -64,6 +64,18 @@ def validate_blueprint(b: dict[str, Any]) -> None:
         raise ValueError("cannot change canonical CP profile roster via an overlay")
     if b["enterprises"][0]["key"] != "nabhold" or enterprises["nabhold"]["business_model"] != "NON_TRADING_HOLDING":
         raise ValueError("Nabhold must remain non-trading")
+    # Freeze declared legal-model *semantics* for the baseline. The overlay
+    # cannot quietly turn an operating business into an incorporated company.
+    expected_legal = {
+        "nabhold": "DECLARED_HOLDING_UNVERIFIED_FOR_TEST",
+        "zuribeans": "OPERATING_ORGANISATION_NO_SEPARATE_INCORPORATION",
+        "thamani": "DECLARED_SEPARATELY_INCORPORATED_UNVERIFIED_FOR_TEST",
+        "equator-estate": "OPERATING_ORGANISATION_NO_SEPARATE_INCORPORATION",
+        "external-client": "INDEPENDENT_EXTERNAL_ORGANISATION_REGISTRATION_UNVERIFIED",
+    }
+    for key, legal_model in expected_legal.items():
+        if enterprises[key]["legal_model"] != legal_model:
+            raise ValueError(f"illegal synthetic legal-model drift: {key}")
     if enterprises["external-client"]["estate"] is not None or enterprises["external-client"]["primary_market"] != "UG":
         raise ValueError("external pharma client must be independent, UG-based and API-only")
     if set(enterprises["external-client"]["source_markets"]) != {"CN", "IN"}:
