@@ -104,6 +104,42 @@ class SyntheticFixtureContractTests(unittest.TestCase):
                             second["scenario_transactions"][0]["fixture_ref"])
         self.assertEqual(first["counts"], second["counts"])
 
+    def test_unmet_prerequisites_preserve_blocked_expectations(self) -> None:
+        data = self.generate("large")
+        cases = {t["fixture_ref"]: t for t in data["scenario_transactions"]}
+        blocked_base = 0
+        for expectation in data["test_case_expectations"]:
+            case = cases[expectation["transaction_fixture_ref"]]
+            precondition = case["expected_precondition"]
+            if precondition.startswith("BLOCK_UNTIL"):
+                self.assertEqual(expectation["expected_outcome"], "BLOCKED")
+                self.assertTrue(expectation["expected_denial"])
+                if case["case_variant"] == "BASE":
+                    blocked_base += 1
+            elif "DENY" in precondition or case["case_variant"] != "BASE":
+                self.assertEqual(expectation["expected_outcome"], "DENY")
+                self.assertTrue(expectation["expected_denial"])
+            else:
+                self.assertEqual(expectation["expected_outcome"], "CONDITIONAL")
+                self.assertFalse(expectation["expected_denial"])
+            self.assertIsNone(expectation["observed_result"])
+        self.assertGreater(blocked_base, 0)
+
+    def test_separate_runs_have_disjoint_fixture_references(self) -> None:
+        first = self.generate("medium", seed=123)
+        second = module.generate(self.blueprint, scale="medium", seed=123, run_id="b" * 32)
+        collections = ("organisations", "personas", "facilities", "counterparties",
+                       "catalogue_items", "scenario_transactions",
+                       "documentary_evidence_inputs", "test_case_expectations")
+        def references(data: dict) -> set[str]:
+            return {value for name in collections for row in data[name]
+                    for key, value in row.items()
+                    if key.endswith("ref") and isinstance(value, str) and value.startswith("SYN-")}
+        self.assertTrue(references(first).isdisjoint(references(second)))
+        self.assertEqual(first["counts"], second["counts"])
+        self.assertEqual([t["amount_minor_units"] for t in first["scenario_transactions"]],
+                         [t["amount_minor_units"] for t in second["scenario_transactions"]])
+
     def test_small_medium_large_scales_increase_load(self) -> None:
         counts = [self.generate(k)["counts"]["scenario_transactions"] for k in ("small", "medium", "large")]
         self.assertEqual(counts, [34, 170, 1360])

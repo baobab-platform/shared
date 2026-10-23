@@ -48,7 +48,7 @@ BAOBAB_ENVIRONMENT=development python3 scripts/development/generate_bfg_sed.py \
 | medium | 170 | everyday integration/data test input |
 | large | 1,360 | opt-in load and recovery exercises |
 
-The stdlib-only Python script makes no requests, connects to no databases, touches no other repository, creates no identities and moves no funds. It refuses protected staging/production environment markers. Run keys identify deterministic **fictional fixture objects**, not valid CP canonical IDs. The demo run ID is also just offline metadata.
+The stdlib-only Python script makes no requests, connects to no databases, touches no other repository, creates no identities and moves no funds. It refuses protected staging/production environment markers. References are deterministic for a seed and run ID, and disjoint across different run IDs. Reuse a run ID only to replay the same offline fixture. Run keys identify deterministic **fictional fixture objects**, not valid CP canonical IDs. The demo run ID is also just offline metadata.
 
 ## Output shape
 
@@ -59,7 +59,7 @@ The stdlib-only Python script makes no requests, connects to no databases, touch
 - catalogue_items: fictional commodities (including vanilla and coffee), transport services, buildings, projects, medical-product concepts and warehouse batches; no actual inventory, drug registration or product approvals
 - scenario_transactions: currency, amount, time, timezone, origin/destination, action precondition and failure variants, marked NOT_EXECUTED with no settlement
 - documentary_evidence_inputs: explicitly fake sample data marked MISSING/UNVERIFIED and **no licence, verification certificate or official registration**
-- test_case_expectations: intended negative/positive assertions with observed_result null until a real native API is actually exercised
+- test_case_expectations: explicit BLOCKED/DENY/CONDITIONAL expectations with observed_result null until a real native API is actually exercised; BLOCK_UNTIL prerequisites always prevent execution
 
 **All material is development-only.** No actual people, legal documents, bank details, VAT IDs, registration numbers, parcels, shipper addresses, geolocatable sites, import permits, genuine customs approvals, real medicines, manufacturer approvals or authorisation credentials are seeded. Data cannot be promoted or bulk imported into production.
 

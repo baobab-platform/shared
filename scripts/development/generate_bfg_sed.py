@@ -13,7 +13,7 @@ import argparse
 import hashlib
 import json
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -32,9 +32,9 @@ def _ordinal(seed: int, key: str, index: int, ceiling: int) -> int:
     return int.from_bytes(digest[:8], "big") % ceiling
 
 
-def fixture_ref(seed: int, kind: str, key: str, index: int = 0) -> str:
+def fixture_ref(run_id: str, seed: int, kind: str, key: str, index: int = 0) -> str:
     """Non-canonical human-readable ID. Not an OrganisationID/PrincipalID/UUID."""
-    h = hashlib.sha256(f"{seed}|{kind}|{key}|{index}".encode()).hexdigest()[:16]
+    h = hashlib.sha256(f"{run_id}|{seed}|{kind}|{key}|{index}".encode()).hexdigest()[:16]
     return f"SYN-{kind.upper()}-{h}"
 
 
@@ -117,7 +117,7 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
     repeat, person_repeat = SCALES[scale]
     markets = {x["code"]: x for x in b["markets"]}
     start = datetime.fromisoformat(b["reference_date"] + "T09:00:00+00:00")
-    enterprise_refs = {e["key"]: fixture_ref(seed, "tenantref", e["key"]) for e in b["enterprises"]}
+    enterprise_refs = {e["key"]: fixture_ref(run_id, seed, "tenantref", e["key"]) for e in b["enterprises"]}
 
     orgs: list[dict[str, Any]] = []
     people: list[dict[str, Any]] = []
@@ -157,7 +157,7 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
         for country in e["operating_markets"]:
             for n in range(market_repeats):
                 facilities.append({
-                    "fixture_ref": fixture_ref(seed, "site", e["key"] + country, n),
+                    "fixture_ref": fixture_ref(run_id, seed, "site", e["key"] + country, n),
                     "enterprise_fixture_key": e["key"],
                     "market_scenario": country,
                     "display_name": f"Synthetic {e['key']} Site {country}-{n:02d}",
@@ -174,7 +174,7 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
                 role = ("supplier" if e["key"] in {"zuribeans", "external-client"} else
                         "prospective_business_partner")
                 counterparties.append({
-                    "fixture_ref": fixture_ref(seed, "counterparty", e["key"] + country, n),
+                    "fixture_ref": fixture_ref(run_id, seed, "counterparty", e["key"] + country, n),
                     "customer_tenant_fixture_ref": enterprise_refs[e["key"]],
                     "display_name": f"Synthetic {markets[country]['name']} {role.replace('_', ' ').title()} {n+1}",
                     "relationship_type": role,
@@ -190,7 +190,7 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
             for n in range(person_repeat):
                 username = f"{e['key']}-{role}-{n}".replace("_", "-")
                 people.append({
-                    "fixture_ref": fixture_ref(seed, "persona", username),
+                    "fixture_ref": fixture_ref(run_id, seed, "persona", username),
                     "enterprise_fixture_key": e["key"],
                     "display_name": f"Synthetic {role.replace('_', ' ').title()} {n + 1}",
                     "email": f"synthetic-{username}@example.invalid",
@@ -206,7 +206,7 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
             variants = 1 if scale == "small" else (3 if scale == "medium" else 12)
             for variant in range(variants):
                 items.append({
-                    "fixture_ref": fixture_ref(seed, "item", code, variant),
+                    "fixture_ref": fixture_ref(run_id, seed, "item", code, variant),
                     "owner_enterprise_key": e["key"],
                     "sku": f"SYN-{code}-{variant:03d}",
                     "name": name,
@@ -227,7 +227,7 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
         ek = scenario["enterprise_key"]
         dest_market = markets[scenario["destination"]]
         for i in range(repeat):
-            ref = fixture_ref(seed, "scenario", scenario["key"], i)
+            ref = fixture_ref(run_id, seed, "scenario", scenario["key"], i)
             case_kind = ("BASE", "AUDIENCE_DENY", "CROSS_TENANT_DENY", "EXPIRED_MANDATE",
                          "MISSING_GRANT", "STALE_PROVIDER", "DUPLICATE_REPLAY", "DEPENDENCY_OUTAGE")[
                              i % 8]
@@ -261,7 +261,7 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
             # real permit, customs release, licensed product or bank reference.
             status = "MISSING" if "PH-" in scenario["key"] or case_kind == "EXPIRED_MANDATE" else "UNVERIFIED"
             evidence.append({
-                "fixture_ref": fixture_ref(seed, "evidence", scenario["key"], i),
+                "fixture_ref": fixture_ref(run_id, seed, "evidence", scenario["key"], i),
                 "transaction_fixture_ref": ref,
                 "category": "FAKE_DOCUMENTARY_ASSERTION",
                 "verification_status": status,
@@ -271,11 +271,19 @@ def generate(b: dict[str, Any], *, scale: str, seed: int, run_id: str) -> dict[s
                 "nda_verification_certificate": None,
                 "simulated_document_label": "SYNTHETIC TEST DATA - NOT A LICENSE",
             })
+            # A blocked prerequisite cannot become a permitted BASE operation.
+            # Conditional scenarios remain conditional; this offline expectation
+            # never grants authority or asserts that a native call succeeded.
+            precondition = scenario["expected_precondition"]
+            blocked = precondition.startswith("BLOCK_UNTIL")
+            denied = "DENY" in precondition or case_kind != "BASE"
+            expectation = "BLOCKED" if blocked else ("DENY" if denied else "CONDITIONAL")
             observations.append({
-                "fixture_ref": fixture_ref(seed, "observation", scenario["key"], i),
+                "fixture_ref": fixture_ref(run_id, seed, "observation", scenario["key"], i),
                 "transaction_fixture_ref": ref,
                 "classification": "SCENARIO_EXPECTATION_NOT_RUNTIME_EVIDENCE",
-                "expected_denial": "DENY" in scenario["expected_precondition"] or case_kind != "BASE",
+                "expected_outcome": expectation,
+                "expected_denial": blocked or denied,
                 "observed_result": None,
                 "runtime_evidence_link": None,
             })
