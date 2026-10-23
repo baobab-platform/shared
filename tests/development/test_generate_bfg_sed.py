@@ -65,6 +65,21 @@ class SyntheticFixtureContractTests(unittest.TestCase):
         other_refs = [x["fixture_tenant_ref"] for x in data["organisations"] if x != external]
         self.assertNotIn(external["fixture_tenant_ref"], other_refs)
 
+    def test_site_and_counterparty_records_do_not_claim_presence_or_rights(self) -> None:
+        data = self.generate("medium")
+        self.assertGreater(len(data["facilities"]), 15)
+        self.assertGreater(len(data["counterparties"]), 10)
+        for facility in data["facilities"]:
+            self.assertIsNone(facility["address"])
+            self.assertFalse(facility["geocodable"])
+            self.assertFalse(facility["actual_location_verified"])
+            self.assertFalse(facility["market_activated"])
+        for counterparty in data["counterparties"]:
+            self.assertTrue(counterparty["email"].endswith("@example.invalid"))
+            self.assertFalse(counterparty["market_granted"])
+            self.assertFalse(counterparty["legal_entity_verified"])
+            self.assertIsNone(counterparty["cp_organisation_id"])
+
     def test_reference_data_is_deterministic_and_seed_scoped(self) -> None:
         self.assertEqual(self.generate("medium", 123), self.generate("medium", 123))
         first, second = self.generate("medium", 123), self.generate("medium", 456)
