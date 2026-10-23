@@ -179,6 +179,12 @@ Measured scorecard: verified clean profile starts; zero unneeded dev-human appro
 
 **Immediate stop conditions:** dev-bootstrap reachable in stage/prod; live secret or data injected into CI; forged bearer/evidence/corporate verification; access to another tenant without grant; same Principal checks own consequential mutation; incorrect legal seller/issuer; money/posting side door; missing cleanup; a mandatory L4 case wrongly marked PASS; unsafe database migration. Stop that operation and retain evidence; do not stop unrelated safe engineering.
 
+## 8A. Progressive production-release handoff (EA-REL)
+
+The [Progressive Production-Release Programme](ea-v2.3-progressive-production-release-programme-2026-10-23.md) is the **separate protected promotion and operations** programme for DEV-13 and independently qualifying engines. It makes CP/IAM the **first candidate shared production foundation** and permits subsequently mature providers such as CMS, Pulse, Trade, ERP, TMS and Payments to be released individually with actual EA-09 evidence, protected operators and precisely scoped CP/market/legal-actor approvals. It does **not** turn any current source or L4 milestone into staging or production acceptance. A production-deployed engine may remain **dark** with no authorised live tenant operation. CMS and the public estates are their own release units and need not be a prerequisite for Pulse or other headless capabilities.
+
+The EA-REL dashboard reports independent **source, runtime, stage, deployed-health and business-activation** states rather than one global green label. Normal synthetic development remains free of per-run independently appointed-human approval under ADR-SHARED-043; signed independent approval remains mandatory at applicable protected transitions. Full plan status and acceptance belong to the owning release records, not this documentation link.
+
 ## 9. Publication, adoption and rollback
 
 - Link this proposed implementation companion from the existing EA v2.3 23 October amendment and the current live EA dashboard. After review/CI/merge, use EA-DEV as a new **execution lane** while leaving all existing accepted ADRs, stage human approvals, production gates, scenario IDs and historical receipts authoritative.
