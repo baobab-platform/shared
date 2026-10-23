@@ -27,6 +27,23 @@ class SyntheticFixtureContractTests(unittest.TestCase):
     def generate(self, scale: str = "small", seed: int = 100) -> dict:
         return module.generate(self.blueprint, scale=scale, seed=seed, run_id="a" * 32)
 
+    def test_requested_capability_keys_exist_in_shared_catalogue(self) -> None:
+        # Lightweight authoritative catalogue census without a YAML parser.
+        # A request to use a capability never counts as activation.
+        catalogue = (ROOT / "contracts" / "capability" / "v1" / "catalogue.yaml").read_text(
+            encoding="utf-8"
+        )
+        keys = set()
+        for line in catalogue.splitlines():
+            if line.lstrip().startswith("- capability_key:"):
+                keys.add(line.split(":", 1)[1].strip().strip("\\\"'"))
+        declared = {
+            capability
+            for e in self.blueprint["enterprises"]
+            for capability in e["capability_requests"]
+        }
+        self.assertTrue(declared <= keys, sorted(declared - keys))
+
     def test_blueprint_has_all_requested_markets(self) -> None:
         keys = {e["key"] for e in self.blueprint["enterprises"]}
         self.assertEqual(keys, {"nabhold", "zuribeans", "thamani", "equator-estate", "external-client"})
