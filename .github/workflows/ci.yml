@@ -273,6 +273,8 @@ jobs:
         run: python scripts/tests/test_estate_client_binding.py
       - name: Test buyer assurance policy (ADR-SHARED-042 CAA-03)
         run: python scripts/tests/test_assurance_policy.py
+      - name: Test DEV-06 external API workload ceilings
+        run: python scripts/tests/test_dev06_workloads.py
       - name: Test identity runtime profile invariants
         run: python scripts/tests/test_identity_runtime_contracts.py
       - name: Validate federation trust and evidence contracts (MP2-B)
