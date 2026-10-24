@@ -5,6 +5,7 @@ all seven original INT-03C cases with 45 closed assertions, and final owned
 resource/private-state cleanup. It does not infer cases from DEV-03's sixteen.
 
 - Engineering: https://github.com/baobab-platform/infrastructure/pull/56
+- Merged Infrastructure source: `5d70e40da1c5b3f22b46fe5a1177f843b26ec411`
 - Reviewed Infrastructure head: `a7867adf637ceeb4062d199617b2071807f13f6b`
 - Actual executed CI harness merge: `7a0b520f949a8d0a3e7364fe5cfb1dfae83e5335`
 - Native workflow: https://github.com/baobab-platform/infrastructure/actions/runs/40095164501
@@ -62,3 +63,11 @@ production and independently observed interactive Codespaces remain unqualified.
 The native owner stores, accepting CP/database, run images, volumes, network,
 private credentials/session/configuration and run state were destroyed; shared
 nonsecret base-image caches are not claimed absent.
+
+Final engineering review/CI: 29 applicable checks succeeded and 6 were skipped
+by applicability, with no open review threads. The separate legacy INT-02
+regression passed at the final head without a rerun. No repair of historical
+BA-AUD-001 MFA root cause is established. Scoped DEV-04 acceptance closes
+BA-AUD-002/030 only for their original DEV-03/04 development case requirements;
+BA-AUD-016/032/043 and other provider/engine/estate/protected findings remain
+independent. Dated assessments and older failed receipts are unchanged.

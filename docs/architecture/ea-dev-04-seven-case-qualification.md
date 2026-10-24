@@ -26,7 +26,9 @@ reviewed immutable source once merged; the register records actual observations.
 The final native run observed all seven original cases and 45 assertions,
 with provider and host teardown verified. Original archive and receipt bytes
 were downloaded and hash-verified; see the [evidence record](evidence/dev04-2026-10-24/README.md).
-Engineering merge and final adoption remain gated by final-head CI/review. Closed per-case reports
+Infrastructure #56 merged after final-head review and all 29 applicable checks
+passed (6 applicability skips). The register accepts the scoped DEV-04 original
+seven-case development outcome. Closed per-case reports
 must retain failed and unexecuted outcomes; missing evidence is not success.
 Only host teardown may complete the last case. Dependency source pins, actual
 executed harness, runtime image IDs/digests, lock/config/Shared contract hashes
@@ -45,3 +47,11 @@ private-state removal, then independently recheck absence and atomically
 publish. Focused tests inject candidate-write, final-write and rename failures
 and recover without the former state or Docker resources. The native run is
 separate from these source regressions.
+
+The IAM, CP and architecture assessments informed assertion scope and authority
+boundaries. New CMS, Trade and ERP assessments were also reviewed and preserved;
+they do not turn their native/source results into DEV-04 or downstream acceptance.
+BA-AUD-002/030 are resolved only for the original DEV-03/04 development proof.
+BA-AUD-001 historical MFA cause and separate provider/consumer/estate findings
+remain independently open. The next sequential gate is DEV-05, not an automatic
+provider promotion or protected release.

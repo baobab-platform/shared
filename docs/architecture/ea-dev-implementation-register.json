@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected CP/IAM/Infrastructure source/CI and scoped DEV-01/02/03 original receipts; native DEV-03 sixteen-case results and cleanup were observed and hash-verified against reviewed, merged engineering sources. Other owners remain NOT_ASSESSED; no complete canonical L4, INT-03C/NAB-03, provider or protected acceptance is inferred.",
+  "observation_scope": "Selected CP/IAM/Infrastructure source/CI and scoped DEV-01/02/03/04 original receipts; native DEV-04 original seven cases, 45 assertions and teardown were observed and hash-verified against reviewed merged engineering sources. Other owners remain independently assessed; no complete canonical L4/C4, NAB-03, provider, estate, legal or protected acceptance is inferred.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -172,6 +172,23 @@
         "https://github.com/baobab-platform/infrastructure/actions/runs/40076614049",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40076614110",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40076612873"
+      ]
+    },
+    {
+      "key": "dev04-infrastructure",
+      "repo": "infrastructure",
+      "sha": "5d70e40da1c5b3f22b46fe5a1177f843b26ec411",
+      "pr": 56,
+      "scope": "Original seven-case INT-03C native development qualifier; 45 real assertions, independent issuer/CP/provider/host readbacks and teardown, 29 source/failure regressions. 29 applicable CI checks successful, 6 applicable skips. Legacy INT-02 passed without rerun; historical MFA cause remains unestablished.",
+      "reviewed_head_sha": "a7867adf637ceeb4062d199617b2071807f13f6b",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40095165274",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40095164470",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40095164458",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40095164459",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40095161115"
       ]
     }
   ],
@@ -724,17 +741,17 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "SOURCE_IN_PROGRESS",
-      "assessment": "IMPLEMENTED_PENDING_REVIEW",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
+      "assessment": "ACCEPTED",
       "source_baselines": [
         "dev03-cp",
-        "dev03-infrastructure"
+        "dev04-infrastructure"
       ],
-      "source_note": "Infrastructure #56 reviewed head a7867adf637ceeb4062d199617b2071807f13f6b produced all original seven INT-03C cases and 45 actual native assertions in run 40095164501, with verified provider and host teardown. Executed harness is 7a0b520f949a8d0a3e7364fe5cfb1dfae83e5335; original archive and all three per-run receipt/suite hashes were verified after download. Final Infrastructure mandatory legacy regression CI and merge remain pending. Provider/token lifetime and recoverable-publication review findings were fixed and rerun; 29 source/failure tests pass. Shared/CP/IAM sources are immutable merged DEV-03 owner pins; later assessment-only Shared changes preserve runtime contracts. No provider, estate, full canonical L4/C4, NAB-03, legal or protected acceptance is inferred.",
+      "source_note": "Infrastructure #56 merged at 5d70e40da1c5b3f22b46fe5a1177f843b26ec411 after review of a7867adf637ceeb4062d199617b2071807f13f6b and 29 successful applicable checks / 6 skips. All original seven INT-03C cases and 45 actual native assertions passed in run 40095164501, with provider/host/private-state teardown. Actual executed harness is 7a0b520f949a8d0a3e7364fe5cfb1dfae83e5335; archive and all original receipt/suite hashes were verified after download. Provider/token lifetime and recoverable-publication findings were corrected and rerun; 29 source/failure tests pass. Legacy INT-02 passed without rerun, with no historical MFA repair claim. Runtime pins are merged Shared 6ebd5fd, CP 718caed and IAM 0ad1036; later Shared assessment-only changes preserve these contracts. Acceptance is scoped original INT-03C synthetic development only. Provider, estate, full canonical L4/C4, NAB-03, legal and protected/production acceptance are not inferred.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-08",
-      "actual_completion_date": null,
-      "mandatory_ci": "PENDING_THIS_PR",
+      "actual_completion_date": "2026-10-24",
+      "mandatory_ci": "SUCCESS",
       "environment": "ISOLATED_DEVELOPMENT",
       "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
@@ -805,13 +822,8 @@
           }
         ]
       },
-      "blockers": [
-        {
-          "kind": "NOT_REVIEWED",
-          "detail": "Final Infrastructure #56 mandatory regression CI and merge, followed by final Shared adoption review/CI, remain pending."
-        }
-      ],
-      "next_action": "Complete final source CI/review/merge and adopt only scoped seven-case development evidence; DEV-05 fourteen-case CMS/estate qualification remains separate.",
+      "blockers": [],
+      "next_action": "DEV-05: qualify the original fourteen NAB-03 cases over actual IAM/CP/BFF/CMS services; preserve provider, legal and protected acceptance boundaries.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
