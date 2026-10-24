@@ -1,0 +1,41 @@
+{
+  "authority": {
+    "canonical_provider_qualified": false,
+    "checks": {
+      "absent_capability_grant_denied": true,
+      "actual_signed_issuer_and_cp_context": true,
+      "authorization_code_replay_denied": true,
+      "cp_denial_independent_of_issuer_status": true,
+      "cp_principal_deactivation_while_unexpired": true,
+      "expired_issuer_token_denied": true,
+      "fresh_credential_after_revoke_succeeds": true,
+      "issuer_revocation_while_unexpired": true,
+      "real_kratos_hydra_pkce_distinct_humans": true,
+      "same_principal_deactivation_approval_denied": true,
+      "same_principal_provenance_approval_denied": true,
+      "wrong_audience_denied": true,
+      "wrong_external_tenant_denied": true,
+      "wrong_pkce_denied_by_issuer": true,
+      "wrong_sibling_tenant_denied": true,
+      "wrong_state_denied_by_relying_party": true
+    },
+    "int03c_qualified": false,
+    "nab03_qualified": false,
+    "protected_acceptance": false,
+    "schema": "infrastructure.dev03.authority-observed.v1",
+    "synthetic_only": true
+  },
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "harness_sha": "7a0b520f949a8d0a3e7364fe5cfb1dfae83e5335",
+  "int03c_qualified": false,
+  "nab03_qualified": false,
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "schema": "infrastructure.dev03.authority-suite.v1",
+  "source_pins": {
+    "baobab-cp": "718caedca3b9203931b399464e21b0f64ffbe879",
+    "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+    "shared": "6ebd5fd258100fe437837869ab2a1248b2df3988"
+  },
+  "teardown_verified": true
+}

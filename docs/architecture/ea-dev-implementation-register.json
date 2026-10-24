@@ -730,72 +730,88 @@
         "dev03-cp",
         "dev03-infrastructure"
       ],
-      "source_note": "Infrastructure #56 implements a separate fresh-run original seven-case qualifier over merged DEV-03 Shared/CP and pinned IAM sources. Named verifier readback, canonical CP provenance, real negatives, unexpired revocation/disable, provider deletion and final independent host teardown have closed per-case reporting. Actual current-run qualification and final engineering review/CI/merge remain pending; source tests do not establish PASS.",
+      "source_note": "Infrastructure #56 reviewed head a7867adf637ceeb4062d199617b2071807f13f6b produced all original seven INT-03C cases and 45 actual native assertions in run 40095164501, with verified provider and host teardown. Executed harness is 7a0b520f949a8d0a3e7364fe5cfb1dfae83e5335; original archive and all three per-run receipt/suite hashes were verified after download. Final Infrastructure mandatory legacy regression CI and merge remain pending. Provider/token lifetime and recoverable-publication review findings were fixed and rerun; 29 source/failure tests pass. Shared/CP/IAM sources are immutable merged DEV-03 owner pins; later assessment-only Shared changes preserve runtime contracts. No provider, estate, full canonical L4/C4, NAB-03, legal or protected acceptance is inferred.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-08",
       "actual_completion_date": null,
       "mandatory_ci": "PENDING_THIS_PR",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "PASS",
         "canonical_scenarios": [
           "INT-03"
         ],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
+        "evidence_urls": [
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501/artifacts/12560518334"
+        ],
+        "cleanup": "COMPLETE",
         "cases": [
           {
             "case": "issuer-issuance-and-readback",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501/artifacts/12560518334"
+            ],
+            "reason": "OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN"
           },
           {
             "case": "current-cp-principal-and-link",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501/artifacts/12560518334"
+            ],
+            "reason": "OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN"
           },
           {
             "case": "wrong-audience-denial",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501/artifacts/12560518334"
+            ],
+            "reason": "OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN"
           },
           {
             "case": "wrong-tenant-denial",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501/artifacts/12560518334"
+            ],
+            "reason": "OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN"
           },
           {
             "case": "issuer-revocation-before-expiry",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501/artifacts/12560518334"
+            ],
+            "reason": "OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN"
           },
           {
             "case": "cp-principal-deactivation",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501/artifacts/12560518334"
+            ],
+            "reason": "OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN"
           },
           {
             "case": "complete-teardown",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40095164501/artifacts/12560518334"
+            ],
+            "reason": "OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN"
           }
         ]
       },
       "blockers": [
         {
-          "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "Infrastructure #56 final-head native seven-case observations, original artifact/hash verification, source review and mandatory CI/merge remain pending."
+          "kind": "NOT_REVIEWED",
+          "detail": "Final Infrastructure #56 mandatory regression CI and merge, followed by final Shared adoption review/CI, remain pending."
         }
       ],
-      "next_action": "Observe all original seven cases in one fresh isolated run, verify source/image/contract pins and retained original bytes, complete final-head CI/review and adopt only the evidenced scoped result.",
+      "next_action": "Complete final source CI/review/merge and adopt only scoped seven-case development evidence; DEV-05 fourteen-case CMS/estate qualification remains separate.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

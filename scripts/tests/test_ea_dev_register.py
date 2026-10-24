@@ -209,6 +209,53 @@ class RegisterTests(unittest.TestCase):
             results.append(receipt["lifecycle_passed"])
         self.assertEqual(sorted(results),[False,True])
 
+    def test_retained_dev04_original_cases_and_final_teardown(self):
+        folder = ROOT / "docs/architecture/evidence/dev04-2026-10-24"
+        path = folder / "dev04-int03c-suite.json"
+        raw = path.read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         json.loads(path.with_name("dev04-int03c-suite.sha256.json").read_text())["sha256"])
+        receipt = json.loads(raw)
+        self.assertEqual(receipt["source_pins"], {
+            "shared": "6ebd5fd258100fe437837869ab2a1248b2df3988",
+            "baobab-cp": "718caedca3b9203931b399464e21b0f64ffbe879",
+            "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae"})
+        self.assertIs(receipt["int03c_qualified"], True)
+        self.assertIs(receipt["lifecycle_passed"], True)
+        self.assertIs(receipt["teardown_verified"], True)
+        for key in ("nab03_qualified", "protected_acceptance", "production_authorized"):
+            self.assertIs(receipt[key], False)
+        report = receipt["int03c"]
+        self.assertEqual(report["run_id"], receipt["run_id"])
+        self.assertEqual(set(report["cases"]), module.IDENTITY_CASES)
+        self.assertIs(report["canonical_provider_qualified"], False)
+        for case in report["cases"].values():
+            self.assertEqual(case["result"], "PASS")
+            self.assertEqual(case["reason"], "OBSERVED")
+            self.assertTrue(case["assertions"])
+            self.assertTrue(all(value is True for value in case["assertions"].values()))
+        self.assertEqual(set(report["cases"]["complete-teardown"]["assertions"]), {
+            "both_issuer_clients_absent", "issuance_after_delete_denied", "original_tokens_inactive",
+            "native_human_identities_absent", "cp_principal_terminal", "accepting_runtime_absent",
+            "owned_resources_absent", "private_state_absent"})
+        self.assertEqual(receipt["contract_hashes"], {
+            "development/v1/enterprise-profiles.schema.json": "24592792f3fb95f825e5397b5ae56fa9b3a63818569a30d8f6c0738484c31a24",
+            "development/v1/examples/nabhold-group.json": "764c6c6d4977f988841b03153ce0ddddd0b9c8895555df6677798739a07fbbc3",
+            "identity/v1/workload-registry.yaml": "1ad1a8a0d5136950c95f32a5e264e6bab22546645ed07c7765a2925f37ae9e4f"})
+        self.assertEqual(set(receipt["native_config_hashes"]), {
+            "hydra.yml", "kratos/kratos.yml", "kratos/identity.schema.json", "introspection.htpasswd"})
+        qualified = []
+        for original in folder.glob("dev01-*/completed/receipt.json"):
+            data = json.loads(original.read_text())
+            self.assertEqual(hashlib.sha256(original.read_bytes()).hexdigest(),
+                             json.loads(original.with_name("receipt.sha256.json").read_text())["sha256"])
+            self.assertEqual(data["harness_sha"], receipt["harness_sha"])
+            self.assertIs(data["teardown_verified"], True)
+            qualified.append(data["int03c_qualified"])
+            if data["int03c_qualified"]:
+                self.assertEqual(original.read_bytes(), raw)
+        self.assertEqual(sorted(qualified), [False, False, True])
+
     def test_legitimate_date_refresh_keeps_a_valid_register(self):
         refreshed = copy.deepcopy(self.data)
         refreshed["observed_on"] = "2027-01-02"

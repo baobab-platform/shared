@@ -7,7 +7,7 @@ run under ADR-SHARED-043. One operator may drive distinct synthetic Principals;
 independent people and protected-environment custody remain separate.
 
 The maintained implementation and operational reference is Infrastructure's
-[`development/INT03C.md`](https://github.com/baobab-platform/infrastructure/blob/feat/dev-04-qualification/tests/platform-integration/development/INT03C.md)
+[`development/INT03C.md`](https://github.com/baobab-platform/infrastructure/blob/a7867adf637ceeb4062d199617b2071807f13f6b/tests/platform-integration/development/INT03C.md)
 with engineering in [Infrastructure #56](https://github.com/baobab-platform/infrastructure/pull/56).
 It documents exact commands, assertion meanings, verifier permission boundaries,
 FAIL/BLOCKED semantics, artifact adoption, rollback and cleanup recovery. Use its
@@ -23,8 +23,10 @@ reviewed immutable source once merged; the register records actual observations.
 | cp-principal-deactivation | Digest-bound maker/checker mutation, same-Principal/wrong-digest denial, terminal CP readback, same-token CP 403 while unexpired and issuer-active |
 | complete-teardown | Native proof client and human deletion/readback, issuance denial and token inactivity, terminal CP state; independent host accepting-runtime/resource inventory and private-state removal |
 
-Qualification remains pending until original current-run receipts are downloaded
-and hash-verified and all final source/CI checks pass. Closed per-case reports
+The final native run observed all seven original cases and 45 assertions,
+with provider and host teardown verified. Original archive and receipt bytes
+were downloaded and hash-verified; see the [evidence record](evidence/dev04-2026-10-24/README.md).
+Engineering merge and final adoption remain gated by final-head CI/review. Closed per-case reports
 must retain failed and unexecuted outcomes; missing evidence is not success.
 Only host teardown may complete the last case. Dependency source pins, actual
 executed harness, runtime image IDs/digests, lock/config/Shared contract hashes
@@ -36,3 +38,10 @@ protected readiness, external legal sources, staging or production. Provider
 support stays PARTIAL. The private fixture hook normalizes identity only;
 canonical Principal, link, context and grants remain CP authority. The exact
 seven-case acceptance does not automatically close these broader findings.
+
+Audit corrections before acceptance: bind lifespan to provider GET and actual
+issued JWT timestamps; retain a durable sanitized pending receipt before
+private-state removal, then independently recheck absence and atomically
+publish. Focused tests inject candidate-write, final-write and rename failures
+and recover without the former state or Docker resources. The native run is
+separate from these source regressions.
