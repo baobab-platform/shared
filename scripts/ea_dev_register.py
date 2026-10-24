@@ -185,11 +185,19 @@ def validate(data: dict, root: Path = ROOT) -> None:
                     "seven INT-03C and fourteen NAB-03 obligations cannot change")
         if (runtime["status"] == "PASS" or package["progress"] == "REAL_COMPONENT_SYNTHETIC_DATA"
                 or package["evidence_class"] == "REAL_COMPONENT_SYNTHETIC_DATA"):
-            require(runtime["status"] == "PASS" and runtime["evidence_urls"] and names
-                    and all(c["result"] == "PASS" for c in runtime["cases"])
-                    and runtime["cleanup"] == "COMPLETE"
-                    and package["evidence_class"] == "REAL_COMPONENT_SYNTHETIC_DATA"
-                    and package["environment"] == "ISOLATED_DEVELOPMENT", "runtime PASS lacks proof/cleanup")
+            # Evidence provenance is independent of package acceptance: real
+            # component observations can coexist with explicit unmet canonical
+            # prerequisites. Mixed BLOCKED never becomes a completed gate.
+            common = (runtime["evidence_urls"] and names and runtime["cleanup"] == "COMPLETE"
+                      and package["evidence_class"] == "REAL_COMPONENT_SYNTHETIC_DATA"
+                      and package["environment"] == "ISOLATED_DEVELOPMENT")
+            complete = runtime["status"] == "PASS" and all(c["result"] == "PASS" for c in runtime["cases"])
+            partial = (runtime["status"] == "BLOCKED" and package["blockers"]
+                       and any(c["result"] == "PASS" for c in runtime["cases"])
+                       and any(c["result"] == "BLOCKED" for c in runtime["cases"])
+                       and all(c["result"] in {"PASS", "BLOCKED"} for c in runtime["cases"])
+                       and package["actual_completion_date"] is None)
+            require(common and (complete or partial), "runtime PASS lacks proof/cleanup or explicit partial evidence")
         if package["actual_completion_date"] is not None:
             require(package["source_baselines"] and package["mandatory_ci"] == "SUCCESS"
                     and package["progress"] not in {"NOT_ASSESSED", "NOT_STARTED", "SOURCE_IN_PROGRESS"}

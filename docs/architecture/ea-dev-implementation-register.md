@@ -4,7 +4,7 @@ Generated from [the JSON register](ea-dev-implementation-register.json); edit JS
 
 **Observed:** 2026-10-24. **Register validation:** SOURCE reporting only. Runtime evidence is scoped to the linked package receipts. **Protected staging, external certification and production:** not accepted.
 
-Selected CP/IAM/Infrastructure source/CI and scoped DEV-01/02/03/04 original receipts; native DEV-04 original seven cases, 45 assertions and teardown were observed and hash-verified against reviewed merged engineering sources. Other owners remain independently assessed; no complete canonical L4/C4, NAB-03, provider, estate, legal or protected acceptance is inferred.
+Selected merged CP/IAM/Infrastructure sources and actual DEV-01..05 receipts. DEV-05 native component results are 12 PASS/2 canonical-provider BLOCKED with verified hashes/teardown; they do not qualify NAB-03. DEV-06 candidate source/runtime progress is separately reported; no canonical provider, legal, protected or production acceptance is inferred.
 
 Observations become STALE after 7 days; compare the observation date with today. CI validates structure and does not refresh evidence.
 
@@ -17,8 +17,8 @@ Observations become STALE after 7 days; compare the observation date with today.
 | **DEV-02** — Accurate CP Organisation/tenant/mandate fixtures | CP / Shared | DEV-00, DEV-01 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | DEV-03: qualify actual signed issuer -> canonical CP Principal/context/current grant, wrong-audience/tenant and revocation/deactivation denials through this reusable lifecycle. |
 | **DEV-03** — Real issuer and CP authority chain | IAM / CP / Infrastructure | DEV-01, DEV-02 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | DEV-04: qualify the original seven INT-03C cases with independent readback, failure recovery and private exact receipts; preserve provider/estate and protected acceptance boundaries. |
 | **DEV-04** — Seven-case INT-03C qualification | Infrastructure / IAM / CP | DEV-03 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | DEV-05: qualify the original fourteen NAB-03 cases over actual IAM/CP/BFF/CMS services; preserve provider, legal and protected acceptance boundaries. |
-| **DEV-05** — Nabhold IAM/CP/BFF/CMS vertical | Nabhold / CMS / IAM / CP / Infrastructure | DEV-03, DEV-04 | SOURCE_IN_PROGRESS / IMPLEMENTED_PENDING_REVIEW | 2026-10-24 | PENDING_THIS_PR / NOT_OBSERVED | Run the actual native vertical, retain per-case PASS/FAIL/BLOCKED with verified teardown, finish owner review/CI, and implement the remaining canonical provider admission through owning interfaces before accepting DEV-05. |
-| **DEV-06** — External client without estate | Infrastructure / CP / IAM / selected provider | DEV-03 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
+| **DEV-05** — Nabhold IAM/CP/BFF/CMS vertical | Nabhold / CMS / IAM / CP / Infrastructure | DEV-03, DEV-04 | REAL_COMPONENT_SYNTHETIC_DATA / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | SUCCESS / BLOCKED | Complete actual CMS provider support and normal CP eligibility/binding/grant qualification, then rerun the unchanged original fourteen-case NAB-03 inventory. |
+| **DEV-06** — External client without estate | Infrastructure / CP / IAM / selected provider | DEV-03 | SOURCE_IN_PROGRESS / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | PENDING_THIS_PR / NOT_OBSERVED | Finish current owner/native runtime CI, retain hashed receipts and teardown; separately implement independent canonical subscription/grant/binding provenance and a current entitled resource-server invocation. |
 | **DEV-07** — ZuriBeans B2B capability slice | ZuriBeans / Trade / ERP / Trade Docs / Regulations | DEV-03 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
 | **DEV-08** — Thamani B2B logistics capability slice | Thamani / TMS / Trade Docs / Regulations / Infrastructure | DEV-03 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
 | **DEV-09** — ERP, finance and Subscriptions references | ERP / Payments / Subscriptions / Finance / Infrastructure | DEV-02, DEV-03 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
@@ -44,6 +44,7 @@ Observations become STALE after 7 days; compare the observation date with today.
 | dev03-cp | [718caedca3b9203931b399464e21b0f64ffbe879](https://github.com/baobab-platform/baobab-cp/commit/718caedca3b9203931b399464e21b0f64ffbe879) ([PR #435](https://github.com/baobab-platform/baobab-cp/pull/435)) | `05964feeed9636a9210cc669395f3481ce841007` | Current issuer status enforcement after JWT verification, normalized authority scope binding, fail-closed outage handling. 24 successful owner checks; 6 applicable skips. Native joined proof is separate.; [run 1](https://github.com/baobab-platform/baobab-cp/actions/runs/40074374606), [run 2](https://github.com/baobab-platform/baobab-cp/actions/runs/40074374077), [run 3](https://github.com/baobab-platform/baobab-cp/actions/runs/40074373729), [run 4](https://github.com/baobab-platform/baobab-cp/actions/runs/40074373705), [run 5](https://github.com/baobab-platform/baobab-cp/actions/runs/40074373658), [run 6](https://github.com/baobab-platform/baobab-cp/actions/runs/40074370154) |
 | dev03-infrastructure | [ed2fd8ddb6e98edc29820b3e79165b234695876f](https://github.com/baobab-platform/infrastructure/commit/ed2fd8ddb6e98edc29820b3e79165b234695876f) ([PR #55](https://github.com/baobab-platform/infrastructure/pull/55)) | `49037c32206656aef4871c9f94e2a65934267f59` | Native Hydra/Kratos/current CP authority profile and sixteen-case proof, lifecycle recovery and verified teardown. 29 successful checks, 6 applicable skips. INT-02 targeted rerun passed after IMAGE_UNAVAILABLE; no MFA root-cause repair asserted.; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/40076614129), [run 2](https://github.com/baobab-platform/infrastructure/actions/runs/40076614681), [run 3](https://github.com/baobab-platform/infrastructure/actions/runs/40076614067), [run 4](https://github.com/baobab-platform/infrastructure/actions/runs/40076614049), [run 5](https://github.com/baobab-platform/infrastructure/actions/runs/40076614110), [run 6](https://github.com/baobab-platform/infrastructure/actions/runs/40076612873) |
 | dev04-infrastructure | [5d70e40da1c5b3f22b46fe5a1177f843b26ec411](https://github.com/baobab-platform/infrastructure/commit/5d70e40da1c5b3f22b46fe5a1177f843b26ec411) ([PR #56](https://github.com/baobab-platform/infrastructure/pull/56)) | `a7867adf637ceeb4062d199617b2071807f13f6b` | Original seven-case INT-03C native development qualifier; 45 real assertions, independent issuer/CP/provider/host readbacks and teardown, 29 source/failure regressions. 29 applicable CI checks successful, 6 applicable skips. Legacy INT-02 passed without rerun; historical MFA cause remains unestablished.; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/40095165274), [run 2](https://github.com/baobab-platform/infrastructure/actions/runs/40095164470), [run 3](https://github.com/baobab-platform/infrastructure/actions/runs/40095164458), [run 4](https://github.com/baobab-platform/infrastructure/actions/runs/40095164459), [run 5](https://github.com/baobab-platform/infrastructure/actions/runs/40095164501), [run 6](https://github.com/baobab-platform/infrastructure/actions/runs/40095161115) |
+| dev05-infrastructure | [ad3c501932db7b5e5cfb5a3a5bab0c47ada44318](https://github.com/baobab-platform/infrastructure/commit/ad3c501932db7b5e5cfb5a3a5bab0c47ada44318) ([PR #57](https://github.com/baobab-platform/infrastructure/pull/57)) | `8430ffc25868232359fd3b5379fb5d76c4bacc9a` | Native DEV-05 component observation: 12 PASS/2 canonical-provider BLOCKED; hash-verified receipts and teardown. Not NAB-03 or provider/protected qualification.; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/40115479241), [run 2](https://github.com/baobab-platform/infrastructure/actions/runs/40115479995), [run 3](https://github.com/baobab-platform/infrastructure/actions/runs/40115479219), [run 4](https://github.com/baobab-platform/infrastructure/actions/runs/40115479222), [run 5](https://github.com/baobab-platform/infrastructure/actions/runs/40115479232) |
 
 ## Case obligations requiring runtime evidence
 
@@ -107,17 +108,17 @@ Descriptive labels preserve the existing INT-03C obligations and NAB-03 subcases
 | DEV-04 | issuer-revocation-before-expiry | PASS | OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN |
 | DEV-04 | cp-principal-deactivation | PASS | OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN |
 | DEV-04 | complete-teardown | PASS | OBSERVED_ORIGINAL_INT03C_DEVELOPMENT_CASE_WITH_FINAL_TEARDOWN |
-| DEV-05 | published-home-nav-footer | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | wrong-audience-token | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | wrong-credential | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | disabled-caller | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | expired-caller-token | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | revoked-caller-token | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | missing-grant | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | wrong-owner-or-context | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | neighbour-tenant | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | draft-or-preview | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | withdrawn-content | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | dependency-outage-and-restoration | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | validator-negatives | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
-| DEV-05 | teardown | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
+| DEV-05 | dependency-outage-and-restoration | PASS | OBSERVED |
+| DEV-05 | disabled-caller | PASS | OBSERVED |
+| DEV-05 | draft-or-preview | PASS | OBSERVED |
+| DEV-05 | expired-caller-token | PASS | OBSERVED |
+| DEV-05 | missing-grant | BLOCKED | CANONICAL_CAPABILITY_NOT_RESOLVED |
+| DEV-05 | neighbour-tenant | PASS | OBSERVED |
+| DEV-05 | published-home-nav-footer | BLOCKED | PROVIDER_NOT_ELIGIBLE |
+| DEV-05 | revoked-caller-token | PASS | OBSERVED |
+| DEV-05 | teardown | PASS | OBSERVED |
+| DEV-05 | validator-negatives | PASS | OBSERVED |
+| DEV-05 | withdrawn-content | PASS | OBSERVED |
+| DEV-05 | wrong-audience-token | PASS | OBSERVED |
+| DEV-05 | wrong-credential | PASS | OBSERVED |
+| DEV-05 | wrong-owner-or-context | PASS | OBSERVED |
