@@ -724,18 +724,17 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "progress": "SOURCE_IN_PROGRESS",
+      "assessment": "IMPLEMENTED_PENDING_REVIEW",
       "source_baselines": [
-        "iam-native",
-        "cp-bootstrap",
-        "infra-49"
+        "dev03-cp",
+        "dev03-infrastructure"
       ],
-      "source_note": "Historical int03c-lock.json pins pre-ADR-043 Shared/CP; no current seven-case receipt was established by this scoped audit.",
+      "source_note": "Infrastructure #56 implements a separate fresh-run original seven-case qualifier over merged DEV-03 Shared/CP and pinned IAM sources. Named verifier readback, canonical CP provenance, real negatives, unexpired revocation/disable, provider deletion and final independent host teardown have closed per-case reporting. Actual current-run qualification and final engineering review/CI/merge remain pending; source tests do not establish PASS.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-08",
       "actual_completion_date": null,
-      "mandatory_ci": "BASELINE_ONLY",
+      "mandatory_ci": "PENDING_THIS_PR",
       "environment": "NO_RUNTIME_OBSERVED",
       "evidence_class": "SOURCE",
       "runtime": {
@@ -793,10 +792,10 @@
       "blockers": [
         {
           "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "Historical int03c-lock.json pins pre-ADR-043 Shared/CP; no current seven-case receipt was established by this scoped audit."
+          "detail": "Infrastructure #56 final-head native seven-case observations, original artifact/hash verification, source review and mandatory CI/merge remain pending."
         }
       ],
-      "next_action": "Execute and retain all seven real cases under fresh development source/image pins and complete teardown.",
+      "next_action": "Observe all original seven cases in one fresh isolated run, verify source/image/contract pins and retained original bytes, complete final-head CI/review and adopt only the evidenced scoped result.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
