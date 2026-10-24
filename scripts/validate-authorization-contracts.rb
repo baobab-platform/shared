@@ -371,6 +371,46 @@ development_expected = JSON.parse(<<~JSON)
   }
 }
 JSON
+# DEV-06 extends the closed development registry, never its production identities.
+development_expected.merge!(JSON.parse(<<~'JSON'))
+{
+  "baobab-dev-external-api": {
+    "repository": "baobab-platform/infrastructure",
+    "owner": "baobab-platform/infrastructure",
+    "runtime": "DEV-06 synthetic EXTERNAL_CLIENT API-only workload",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-pulse"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "intelligence:evidence:search"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/infrastructure",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-pulse-validator": {
+    "repository": "baobab-platform/baobab-pulse",
+    "owner": "baobab-platform/baobab-pulse",
+    "runtime": "DEV-06 independent disposable Pulse context validator",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane"
+    ],
+    "allowed_scopes": [
+      "context:validate"
+    ],
+    "validates_audiences": [
+      "baobab-pulse"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-pulse",
+    "status": "ACTIVE"
+  }
+}
+JSON
 development_expected.each do |name, expected|
   fail_contract("development identity #{name} exceeds its exact ADR-043 ceiling") unless workloads[name] == expected
 end
