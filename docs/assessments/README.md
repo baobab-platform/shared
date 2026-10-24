@@ -10,6 +10,7 @@ This directory contains **dated, evidence-linked technical, strategic, security,
 | --- | --- |
 | [EA v2.3 / EA-DEV assessment — 24 October 2026](architecture/2026-10-24-ea-v2.3-ea-dev-strategic-technical-assessment.md) | Evidence-based implementation drift, critical-path risk, strategic opportunities and engineering recommendations |
 | [IAM ADR-to-capability assessment — 24 October 2026](iam/2026-10-24-iam-adr-capabilities-implementation-assessment.md) | 15-operation inventory; MP0–MP20 implementation/acceptance assessment; Kratos/Hydra/Keycloak capability limitations; IAM-specific BA-AUD-015–028 findings and critical path |
+| [Control Plane ADR-to-capability assessment — 24 October 2026](cp/2026-10-24-cp-adr-capabilities-implementation-assessment.md) | Twenty-five CP authority/operation families; source versus qualification evidence; ADR precedence; BA-AUD-029–041 mapped into **existing EA-DEV** only |
 | [Findings and improvements register](findings-register.md) | Stable IDs, owner proposals, triage state, precise closure criteria and dated improvement log |
 | [Assessment template](templates/assessment-template.md) | Reusable structure for future architecture, security, UX, operations, provider or engineering reviews |
 
