@@ -3,7 +3,7 @@
 > **Organisation-wide shared workflows, pipelines, contracts, packages, automation, configuration, and engineering standards for the BAOBAB-PLATFORM GitHub ecosystem.**
 
 **Repository:** `baobab-platform/shared`
-**Visibility:** Private
+**Visibility:** Public (GitHub repository metadata; do not publish secrets or restricted evidence)
 **Scope:** BAOBAB-PLATFORM Organisation
 **Status:** Foundational / Internal Infrastructure
 
@@ -16,6 +16,8 @@
 **Active priority:** Connected INT-03 Nabhold ↔ IAM ↔ CP ↔ CMS real-component acceptance; native Trade/ERP/Payments and documentary legal-authority work in parallel; mandatory INT-07 unrelated API-only Tenant with **zero** DigitalEstate. New v2.3 workstreams incorporate [ADR-SHARED-040](docs/adr/ADR-SHARED-040%20%E2%80%94%20Baobab%20Experience%20System%2C%20Frontend%20Engineering%20and%20Geospatial%20Presentation.md) experience gates, [ADR-SHARED-041](docs/adr/ADR-SHARED-041%20%E2%80%94%20Baobab%20Platform%20Engineering%20Philosophy%20and%20African%20Enterprise%20Product%20Excellence.md) engineering excellence and conditional Baobab People/TMS/SCF product readiness. Thamani's Accepted business scope is **B2B integrated logistics** under ADR-THA-0018; its legacy B2C storefront does not establish a live logistics capability.
 
 **Evidence separation:** Accepted ADR ≠ merged source ≠ pinned synthetic integration ≠ protected staging ≠ external legal/provider certification ≠ signed production GO. No live customer, provider, bank mandate, cloud role or real organisational grant is implied by this plan.
+
+**Dated assessments and improvement tracking:** [Assessment catalogue](docs/assessments/README.md) includes the [24 October 2026 EA v2.3 / EA-DEV strategic and technical audit](docs/assessments/architecture/2026-10-24-ea-v2.3-ea-dev-strategic-technical-assessment.md) and its [findings register](docs/assessments/findings-register.md). Audit findings are advisory, do not supersede Accepted decisions, and cannot promote development CI to protected acceptance.
 
 ---
 
