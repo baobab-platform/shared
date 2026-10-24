@@ -225,7 +225,7 @@ def render(data: dict) -> str:
     """Deterministic view; never change observation dates during a CI check."""
     lines = ["# EA-DEV implementation register", "",
              "Generated from [the JSON register](ea-dev-implementation-register.json); edit JSON and run `python3 scripts/ea_dev_register.py --write-view`.", "",
-             f"**Observed:** {data['observed_on']}. **Evidence:** SOURCE reporting only. **Protected staging, external certification and production:** not accepted.", "",
+             f"**Observed:** {data['observed_on']}. **Register validation:** SOURCE reporting only. Runtime evidence is scoped to the linked package receipts. **Protected staging, external certification and production:** not accepted.", "",
              data["observation_scope"], "",
              f"Observations become STALE after {data['freshness_days']} days; compare the observation date with today. CI validates structure and does not refresh evidence.", "",
              "[Decision precedence, CI policy and closure rules](ea-dev-00-gate-reconciliation.md). NOT_ASSESSED means no new progress claim. Baseline CI does not qualify a current composed runtime.", "",
@@ -267,7 +267,7 @@ def main() -> int:
             VIEW.write_text(view, encoding="utf-8")
         else:
             require(VIEW.read_text(encoding="utf-8") == view, "generated view drift; run --write-view")
-        print(f"VALID_REGISTER_SOURCE_ONLY; observed={data['observed_on']}; {state}; runtime not qualified")
+        print(f"VALID_REGISTER_SOURCE_ONLY; observed={data['observed_on']}; {state}; validation grants no runtime qualification")
         return 0
     except (ValueError, TypeError, KeyError, OSError) as error:
         raise SystemExit(f"EA-DEV register invalid: {error}") from error
