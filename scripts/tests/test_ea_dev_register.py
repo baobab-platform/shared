@@ -1,6 +1,6 @@
 """DEV-00 reporting regressions; these tests never claim runtime acceptance."""
 import copy
-from datetime import date
+from datetime import date, timedelta
 import importlib.util
 import json
 from pathlib import Path
@@ -17,7 +17,21 @@ spec.loader.exec_module(module)
 
 class RegisterTests(unittest.TestCase):
     def setUp(self):
-        self.data = json.loads(module.REGISTER.read_text(encoding="utf-8"))
+        self.live = json.loads(module.REGISTER.read_text(encoding="utf-8"))
+        # Mutation tests use a stable source-only fixture, not today's progress
+        # or calendar state. Normal register maintenance must not break them.
+        self.data = copy.deepcopy(self.live)
+        self.data["observed_on"] = "2026-10-24"
+        for package in self.data["packages"]:
+            package.update(observed_on="2026-10-24", actual_completion_date=None,
+                           progress="SOURCE_IN_PROGRESS", assessment="IMPLEMENTED_PENDING_REVIEW",
+                           mandatory_ci="PENDING_THIS_PR", environment="NO_RUNTIME_OBSERVED",
+                           evidence_class="SOURCE", protected_staging_accepted=False,
+                           external_certification_accepted=False, production_accepted=False)
+            package["blockers"] = [{"kind": "IMPLEMENTED_NOT_TESTED", "detail": "Test fixture only"}]
+            package["runtime"].update(status="NOT_OBSERVED", evidence_urls=[], cleanup="NOT_OBSERVED")
+            for case in package["runtime"]["cases"]:
+                case.update(result="BLOCKED", evidence_urls=[], reason="TEST_FIXTURE_ONLY")
 
     def rejects(self, mutate):
         data = copy.deepcopy(self.data)
@@ -26,8 +40,8 @@ class RegisterTests(unittest.TestCase):
             module.validate(data)
 
     def test_inventory_and_generated_view_are_valid(self):
-        module.validate(self.data)
-        self.assertEqual(module.render(self.data), module.VIEW.read_text(encoding="utf-8"))
+        module.validate(self.live)
+        self.assertEqual(module.render(self.live), module.VIEW.read_text(encoding="utf-8"))
 
     def test_missing_and_duplicate_packages_are_rejected(self):
         self.rejects(lambda d: d["packages"].pop())
@@ -88,7 +102,8 @@ class RegisterTests(unittest.TestCase):
     def test_staleness_is_visible_without_fabricating_freshness_or_freezing_ci(self):
         self.assertEqual(module.freshness(self.data, date(2026, 10, 31)), "WITHIN_OBSERVATION_WINDOW")
         self.assertEqual(module.freshness(self.data, date(2026, 11, 1)), "STALE")
-        result = subprocess.run([sys.executable, str(SCRIPT), "--check", "--as-of", "2026-11-01"],
+        stale_on = date.fromisoformat(self.live["observed_on"]) + timedelta(days=self.live["freshness_days"] + 1)
+        result = subprocess.run([sys.executable, str(SCRIPT), "--check", "--as-of", stale_on.isoformat()],
                                 capture_output=True, text=True, check=True)
         self.assertIn("STALE", result.stdout)
         self.assertIn("runtime not qualified", result.stdout)
@@ -99,11 +114,19 @@ class RegisterTests(unittest.TestCase):
     def test_register_does_not_require_an_optional_49_packet(self):
         # All required reporting inputs live in Shared. No packet, identities,
         # network, database or external service is an input to this CI check.
-        result = subprocess.run([sys.executable, str(SCRIPT), "--check", "--as-of", "2026-10-24"],
+        result = subprocess.run([sys.executable, str(SCRIPT), "--check", "--as-of", self.live["observed_on"]],
                                 capture_output=True, text=True, check=True)
         self.assertIn("VALID_REGISTER_SOURCE_ONLY", result.stdout)
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertNotIn("int03c_approval_packet", source)
+
+    def test_legitimate_date_refresh_keeps_a_valid_register(self):
+        refreshed = copy.deepcopy(self.data)
+        refreshed["observed_on"] = "2027-01-02"
+        for package in refreshed["packages"]:
+            package["observed_on"] = refreshed["observed_on"]
+        module.validate(refreshed)
+        self.assertEqual(module.freshness(refreshed, date(2027, 1, 2)), "WITHIN_OBSERVATION_WINDOW")
 
 
 if __name__ == "__main__":

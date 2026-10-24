@@ -270,7 +270,7 @@ def main() -> int:
         print(f"VALID_REGISTER_SOURCE_ONLY; observed={data['observed_on']}; {state}; runtime not qualified")
         return 0
     except (ValueError, TypeError, KeyError, OSError) as error:
-        parser.exit(1, f"EA-DEV register invalid: {error}\n")
+        raise SystemExit(f"EA-DEV register invalid: {error}") from error
 
 
 if __name__ == "__main__":
