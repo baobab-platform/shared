@@ -206,6 +206,76 @@
         "https://github.com/baobab-platform/infrastructure/actions/runs/40115479222",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40115479232"
       ]
+    },
+    {
+      "key": "dev06-shared",
+      "repo": "shared",
+      "sha": "935be8b6c3598743fb4f553b29f47998308ad5cc",
+      "pr": 389,
+      "reviewed_head_sha": "1f41939abdf26091509592469beb12661ae95f8b",
+      "scope": "Development-only external API caller and separate unassigned Pulse validator registry; exact ceiling regressions.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/shared/actions/runs/40118059230",
+        "https://github.com/baobab-platform/shared/actions/runs/40118059159",
+        "https://github.com/baobab-platform/shared/actions/runs/40118059200",
+        "https://github.com/baobab-platform/shared/actions/runs/40118056061"
+      ],
+      "ci_status": "SUCCESS"
+    },
+    {
+      "key": "dev06-cp",
+      "repo": "baobab-cp",
+      "sha": "50a130576f6b126066a56e97a09676b2015f1261",
+      "pr": 437,
+      "reviewed_head_sha": "0929e678833f686e833ec569385cf80466eb6f31",
+      "scope": "Opt-in leased API-only Principal; actual zero-estate and assignment readback; PostgreSQL owner integration evidence.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40119240689",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40119240269",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40119240171",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40119240148",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40119240173",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40119240111",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40119240109",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40119235470"
+      ],
+      "ci_status": "SUCCESS"
+    },
+    {
+      "key": "dev06-pulse",
+      "repo": "baobab-pulse",
+      "sha": "1ec50d9b1fefaae888b600e8836834cb777ecccb",
+      "pr": 56,
+      "reviewed_head_sha": "e8b41d4f5762bec8a19a40e3b1da4d6db2105208",
+      "scope": "Native validator explicit CP audience and case-insensitive OAuth Bearer; vulnerable dependency locks updated without scan suppression.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-pulse/actions/runs/40118681823",
+        "https://github.com/baobab-platform/baobab-pulse/actions/runs/40118681410",
+        "https://github.com/baobab-platform/baobab-pulse/actions/runs/40118681244",
+        "https://github.com/baobab-platform/baobab-pulse/actions/runs/40118681301",
+        "https://github.com/baobab-platform/baobab-pulse/actions/runs/40118680985",
+        "https://github.com/baobab-platform/baobab-pulse/actions/runs/40118681270",
+        "https://github.com/baobab-platform/baobab-pulse/actions/runs/40118677011"
+      ],
+      "ci_status": "SUCCESS"
+    },
+    {
+      "key": "dev06-infrastructure",
+      "repo": "infrastructure",
+      "sha": "eeea864f3764038223793fd5dc3ed88791751914",
+      "pr": 58,
+      "scope": "Native external API-only IAM/CP/Pulse/PG17/Qdrant component observation: 14 PASS, 4 canonical-entitlement/binding BLOCKED; 49 source/failure/custody tests. Verified source identity, receipt hashes, zero estates and complete owned teardown; no canonical INT-07/provider/protected qualification.",
+      "reviewed_head_sha": "a45e4792614407eb0fc1ef55b1dc9482f7a993e0",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40119778054",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40119777292",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40119777293",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40119777298",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40119777300",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40119771152"
+      ]
     }
   ],
   "packages": [
@@ -1016,38 +1086,184 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "SOURCE_IN_PROGRESS",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
       "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
       "source_baselines": [
-        "cp-bootstrap"
+        "dev06-shared",
+        "dev06-cp",
+        "dev06-pulse",
+        "dev06-infrastructure"
       ],
-      "source_note": "Shared #389 merged; CP #437, Pulse #56 and Infrastructure #58 implement explicit headless Principal/lease, current zero-estate readback and native OAuth/CP/Pulse component journey. Current candidate runtime and final owner CI remain pending; no canonical INT-07 acceptance.",
+      "source_note": "Shared #389, CP #437, Pulse #56 and Infrastructure #58 merged after final-head CI/review and implement the native API-only IAM/CP/Pulse development journey. Final receipt: 14 PASS, 4 canonical-entitlement/binding BLOCKED, no failures; zero estates, hash pairs, source identity and owned teardown independently verified. Canonical INT-07 remains unqualified.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-15",
       "actual_completion_date": null,
-      "mandatory_ci": "PENDING_THIS_PR",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "mandatory_ci": "SUCCESS",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "BLOCKED",
         "canonical_scenarios": [
           "INT-07"
         ],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "evidence_urls": [
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+        ],
+        "cleanup": "COMPLETE",
+        "cases": [
+          {
+            "case": "absent-subscription-denied",
+            "reason": "CANONICAL_ENTITLEMENT_NOT_ESTABLISHED",
+            "result": "BLOCKED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "bound-resource-and-audited-effect",
+            "reason": "CANONICAL_ENTITLEMENT_NOT_ESTABLISHED",
+            "result": "BLOCKED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "dependency-outage-and-recovery",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "expired-token-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "fake-estate-injection-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "forged-tenant-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "independent-registered-workload",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "nabhold-tenant-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "own-context",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "retired-binding-denied",
+            "reason": "CANONICAL_BINDING_NOT_ESTABLISHED",
+            "result": "BLOCKED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "revoked-token-replay-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "teardown",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "thamani-tenant-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "unentitled-resource-denied",
+            "reason": "CANONICAL_ENTITLEMENT_NOT_ESTABLISHED",
+            "result": "BLOCKED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "wrong-audience-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "wrong-owner-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "zero-estates",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          },
+          {
+            "case": "zuribeans-tenant-denied",
+            "reason": "OBSERVED",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40119777295"
+            ]
+          }
+        ]
       },
       "blockers": [
-        {
-          "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "Current paired candidate final CI/runtime and reviewer receipt verification remain pending."
-        },
         {
           "kind": "NOT_IMPLEMENTED",
           "detail": "Canonical bound resource/audited effect, controlled absent-subscription, unentitled-resource and retired-binding cases lack the independent entitlement/binding positive prerequisite. Direct Pulse component reads cannot qualify INT-07."
         }
       ],
-      "next_action": "Finish current owner/native runtime CI, retain hashed receipts and teardown; separately implement independent canonical subscription/grant/binding provenance and a current entitled resource-server invocation.",
+      "next_action": "Establish independent canonical subscription/grant/binding provenance, provider eligibility and an actual entitled resource invocation with audited effect; then rerun the unchanged INT-07 obligations including absent subscription, unentitled resource and retired binding.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
