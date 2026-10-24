@@ -20,6 +20,16 @@ report development PASS; missing cases remain BLOCKED. Protected staging and
 production retain independent approval and acceptance. Production identities
 remain unchanged. This amendment controls conflicting development gates below.
 
+## 24 October 2026 — DEV-00 reading guide
+
+Use the [single DEV-00 precedence table](ea-dev-00-gate-reconciliation.md) for
+ordinary synthetic development, optional #49 and protected-environment gates.
+The dated clauses below retain their historical scope; their old CMS hold and
+independently appointed-human prerequisites cannot veto ADR-SHARED-043 development.
+The [current scoped register](ea-dev-implementation-register.md) records source
+and CI observations separately from runtime proof. Named CMS development rows are
+ACTIVE in the observed Shared source; this fact is not NAB-03 qualification.
+
 ## Concrete blocker
 
 At Shared `ba5b4523ffc82cbf1b1d804b4d88ab69be04843a`, the canonical

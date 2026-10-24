@@ -159,6 +159,14 @@ Inputs: DEV-14 descriptor adoption and genuine IAM-issued workload/CP context. D
 
 DEV-00→01/02→03→04→05 is the initial connected Nabhold path. **DEV-14 composes reusable engine profiles once DEV-01/02/03 are available; DEV-15 (Pulse and Payments) proceeds in parallel with DEV-04/05 and does not wait for CMS.** DEV-06 can proceed once 03 exists. DEV-07/08/09 proceed in parallel as providers mature. DEV-10/11/12 are parallel enablers, not general freezes. Protected DEV-13 is a **later promotion gate**, never a gate on doing ordinary source development. Do not create one infrastructure stack per legal entity where secure pooled engine instances suffice.
 
+### DEV-00 publication and ongoing reporting
+
+The [DEV-00 reconciliation](ea-dev-00-gate-reconciliation.md) holds the single
+precedence table and source/CI policies. Maintain the [implementation register](ea-dev-implementation-register.md)
+through its checked JSON source; report exact source observations and unresolved
+owner adoption without substituting them for real component or protected proof.
+The register is a read model, not a new contract, permission or scenario authority.
+
 ## 5. Golden reference profiles and acceptance
 
 | Profile | Required reference behavior | Explicitly separate |

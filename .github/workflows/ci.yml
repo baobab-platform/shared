@@ -139,6 +139,7 @@ on:
       - "scripts/contract_lock.py"
       - "scripts/event_contexts.py"
       - ".baobab/contract-consumer-lock.schema.json"
+      - "scripts/ea_dev_register.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
@@ -186,6 +187,7 @@ on:
       - "scripts/contract_lock.py"
       - "scripts/event_contexts.py"
       - ".baobab/contract-consumer-lock.schema.json"
+      - "scripts/ea_dev_register.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
@@ -225,6 +227,10 @@ jobs:
         run: python scripts/tests/test_engineering_philosophy_governance.py
       - name: Validate Accepted EA v2.3 plan, 20-repo audit and historical precedence
         run: python scripts/tests/test_ea_v23_governance.py
+      - name: Validate EA-DEV register and decision reconciliation (DEV-00)
+        run: |
+          python scripts/ea_dev_register.py --check
+          python scripts/tests/test_ea_dev_register.py
       - name: Validate TradeDocument v2 contracts (ADR-SHARED-020 / RTD-04)
         run: python scripts/validate-trade-document-contracts.py
       - name: Validate cross-engine object references (ADR-SHARED-021 / RTD-05)
@@ -343,5 +349,3 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/enforce-dependabot-config.yml
-
-

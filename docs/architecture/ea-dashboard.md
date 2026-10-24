@@ -12,6 +12,23 @@ This header and the current v2.3 sections **supersede older 'current' claims in 
 
 **23 October 2026 — EA-REL active release-delivery companion (NOT a protected go-live approval):** [EA-REL progressive production-release programme](ea-v2.3-progressive-production-release-programme-2026-10-23.md) defines **CP/IAM as the first candidate production foundation** with infrastructure/ops and separately witnessed staging and production evidence; other CMS/estate and headless engines may be added independently only with their exact tested provider/contract and tenant-market operation eligibility. All protected environment, statutory, provider, independent approver and live operations gates remain **NOT ACCEPTED** until actual evidence is recorded. The current dated gate table below is not silently overwritten by this planning note.
 
+## 24 October 2026 — DEV-00 decision and gate reconciliation
+
+[DEV-00 precedence and CI policy](ea-dev-00-gate-reconciliation.md) is the single
+reconciliation of isolated development, optional Infrastructure #49 and protected
+staging/production gates. [The EA-DEV register](ea-dev-implementation-register.md)
+tracks DEV-00..DEV-15 from a validated [JSON read model](ea-dev-implementation-register.json),
+including owners, dependencies, exact inspected source/CI, observation dates,
+blockers and next actions. The candidate DEV-00 row remains SOURCE_IN_PROGRESS
+until this change is reviewed/merged; it does not assert its own merge SHA.
+
+Shared's named CMS development rows are ACTIVE; CP #433 is merged. Infrastructure
+still has historical locks and a CMS gate that fails when OPEN. That is actionable
+DEV-01/05 adapter adoption, not an independent-human development hold. No current
+seven-case INT-03C or fourteen-case NAB-03 qualification was established by this
+scoped source review. Other owners are explicitly NOT_ASSESSED where not checked.
+Protected acceptance remains separate; earlier dated snapshots below are retained.
+
 ## v2.3 current gate decisions (20 October 2026)
 
 | Item | Current verified assessment | Next exit and authority |

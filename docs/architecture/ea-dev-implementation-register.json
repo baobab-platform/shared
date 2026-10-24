@@ -1,0 +1,874 @@
+{
+  "schema": "ea-dev-implementation-register.v1",
+  "observed_on": "2026-10-24",
+  "purpose": "READ_MODEL_NOT_AUTHORITY",
+  "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
+  "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
+  "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
+  "observation_scope": "Shared plus selected CP/IAM/Infrastructure source and final-head CI. Other owner packages are NOT_ASSESSED, never assumed NOT_STARTED or passed.",
+  "freshness_days": 7,
+  "baselines": [
+    {
+      "key": "shared",
+      "repo": "shared",
+      "sha": "e1c0f4535e143a584dc8e03377129977d440a0cf",
+      "pr": 375,
+      "scope": "Offline BFG-SED source and accepted programme; no composed runtime",
+      "reviewed_head_sha": "3e0683bedb69ee2f0813a8eadaf16bda2ae4af17",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/shared/actions/runs/40017765873",
+        "https://github.com/baobab-platform/shared/actions/runs/40017765971",
+        "https://github.com/baobab-platform/shared/actions/runs/40017766169",
+        "https://github.com/baobab-platform/shared/actions/runs/40017765874"
+      ]
+    },
+    {
+      "key": "cp-bootstrap",
+      "repo": "baobab-cp",
+      "sha": "3b1ca63f85dd18d9d82c162c2777ab3313091328",
+      "pr": 433,
+      "scope": "Guarded CP bootstrap source and owner PostgreSQL CI; not composed L4",
+      "reviewed_head_sha": "2863e9a145aabf386454bc99c936e41acb469b75",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/39982169937",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/39982167869",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/39982168024",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/39982168537",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/39982167837",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/39982167914",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/39982167859"
+      ]
+    },
+    {
+      "key": "iam-native",
+      "repo": "baobab-iam",
+      "sha": "ca5eb723c7845ed9a60e19fd0ef1a1e900d7b97a",
+      "pr": 137,
+      "scope": "Native issuer/deadline source; not seven-case qualification",
+      "reviewed_head_sha": "d107e5b21e8c9cb21d8e98440ccd8644a0d30e28",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-iam/actions/runs/39819133492",
+        "https://github.com/baobab-platform/baobab-iam/actions/runs/39819132648",
+        "https://github.com/baobab-platform/baobab-iam/actions/runs/39819132578",
+        "https://github.com/baobab-platform/baobab-iam/actions/runs/39819131953"
+      ]
+    },
+    {
+      "key": "infra-49",
+      "repo": "infrastructure",
+      "sha": "d573582e6302da40a68215746371980e096a8b3c",
+      "pr": 52,
+      "scope": "Optional #49 private packet source; older integration locks remain",
+      "reviewed_head_sha": "0de8be75fadb808f1a12469185a85b61fc1bc2b6",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/39986035880",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/39986036568",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/39986034668",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/39986034505",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/39986034955"
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "id": "DEV-00",
+      "title": "Decision/gate reconciliation",
+      "owner": "Shared Platform Architecture",
+      "dependencies": [],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "SOURCE_IN_PROGRESS",
+      "assessment": "IMPLEMENTED_PENDING_REVIEW",
+      "source_baselines": [
+        "shared"
+      ],
+      "source_note": "Candidate DEV-00 source, tests and documentation in this change; reconcile its merge at next observation.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-01",
+      "actual_completion_date": null,
+      "mandatory_ci": "PENDING_THIS_PR",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_REVIEWED",
+          "detail": "Candidate DEV-00 source, tests and documentation in this change; reconcile its merge at next observation."
+        }
+      ],
+      "next_action": "Review this change and merge only after final-head mandatory CI; refresh this candidate snapshot from the merge at the next gate.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-01",
+      "title": "One paved-road integration command",
+      "owner": "Infrastructure / baobab-dev",
+      "dependencies": [
+        "DEV-00"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "infra-49"
+      ],
+      "source_note": "Existing L4 harness and optional #49 track are source-merged. Current ordinary-development composition and recovery are not qualified; cms_gate.py expects the historical registry hold and exits nonzero on OPEN.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-01",
+      "actual_completion_date": null,
+      "mandatory_ci": "BASELINE_ONLY",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "INT-01"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "Existing L4 harness and optional #49 track are source-merged. Current ordinary-development composition and recovery are not qualified; cms_gate.py expects the historical registry hold and exits nonzero on OPEN."
+        }
+      ],
+      "next_action": "Implement ADR-043 ordinary-development composition with current source locks, actual IAM subjects, guarded CP bootstrap and recovery; preserve optional #49 track.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-02",
+      "title": "Accurate CP Organisation/tenant/mandate fixtures",
+      "owner": "CP / Shared",
+      "dependencies": [
+        "DEV-00",
+        "DEV-01"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "cp-bootstrap",
+        "shared"
+      ],
+      "source_note": "CP #433 guarded bootstrap is merged. Additional mandate variants and composed owner API proof need qualification.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-01",
+      "actual_completion_date": null,
+      "mandatory_ci": "BASELINE_ONLY",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "L4-CP-03",
+          "L4-CP-04"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "CP #433 guarded bootstrap is merged. Additional mandate variants and composed owner API proof need qualification."
+        }
+      ],
+      "next_action": "Qualify mandate variants through CP-owned APIs and PostgreSQL tests using the closed contract.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-03",
+      "title": "Real issuer and CP authority chain",
+      "owner": "IAM / CP / Infrastructure",
+      "dependencies": [
+        "DEV-01",
+        "DEV-02"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "iam-native",
+        "cp-bootstrap"
+      ],
+      "source_note": "IAM #137 native issuer bridge is merged. Current-main IAM is 0ad103606b9705fcb33c468ea01b54d8ce76f9ae; no qualification is inferred for that later revision.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-08",
+      "actual_completion_date": null,
+      "mandatory_ci": "BASELINE_ONLY",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "L4-IAM-01",
+          "L4-IAM-02",
+          "L4-CP-01"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "IAM #137 native issuer bridge is merged. Current-main IAM is 0ad103606b9705fcb33c468ea01b54d8ce76f9ae; no qualification is inferred for that later revision."
+        }
+      ],
+      "next_action": "Compose actual IAM-issued identities and CP mappings; prove audience, revocation and distinct-Principal workflow denials.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-04",
+      "title": "Seven-case INT-03C qualification",
+      "owner": "Infrastructure / IAM / CP",
+      "dependencies": [
+        "DEV-03"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "iam-native",
+        "cp-bootstrap",
+        "infra-49"
+      ],
+      "source_note": "Historical int03c-lock.json pins pre-ADR-043 Shared/CP; no current seven-case receipt was established by this scoped audit.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-08",
+      "actual_completion_date": null,
+      "mandatory_ci": "BASELINE_ONLY",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "INT-03"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": [
+          {
+            "case": "issuer-issuance-and-readback",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "current-cp-principal-and-link",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "wrong-audience-denial",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "wrong-tenant-denial",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "issuer-revocation-before-expiry",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "cp-principal-deactivation",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "complete-teardown",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          }
+        ]
+      },
+      "blockers": [
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "Historical int03c-lock.json pins pre-ADR-043 Shared/CP; no current seven-case receipt was established by this scoped audit."
+        }
+      ],
+      "next_action": "Execute and retain all seven real cases under fresh development source/image pins and complete teardown.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-05",
+      "title": "Nabhold IAM/CP/BFF/CMS vertical",
+      "owner": "Nabhold / CMS / IAM / CP / Infrastructure",
+      "dependencies": [
+        "DEV-03",
+        "DEV-04"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "shared",
+        "infra-49"
+      ],
+      "source_note": "Shared named CMS development rows are ACTIVE with unchanged ceilings; historical cms-lock.json and gate need DEV-01/05 adoption. Fourteen-case runtime not observed.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-15",
+      "actual_completion_date": null,
+      "mandatory_ci": "BASELINE_ONLY",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "INT-03",
+          "NAB-01",
+          "NAB-02",
+          "NAB-03",
+          "NAB-04"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": [
+          {
+            "case": "published-home-nav-footer",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "wrong-audience-token",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "wrong-credential",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "disabled-caller",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "expired-caller-token",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "revoked-caller-token",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "missing-grant",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "wrong-owner-or-context",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "neighbour-tenant",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "draft-or-preview",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "withdrawn-content",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "dependency-outage-and-restoration",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "validator-negatives",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          },
+          {
+            "case": "teardown",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_PROFILE_RUNTIME_NOT_OBSERVED"
+          }
+        ]
+      },
+      "blockers": [
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "Shared named CMS development rows are ACTIVE with unchanged ceilings; historical cms-lock.json and gate need DEV-01/05 adoption. Fourteen-case runtime not observed."
+        }
+      ],
+      "next_action": "Repin and adopt current CMS rows, then run all fourteen NAB-03 subcases without broadening caller ceilings.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-06",
+      "title": "External client without estate",
+      "owner": "Infrastructure / CP / IAM / selected provider",
+      "dependencies": [
+        "DEV-03"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "cp-bootstrap"
+      ],
+      "source_note": "CP external-client fixture has zero estates by design; actual INT-07 resource-server journey not observed.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-15",
+      "actual_completion_date": null,
+      "mandatory_ci": "BASELINE_ONLY",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "INT-07"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "CP external-client fixture has zero estates by design; actual INT-07 resource-server journey not observed."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-07",
+      "title": "ZuriBeans B2B capability slice",
+      "owner": "ZuriBeans / Trade / ERP / Trade Docs / Regulations",
+      "dependencies": [
+        "DEV-03"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "NOT_AUDITED",
+      "source_baselines": [],
+      "source_note": "Not audited for this DEV-00 source review; owner must reconcile existing code and receipts before assigning a progress milestone.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-29",
+      "actual_completion_date": null,
+      "mandatory_ci": "NOT_ASSESSED",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "INT-05"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_ASSESSED",
+          "detail": "Not audited for this DEV-00 source review; owner must reconcile existing code and receipts before assigning a progress milestone."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-08",
+      "title": "Thamani B2B logistics capability slice",
+      "owner": "Thamani / TMS / Trade Docs / Regulations / Infrastructure",
+      "dependencies": [
+        "DEV-03"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "NOT_AUDITED",
+      "source_baselines": [],
+      "source_note": "Not audited for this DEV-00 source review; prototype and actual transport qualification remain distinct.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-29",
+      "actual_completion_date": null,
+      "mandatory_ci": "NOT_ASSESSED",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "INT-04"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_ASSESSED",
+          "detail": "Not audited for this DEV-00 source review; prototype and actual transport qualification remain distinct."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-09",
+      "title": "ERP, finance and Subscriptions references",
+      "owner": "ERP / Payments / Subscriptions / Finance / Infrastructure",
+      "dependencies": [
+        "DEV-02",
+        "DEV-03"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "NOT_AUDITED",
+      "source_baselines": [],
+      "source_note": "Not audited for this DEV-00 source review; no native JVM/DB or financial acceptance inferred.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-11-29",
+      "actual_completion_date": null,
+      "mandatory_ci": "NOT_ASSESSED",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "INT-08",
+          "FIN-01",
+          "FIN-02",
+          "FIN-03",
+          "FIN-04",
+          "FIN-05"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_ASSESSED",
+          "detail": "Not audited for this DEV-00 source review; no native JVM/DB or financial acceptance inferred."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-10",
+      "title": "Developer tooling and contracts",
+      "owner": "baobab-dev / Shared Foundation / consumers",
+      "dependencies": [
+        "DEV-01"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "NOT_AUDITED",
+      "source_baselines": [],
+      "source_note": "Not audited for this DEV-00 source review; toolchain changes require their own compatibility evidence.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-12-13",
+      "actual_completion_date": null,
+      "mandatory_ci": "NOT_ASSESSED",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_ASSESSED",
+          "detail": "Not audited for this DEV-00 source review; toolchain changes require their own compatibility evidence."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-11",
+      "title": "Observability, browser experience and CI test routing",
+      "owner": "Infrastructure / Shared / estates",
+      "dependencies": [
+        "DEV-01"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "NOT_AUDITED",
+      "source_baselines": [],
+      "source_note": "Not audited for this DEV-00 source review; actual trace/browser evidence required.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-12-13",
+      "actual_completion_date": null,
+      "mandatory_ci": "NOT_ASSESSED",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "L4-OPS-01"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_ASSESSED",
+          "detail": "Not audited for this DEV-00 source review; actual trace/browser evidence required."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-12",
+      "title": "Database, migration and resilience drills",
+      "owner": "Persistent-engine owners / Infrastructure",
+      "dependencies": [
+        "DEV-01",
+        "DEV-02"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "NOT_AUDITED",
+      "source_baselines": [],
+      "source_note": "Not audited for this DEV-00 source review; migration and crash-recovery receipts required.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-12-13",
+      "actual_completion_date": null,
+      "mandatory_ci": "NOT_ASSESSED",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "EVT-01",
+          "REC-01"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_ASSESSED",
+          "detail": "Not audited for this DEV-00 source review; migration and crash-recovery receipts required."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-13",
+      "title": "Independent staging/production entry",
+      "owner": "Infrastructure / Security and Operations / legal and domain owners",
+      "dependencies": [
+        "DEV-04",
+        "DEV-05",
+        "DEV-06",
+        "DEV-07",
+        "DEV-08",
+        "DEV-09",
+        "DEV-10",
+        "DEV-11",
+        "DEV-12"
+      ],
+      "dependency_scope": "Applicable protected release scope only; not a global conjunction or development hold.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "NOT_AUDITED",
+      "source_baselines": [],
+      "source_note": "No independently accepted protected receipt was established by this development-only review.",
+      "observed_on": "2026-10-24",
+      "target_date": "2026-12-31",
+      "actual_completion_date": null,
+      "mandatory_ci": "NOT_ASSESSED",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_APPROVED",
+          "detail": "No independently accepted protected receipt was established by this development-only review."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-14",
+      "title": "Reusable engine onboarding framework",
+      "owner": "Shared / Infrastructure / baobab-dev / engine-template",
+      "dependencies": [
+        "DEV-01",
+        "DEV-02",
+        "DEV-03"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "shared"
+      ],
+      "source_note": "Accepted delivery specification exists; new descriptor and CLI adoption not established by this audit.",
+      "observed_on": "2026-10-24",
+      "target_date": null,
+      "actual_completion_date": null,
+      "mandatory_ci": "BASELINE_ONLY",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_ASSESSED",
+          "detail": "Accepted delivery specification exists; new descriptor and CLI adoption not established by this audit."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    },
+    {
+      "id": "DEV-15",
+      "title": "Pulse/Payments first-adopter runtime profiles",
+      "owner": "Infrastructure / Pulse / Payments / IAM / CP",
+      "dependencies": [
+        "DEV-14",
+        "DEV-03"
+      ],
+      "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
+      "progress": "NOT_ASSESSED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "shared"
+      ],
+      "source_note": "Accepted Pulse/Payments goals exist; no first-adopter current-profile runtime receipt established. CMS is not a prerequisite.",
+      "observed_on": "2026-10-24",
+      "target_date": null,
+      "actual_completion_date": null,
+      "mandatory_ci": "BASELINE_ONLY",
+      "environment": "NO_RUNTIME_OBSERVED",
+      "evidence_class": "SOURCE",
+      "runtime": {
+        "status": "NOT_OBSERVED",
+        "canonical_scenarios": [
+          "L4-ENG-01",
+          "L4-CP-02",
+          "L4-CP-03"
+        ],
+        "evidence_urls": [],
+        "cleanup": "NOT_OBSERVED",
+        "cases": []
+      },
+      "blockers": [
+        {
+          "kind": "NOT_ASSESSED",
+          "detail": "Accepted Pulse/Payments goals exist; no first-adopter current-profile runtime receipt established. CMS is not a prerequisite."
+        }
+      ],
+      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "protected_staging_accepted": false,
+      "external_certification_accepted": false,
+      "production_accepted": false,
+      "rollback": "Disable only the failing development profile, restore reviewed pins, revoke owned credentials and clean up owned disposable resources; retain prior receipts."
+    }
+  ]
+}
