@@ -1,6 +1,7 @@
 """DEV-00 reporting regressions; these tests never claim runtime acceptance."""
 import copy
 from datetime import date, timedelta
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -106,7 +107,7 @@ class RegisterTests(unittest.TestCase):
         result = subprocess.run([sys.executable, str(SCRIPT), "--check", "--as-of", stale_on.isoformat()],
                                 capture_output=True, text=True, check=True)
         self.assertIn("STALE", result.stdout)
-        self.assertIn("runtime not qualified", result.stdout)
+        self.assertIn("validation grants no runtime qualification", result.stdout)
         self.assertEqual(self.data["observed_on"], "2026-10-24")
         self.data["packages"][2]["observed_on"] = "2026-10-01"
         self.assertEqual(module.freshness(self.data, date(2026, 10, 24)), "STALE")
@@ -119,6 +120,30 @@ class RegisterTests(unittest.TestCase):
         self.assertIn("VALID_REGISTER_SOURCE_ONLY", result.stdout)
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertNotIn("int03c_approval_packet", source)
+
+    def test_retained_dev01_originals_preserve_hashes_and_scope(self):
+        # This dated historical receipt is intentionally immutable; it is not
+        # the mutable register clock used by the maintenance tests above.
+        folder = ROOT / "docs/architecture/evidence/dev01-2026-10-24"
+        suite = json.loads((folder / "dev01-lifecycle-suite.json").read_text())
+        self.assertEqual(len(suite["checks"]), 6)
+        self.assertTrue(all(value is True for value in suite["checks"].values()))
+        receipts = list(folder.glob("dev01-*/completed/receipt.json"))
+        self.assertEqual(len(receipts), 2)
+        passed = []
+        for path in receipts:
+            raw = path.read_bytes()
+            digest = json.loads(path.with_name("receipt.sha256.json").read_text())
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), digest["sha256"])
+            receipt = json.loads(raw)
+            self.assertEqual(receipt["harness_sha"], suite["harness_sha"])
+            self.assertIs(receipt["teardown_verified"], True)
+            self.assertIs(receipt["protected_acceptance"], False)
+            self.assertIs(receipt["production_authorized"], False)
+            self.assertIs(receipt["int03c_qualified"], False)
+            self.assertIs(receipt["nab03_qualified"], False)
+            passed.append(receipt["lifecycle_passed"])
+        self.assertEqual(sorted(passed), [False, True])
 
     def test_legitimate_date_refresh_keeps_a_valid_register(self):
         refreshed = copy.deepcopy(self.data)

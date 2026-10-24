@@ -19,8 +19,10 @@ reconciliation of isolated development, optional Infrastructure #49 and protecte
 staging/production gates. [The EA-DEV register](ea-dev-implementation-register.md)
 tracks DEV-00..DEV-15 from a validated [JSON read model](ea-dev-implementation-register.json),
 including owners, dependencies, exact inspected source/CI, observation dates,
-blockers and next actions. The candidate DEV-00 row remains SOURCE_IN_PROGRESS
-until this change is reviewed/merged; it does not assert its own merge SHA.
+blockers and next actions. DEV-00 source was subsequently merged through
+[Shared #376](https://github.com/baobab-platform/shared/pull/376) at `e2acbed1` after
+final-head CI and review. The current register now records that actual merge;
+it does not promote runtime or protected acceptance.
 
 Shared's named CMS development rows are ACTIVE; CP #433 is merged. Infrastructure
 still has historical locks and a CMS gate that fails when OPEN. That is actionable
@@ -28,6 +30,24 @@ DEV-01/05 adapter adoption, not an independent-human development hold. No curren
 seven-case INT-03C or fourteen-case NAB-03 qualification was established by this
 scoped source review. Other owners are explicitly NOT_ASSESSED where not checked.
 Protected acceptance remains separate; earlier dated snapshots below are retained.
+
+## 24 October 2026 — DEV-01 lifecycle accepted for its scoped Actions profile
+
+[Infrastructure #53](https://github.com/baobab-platform/infrastructure/pull/53)
+merged at `1445195e5304accaf38b29617dc223d12680cd03` after 33 successful checks
+and 6 applicable skips. The final-head [actual lifecycle run](https://github.com/baobab-platform/infrastructure/actions/runs/40052631759)
+proved native IAM setup, CP-owned five-profile bootstrap and replay, interrupted
+start recovery, failed health/restoration, missing Compose state and expired
+orphan cleanup. [Verified retained originals](evidence/dev01-2026-10-24/README.md)
+keep the interrupted run incomplete and retain both verified teardown receipts.
+The [EA-DEV register](ea-dev-implementation-register.md) now closes DEV-00 source
+and DEV-01 lifecycle independently, with exact source/CI and bounded evidence.
+
+This is an ordinary-development lifecycle slice, not the seven INT-03C or fourteen
+NAB-03 qualification. It does not qualify Ory/federation, a domain provider,
+protected staging, production or an independently observed interactive Codespace.
+DEV-02 CP mandate/context variants are next, followed by DEV-03 authorisation.
+The optional #49 packet remains separate; other safe engine work may proceed.
 
 ## v2.3 current gate decisions (20 October 2026)
 

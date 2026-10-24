@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Shared plus selected CP/IAM/Infrastructure source and final-head CI. Other owner packages are NOT_ASSESSED, never assumed NOT_STARTED or passed.",
+  "observation_scope": "Shared and selected CP/IAM/Infrastructure source/CI; actual scoped DEV-01 lifecycle/recovery receipts downloaded and hash-verified. Other owner packages remain NOT_ASSESSED; no INT-03C/NAB-03 or protected acceptance is inferred.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -71,6 +71,38 @@
         "https://github.com/baobab-platform/infrastructure/actions/runs/39986034505",
         "https://github.com/baobab-platform/infrastructure/actions/runs/39986034955"
       ]
+    },
+    {
+      "key": "dev00-shared",
+      "repo": "shared",
+      "sha": "e2acbed153e8868bc07679374815971acac48f5b",
+      "pr": 376,
+      "scope": "Merged DEV-00 source and reporting; no domain runtime acceptance",
+      "reviewed_head_sha": "62d5e4686c2d9b6514eadaa47bc12d2b92cb94e2",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/shared/actions/runs/40049590842",
+        "https://github.com/baobab-platform/shared/actions/runs/40049591099",
+        "https://github.com/baobab-platform/shared/actions/runs/40049590850",
+        "https://github.com/baobab-platform/shared/actions/runs/40049590809"
+      ]
+    },
+    {
+      "key": "dev01-infrastructure",
+      "repo": "infrastructure",
+      "sha": "1445195e5304accaf38b29617dc223d12680cd03",
+      "pr": 53,
+      "scope": "Actual native Keycloak setup and CP guarded-bootstrap lifecycle/recovery only; not full authorisation, a domain provider or protected acceptance",
+      "reviewed_head_sha": "97c6a65cdf0ae191ef9d96c2b9beaa118f2476b4",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40052632487",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40052631751",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40052631757",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40052631801",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40052631765"
+      ]
     }
   ],
   "packages": [
@@ -80,16 +112,16 @@
       "owner": "Shared Platform Architecture",
       "dependencies": [],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "SOURCE_IN_PROGRESS",
-      "assessment": "IMPLEMENTED_PENDING_REVIEW",
+      "progress": "SOURCE_MERGED",
+      "assessment": "ACCEPTED",
       "source_baselines": [
-        "shared"
+        "dev00-shared"
       ],
-      "source_note": "Candidate DEV-00 source, tests and documentation in this change; reconcile its merge at next observation.",
+      "source_note": "DEV-00 merged through Shared #376 after final-head review and mandatory CI. This closes Shared reporting, not any runtime qualification.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-01",
-      "actual_completion_date": null,
-      "mandatory_ci": "PENDING_THIS_PR",
+      "actual_completion_date": "2026-10-24",
+      "mandatory_ci": "SUCCESS",
       "environment": "NO_RUNTIME_OBSERVED",
       "evidence_class": "SOURCE",
       "runtime": {
@@ -99,13 +131,8 @@
         "cleanup": "NOT_OBSERVED",
         "cases": []
       },
-      "blockers": [
-        {
-          "kind": "NOT_REVIEWED",
-          "detail": "Candidate DEV-00 source, tests and documentation in this change; reconcile its merge at next observation."
-        }
-      ],
-      "next_action": "Review this change and merge only after final-head mandatory CI; refresh this candidate snapshot from the merge at the next gate.",
+      "blockers": [],
+      "next_action": "Maintain source/evidence observations as each owner gate lands; retain protected acceptance separately.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
@@ -119,34 +146,78 @@
         "DEV-00"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
+      "assessment": "ACCEPTED",
       "source_baselines": [
-        "infra-49"
+        "dev01-infrastructure"
       ],
-      "source_note": "Existing L4 harness and optional #49 track are source-merged. Current ordinary-development composition and recovery are not qualified; cms_gate.py expects the historical registry hold and exits nonzero on OPEN.",
+      "source_note": "Infrastructure #53 merged after 33 successful checks and 6 applicable skips. Actions run 40052631759 observed all six DEV-01 lifecycle/recovery drills using actual IAM, PostgreSQL and CP. Exact tested harness merge SHA 7963d837b64b9315334afd7c039ad101f00cb625 differs from the source squash SHA; both are recorded. No independent interactive Codespace session or INT-03C/NAB-03 authorisation qualification is asserted.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-01",
-      "actual_completion_date": null,
-      "mandatory_ci": "BASELINE_ONLY",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "actual_completion_date": "2026-10-24",
+      "mandatory_ci": "SUCCESS",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
-        "canonical_scenarios": [
-          "INT-01"
+        "status": "PASS",
+        "canonical_scenarios": [],
+        "evidence_urls": [
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759/artifacts/12544247579"
         ],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "cleanup": "COMPLETE",
+        "cases": [
+          {
+            "case": "expired_orphan_without_state_recovered",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759/artifacts/12544247579"
+            ],
+            "reason": "OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION"
+          },
+          {
+            "case": "failed_health_rejected",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759/artifacts/12544247579"
+            ],
+            "reason": "OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION"
+          },
+          {
+            "case": "fresh_real_iam_cp_bootstrap_and_replay",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759/artifacts/12544247579"
+            ],
+            "reason": "OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION"
+          },
+          {
+            "case": "interrupted_startup_recovered",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759/artifacts/12544247579"
+            ],
+            "reason": "OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION"
+          },
+          {
+            "case": "recovery_retested",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759/artifacts/12544247579"
+            ],
+            "reason": "OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION"
+          },
+          {
+            "case": "teardown_without_compose_verified",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759/artifacts/12544247579"
+            ],
+            "reason": "OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION"
+          }
+        ]
       },
-      "blockers": [
-        {
-          "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "Existing L4 harness and optional #49 track are source-merged. Current ordinary-development composition and recovery are not qualified; cms_gate.py expects the historical registry hold and exits nonzero on OPEN."
-        }
-      ],
-      "next_action": "Implement ADR-043 ordinary-development composition with current source locks, actual IAM subjects, guarded CP bootstrap and recovery; preserve optional #49 track.",
+      "blockers": [],
+      "next_action": "DEV-02: qualify accurate CP Organisation/tenant/mandate variants, then DEV-03 real issuer and CP authorisation; reuse this lifecycle without the optional #49 packet.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

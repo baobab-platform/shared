@@ -1,0 +1,18 @@
+{
+  "checks": {
+    "expired_orphan_without_state_recovered": true,
+    "failed_health_rejected": true,
+    "fresh_real_iam_cp_bootstrap_and_replay": true,
+    "interrupted_startup_recovered": true,
+    "recovery_retested": true,
+    "teardown_without_compose_verified": true
+  },
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "harness_sha": "7963d837b64b9315334afd7c039ad101f00cb625",
+  "int03c_qualified": false,
+  "nab03_qualified": false,
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "schema": "infrastructure.dev01.lifecycle-suite.v1",
+  "scope": "DEV01_LIFECYCLE_ONLY"
+}
