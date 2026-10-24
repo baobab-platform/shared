@@ -1,0 +1,20 @@
+{
+  "reviewed_head_sha": "49037c32206656aef4871c9f94e2a65934267f59",
+  "run_url": "https://github.com/baobab-platform/infrastructure/actions/runs/40076614129",
+  "attempts": [
+    {
+      "job_id": 120821241775,
+      "url": "https://github.com/baobab-platform/infrastructure/actions/runs/40076614129/job/120821241775",
+      "result": "FAIL",
+      "failure_class": "IMAGE_UNAVAILABLE"
+    },
+    {
+      "job_id": 120821570322,
+      "url": "https://github.com/baobab-platform/infrastructure/actions/runs/40076614129/job/120821570322",
+      "result": "PASS",
+      "failure_class": null
+    }
+  ],
+  "historical_mfa_root_cause_repaired": false,
+  "scope": "Mandatory legacy INT-02 regression; separate from the sixteen native DEV-03 observations."
+}

@@ -1,0 +1,171 @@
+{
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "fixture_checks": {
+    "observations": [
+      {
+        "case": "missing",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "pending",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "revoked",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "REVOKED_OR_EXPIRED"
+      },
+      {
+        "case": "stale",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "REVOKED_OR_EXPIRED"
+      },
+      {
+        "case": "valid_scoped",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "ACTOR_NOT_VERIFIED"
+      },
+      {
+        "case": "boundary_wrong_role",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_activity",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_capability",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_tenant",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_organisation",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_market",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "wrong_market",
+        "enterprise": "equator-estate",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "missing",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "pending",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "revoked",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "REVOKED_OR_EXPIRED"
+      },
+      {
+        "case": "stale",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "REVOKED_OR_EXPIRED"
+      },
+      {
+        "case": "valid_scoped",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "ACTOR_NOT_VERIFIED"
+      },
+      {
+        "case": "boundary_wrong_role",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_activity",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_capability",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_tenant",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_organisation",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "boundary_wrong_market",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      },
+      {
+        "case": "wrong_market",
+        "enterprise": "zuribeans",
+        "passed": true,
+        "policy_outcome": "NO_APPLICABLE_MANDATE"
+      }
+    ],
+    "official_actor_verified": false,
+    "protected_acceptance": false,
+    "provider_permissions_granted": false,
+    "run_id": "0150912c3279a2b1679b1e3f9f3b6ef1",
+    "schema": "baobab.development-fixture-checks.v1",
+    "scope": "DEV02_NON_AUTHORISING_SCOPE_AND_LIFECYCLE",
+    "synthetic_only": true
+  },
+  "harness_sha": "0b0657bce228874bdb813c2dbe892377c9b95ea4",
+  "int03c_qualified": false,
+  "nab03_qualified": false,
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "schema": "infrastructure.dev02.fixture-suite.v1",
+  "scope": "DEV02_NON_AUTHORISING_SCOPE_AND_LIFECYCLE",
+  "source_pins": {
+    "baobab-cp": "05964feeed9636a9210cc669395f3481ce841007",
+    "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+    "shared": "33b514d690e468fbcce34275705a08a32647d4ad"
+  },
+  "teardown_verified": true
+}

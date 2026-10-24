@@ -6,3 +6,7 @@ d28cbdeb77f2c2eab7c20439f908a7c7a8fa4110:contracts/erp/v1/examples/order-consequ
 
 # Reviewed schema prose false positive: subject/capability coverage is not a credential.
 c44051eb3b06e2d2364116ea1d4b33f77563079d:contracts/identity/v1/runtime-capability.schema.json:generic-api-key:67
+
+# DEV-03 original receipt: SHA-256 digest of the private generated configuration
+# file, not htpasswd contents, a password hash, or an API key. Preserve evidence bytes.
+788f654649e7824b2098338ed63f7853f091eedc:docs/architecture/evidence/dev03-2026-10-24/dev01-0150912c3279a2b1679b1e3f9f3b6ef1/completed/receipt.json:generic-api-key:40
