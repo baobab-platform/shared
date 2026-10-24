@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected CP/IAM/Infrastructure source/CI and scoped DEV-01/02/03 original receipts; native DEV-03 sixteen-case results and cleanup were observed and hash-verified. Final DEV-03 Infrastructure/adoption closure remains pending. Other owners remain NOT_ASSESSED; no complete canonical L4, INT-03C/NAB-03, provider or protected acceptance is inferred.",
+  "observation_scope": "Selected CP/IAM/Infrastructure source/CI and scoped DEV-01/02/03 original receipts; native DEV-03 sixteen-case results and cleanup were observed and hash-verified against reviewed, merged engineering sources. Other owners remain NOT_ASSESSED; no complete canonical L4, INT-03C/NAB-03, provider or protected acceptance is inferred.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -155,6 +155,23 @@
         "https://github.com/baobab-platform/baobab-cp/actions/runs/40074373705",
         "https://github.com/baobab-platform/baobab-cp/actions/runs/40074373658",
         "https://github.com/baobab-platform/baobab-cp/actions/runs/40074370154"
+      ]
+    },
+    {
+      "key": "dev03-infrastructure",
+      "repo": "infrastructure",
+      "sha": "ed2fd8ddb6e98edc29820b3e79165b234695876f",
+      "pr": 55,
+      "scope": "Native Hydra/Kratos/current CP authority profile and sixteen-case proof, lifecycle recovery and verified teardown. 29 successful checks, 6 applicable skips. INT-02 targeted rerun passed after IMAGE_UNAVAILABLE; no MFA root-cause repair asserted.",
+      "reviewed_head_sha": "49037c32206656aef4871c9f94e2a65934267f59",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40076614129",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40076614681",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40076614049",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40076614110",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40076612873"
       ]
     }
   ],
@@ -542,14 +559,15 @@
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
       "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
-      "assessment": "IMPLEMENTED_PENDING_REVIEW",
+      "assessment": "ACCEPTED",
       "source_baselines": [
-        "dev03-cp"
+        "dev03-cp",
+        "dev03-infrastructure"
       ],
-      "source_note": "CP #435 merged at 718caedca3b9203931b399464e21b0f64ffbe879 after 24 successful final-head checks and 6 applicable skips. Infrastructure #55 candidate 49037c32206656aef4871c9f94e2a65934267f59 passed all sixteen actual native Hydra/Kratos/current CP cases and verified teardown in run 40076614067; executed harness is 0b0657bce228874bdb813c2dbe892377c9b95ea4. Archive and original receipt hashes were independently checked after download. Final Infrastructure INT-02 image-fetch rerun and engineering merge remain pending. IAM-owned source/configuration is pinned to 0ad103606b9705fcb33c468ea01b54d8ce76f9ae; provider declarations stay PARTIAL. No canonical provider hook, estate BFF/ID-token, complete canonical L4, DEV-04 seven-case or protected acceptance is inferred.",
+      "source_note": "CP #435 merged at 718caedca3b9203931b399464e21b0f64ffbe879 after 24 successful final-head checks and 6 applicable skips. Infrastructure #55 merged at ed2fd8ddb6e98edc29820b3e79165b234695876f after 29 successful final-head checks and 6 applicable skips. Reviewed Infrastructure head 49037c32206656aef4871c9f94e2a65934267f59 passed all sixteen actual native Hydra/Kratos/current CP cases and verified teardown in run 40076614067; executed harness is 0b0657bce228874bdb813c2dbe892377c9b95ea4. Archive and original receipt hashes were checked after download. INT-02 passed targeted rerun job 120821570322 after IMAGE_UNAVAILABLE in job 120821241775; no repair of BA-AUD-001 MFA cause is established. IAM-owned source/configuration is pinned to 0ad103606b9705fcb33c468ea01b54d8ce76f9ae; provider declarations stay PARTIAL. Acceptance is only scoped DEV-03 real-component synthetic-data engineering. No canonical provider hook, estate BFF/ID-token, complete canonical L4, DEV-04 seven-case or protected acceptance is inferred.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-08",
-      "actual_completion_date": null,
+      "actual_completion_date": "2026-10-24",
       "mandatory_ci": "SUCCESS",
       "environment": "ISOLATED_DEVELOPMENT",
       "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
@@ -691,13 +709,8 @@
           }
         ]
       },
-      "blockers": [
-        {
-          "kind": "NOT_REVIEWED",
-          "detail": "Final Infrastructure #55 mandatory regression CI and merge, followed by Shared adoption review, remain pending. Source baseline SUCCESS currently records merged CP only."
-        }
-      ],
-      "next_action": "Finish final Infrastructure CI/merge and reviewed source/evidence adoption; then DEV-04 original seven-case qualification.",
+      "blockers": [],
+      "next_action": "DEV-04: qualify the original seven INT-03C cases with independent readback, failure recovery and private exact receipts; preserve provider/estate and protected acceptance boundaries.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

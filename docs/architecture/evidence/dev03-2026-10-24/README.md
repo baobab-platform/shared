@@ -7,6 +7,7 @@ sixteen native authority/protocol cases and complete owned-resource teardown.
 - CP merged source: `718caedca3b9203931b399464e21b0f64ffbe879`
 - Reviewed and runtime-pinned CP head: `05964feeed9636a9210cc669395f3481ce841007`
 - Infrastructure engineering: https://github.com/baobab-platform/infrastructure/pull/55
+- Infrastructure merged source: `ed2fd8ddb6e98edc29820b3e79165b234695876f`
 - Reviewed Infrastructure head: `49037c32206656aef4871c9f94e2a65934267f59`
 - Actual executed CI harness merge SHA: `0b0657bce228874bdb813c2dbe892377c9b95ea4`
 - Native run: https://github.com/baobab-platform/infrastructure/actions/runs/40076614067
@@ -47,3 +48,9 @@ Engineering startup failures were resolved before this final native run. The
 separate mandatory INT-02 regression's image-fetch failure and targeted rerun
 are recorded separately; they do not substitute for these native observations
 and do not establish repair of the earlier BA-AUD-001 MFA finding.
+
+Final reviewed-head CI: CP 24 successful checks / 6 applicable skips;
+Infrastructure 29 successful checks / 6 applicable skips. The scoped DEV-03
+engineering gate is accepted. INT-02 attempts are retained in
+`int02-regression-attempts.json`; the rerun passed without establishing repair
+of the historical MFA cause. DEV-04 and combined BA-AUD-002/030 remain open.
