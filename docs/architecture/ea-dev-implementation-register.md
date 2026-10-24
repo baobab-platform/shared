@@ -4,7 +4,7 @@ Generated from [the JSON register](ea-dev-implementation-register.json); edit JS
 
 **Observed:** 2026-10-24. **Register validation:** SOURCE reporting only. Runtime evidence is scoped to the linked package receipts. **Protected staging, external certification and production:** not accepted.
 
-Selected CP/IAM/Infrastructure source and final-head CI; actual scoped DEV-01 lifecycle and DEV-02 non-authorising fixture/PG/API receipts downloaded and hash-verified. The initial INT-02 MFA failure and successful targeted rerun remain recorded with root cause open. Other owner packages remain NOT_ASSESSED; no full canonical L4, INT-03C/NAB-03 or protected acceptance is inferred.
+Selected CP/IAM/Infrastructure source/CI and scoped DEV-01/02/03 original receipts; native DEV-03 sixteen-case results and cleanup were observed and hash-verified. Final DEV-03 Infrastructure/adoption closure remains pending. Other owners remain NOT_ASSESSED; no complete canonical L4, INT-03C/NAB-03, provider or protected acceptance is inferred.
 
 Observations become STALE after 7 days; compare the observation date with today. CI validates structure and does not refresh evidence.
 
@@ -15,7 +15,7 @@ Observations become STALE after 7 days; compare the observation date with today.
 | **DEV-00** — Decision/gate reconciliation | Shared Platform Architecture | None | SOURCE_MERGED / ACCEPTED | 2026-10-24 | SUCCESS / NOT_OBSERVED | Maintain source/evidence observations as each owner gate lands; retain protected acceptance separately. |
 | **DEV-01** — One paved-road integration command | Infrastructure / baobab-dev | DEV-00 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | Reuse the DEV-02-adopted lifecycle for DEV-03 real issuer and CP authorisation; retain the original DEV-01 lifecycle receipts as historical observations. |
 | **DEV-02** — Accurate CP Organisation/tenant/mandate fixtures | CP / Shared | DEV-00, DEV-01 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | DEV-03: qualify actual signed issuer -> canonical CP Principal/context/current grant, wrong-audience/tenant and revocation/deactivation denials through this reusable lifecycle. |
-| **DEV-03** — Real issuer and CP authority chain | IAM / CP / Infrastructure | DEV-01, DEV-02 | SOURCE_MERGED / IMPLEMENTED_NOT_TESTED | 2026-10-24 | SUCCESS / BLOCKED | Finish exact native issuer/current CP runtime observations and source adoption; only then proceed to DEV-04 original seven-case qualification. |
+| **DEV-03** — Real issuer and CP authority chain | IAM / CP / Infrastructure | DEV-01, DEV-02 | REAL_COMPONENT_SYNTHETIC_DATA / IMPLEMENTED_PENDING_REVIEW | 2026-10-24 | SUCCESS / PASS | Finish final Infrastructure CI/merge and reviewed source/evidence adoption; then DEV-04 original seven-case qualification. |
 | **DEV-04** — Seven-case INT-03C qualification | Infrastructure / IAM / CP | DEV-03 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Execute and retain all seven real cases under fresh development source/image pins and complete teardown. |
 | **DEV-05** — Nabhold IAM/CP/BFF/CMS vertical | Nabhold / CMS / IAM / CP / Infrastructure | DEV-03, DEV-04 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Repin and adopt current CMS rows, then run all fourteen NAB-03 subcases without broadening caller ceilings. |
 | **DEV-06** — External client without estate | Infrastructure / CP / IAM / selected provider | DEV-03 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
@@ -82,22 +82,22 @@ Descriptive labels preserve the existing INT-03C obligations and NAB-03 subcases
 | DEV-02 | postgres-identity-projections-and-atomic-rollback | PASS | OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION |
 | DEV-02 | routed-context-api-positives-and-negatives | PASS | OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION |
 | DEV-02 | canonical-resolver-separation-and-protected-route-absence | PASS | OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION |
-| DEV-03 | absent_capability_grant_denied | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | actual_signed_issuer_and_cp_context | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | authorization_code_replay_denied | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | cp_denial_independent_of_issuer_status | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | cp_principal_deactivation_while_unexpired | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | expired_issuer_token_denied | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | fresh_credential_after_revoke_succeeds | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | issuer_revocation_while_unexpired | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | real_kratos_hydra_pkce_distinct_humans | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | same_principal_deactivation_approval_denied | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | same_principal_provenance_approval_denied | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | wrong_audience_denied | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | wrong_external_tenant_denied | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | wrong_pkce_denied_by_issuer | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | wrong_sibling_tenant_denied | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
-| DEV-03 | wrong_state_denied_by_relying_party | BLOCKED | CURRENT_NATIVE_PROFILE_NOT_QUALIFIED |
+| DEV-03 | absent_capability_grant_denied | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | actual_signed_issuer_and_cp_context | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | authorization_code_replay_denied | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | cp_denial_independent_of_issuer_status | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | cp_principal_deactivation_while_unexpired | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | expired_issuer_token_denied | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | fresh_credential_after_revoke_succeeds | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | issuer_revocation_while_unexpired | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | real_kratos_hydra_pkce_distinct_humans | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | same_principal_deactivation_approval_denied | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | same_principal_provenance_approval_denied | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | wrong_audience_denied | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | wrong_external_tenant_denied | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | wrong_pkce_denied_by_issuer | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | wrong_sibling_tenant_denied | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
+| DEV-03 | wrong_state_denied_by_relying_party | PASS | OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION |
 | DEV-04 | issuer-issuance-and-readback | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
 | DEV-04 | current-cp-principal-and-link | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
 | DEV-04 | wrong-audience-denial | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |

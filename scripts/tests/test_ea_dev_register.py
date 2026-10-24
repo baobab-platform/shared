@@ -173,6 +173,42 @@ class RegisterTests(unittest.TestCase):
             self.assertIs(row["passed"], True)
             self.assertEqual(row["policy_outcome"], expected[row["case"]])
 
+    def test_retained_dev03_native_authority_has_exact_cases_and_no_promotion(self):
+        folder=ROOT / "docs/architecture/evidence/dev03-2026-10-24"
+        raw=(folder / "dev03-authority-suite.json").read_bytes()
+        digest=json.loads((folder / "dev03-authority-suite.sha256.json").read_text())
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),digest["sha256"])
+        suite=json.loads(raw)
+        self.assertEqual(suite["source_pins"]["baobab-cp"],"05964feeed9636a9210cc669395f3481ce841007")
+        self.assertEqual(suite["source_pins"]["baobab-iam"],"0ad103606b9705fcb33c468ea01b54d8ce76f9ae")
+        self.assertIs(suite["teardown_verified"],True)
+        for key in ("int03c_qualified","nab03_qualified","protected_acceptance","production_authorized"):
+            self.assertIs(suite[key],False)
+        authority=suite["authority"]
+        self.assertIs(authority["synthetic_only"],True)
+        for key in ("canonical_provider_qualified","int03c_qualified","nab03_qualified","protected_acceptance"):
+            self.assertIs(authority[key],False)
+        self.assertEqual(set(authority["checks"]), {
+            'actual_signed_issuer_and_cp_context','wrong_sibling_tenant_denied','wrong_external_tenant_denied',
+            'wrong_audience_denied','absent_capability_grant_denied','expired_issuer_token_denied',
+            'issuer_revocation_while_unexpired','fresh_credential_after_revoke_succeeds',
+            'real_kratos_hydra_pkce_distinct_humans','same_principal_provenance_approval_denied',
+            'same_principal_deactivation_approval_denied','cp_principal_deactivation_while_unexpired',
+            'cp_denial_independent_of_issuer_status','wrong_pkce_denied_by_issuer',
+            'wrong_state_denied_by_relying_party','authorization_code_replay_denied'})
+        self.assertTrue(all(v is True for v in authority["checks"].values()))
+        results=[]
+        for path in folder.glob('dev01-*/completed/receipt.json'):
+            receipt=json.loads(path.read_text())
+            self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),json.loads(path.with_name('receipt.sha256.json').read_text())["sha256"])
+            self.assertEqual(receipt["harness_sha"],suite["harness_sha"])
+            self.assertIs(receipt["teardown_verified"],True)
+            if receipt["lifecycle_passed"]:
+                self.assertEqual(receipt["authority"],authority)
+                self.assertEqual(set(receipt["native_config_hashes"]),{'hydra.yml','kratos/kratos.yml','kratos/identity.schema.json','introspection.htpasswd'})
+            results.append(receipt["lifecycle_passed"])
+        self.assertEqual(sorted(results),[False,True])
+
     def test_legitimate_date_refresh_keeps_a_valid_register(self):
         refreshed = copy.deepcopy(self.data)
         refreshed["observed_on"] = "2027-01-02"

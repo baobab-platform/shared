@@ -123,8 +123,10 @@ The IAM and CP assessments were consulted for the next Accepted gate. CP #435
 adds current issuer status after local JWT validation and is merged at
 `718caedca3b9203931b399464e21b0f64ffbe879` with final-head CI/review. Infrastructure
 #55 composes actual native Hydra/Kratos and CP APIs, with explicit non-authorising
-fixture metadata and closed case receipts. Runtime qualification and adoption are
-pending; no actual PASS is inferred from source.
+fixture metadata and closed case receipts. The final native run observed all sixteen cases and verified cleanup; original
+receipts and archive hashes are retained in the
+[DEV-03 evidence record](../architecture/evidence/dev03-2026-10-24/README.md).
+Infrastructure mandatory CI/merge and final adoption remain pending.
 
 BA-AUD-002/030 are IN_PROGRESS, not closed: they include the original DEV-04
 seven-case obligations as well as this authority chain. IAM provider, C4,

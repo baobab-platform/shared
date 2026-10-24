@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected CP/IAM/Infrastructure source and final-head CI; actual scoped DEV-01 lifecycle and DEV-02 non-authorising fixture/PG/API receipts downloaded and hash-verified. The initial INT-02 MFA failure and successful targeted rerun remain recorded with root cause open. Other owner packages remain NOT_ASSESSED; no full canonical L4, INT-03C/NAB-03 or protected acceptance is inferred.",
+  "observation_scope": "Selected CP/IAM/Infrastructure source/CI and scoped DEV-01/02/03 original receipts; native DEV-03 sixteen-case results and cleanup were observed and hash-verified. Final DEV-03 Infrastructure/adoption closure remains pending. Other owners remain NOT_ASSESSED; no complete canonical L4, INT-03C/NAB-03, provider or protected acceptance is inferred.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -541,129 +541,163 @@
         "DEV-02"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "SOURCE_MERGED",
-      "assessment": "IMPLEMENTED_NOT_TESTED",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
+      "assessment": "IMPLEMENTED_PENDING_REVIEW",
       "source_baselines": [
         "dev03-cp"
       ],
-      "source_note": "CP #435 merged at 718caedca3b9203931b399464e21b0f64ffbe879 after 24 successful final-head checks and 6 applicable skips. Infrastructure #55 implements the selected native Hydra/Kratos profile at current IAM 0ad103606b9705fcb33c468ea01b54d8ce76f9ae and a reviewed CP pin, but actual current-profile qualification, all final-head CI and merge remain pending. The IAM/CP assessments guide scope; provider declarations stay PARTIAL and no canonical provider/estate/C4 acceptance is inferred.",
+      "source_note": "CP #435 merged at 718caedca3b9203931b399464e21b0f64ffbe879 after 24 successful final-head checks and 6 applicable skips. Infrastructure #55 candidate 49037c32206656aef4871c9f94e2a65934267f59 passed all sixteen actual native Hydra/Kratos/current CP cases and verified teardown in run 40076614067; executed harness is 0b0657bce228874bdb813c2dbe892377c9b95ea4. Archive and original receipt hashes were independently checked after download. Final Infrastructure INT-02 image-fetch rerun and engineering merge remain pending. IAM-owned source/configuration is pinned to 0ad103606b9705fcb33c468ea01b54d8ce76f9ae; provider declarations stay PARTIAL. No canonical provider hook, estate BFF/ID-token, complete canonical L4, DEV-04 seven-case or protected acceptance is inferred.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-08",
       "actual_completion_date": null,
       "mandatory_ci": "SUCCESS",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "BLOCKED",
+        "status": "PASS",
         "canonical_scenarios": [],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
+        "evidence_urls": [
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+        ],
+        "cleanup": "COMPLETE",
         "cases": [
           {
             "case": "absent_capability_grant_denied",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "actual_signed_issuer_and_cp_context",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "authorization_code_replay_denied",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "cp_denial_independent_of_issuer_status",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "cp_principal_deactivation_while_unexpired",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "expired_issuer_token_denied",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "fresh_credential_after_revoke_succeeds",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "issuer_revocation_while_unexpired",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "real_kratos_hydra_pkce_distinct_humans",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "same_principal_deactivation_approval_denied",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "same_principal_provenance_approval_denied",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "wrong_audience_denied",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "wrong_external_tenant_denied",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "wrong_pkce_denied_by_issuer",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "wrong_sibling_tenant_denied",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           },
           {
             "case": "wrong_state_denied_by_relying_party",
-            "result": "BLOCKED",
-            "evidence_urls": [],
-            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40076614067/artifacts/12553716835"
+            ],
+            "reason": "OBSERVED_NATIVE_PROVIDER_CURRENT_CP_AUTHORITY_ONLY_NOT_PROVIDER_OR_PROTECTED_QUALIFICATION"
           }
         ]
       },
       "blockers": [
         {
-          "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "The current native authority-chain profile must pass all actual cases and verified teardown; Infrastructure #55 and final Shared adoption remain pending."
+          "kind": "NOT_REVIEWED",
+          "detail": "Final Infrastructure #55 mandatory regression CI and merge, followed by Shared adoption review, remain pending. Source baseline SUCCESS currently records merged CP only."
         }
       ],
-      "next_action": "Finish exact native issuer/current CP runtime observations and source adoption; only then proceed to DEV-04 original seven-case qualification.",
+      "next_action": "Finish final Infrastructure CI/merge and reviewed source/evidence adoption; then DEV-04 original seven-case qualification.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
