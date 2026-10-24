@@ -1,0 +1,205 @@
+{
+  "schema": "shared.dev02.cp-ci-observation.v1",
+  "observed_on": "2026-10-24",
+  "repository": "baobab-platform/baobab-cp",
+  "pr": 434,
+  "reviewed_head_sha": "6ed4c63f4e28b3370c4f83c097f22d2308f4d474",
+  "merged_sha": "a21f48a80cd5b2387c85aea7f6d97ff3811f2dbb",
+  "actual_ci_merge_sha": "7b932eac9712078fb6a1ef285c622b566df5da00",
+  "checks": [
+    {
+      "name": "foundation / Foundation / Result",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765556595"
+    },
+    {
+      "name": "foundation / runtime / Runtime / Result",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765533024"
+    },
+    {
+      "name": "foundation / security / Security / PR",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765368320"
+    },
+    {
+      "name": "foundation / security / sast / CodeQL (${{ matrix.language }})",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765275843"
+    },
+    {
+      "name": "foundation / security / sast / SAST / Fallback",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765274633"
+    },
+    {
+      "name": "foundation / runtime / python",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765246168"
+    },
+    {
+      "name": "foundation / runtime / java",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765246126"
+    },
+    {
+      "name": "foundation / runtime / terraform",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765246031"
+    },
+    {
+      "name": "foundation / runtime / rust",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765246000"
+    },
+    {
+      "name": "foundation / runtime / exception",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765245626"
+    },
+    {
+      "name": "foundation / security / dependency-review / review",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244784"
+    },
+    {
+      "name": "foundation / security / native-deps / Dependency adapters",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244719"
+    },
+    {
+      "name": "foundation / security / secrets / Scan for committed secrets",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244674"
+    },
+    {
+      "name": "foundation / security / sast / plan",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244665"
+    },
+    {
+      "name": "foundation / security / portable",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244612"
+    },
+    {
+      "name": "foundation / baseline / baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244608"
+    },
+    {
+      "name": "foundation / container / container",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244599"
+    },
+    {
+      "name": "foundation / runtime / node",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244578"
+    },
+    {
+      "name": "foundation / reproducibility / reproducibility",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244561"
+    },
+    {
+      "name": "foundation / runtime / go",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244560"
+    },
+    {
+      "name": "foundation / environment / environment",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765244538"
+    },
+    {
+      "name": "foundation / classify / classify",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694/job/120765179571"
+    },
+    {
+      "name": "Secret scanning / Scan for committed secrets",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008550/job/120765179058"
+    },
+    {
+      "name": "convergence",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008112/job/120765177552"
+    },
+    {
+      "name": "test",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008050/job/120765177416"
+    },
+    {
+      "name": "ghcr",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058007987/job/120765177093"
+    },
+    {
+      "name": "evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008037/job/120765177035"
+    },
+    {
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058007980/job/120765176925"
+    },
+    {
+      "name": "source",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058007987/job/120765176872"
+    },
+    {
+      "name": "Analyze (javascript-typescript)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058005043/job/120765171565"
+    },
+    {
+      "name": "Analyze (go)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058005043/job/120765171315"
+    },
+    {
+      "name": "Analyze (python)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/baobab-platform/baobab-cp/actions/runs/40058005043/job/120765171029"
+    }
+  ],
+  "scope": "Native owner PostgreSQL/race and HTTP component fixture tests; synthetic token verifier, not real IAM qualification",
+  "protected_acceptance": false
+}

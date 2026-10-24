@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Shared and selected CP/IAM/Infrastructure source/CI; actual scoped DEV-01 lifecycle/recovery receipts downloaded and hash-verified. Other owner packages remain NOT_ASSESSED; no INT-03C/NAB-03 or protected acceptance is inferred.",
+  "observation_scope": "Selected CP/IAM/Infrastructure source and CI; verified DEV-01 lifecycle and DEV-02 non-authorising fixture receipts are retained. DEV-02 final Infrastructure/adoption closure remains pending; other owner packages remain NOT_ASSESSED. No full canonical L4, INT-03C/NAB-03 or protected acceptance is inferred.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -103,6 +103,25 @@
         "https://github.com/baobab-platform/infrastructure/actions/runs/40052631759",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40052631765"
       ]
+    },
+    {
+      "key": "dev02-cp",
+      "repo": "baobab-cp",
+      "sha": "a21f48a80cd5b2387c85aea7f6d97ff3811f2dbb",
+      "pr": 434,
+      "scope": "DEV-02 CP-owned fixture v2; 24 non-authorising mandate/scope checks, real PG rollback and routed API negatives. No fictitious legal verification or canonical mandate activation.",
+      "reviewed_head_sha": "6ed4c63f4e28b3370c4f83c097f22d2308f4d474",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008550",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008112",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008050",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40058007987",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008037",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40058007980",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40058005043"
+      ]
     }
   ],
   "packages": [
@@ -151,7 +170,7 @@
       "source_baselines": [
         "dev01-infrastructure"
       ],
-      "source_note": "Infrastructure #53 merged after 33 successful checks and 6 applicable skips. Actions run 40052631759 observed all six DEV-01 lifecycle/recovery drills using actual IAM, PostgreSQL and CP. Exact tested harness merge SHA 7963d837b64b9315334afd7c039ad101f00cb625 differs from the source squash SHA; both are recorded. No independent interactive Codespace session or INT-03C/NAB-03 authorisation qualification is asserted.",
+      "source_note": "Infrastructure #53 merged after 33 successful checks and 6 applicable skips. Actions run 40052631759 observed all six DEV-01 lifecycle/recovery drills using actual IAM, PostgreSQL and CP. Exact tested harness merge SHA 7963d837b64b9315334afd7c039ad101f00cb625 differs from the source squash SHA; both are recorded. No independent interactive Codespace session or INT-03C/NAB-03 authorisation qualification is asserted. These historical receipts predate DEV-02 fixture version 2 and do not qualify its corrected legal-entity semantics; DEV-02 recreates runs at the newer CP source.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-01",
       "actual_completion_date": "2026-10-24",
@@ -217,7 +236,7 @@
         ]
       },
       "blockers": [],
-      "next_action": "DEV-02: qualify accurate CP Organisation/tenant/mandate variants, then DEV-03 real issuer and CP authorisation; reuse this lifecycle without the optional #49 packet.",
+      "next_action": "Reuse the DEV-02-adopted lifecycle for DEV-03 real issuer and CP authorisation; retain the original DEV-01 lifecycle receipts as historical observations.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
@@ -232,36 +251,253 @@
         "DEV-01"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
+      "assessment": "IMPLEMENTED_PENDING_REVIEW",
       "source_baselines": [
-        "cp-bootstrap",
-        "shared"
+        "dev02-cp",
+        "dev01-infrastructure"
       ],
-      "source_note": "CP #433 guarded bootstrap is merged. Additional mandate variants and composed owner API proof need qualification.",
+      "source_note": "CP #434 merged at a21f48a80cd5b2387c85aea7f6d97ff3811f2dbb after 26 successful checks and 6 applicable skips. The runtime CP pin 6ed4c63f4e28b3370c4f83c097f22d2308f4d474 is the reviewed head contained in that merge. Infrastructure #54 candidate bd181655bf8b2c64420beeeab72129f9811df3bc produced 24 actual fixture observations and verified teardown in run 40058049472 at executed harness 8d0d435d4ef8228a08cd5c8fa62066fa4cc926df. Full Infrastructure mandatory CI and merge remain pending; its initial INT-02 MFA failure and targeted rerun are retained separately. No full canonical L4-CP-03/04, real IAM authority chain or official legal verification is asserted.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-01",
       "actual_completion_date": null,
-      "mandatory_ci": "BASELINE_ONLY",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "mandatory_ci": "SUCCESS",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
-        "canonical_scenarios": [
-          "L4-CP-03",
-          "L4-CP-04"
+        "status": "PASS",
+        "canonical_scenarios": [],
+        "evidence_urls": [
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663",
+          "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008050/job/120765177416"
         ],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "cleanup": "COMPLETE",
+        "cases": [
+          {
+            "case": "equator-estate:missing",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "equator-estate:pending",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "equator-estate:revoked",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_REVOKED_OR_EXPIRED"
+          },
+          {
+            "case": "equator-estate:stale",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_REVOKED_OR_EXPIRED"
+          },
+          {
+            "case": "equator-estate:valid_scoped",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_ACTOR_NOT_VERIFIED"
+          },
+          {
+            "case": "equator-estate:boundary_wrong_role",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "equator-estate:boundary_wrong_activity",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "equator-estate:boundary_wrong_capability",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "equator-estate:boundary_wrong_tenant",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "equator-estate:boundary_wrong_organisation",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "equator-estate:boundary_wrong_market",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "equator-estate:wrong_market",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:missing",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:pending",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:revoked",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_REVOKED_OR_EXPIRED"
+          },
+          {
+            "case": "zuribeans:stale",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_REVOKED_OR_EXPIRED"
+          },
+          {
+            "case": "zuribeans:valid_scoped",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_ACTOR_NOT_VERIFIED"
+          },
+          {
+            "case": "zuribeans:boundary_wrong_role",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:boundary_wrong_activity",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:boundary_wrong_capability",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:boundary_wrong_tenant",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:boundary_wrong_organisation",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:boundary_wrong_market",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "zuribeans:wrong_market",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472/artifacts/12546228663"
+            ],
+            "reason": "OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE"
+          },
+          {
+            "case": "postgres-identity-projections-and-atomic-rollback",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008050/job/120765177416"
+            ],
+            "reason": "OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION"
+          },
+          {
+            "case": "routed-context-api-positives-and-negatives",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008050/job/120765177416"
+            ],
+            "reason": "OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION"
+          },
+          {
+            "case": "canonical-resolver-separation-and-protected-route-absence",
+            "result": "PASS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008050/job/120765177416"
+            ],
+            "reason": "OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION"
+          }
+        ]
       },
       "blockers": [
         {
-          "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "CP #433 guarded bootstrap is merged. Additional mandate variants and composed owner API proof need qualification."
+          "kind": "NOT_REVIEWED",
+          "detail": "Infrastructure #54 final-head mandatory regression CI and merge, followed by Shared adoption review, remain pending. Source baseline SUCCESS currently records merged CP and DEV-01 only."
         }
       ],
-      "next_action": "Qualify mandate variants through CP-owned APIs and PostgreSQL tests using the closed contract.",
+      "next_action": "Finish Infrastructure #54 mandatory CI/merge and Shared adoption; then DEV-03 actual signed issuer and CP authority chain.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
