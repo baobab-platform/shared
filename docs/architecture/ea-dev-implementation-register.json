@@ -838,17 +838,17 @@
         "DEV-04"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "progress": "SOURCE_IN_PROGRESS",
+      "assessment": "IMPLEMENTED_PENDING_REVIEW",
       "source_baselines": [
         "shared",
         "infra-49"
       ],
-      "source_note": "Shared named CMS development rows are ACTIVE with unchanged ceilings; historical cms-lock.json and gate need DEV-01/05 adoption. Fourteen-case runtime not observed.",
+      "source_note": "DEV-05 source is in CP #436 (current cross-service subject status), CMS #48 (current caller status, patched Next runtime and exact native issuer), Nabhold #92 (explicit authority:self and exact issuer), and Infrastructure #57 (real Payload/PG17/BFF/TLS Redis fourteen-case executor). Existing CMS declaration remains PARTIAL and CP has no adopted eligible content capability binding; no ACTIVE binding, grant or certification is invented. Direct component success cannot qualify the canonical estate path. Actual final-head execution, custody and owner CI/review/merge are pending.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-15",
       "actual_completion_date": null,
-      "mandatory_ci": "BASELINE_ONLY",
+      "mandatory_ci": "PENDING_THIS_PR",
       "environment": "NO_RUNTIME_OBSERVED",
       "evidence_class": "SOURCE",
       "runtime": {
@@ -952,10 +952,14 @@
       "blockers": [
         {
           "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "Shared named CMS development rows are ACTIVE with unchanged ceilings; historical cms-lock.json and gate need DEV-01/05 adoption. Fourteen-case runtime not observed."
+          "detail": "Final native fourteen-case outcomes and original receipt/hash verification remain pending."
+        },
+        {
+          "kind": "NOT_IMPLEMENTED",
+          "detail": "Current CMS PARTIAL provider support and absent current CP capability eligibility/binding cannot qualify the canonical estate published-content or controlled missing-grant cases."
         }
       ],
-      "next_action": "Repin and adopt current CMS rows, then run all fourteen NAB-03 subcases without broadening caller ceilings.",
+      "next_action": "Run the actual native vertical, retain per-case PASS/FAIL/BLOCKED with verified teardown, finish owner review/CI, and implement the remaining canonical provider admission through owning interfaces before accepting DEV-05.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
