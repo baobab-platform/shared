@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected CP/IAM/Infrastructure source and CI; verified DEV-01 lifecycle and DEV-02 non-authorising fixture receipts are retained. DEV-02 final Infrastructure/adoption closure remains pending; other owner packages remain NOT_ASSESSED. No full canonical L4, INT-03C/NAB-03 or protected acceptance is inferred.",
+  "observation_scope": "Selected CP/IAM/Infrastructure source and final-head CI; actual scoped DEV-01 lifecycle and DEV-02 non-authorising fixture/PG/API receipts downloaded and hash-verified. The initial INT-02 MFA failure and successful targeted rerun remain recorded with root cause open. Other owner packages remain NOT_ASSESSED; no full canonical L4, INT-03C/NAB-03 or protected acceptance is inferred.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -121,6 +121,23 @@
         "https://github.com/baobab-platform/baobab-cp/actions/runs/40058008037",
         "https://github.com/baobab-platform/baobab-cp/actions/runs/40058007980",
         "https://github.com/baobab-platform/baobab-cp/actions/runs/40058005043"
+      ]
+    },
+    {
+      "key": "dev02-infrastructure",
+      "repo": "infrastructure",
+      "sha": "631e59dc0787f81bec0fed3516a97572e825d949",
+      "pr": 54,
+      "scope": "DEV-02 fixture v2 adoption; exact 24-case read-only checks and native lifecycle/recovery/teardown. 29 checks succeeded, 6 skipped. INT-02 passed a targeted rerun; original MFA failure remains BA-AUD-001, not a root-cause repair.",
+      "reviewed_head_sha": "bd181655bf8b2c64420beeeab72129f9811df3bc",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40058049607",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40058050105",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40058049472",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40058049452",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40058049454",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40058048081"
       ]
     }
   ],
@@ -252,15 +269,15 @@
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
       "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
-      "assessment": "IMPLEMENTED_PENDING_REVIEW",
+      "assessment": "ACCEPTED",
       "source_baselines": [
         "dev02-cp",
-        "dev01-infrastructure"
+        "dev02-infrastructure"
       ],
-      "source_note": "CP #434 merged at a21f48a80cd5b2387c85aea7f6d97ff3811f2dbb after 26 successful checks and 6 applicable skips. The runtime CP pin 6ed4c63f4e28b3370c4f83c097f22d2308f4d474 is the reviewed head contained in that merge. Infrastructure #54 candidate bd181655bf8b2c64420beeeab72129f9811df3bc produced 24 actual fixture observations and verified teardown in run 40058049472 at executed harness 8d0d435d4ef8228a08cd5c8fa62066fa4cc926df. Full Infrastructure mandatory CI and merge remain pending; its initial INT-02 MFA failure and targeted rerun are retained separately. No full canonical L4-CP-03/04, real IAM authority chain or official legal verification is asserted.",
+      "source_note": "CP #434 merged at a21f48a80cd5b2387c85aea7f6d97ff3811f2dbb after 26 successful checks and 6 applicable skips. Infrastructure #54 merged at 631e59dc0787f81bec0fed3516a97572e825d949 after 29 successful checks and 6 applicable skips. Runtime-pinned CP head 6ed4c63f4e28b3370c4f83c097f22d2308f4d474 is contained in the CP merge. Actual executed harness 8d0d435d4ef8228a08cd5c8fa62066fa4cc926df produced all 24 non-authorising fixture observations and verified recovery/teardown in run 40058049472; archive and original receipt hashes were verified. Owner PG/race CI separately proves identity projections, atomic rollback, routed context API denials and canonical resolver/protected-route separation. INT-02 passed targeted rerun job 120803720791 after its initial MFA failure; root cause remains unestablished and BA-AUD-001 stays open. The pinned Shared development/v1 contract is unchanged by later documentation-only #379-381. No full canonical L4-CP-03/04, DEV-03 real authority chain, official legal verification, INT-03C/NAB-03 or protected acceptance is asserted.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-01",
-      "actual_completion_date": null,
+      "actual_completion_date": "2026-10-24",
       "mandatory_ci": "SUCCESS",
       "environment": "ISOLATED_DEVELOPMENT",
       "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
@@ -491,13 +508,8 @@
           }
         ]
       },
-      "blockers": [
-        {
-          "kind": "NOT_REVIEWED",
-          "detail": "Infrastructure #54 final-head mandatory regression CI and merge, followed by Shared adoption review, remain pending. Source baseline SUCCESS currently records merged CP and DEV-01 only."
-        }
-      ],
-      "next_action": "Finish Infrastructure #54 mandatory CI/merge and Shared adoption; then DEV-03 actual signed issuer and CP authority chain.",
+      "blockers": [],
+      "next_action": "DEV-03: qualify actual signed issuer -> canonical CP Principal/context/current grant, wrong-audience/tenant and revocation/deactivation denials through this reusable lifecycle.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

@@ -9,6 +9,7 @@ context APIs, and reusable development lifecycle recovery/teardown.
 - Reviewed and runtime-pinned CP head: `6ed4c63f4e28b3370c4f83c097f22d2308f4d474`
 - CP actual CI merge SHA: `7b932eac9712078fb6a1ef285c622b566df5da00`
 - Lifecycle adoption: https://github.com/baobab-platform/infrastructure/pull/54
+- Merged Infrastructure source: `631e59dc0787f81bec0fed3516a97572e825d949`
 - Reviewed Infrastructure head: `bd181655bf8b2c64420beeeab72129f9811df3bc`
 - Actual executed CI harness merge SHA: `8d0d435d4ef8228a08cd5c8fa62066fa4cc926df`
 - Native run: https://github.com/baobab-platform/infrastructure/actions/runs/40058049472
@@ -44,3 +45,10 @@ stale/revoked cases return REVOKED_OR_EXPIRED. Official actor verification,
 provider permissions, INT-03C, NAB-03, protected acceptance and production
 authorisation remain false. These receipts do not establish complete canonical
 L4-CP-03/04 or DEV-03 authority-chain acceptance.
+
+The separate mandatory INT-02 regression failed its first MFA attempt and passed
+a targeted rerun at the unchanged reviewed head. Both job references are retained
+in `int02-regression-attempts.json`. All 29 applicable Infrastructure checks
+succeeded before merge; 6 checks were applicable skips. The cause of the initial
+MFA failure remains unestablished and BA-AUD-001 remains OPEN. This change does
+not treat a retry as a root-cause fix or as DEV-03 qualification.

@@ -10,7 +10,14 @@
       "diagnostic_class": "ResponseBodyError",
       "cleanup_observed": true,
       "note": "Unchanged INT-02 browser MFA flow failed; no issuer fault site reported. Root cause not established; targeted rerun requested."
+    },
+    {
+      "job_url": "https://github.com/baobab-platform/infrastructure/actions/runs/40058049607/job/120803720791",
+      "conclusion": "success",
+      "cleanup_observed": true,
+      "note": "Targeted rerun of unchanged final head passed; no root cause established and no source repair claimed."
     }
   ],
-  "protected_acceptance": false
+  "protected_acceptance": false,
+  "root_cause_repaired": false
 }
