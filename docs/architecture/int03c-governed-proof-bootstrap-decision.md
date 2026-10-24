@@ -26,6 +26,16 @@ production. The CMS development hold is lifted within ADR-043's scope. The text
 below remains the protected workflow/mechanism reference, not a prerequisite
 for normal development provisioning.
 
+## 24 October 2026 — DEV-00 reading guide
+
+Use the [single DEV-00 precedence table](ea-dev-00-gate-reconciliation.md) for
+ordinary synthetic development, optional #49 and protected-environment gates.
+The dated clauses below retain their historical scope; their old CMS hold and
+independently appointed-human prerequisites cannot veto ADR-SHARED-043 development.
+The [current scoped register](ea-dev-implementation-register.md) records source
+and CI observations separately from runtime proof. Named CMS development rows are
+ACTIVE in the observed Shared source; this fact is not NAB-03 qualification.
+
 ## Exact identity ceilings
 
 Two *and only two* new canonical workspaces are allowed:
