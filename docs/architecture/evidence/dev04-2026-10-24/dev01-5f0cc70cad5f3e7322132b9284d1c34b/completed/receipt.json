@@ -1,0 +1,67 @@
+{
+  "authority": {
+    "canonical_provider_qualified": false,
+    "checks": {
+      "absent_capability_grant_denied": true,
+      "actual_signed_issuer_and_cp_context": true,
+      "authorization_code_replay_denied": true,
+      "cp_denial_independent_of_issuer_status": true,
+      "cp_principal_deactivation_while_unexpired": true,
+      "expired_issuer_token_denied": true,
+      "fresh_credential_after_revoke_succeeds": true,
+      "issuer_revocation_while_unexpired": true,
+      "real_kratos_hydra_pkce_distinct_humans": true,
+      "same_principal_deactivation_approval_denied": true,
+      "same_principal_provenance_approval_denied": true,
+      "wrong_audience_denied": true,
+      "wrong_external_tenant_denied": true,
+      "wrong_pkce_denied_by_issuer": true,
+      "wrong_sibling_tenant_denied": true,
+      "wrong_state_denied_by_relying_party": true
+    },
+    "int03c_qualified": false,
+    "nab03_qualified": false,
+    "protected_acceptance": false,
+    "schema": "infrastructure.dev03.authority-observed.v1",
+    "synthetic_only": true
+  },
+  "contract_hashes": {
+    "development/v1/enterprise-profiles.schema.json": "24592792f3fb95f825e5397b5ae56fa9b3a63818569a30d8f6c0738484c31a24",
+    "development/v1/examples/nabhold-group.json": "764c6c6d4977f988841b03153ce0ddddd0b9c8895555df6677798739a07fbbc3",
+    "identity/v1/workload-registry.yaml": "1ad1a8a0d5136950c95f32a5e264e6bab22546645ed07c7765a2925f37ae9e4f"
+  },
+  "domain_qualification": "DEV03_NATIVE_CP_AUTHORITY_ONLY",
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "harness_sha": "7a0b520f949a8d0a3e7364fe5cfb1dfae83e5335",
+  "image_ids": {
+    "cp": "sha256:8d1c7ea03b8e7230ad59fb9a39fa364db64df381c8302a06e765c3c3c627b474"
+  },
+  "int03c": null,
+  "int03c_qualified": false,
+  "lifecycle_passed": true,
+  "lock_sha256": "87c5305586490bfaf58ddf530f8048e5fb7762450b11fcab557f8236dc74f38b",
+  "nab03_qualified": false,
+  "native_config_hashes": {
+    "hydra.yml": "e8dedb1bc435d0514503037de6fae627e3e938b8dcd9154d81e052c0121f91c2",
+    "introspection.htpasswd": "f6f6331f48590e2fc1a3ed83563e19babcd31a883178a3ac75ec35d116d0db44",
+    "kratos/identity.schema.json": "080c937141d2829c12771d99e09d81ee5139e2ad3a3bbfbde9fa4232ebf88262",
+    "kratos/kratos.yml": "0dfd82cc72536d20b4e10f8f35b6772ef1daac50eb594cb6c756b6b3f0fa5d33"
+  },
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "run_id": "5f0cc70cad5f3e7322132b9284d1c34b",
+  "runtime_images": {
+    "edge": "nginx@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de",
+    "hydra": "oryd/hydra:v26.2.0@sha256:ff67c7fb5f95074fa53374d41151713554960504b340cd3f95b09e65deaea2a9",
+    "kratos": "oryd/kratos:v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643",
+    "postgres": "postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+    "probe": "python@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c"
+  },
+  "schema": "infrastructure.dev01.lifecycle.observed.v1",
+  "source_pins": {
+    "baobab-cp": "718caedca3b9203931b399464e21b0f64ffbe879",
+    "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+    "shared": "6ebd5fd258100fe437837869ab2a1248b2df3988"
+  },
+  "teardown_verified": true
+}

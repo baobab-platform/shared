@@ -13,7 +13,7 @@ Allowed statuses: **OPEN** (observed with source evidence), **TRIAGE** (inferenc
 | ID | Priority | Character | Status at 2026-10-24 | Recommended owner | Problem / strategic opportunity | Proposed resolution and closure test |
 | --- | --- | --- | --- | --- | --- | --- |
 | **BA-AUD-001** | P0 | Observed CI blocker | OPEN | Infrastructure + IAM/CP | Infrastructure [#54](https://github.com/baobab-platform/infrastructure/pull/54) INT-02 [run](https://github.com/baobab-platform/infrastructure/actions/runs/40058049607) failed in human IAM login proof, status 500 | Identify root cause without masking the test; final-head mandatory CI passes and DEV-02 scoped fixture receipts/teardown are inspected |
-| **BA-AUD-002** | P0 | Observed qualification gap | IN_PROGRESS | IAM + CP + Infrastructure | DEV-03 scoped native authority proof accepted; all seven DEV-04 INT-03C cases still require current-profile qualification | Current actual IAM-issued token/Principal/grant and all original cases observed, with explicit denials and cleanup |
+| **BA-AUD-002** | P0 | Observed qualification gap | VERIFIED_RESOLVED | IAM + CP + Infrastructure | DEV-03/04 original development authority/seven-case gap resolved by reviewed Infrastructure #56 and hash-verified native run 40095164501; provider/estate/protected scopes remain separate | Current actual IAM-issued token/Principal/grant and all original cases observed, with explicit denials and cleanup |
 | **BA-AUD-003** | P0 | Observed qualification gap | OPEN | Nabhold + CMS + IAM/CP/Infra | DEV-05 fourteen NAB-03 cases and DEV-06 external zero-estate journey not qualified in inspected register | Actual case-by-case positive/negative receipts per owning programme, not lifecycle substitutions |
 | **BA-AUD-004** | P1 | Architecture risk | TRIAGE | Shared EA-REL + Infrastructure | DEV-13 dependencies DEV-04..12 may be interpreted as a global production release prerequisite despite progressive EA-REL | Approve and test scope-specific release dependency projection while retaining all applicable protected approvals |
 | **BA-AUD-005** | P1 | Verified tool limitation / compatibility risk | TRIAGE | Shared Foundation + engine owners | Valid but older Shared consumer pins prove neither failure nor semantic compatibility | Produce per-contract changed-consumer impact report with actual selected compatibility tests and explicit permitted lag |
@@ -59,7 +59,7 @@ To prevent duplicate reporting: BA-AUD-001 already tracks Infrastructure INT-02;
 | ID | Priority | Character | Status at 2026-10-24 | Recommended owner | Problem / opportunity | Proposed remedy and **closure test** under existing EA-DEV |
 | --- | --- | --- | --- | --- | --- | --- |
 | **BA-AUD-029** | P0 | Observed report/source discrepancy | VERIFIED_RESOLVED | CP / Shared DEV-02 register owner | CP [#434](https://github.com/baobab-platform/baobab-cp/pull/434) merged five-profile Organisation/Tenant/mandate fixture code, current main Go CI green, but [official DEV-02 row](../architecture/ea-dev-implementation-register.md) remains NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | Reconcile actual independently reviewable Postgres/API fixture receipts, source/test/provenance and exact positive/negative cases in official EA-DEV JSON and generated view; don't infer runtime PASS solely from source |
-| **BA-AUD-030** | P0 | Observed real integration gap | IN_PROGRESS | CP / IAM / Infrastructure | CP identity, federation, current runtime authority and INT-03C Principal disable source exist, DEV-03 scoped native issuer/current CP proof accepted; DEV-04 protected-consumer seven-case evidence remains outstanding; historical INT-02 failure remains separately tracked by BA-AUD-001 | Qualify DEV-03 actual signed provider, CP canonical Principal/context/grant, revocation before expiry, wrong audience/tenant, separate Principals, then the **original** seven DEV-04 cases with private exact receipts/teardown; cross-link BA-AUD-001/002 |
+| **BA-AUD-030** | P0 | Observed real integration gap | VERIFIED_RESOLVED | CP / IAM / Infrastructure | Scoped DEV-03/04 signed issuer → current canonical CP authority and original seven cases verified in Infrastructure #56; broader provider/engine/estate/protected readiness and historical INT-02 cause remain independently tracked | Qualify DEV-03 actual signed provider, CP canonical Principal/context/grant, revocation before expiry, wrong audience/tenant, separate Principals, then the **original** seven DEV-04 cases with private exact receipts/teardown; cross-link BA-AUD-001/002 |
 | **BA-AUD-031** | P0 | Observed estate native-consumer gap | OPEN | CP / IAM / Trade / estate owners | CP #424/426/430/432 introduce source Principal, BFF binding, commerce profile and resource assignment; complete registered Trade estate/native commitment acceptance unproved | Under applicable DEV-05/07/08, prove current IAM workload/CP estate attestation, buyer/seller native operation and cross-tenant/wrong estate negatives, with domain veto intact; no Proposal-to-Accepted status assumption |
 | **BA-AUD-032** | P1 | Current provider-support qualification gap | OPEN | CP provider/Shared/IAM/engine owner | CP support certification, runtime profile and observation handlers present; no checked evidence that all concerned providers are currently REGISTERED, ACTIVE, eligible and correctly consumed | Under DEV-03/14/15, verify actual owner provider-support declaration, current instance/artifact/health, exact capability binding, expiry/grant and real consumer receipts; never invent CP provider declaration or promote PARTIAL |
 | **BA-AUD-033** | P1 | Observed legal-verification acceptance gap | OPEN | CP / legal/source / onboarding domain | Organisation admission, legal actor mandates, official-source capture and documentary controls substantially coded; synthetic/development cases do not provide real verified legal/market approval | Under applicable DEV-02/05/06/09, prove owner-authorised real legal-source provenance and specific permitted legal responsibility/mandate; retain nonproduction synthetic as synthetic and production approval separate |
@@ -219,3 +219,29 @@ The register accepts only the observed sixteen-case native development scope;
 BA-AUD-002/030 remain IN_PROGRESS for DEV-04 and broader consumer obligations.
 The final INT-02 targeted rerun passed after IMAGE_UNAVAILABLE; historical MFA
 root cause remains unestablished and BA-AUD-001 stays OPEN.
+
+## DEV-04 verified engineering closure — 24 October 2026
+
+Infrastructure [#56](https://github.com/baobab-platform/infrastructure/pull/56)
+merged at `5d70e40da1c5b3f22b46fe5a1177f843b26ec411` after review and 29
+successful applicable checks / 6 applicable skips. The final native run observed
+all original seven cases and 45 assertions in a fresh run, including distinct
+named-verifier issuer readback, exact CP provenance, unexpired revocation and
+CP-only deactivation, provider deletion and independently queried host teardown.
+Original artifact/receipt hashes were verified after download; see the
+[DEV-04 evidence record](../architecture/evidence/dev04-2026-10-24/README.md).
+
+BA-AUD-002 and BA-AUD-030 are VERIFIED_RESOLVED **only for their original
+DEV-03/04 synthetic-development proof requirements**. Earlier IN_PROGRESS
+paragraphs above retain their DEV-03 observation time. The current register and
+this dated closure supersede those progress observations. DEV-05's fourteen
+cases, BA-AUD-016/032/043, canonical provider/C4, native engine/estate, legal and
+protected/production requirements are not closed. New CMS, Trade and ERP
+assessments and all their independent findings remain unchanged.
+
+The first candidate passed runtime but was not accepted: review identified a
+provider/issued-lifetime binding gap and publication recovery gap. Both were
+fixed with regressions and actual final-head re-execution. The final legacy
+INT-02 passed without rerun, but this establishes no repair of the historical
+MFA cause; BA-AUD-001 remains OPEN. Source-green and native synthetic acceptance
+remain distinct from provider support and protected release authority.

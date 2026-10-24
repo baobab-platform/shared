@@ -1,0 +1,140 @@
+{
+  "authority": null,
+  "contract_hashes": {
+    "development/v1/enterprise-profiles.schema.json": "24592792f3fb95f825e5397b5ae56fa9b3a63818569a30d8f6c0738484c31a24",
+    "development/v1/examples/nabhold-group.json": "764c6c6d4977f988841b03153ce0ddddd0b9c8895555df6677798739a07fbbc3",
+    "identity/v1/workload-registry.yaml": "1ad1a8a0d5136950c95f32a5e264e6bab22546645ed07c7765a2925f37ae9e4f"
+  },
+  "domain_qualification": "DEV04_INT03C_DEVELOPMENT_ONLY",
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "harness_sha": "7a0b520f949a8d0a3e7364fe5cfb1dfae83e5335",
+  "image_ids": {
+    "cp": "sha256:2601c4d03240a5b99d5142e43f020d41caf392ce7bab8a2a519995db27b30264"
+  },
+  "int03c": {
+    "canonical_provider_qualified": false,
+    "cases": {
+      "complete-teardown": {
+        "assertions": {
+          "accepting_runtime_absent": true,
+          "both_issuer_clients_absent": true,
+          "cp_principal_terminal": true,
+          "issuance_after_delete_denied": true,
+          "native_human_identities_absent": true,
+          "original_tokens_inactive": true,
+          "owned_resources_absent": true,
+          "private_state_absent": true
+        },
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "cp-principal-deactivation": {
+        "assertions": {
+          "distinct_checker_completed": true,
+          "issuer_independently_active": true,
+          "positive_before_disable": true,
+          "principal_disabled_readback": true,
+          "same_bearer_cp_403": true,
+          "same_principal_denied": true,
+          "unexpired_after_denial": true,
+          "wrong_digest_denied": true
+        },
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "current-cp-principal-and-link": {
+        "assertions": {
+          "canonical_issuer_subject_provenance_approved": true,
+          "distinct_current_humans": true,
+          "exact_principal_readback": true,
+          "own_tenant_organisation_market": true,
+          "principal_active": true,
+          "same_principal_approval_denied": true
+        },
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "issuer-issuance-and-readback": {
+        "assertions": {
+          "active_readback": true,
+          "exact_client_ceiling": true,
+          "issuer_subject_client_audience_scope_expiry_bound": true,
+          "owner_cannot_introspect": true,
+          "positive_cp_before_mutation": true,
+          "verifier_authenticated": true,
+          "wrong_verifier_secret_denied": true
+        },
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "issuer-revocation-before-expiry": {
+        "assertions": {
+          "active_before_revoke": true,
+          "fresh_token_cp_succeeds": true,
+          "independent_inactive_readback": true,
+          "native_revoke_200": true,
+          "positive_before_revoke": true,
+          "same_bearer_cp_401": true,
+          "unexpired_after_denial": true
+        },
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "wrong-audience-denial": {
+        "assertions": {
+          "cp_401": true,
+          "genuine_same_subject_wrong_audience": true,
+          "issuer_still_active": true,
+          "unexpired_after_denial": true,
+          "valid_control_succeeds": true
+        },
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "wrong-tenant-denial": {
+        "assertions": {
+          "external_403": true,
+          "same_unexpired_bearer": true,
+          "sibling_403": true,
+          "valid_control_succeeds": true
+        },
+        "reason": "OBSERVED",
+        "result": "PASS"
+      }
+    },
+    "nab03_qualified": false,
+    "production_authorized": false,
+    "protected_acceptance": false,
+    "run_id": "039946c7b987ecb3baa7788aa776c93a",
+    "schema": "infrastructure.dev04.int03c-observed.v1",
+    "scope": "DEV04_INT03C_DEVELOPMENT_ONLY",
+    "synthetic_only": true
+  },
+  "int03c_qualified": true,
+  "lifecycle_passed": true,
+  "lock_sha256": "87c5305586490bfaf58ddf530f8048e5fb7762450b11fcab557f8236dc74f38b",
+  "nab03_qualified": false,
+  "native_config_hashes": {
+    "hydra.yml": "7b88c24cd71bc8c75515140ed7876249a0742863bf55e3b73fa7cc973c41566e",
+    "introspection.htpasswd": "02e8a59f305715064766fc7bf8d1bbd875f83f5480e0363fe3afd41a9825bfc4",
+    "kratos/identity.schema.json": "080c937141d2829c12771d99e09d81ee5139e2ad3a3bbfbde9fa4232ebf88262",
+    "kratos/kratos.yml": "ec15a31282b48241e6ee642b7ea4b8ace292c48b1e08b8c96de523ca84feb865"
+  },
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "run_id": "039946c7b987ecb3baa7788aa776c93a",
+  "runtime_images": {
+    "edge": "nginx@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de",
+    "hydra": "oryd/hydra:v26.2.0@sha256:ff67c7fb5f95074fa53374d41151713554960504b340cd3f95b09e65deaea2a9",
+    "kratos": "oryd/kratos:v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643",
+    "postgres": "postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+    "probe": "python@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c"
+  },
+  "schema": "infrastructure.dev01.lifecycle.observed.v1",
+  "source_pins": {
+    "baobab-cp": "718caedca3b9203931b399464e21b0f64ffbe879",
+    "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+    "shared": "6ebd5fd258100fe437837869ab2a1248b2df3988"
+  },
+  "teardown_verified": true
+}
