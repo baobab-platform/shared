@@ -139,6 +139,23 @@
         "https://github.com/baobab-platform/infrastructure/actions/runs/40058049454",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40058048081"
       ]
+    },
+    {
+      "key": "dev03-cp",
+      "repo": "baobab-cp",
+      "sha": "718caedca3b9203931b399464e21b0f64ffbe879",
+      "pr": 435,
+      "scope": "Current issuer status enforcement after JWT verification, normalized authority scope binding, fail-closed outage handling. 24 successful owner checks; 6 applicable skips. Native joined proof is separate.",
+      "reviewed_head_sha": "05964feeed9636a9210cc669395f3481ce841007",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40074374606",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40074374077",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40074373729",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40074373705",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40074373658",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40074370154"
+      ]
     }
   ],
   "packages": [
@@ -524,37 +541,129 @@
         "DEV-02"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "progress": "SOURCE_MERGED",
+      "assessment": "IMPLEMENTED_NOT_TESTED",
       "source_baselines": [
-        "iam-native",
-        "cp-bootstrap"
+        "dev03-cp"
       ],
-      "source_note": "IAM #137 native issuer bridge is merged. Current-main IAM is 0ad103606b9705fcb33c468ea01b54d8ce76f9ae; no qualification is inferred for that later revision.",
+      "source_note": "CP #435 merged at 718caedca3b9203931b399464e21b0f64ffbe879 after 24 successful final-head checks and 6 applicable skips. Infrastructure #55 implements the selected native Hydra/Kratos profile at current IAM 0ad103606b9705fcb33c468ea01b54d8ce76f9ae and a reviewed CP pin, but actual current-profile qualification, all final-head CI and merge remain pending. The IAM/CP assessments guide scope; provider declarations stay PARTIAL and no canonical provider/estate/C4 acceptance is inferred.",
       "observed_on": "2026-10-24",
       "target_date": "2026-11-08",
       "actual_completion_date": null,
-      "mandatory_ci": "BASELINE_ONLY",
+      "mandatory_ci": "SUCCESS",
       "environment": "NO_RUNTIME_OBSERVED",
       "evidence_class": "SOURCE",
       "runtime": {
-        "status": "NOT_OBSERVED",
-        "canonical_scenarios": [
-          "L4-IAM-01",
-          "L4-IAM-02",
-          "L4-CP-01"
-        ],
+        "status": "BLOCKED",
+        "canonical_scenarios": [],
         "evidence_urls": [],
         "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "cases": [
+          {
+            "case": "absent_capability_grant_denied",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "actual_signed_issuer_and_cp_context",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "authorization_code_replay_denied",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "cp_denial_independent_of_issuer_status",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "cp_principal_deactivation_while_unexpired",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "expired_issuer_token_denied",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "fresh_credential_after_revoke_succeeds",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "issuer_revocation_while_unexpired",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "real_kratos_hydra_pkce_distinct_humans",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "same_principal_deactivation_approval_denied",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "same_principal_provenance_approval_denied",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "wrong_audience_denied",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "wrong_external_tenant_denied",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "wrong_pkce_denied_by_issuer",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "wrong_sibling_tenant_denied",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          },
+          {
+            "case": "wrong_state_denied_by_relying_party",
+            "result": "BLOCKED",
+            "evidence_urls": [],
+            "reason": "CURRENT_NATIVE_PROFILE_NOT_QUALIFIED"
+          }
+        ]
       },
       "blockers": [
         {
           "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "IAM #137 native issuer bridge is merged. Current-main IAM is 0ad103606b9705fcb33c468ea01b54d8ce76f9ae; no qualification is inferred for that later revision."
+          "detail": "The current native authority-chain profile must pass all actual cases and verified teardown; Infrastructure #55 and final Shared adoption remain pending."
         }
       ],
-      "next_action": "Compose actual IAM-issued identities and CP mappings; prove audience, revocation and distinct-Principal workflow denials.",
+      "next_action": "Finish exact native issuer/current CP runtime observations and source adoption; only then proceed to DEV-04 original seven-case qualification.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
