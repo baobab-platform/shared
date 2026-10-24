@@ -78,6 +78,19 @@ class RegisterTests(unittest.TestCase):
         self.rejects(lambda d: d["packages"][4]["runtime"].update(cleanup="NOT_OBSERVED"))
         self.rejects(lambda d: d["packages"][4]["runtime"]["cases"][0].update(result="BLOCKED"))
 
+    def test_mixed_real_observations_preserve_blocked_package_acceptance(self):
+        package = self.data["packages"][5]
+        url = "https://github.com/baobab-platform/infrastructure/actions/runs/123"
+        package.update(environment="ISOLATED_DEVELOPMENT", evidence_class="REAL_COMPONENT_SYNTHETIC_DATA")
+        package["runtime"].update(status="BLOCKED", evidence_urls=[url], cleanup="COMPLETE")
+        package["runtime"]["cases"][0].update(result="PASS", evidence_urls=[url], reason="TEST_REFERENCE_ONLY")
+        module.validate(self.data)
+        self.rejects(lambda d: d["packages"][5]["runtime"].update(status="PASS"))
+        self.rejects(lambda d: d["packages"][5].update(actual_completion_date="2026-10-24"))
+        self.rejects(lambda d: d["packages"][5].update(blockers=[]))
+        self.rejects(lambda d: d["packages"][5]["runtime"].update(cleanup="NOT_OBSERVED"))
+        self.rejects(lambda d: d["packages"][5]["runtime"]["cases"][1].update(result="FAIL"))
+
     def test_source_and_ci_references_are_immutable_and_owner_scoped(self):
         self.rejects(lambda d: d["baselines"][0].update(sha="main"))
         self.rejects(lambda d: d["baselines"][0].update(ci_urls=[]))
