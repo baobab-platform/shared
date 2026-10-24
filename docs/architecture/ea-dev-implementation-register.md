@@ -4,7 +4,7 @@ Generated from [the JSON register](ea-dev-implementation-register.json); edit JS
 
 **Observed:** 2026-10-24. **Register validation:** SOURCE reporting only. Runtime evidence is scoped to the linked package receipts. **Protected staging, external certification and production:** not accepted.
 
-Shared and selected CP/IAM/Infrastructure source/CI; actual scoped DEV-01 lifecycle/recovery receipts downloaded and hash-verified. Other owner packages remain NOT_ASSESSED; no INT-03C/NAB-03 or protected acceptance is inferred.
+Selected CP/IAM/Infrastructure source and final-head CI; actual scoped DEV-01 lifecycle and DEV-02 non-authorising fixture/PG/API receipts downloaded and hash-verified. The initial INT-02 MFA failure and successful targeted rerun remain recorded with root cause open. Other owner packages remain NOT_ASSESSED; no full canonical L4, INT-03C/NAB-03 or protected acceptance is inferred.
 
 Observations become STALE after 7 days; compare the observation date with today. CI validates structure and does not refresh evidence.
 
@@ -13,8 +13,8 @@ Observations become STALE after 7 days; compare the observation date with today.
 | Package | Accountable team | Dependencies | Progress / assessment | Observed | CI / runtime | Next action |
 | --- | --- | --- | --- | --- | --- | --- |
 | **DEV-00** — Decision/gate reconciliation | Shared Platform Architecture | None | SOURCE_MERGED / ACCEPTED | 2026-10-24 | SUCCESS / NOT_OBSERVED | Maintain source/evidence observations as each owner gate lands; retain protected acceptance separately. |
-| **DEV-01** — One paved-road integration command | Infrastructure / baobab-dev | DEV-00 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | DEV-02: qualify accurate CP Organisation/tenant/mandate variants, then DEV-03 real issuer and CP authorisation; reuse this lifecycle without the optional #49 packet. |
-| **DEV-02** — Accurate CP Organisation/tenant/mandate fixtures | CP / Shared | DEV-00, DEV-01 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Qualify mandate variants through CP-owned APIs and PostgreSQL tests using the closed contract. |
+| **DEV-01** — One paved-road integration command | Infrastructure / baobab-dev | DEV-00 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | Reuse the DEV-02-adopted lifecycle for DEV-03 real issuer and CP authorisation; retain the original DEV-01 lifecycle receipts as historical observations. |
+| **DEV-02** — Accurate CP Organisation/tenant/mandate fixtures | CP / Shared | DEV-00, DEV-01 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | DEV-03: qualify actual signed issuer -> canonical CP Principal/context/current grant, wrong-audience/tenant and revocation/deactivation denials through this reusable lifecycle. |
 | **DEV-03** — Real issuer and CP authority chain | IAM / CP / Infrastructure | DEV-01, DEV-02 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Compose actual IAM-issued identities and CP mappings; prove audience, revocation and distinct-Principal workflow denials. |
 | **DEV-04** — Seven-case INT-03C qualification | Infrastructure / IAM / CP | DEV-03 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Execute and retain all seven real cases under fresh development source/image pins and complete teardown. |
 | **DEV-05** — Nabhold IAM/CP/BFF/CMS vertical | Nabhold / CMS / IAM / CP / Infrastructure | DEV-03, DEV-04 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Repin and adopt current CMS rows, then run all fourteen NAB-03 subcases without broadening caller ceilings. |
@@ -39,6 +39,8 @@ Observations become STALE after 7 days; compare the observation date with today.
 | infra-49 | [d573582e6302da40a68215746371980e096a8b3c](https://github.com/baobab-platform/infrastructure/commit/d573582e6302da40a68215746371980e096a8b3c) ([PR #52](https://github.com/baobab-platform/infrastructure/pull/52)) | `0de8be75fadb808f1a12469185a85b61fc1bc2b6` | Optional #49 private packet source; older integration locks remain; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/39986035880), [run 2](https://github.com/baobab-platform/infrastructure/actions/runs/39986036568), [run 3](https://github.com/baobab-platform/infrastructure/actions/runs/39986034668), [run 4](https://github.com/baobab-platform/infrastructure/actions/runs/39986034505), [run 5](https://github.com/baobab-platform/infrastructure/actions/runs/39986034955) |
 | dev00-shared | [e2acbed153e8868bc07679374815971acac48f5b](https://github.com/baobab-platform/shared/commit/e2acbed153e8868bc07679374815971acac48f5b) ([PR #376](https://github.com/baobab-platform/shared/pull/376)) | `62d5e4686c2d9b6514eadaa47bc12d2b92cb94e2` | Merged DEV-00 source and reporting; no domain runtime acceptance; [run 1](https://github.com/baobab-platform/shared/actions/runs/40049590842), [run 2](https://github.com/baobab-platform/shared/actions/runs/40049591099), [run 3](https://github.com/baobab-platform/shared/actions/runs/40049590850), [run 4](https://github.com/baobab-platform/shared/actions/runs/40049590809) |
 | dev01-infrastructure | [1445195e5304accaf38b29617dc223d12680cd03](https://github.com/baobab-platform/infrastructure/commit/1445195e5304accaf38b29617dc223d12680cd03) ([PR #53](https://github.com/baobab-platform/infrastructure/pull/53)) | `97c6a65cdf0ae191ef9d96c2b9beaa118f2476b4` | Actual native Keycloak setup and CP guarded-bootstrap lifecycle/recovery only; not full authorisation, a domain provider or protected acceptance; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/40052632487), [run 2](https://github.com/baobab-platform/infrastructure/actions/runs/40052631751), [run 3](https://github.com/baobab-platform/infrastructure/actions/runs/40052631757), [run 4](https://github.com/baobab-platform/infrastructure/actions/runs/40052631801), [run 5](https://github.com/baobab-platform/infrastructure/actions/runs/40052631759), [run 6](https://github.com/baobab-platform/infrastructure/actions/runs/40052631765) |
+| dev02-cp | [a21f48a80cd5b2387c85aea7f6d97ff3811f2dbb](https://github.com/baobab-platform/baobab-cp/commit/a21f48a80cd5b2387c85aea7f6d97ff3811f2dbb) ([PR #434](https://github.com/baobab-platform/baobab-cp/pull/434)) | `6ed4c63f4e28b3370c4f83c097f22d2308f4d474` | DEV-02 CP-owned fixture v2; 24 non-authorising mandate/scope checks, real PG rollback and routed API negatives. No fictitious legal verification or canonical mandate activation.; [run 1](https://github.com/baobab-platform/baobab-cp/actions/runs/40058008694), [run 2](https://github.com/baobab-platform/baobab-cp/actions/runs/40058008550), [run 3](https://github.com/baobab-platform/baobab-cp/actions/runs/40058008112), [run 4](https://github.com/baobab-platform/baobab-cp/actions/runs/40058008050), [run 5](https://github.com/baobab-platform/baobab-cp/actions/runs/40058007987), [run 6](https://github.com/baobab-platform/baobab-cp/actions/runs/40058008037), [run 7](https://github.com/baobab-platform/baobab-cp/actions/runs/40058007980), [run 8](https://github.com/baobab-platform/baobab-cp/actions/runs/40058005043) |
+| dev02-infrastructure | [631e59dc0787f81bec0fed3516a97572e825d949](https://github.com/baobab-platform/infrastructure/commit/631e59dc0787f81bec0fed3516a97572e825d949) ([PR #54](https://github.com/baobab-platform/infrastructure/pull/54)) | `bd181655bf8b2c64420beeeab72129f9811df3bc` | DEV-02 fixture v2 adoption; exact 24-case read-only checks and native lifecycle/recovery/teardown. 29 checks succeeded, 6 skipped. INT-02 passed a targeted rerun; original MFA failure remains BA-AUD-001, not a root-cause repair.; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/40058049607), [run 2](https://github.com/baobab-platform/infrastructure/actions/runs/40058050105), [run 3](https://github.com/baobab-platform/infrastructure/actions/runs/40058049472), [run 4](https://github.com/baobab-platform/infrastructure/actions/runs/40058049452), [run 5](https://github.com/baobab-platform/infrastructure/actions/runs/40058049454), [run 6](https://github.com/baobab-platform/infrastructure/actions/runs/40058048081) |
 
 ## Case obligations requiring runtime evidence
 
@@ -52,6 +54,33 @@ Descriptive labels preserve the existing INT-03C obligations and NAB-03 subcases
 | DEV-01 | interrupted_startup_recovered | PASS | OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION |
 | DEV-01 | recovery_retested | PASS | OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION |
 | DEV-01 | teardown_without_compose_verified | PASS | OBSERVED_DEV01_LIFECYCLE_ONLY_NOT_DOMAIN_QUALIFICATION |
+| DEV-02 | equator-estate:missing | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | equator-estate:pending | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | equator-estate:revoked | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_REVOKED_OR_EXPIRED |
+| DEV-02 | equator-estate:stale | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_REVOKED_OR_EXPIRED |
+| DEV-02 | equator-estate:valid_scoped | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_ACTOR_NOT_VERIFIED |
+| DEV-02 | equator-estate:boundary_wrong_role | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | equator-estate:boundary_wrong_activity | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | equator-estate:boundary_wrong_capability | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | equator-estate:boundary_wrong_tenant | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | equator-estate:boundary_wrong_organisation | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | equator-estate:boundary_wrong_market | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | equator-estate:wrong_market | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:missing | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:pending | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:revoked | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_REVOKED_OR_EXPIRED |
+| DEV-02 | zuribeans:stale | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_REVOKED_OR_EXPIRED |
+| DEV-02 | zuribeans:valid_scoped | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_ACTOR_NOT_VERIFIED |
+| DEV-02 | zuribeans:boundary_wrong_role | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:boundary_wrong_activity | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:boundary_wrong_capability | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:boundary_wrong_tenant | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:boundary_wrong_organisation | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:boundary_wrong_market | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | zuribeans:wrong_market | PASS | OBSERVED_DEV02_NON_AUTHORISING_POLICY_INPUTS_NO_APPLICABLE_MANDATE |
+| DEV-02 | postgres-identity-projections-and-atomic-rollback | PASS | OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION |
+| DEV-02 | routed-context-api-positives-and-negatives | PASS | OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION |
+| DEV-02 | canonical-resolver-separation-and-protected-route-absence | PASS | OWNER_REAL_POSTGRES_AND_HTTP_COMPONENT_TESTS_SYNTHETIC_VERIFIER_NOT_IAM_QUALIFICATION |
 | DEV-04 | issuer-issuance-and-readback | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
 | DEV-04 | current-cp-principal-and-link | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |
 | DEV-04 | wrong-audience-denial | BLOCKED | CURRENT_PROFILE_RUNTIME_NOT_OBSERVED |

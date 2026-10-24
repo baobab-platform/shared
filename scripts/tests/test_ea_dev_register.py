@@ -145,6 +145,34 @@ class RegisterTests(unittest.TestCase):
             passed.append(receipt["lifecycle_passed"])
         self.assertEqual(sorted(passed), [False, True])
 
+    def test_retained_dev02_fixture_inventory_is_non_authorising(self):
+        folder = ROOT / "docs/architecture/evidence/dev02-2026-10-24"
+        raw = (folder / "dev02-fixture-suite.json").read_bytes()
+        digest = json.loads((folder / "dev02-fixture-suite.sha256.json").read_text())
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), digest["sha256"])
+        suite = json.loads(raw)
+        self.assertEqual(suite["schema"], "infrastructure.dev02.fixture-suite.v1")
+        self.assertEqual(suite["source_pins"]["baobab-cp"], "6ed4c63f4e28b3370c4f83c097f22d2308f4d474")
+        self.assertIs(suite["teardown_verified"], True)
+        for key in ("protected_acceptance", "production_authorized", "int03c_qualified", "nab03_qualified"):
+            self.assertIs(suite[key], False)
+        report = suite["fixture_checks"]
+        self.assertIs(report["synthetic_only"], True)
+        for key in ("official_actor_verified", "provider_permissions_granted", "protected_acceptance"):
+            self.assertIs(report[key], False)
+        expected = {"valid_scoped": "ACTOR_NOT_VERIFIED", "missing": "NO_APPLICABLE_MANDATE",
+                    "stale": "REVOKED_OR_EXPIRED", "revoked": "REVOKED_OR_EXPIRED",
+                    "wrong_market": "NO_APPLICABLE_MANDATE", "pending": "NO_APPLICABLE_MANDATE"}
+        expected.update({"boundary_wrong_" + field: "NO_APPLICABLE_MANDATE"
+                         for field in ("role", "activity", "capability", "tenant", "organisation", "market")})
+        rows = report["observations"]
+        self.assertEqual(len(rows), 24)
+        self.assertEqual({(row["enterprise"], row["case"]) for row in rows},
+                         {(e, key) for e in ("zuribeans", "equator-estate") for key in expected})
+        for row in rows:
+            self.assertIs(row["passed"], True)
+            self.assertEqual(row["policy_outcome"], expected[row["case"]])
+
     def test_legitimate_date_refresh_keeps_a_valid_register(self):
         refreshed = copy.deepcopy(self.data)
         refreshed["observed_on"] = "2027-01-02"

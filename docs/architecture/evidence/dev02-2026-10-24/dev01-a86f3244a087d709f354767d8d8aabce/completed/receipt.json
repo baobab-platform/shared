@@ -1,0 +1,28 @@
+{
+  "domain_qualification": "NOT_EXECUTED",
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "harness_sha": "8d0d435d4ef8228a08cd5c8fa62066fa4cc926df",
+  "image_ids": {
+    "cp": "sha256:cf541627295f3391f186e9d7b59e666e25a60c5413cf9cc4da0decf2cb14f696",
+    "iam": "sha256:ca12266c796ca92333d2adffaabb90086d55ded70bbbf227b84e8f8446a3fab1"
+  },
+  "int03c_qualified": false,
+  "lifecycle_passed": true,
+  "lock_sha256": "92816c860beddf9a5c67f78dd1fe6c9f2aa1b22b53ef9100368209f1a5eb6be8",
+  "nab03_qualified": false,
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "run_id": "a86f3244a087d709f354767d8d8aabce",
+  "runtime_images": {
+    "edge": "nginx@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de",
+    "postgres": "postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+    "probe": "python@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c"
+  },
+  "schema": "infrastructure.dev01.lifecycle.observed.v1",
+  "source_pins": {
+    "baobab-cp": "6ed4c63f4e28b3370c4f83c097f22d2308f4d474",
+    "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+    "shared": "a22782949fe5e761ae14cf37c8ebe76172d2b78a"
+  },
+  "teardown_verified": true
+}
