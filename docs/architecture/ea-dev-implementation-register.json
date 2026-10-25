@@ -1,6 +1,6 @@
 {
   "schema": "ea-dev-implementation-register.v1",
-  "observed_on": "2026-10-24",
+  "observed_on": "2026-10-25",
   "purpose": "READ_MODEL_NOT_AUTHORITY",
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
@@ -275,6 +275,23 @@
         "https://github.com/baobab-platform/infrastructure/actions/runs/40119777298",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40119777300",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40119771152"
+      ]
+    },
+    {
+      "key": "dev07-trade",
+      "repo": "baobab-trade",
+      "sha": "afea037ba8e32154ac920667609ac1016a9fb02a",
+      "pr": 172,
+      "scope": "DEV-07 native Medusa/PostgreSQL components only: 16 PASS/9 joined BLOCKED; real persisted missing-role refusal, UG/ZA catalogue, mandatory current clearance and native active-fixture cleanup. No joined IAM/CP/BFF, canonical INT-05/provider/protected qualification or Infrastructure host teardown. 27 successful checks and 8 applicable skips.",
+      "reviewed_head_sha": "0b99f4aed188361bfaafd198ed5ae577585a3322",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157211635",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157211228",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157211246",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210945",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157208140"
       ]
     }
   ],
@@ -1263,7 +1280,7 @@
           "detail": "Canonical bound resource/audited effect, controlled absent-subscription, unentitled-resource and retired-binding cases lack the independent entitlement/binding positive prerequisite. Direct Pulse component reads cannot qualify INT-07."
         }
       ],
-      "next_action": "Establish independent canonical subscription/grant/binding provenance, provider eligibility and an actual entitled resource invocation with audited effect; then rerun the unchanged INT-07 obligations including absent subscription, unentitled resource and retired binding.",
+      "next_action": "Revisit after baobab-subscriptions onboarding: establish independent subscription/grant provenance, normal provider eligibility and CP binding, and actual entitled resource invocation/audited effect; rerun unchanged INT-07 absent-subscription, unentitled-resource and retired-binding obligations.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
@@ -1277,32 +1294,237 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "NOT_AUDITED",
-      "source_baselines": [],
-      "source_note": "Not audited for this DEV-00 source review; owner must reconcile existing code and receipts before assigning a progress milestone.",
-      "observed_on": "2026-10-24",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "dev07-trade"
+      ],
+      "source_note": "Trade #172 merged at afea037ba8e32154ac920667609ac1016a9fb02a after review of 0b99f4aed188361bfaafd198ed5ae577585a3322 and 27 successful checks / 8 applicable skips. Fresh native result: 16 PASS/9 joined BLOCKED, no failures; original artifact/receipt hashes, tested source and native active-fixture cleanup independently verified. Evidence covers actual Medusa/PostgreSQL services and route-handler execution; joined IAM/CP/BFF authority and Infrastructure host teardown remain unqualified.",
+      "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
-      "mandatory_ci": "NOT_ASSESSED",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "mandatory_ci": "SUCCESS",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "BLOCKED",
         "canonical_scenarios": [
           "INT-05"
         ],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "evidence_urls": [
+          "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+        ],
+        "cleanup": "COMPLETE",
+        "cases": [
+          {
+            "case": "independent-buyer-relationships",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "persisted-principal-reference",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "other-buyer-relationship-refused",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "unknown-customer-refused",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "revoked-membership-refused",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "role-bound-market-grants",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "absent-role-refused",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "missing-canonical-market-fails-closed",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "ug-native-catalogue",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "za-native-catalogue",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "public-clearance-cannot-be-relaxed",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "current-market-assortment",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "expired-market-assortment-refused",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "future-market-assortment-refused",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "withdrawn-market-assortment-refused",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "owned-active-fixtures-removed",
+            "result": "PASS",
+            "reason": "OBSERVED_NATIVE_COMPONENT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "current-iam-cp-buyer-principal",
+            "result": "BLOCKED",
+            "reason": "CONNECTED_BUYER_AUTHORITY_NOT_QUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "supplier-organisation-and-erp-onboarding",
+            "result": "BLOCKED",
+            "reason": "CONNECTED_SUPPLIER_PROVIDER_NOT_QUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "entitled-private-catalogue-and-price",
+            "result": "BLOCKED",
+            "reason": "CANONICAL_BUYER_MARKET_AUTHORITY_NOT_IMPLEMENTED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "rfq-and-controlled-approval",
+            "result": "BLOCKED",
+            "reason": "CANONICAL_RFQ_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "quotation-lifecycle",
+            "result": "BLOCKED",
+            "reason": "CANONICAL_QUOTATION_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "guarded-native-order-and-replay",
+            "result": "BLOCKED",
+            "reason": "COMPOSED_BUYER_COMMIT_FENCE_NOT_QUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "erp-native-step",
+            "result": "BLOCKED",
+            "reason": "CONNECTED_ERP_PROVIDER_NOT_QUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "shipment-and-document-access",
+            "result": "BLOCKED",
+            "reason": "CONNECTED_DOCUMENTARY_PROVIDER_NOT_QUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          },
+          {
+            "case": "cross-jurisdiction-seller-authority",
+            "result": "BLOCKED",
+            "reason": "CONNECTED_LEGAL_ACTOR_AUTHORITY_NOT_QUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
+            ]
+          }
+        ]
       },
       "blockers": [
         {
-          "kind": "NOT_ASSESSED",
-          "detail": "Not audited for this DEV-00 source review; owner must reconcile existing code and receipts before assigning a progress milestone."
+          "kind": "NOT_IMPLEMENTED",
+          "detail": "Joined IAM/CP buyer Principal/Organisation/Market authority, supplier/ERP onboarding, entitled private catalogue/pricing, exact RFQ/quotation providers and controlled approval, composed buyer native commitment/replay, real ERP/documentary/Regulations and cross-jurisdiction authority remain unqualified. Native components cannot accept INT-05."
         }
       ],
-      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "next_action": "Compose actual IAM/CP buyer Principal/Organisation/Market authority, qualify exact RFQ/quotation lifecycle and composed native commitment/replay enforcement, and connect available supplier/ERP/documentary/Regulations providers with explicit unavailable cases.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

@@ -91,6 +91,28 @@ class RegisterTests(unittest.TestCase):
         self.rejects(lambda d: d["packages"][5]["runtime"].update(cleanup="NOT_OBSERVED"))
         self.rejects(lambda d: d["packages"][5]["runtime"]["cases"][1].update(result="FAIL"))
 
+    def test_dev07_joined_obligations_cannot_be_dropped_to_claim_pass(self):
+        package = self.data["packages"][7]
+        package["runtime"]["cases"] = [dict(case=name, result="BLOCKED", evidence_urls=[],
+                                               reason="TEST_ONLY") for name in module.B2B_COMPONENT_CASES]
+        module.validate(self.data)
+        self.rejects(lambda d: d["packages"][7]["runtime"]["cases"].pop())
+        self.rejects(lambda d: d["packages"][7]["runtime"].update(status="BLOCKED", cases=[]))
+
+    def test_retained_dev07_original_hash_and_authority_boundary(self):
+        folder = ROOT / "docs/architecture/evidence/dev07-2026-10-25"
+        raw = (folder / "report.json").read_bytes()
+        expected = json.loads((folder / "report.sha256.json").read_text())["sha256"]
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), expected)
+        report = json.loads(raw)
+        self.assertEqual(set(report["cases"]), module.B2B_COMPONENT_CASES)
+        self.assertEqual(sum(c["result"] == "PASS" for c in report["cases"].values()), 16)
+        self.assertEqual(sum(c["result"] == "BLOCKED" for c in report["cases"].values()), 9)
+        self.assertTrue(report["synthetic_principal_reference_only"])
+        for name in ("int05_qualified", "current_iam_cp_buyer_qualified", "provider_qualified",
+                     "protected_acceptance", "production_authorized"):
+            self.assertFalse(report[name])
+
     def test_source_and_ci_references_are_immutable_and_owner_scoped(self):
         self.rejects(lambda d: d["baselines"][0].update(sha="main"))
         self.rejects(lambda d: d["baselines"][0].update(ci_urls=[]))
