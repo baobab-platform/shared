@@ -43,7 +43,8 @@ Trade's `docs/development/DEV-07.md` documents the exact command, disposable
 configuration guard, original case inventory, maintenance triggers, cleanup and
 rollback. Source/unit tests do not themselves prove PostgreSQL execution. Actual
 CI reports must be downloaded, hash-checked and reconciled to the exact reviewed
-source. Original report bytes remain in artifact custody.
+source. The sanitized original report/hash bytes are also retained unchanged under
+`evidence/dev07-2026-10-25/` for durable source custody.
 
 Cleanup revokes append-only grants and verifies their terminal state, soft-deletes
 their referenced buyer relationship records and removes the owned product and
@@ -64,3 +65,23 @@ BLOCKED where missing. Verify wrong legal actor/Market, absent grant, private
 price/document isolation and duplicate/replay through actual execution paths.
 A native module test, local policy ALLOW, Medusa customer token or public catalogue
 result cannot substitute for these obligations.
+
+## Verified native observation — 25 October 2026
+
+[Trade run 40156275115](https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115)
+retains `dev07-native-b2b-components`, artifact `12584404889`. The downloaded ZIP
+SHA-256 is `6ae6a96f77299100b375db26bbe63797a8c3cf32d59e625c9413a54562897491`;
+the original `report.json` SHA-256 is
+`1b34b4631bb93c8340aa7b8efe4cf370ad2018e148fac7523aa1b898dddbc11f`.
+Both independently match their artifact/receipt metadata. The report's source
+SHA `2aaf478d5363bf94f082591691f025f8882d3db4` matches the tested PR merge for
+reviewed head `beee8c6ccdb205c71fd483011628ba00f87e74bb`.
+
+The exact observed result is **16 PASS, 9 BLOCKED, no failures**. All sixteen
+native component observations and active-fixture cleanup completed. Joined
+IAM/CP buyer, canonical INT-05, provider, protected and production qualification
+flags remain false. The local Principal-reference-only flag remains true.
+The requested workflow retention is 30 days, but the returned artifact metadata
+is authoritative: its expiry is 9 November 2026. The original sanitized [report](evidence/dev07-2026-10-25/report.json) and
+[hash pair](evidence/dev07-2026-10-25/report.sha256.json) are retained unchanged
+in this repository, so receipt custody survives archive expiry.

@@ -28,6 +28,33 @@ CMS_CASES = {
     "wrong-owner-or-context", "neighbour-tenant", "draft-or-preview", "withdrawn-content",
     "dependency-outage-and-restoration", "validator-negatives", "teardown",
 }
+B2B_COMPONENT_CASES = {
+    'independent-buyer-relationships',
+    'persisted-principal-reference',
+    'other-buyer-relationship-refused',
+    'unknown-customer-refused',
+    'revoked-membership-refused',
+    'role-bound-market-grants',
+    'absent-role-refused',
+    'missing-canonical-market-fails-closed',
+    'ug-native-catalogue',
+    'za-native-catalogue',
+    'public-clearance-cannot-be-relaxed',
+    'current-market-assortment',
+    'expired-market-assortment-refused',
+    'future-market-assortment-refused',
+    'withdrawn-market-assortment-refused',
+    'owned-active-fixtures-removed',
+    'current-iam-cp-buyer-principal',
+    'supplier-organisation-and-erp-onboarding',
+    'entitled-private-catalogue-and-price',
+    'rfq-and-controlled-approval',
+    'quotation-lifecycle',
+    'guarded-native-order-and-replay',
+    'erp-native-step',
+    'shipment-and-document-access',
+    'cross-jurisdiction-seller-authority',
+}
 SHA = re.compile(r"[0-9a-f]{40}")
 PROGRESS = {"NOT_ASSESSED", "NOT_STARTED", "SOURCE_IN_PROGRESS", "SOURCE_MERGED",
             "LOCAL_TESTED", "REAL_COMPONENT_SYNTHETIC_DATA"}
@@ -183,6 +210,12 @@ def validate(data: dict, root: Path = ROOT) -> None:
         if key in {"DEV-04", "DEV-05"}:
             require(set(names) == (IDENTITY_CASES if key == "DEV-04" else CMS_CASES),
                     "seven INT-03C and fourteen NAB-03 obligations cannot change")
+        # DEV-07's fixed engineering inventory preserves the joined INT-05
+        # obligations alongside component observations; they cannot disappear
+        # to manufacture a completed gate. An unaudited empty source roster
+        # remains permitted before the first runtime observation.
+        if key == "DEV-07" and (names or runtime["status"] != "NOT_OBSERVED"):
+            require(set(names) == B2B_COMPONENT_CASES, "DEV-07 component/joined inventory cannot shrink")
         if (runtime["status"] == "PASS" or package["progress"] == "REAL_COMPONENT_SYNTHETIC_DATA"
                 or package["evidence_class"] == "REAL_COMPONENT_SYNTHETIC_DATA"):
             # Evidence provenance is independent of package acceptance: real

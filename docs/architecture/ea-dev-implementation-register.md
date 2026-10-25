@@ -19,7 +19,7 @@ Observations become STALE after 7 days; compare the observation date with today.
 | **DEV-04** — Seven-case INT-03C qualification | Infrastructure / IAM / CP | DEV-03 | REAL_COMPONENT_SYNTHETIC_DATA / ACCEPTED | 2026-10-24 | SUCCESS / PASS | DEV-05: qualify the original fourteen NAB-03 cases over actual IAM/CP/BFF/CMS services; preserve provider, legal and protected acceptance boundaries. |
 | **DEV-05** — Nabhold IAM/CP/BFF/CMS vertical | Nabhold / CMS / IAM / CP / Infrastructure | DEV-03, DEV-04 | REAL_COMPONENT_SYNTHETIC_DATA / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | SUCCESS / BLOCKED | Complete actual CMS provider support and normal CP eligibility/binding/grant qualification, then rerun the unchanged original fourteen-case NAB-03 inventory. |
 | **DEV-06** — External client without estate | Infrastructure / CP / IAM / selected provider | DEV-03 | REAL_COMPONENT_SYNTHETIC_DATA / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | SUCCESS / BLOCKED | Revisit after baobab-subscriptions onboarding: establish independent subscription/grant provenance, normal provider eligibility and CP binding, and actual entitled resource invocation/audited effect; rerun unchanged INT-07 absent-subscription, unentitled-resource and retired-binding obligations. |
-| **DEV-07** — ZuriBeans B2B capability slice | ZuriBeans / Trade / ERP / Trade Docs / Regulations | DEV-03 | SOURCE_IN_PROGRESS / IMPLEMENTED_PENDING_REVIEW | 2026-10-25 | PENDING_THIS_PR / NOT_OBSERVED | Verify the native component report, then compose actual IAM/CP buyer and Market authority, qualify exact RFQ/quotation lifecycle and native commitment fence, and connect available ERP/documentary/Regulations providers with explicit unavailable cases. |
+| **DEV-07** — ZuriBeans B2B capability slice | ZuriBeans / Trade / ERP / Trade Docs / Regulations | DEV-03 | SOURCE_IN_PROGRESS / IMPLEMENTED_PENDING_REVIEW | 2026-10-25 | PENDING_THIS_PR / BLOCKED | Verify the native component report, then compose actual IAM/CP buyer and Market authority, qualify exact RFQ/quotation lifecycle and native commitment fence, and connect available ERP/documentary/Regulations providers with explicit unavailable cases. |
 | **DEV-08** — Thamani B2B logistics capability slice | Thamani / TMS / Trade Docs / Regulations / Infrastructure | DEV-03 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
 | **DEV-09** — ERP, finance and Subscriptions references | ERP / Payments / Subscriptions / Finance / Infrastructure | DEV-02, DEV-03 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
 | **DEV-10** — Developer tooling and contracts | baobab-dev / Shared Foundation / consumers | DEV-01 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
@@ -144,3 +144,28 @@ Descriptive labels preserve the existing INT-03C obligations and NAB-03 subcases
 | DEV-06 | wrong-owner-denied | PASS | OBSERVED |
 | DEV-06 | zero-estates | PASS | OBSERVED |
 | DEV-06 | zuribeans-tenant-denied | PASS | OBSERVED |
+| DEV-07 | independent-buyer-relationships | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | persisted-principal-reference | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | other-buyer-relationship-refused | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | unknown-customer-refused | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | revoked-membership-refused | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | role-bound-market-grants | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | absent-role-refused | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | missing-canonical-market-fails-closed | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | ug-native-catalogue | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | za-native-catalogue | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | public-clearance-cannot-be-relaxed | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | current-market-assortment | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | expired-market-assortment-refused | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | future-market-assortment-refused | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | withdrawn-market-assortment-refused | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | owned-active-fixtures-removed | PASS | OBSERVED_NATIVE_COMPONENT |
+| DEV-07 | current-iam-cp-buyer-principal | BLOCKED | CONNECTED_BUYER_AUTHORITY_NOT_QUALIFIED |
+| DEV-07 | supplier-organisation-and-erp-onboarding | BLOCKED | CONNECTED_SUPPLIER_PROVIDER_NOT_QUALIFIED |
+| DEV-07 | entitled-private-catalogue-and-price | BLOCKED | CANONICAL_BUYER_MARKET_AUTHORITY_NOT_IMPLEMENTED |
+| DEV-07 | rfq-and-controlled-approval | BLOCKED | CANONICAL_RFQ_PROVIDER_NOT_IMPLEMENTED |
+| DEV-07 | quotation-lifecycle | BLOCKED | CANONICAL_QUOTATION_PROVIDER_NOT_IMPLEMENTED |
+| DEV-07 | guarded-native-order-and-replay | BLOCKED | COMPOSED_BUYER_COMMIT_FENCE_NOT_QUALIFIED |
+| DEV-07 | erp-native-step | BLOCKED | CONNECTED_ERP_PROVIDER_NOT_QUALIFIED |
+| DEV-07 | shipment-and-document-access | BLOCKED | CONNECTED_DOCUMENTARY_PROVIDER_NOT_QUALIFIED |
+| DEV-07 | cross-jurisdiction-seller-authority | BLOCKED | CONNECTED_LEGAL_ACTOR_AUTHORITY_NOT_QUALIFIED |
