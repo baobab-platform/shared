@@ -113,6 +113,16 @@ class RegisterTests(unittest.TestCase):
                      "protected_acceptance", "production_authorized"):
             self.assertFalse(report[name])
 
+    def test_dev08_source_checks_cannot_accept_unobserved_transport(self):
+        package = self.data["packages"][8]
+        self.assertEqual({c["case"] for c in package["runtime"]["cases"]}, module.LOGISTICS_CASES)
+        module.validate(self.data)
+        self.rejects(lambda d: d["packages"][8]["runtime"]["cases"].pop())
+        self.rejects(lambda d: d["packages"][8]["runtime"]["cases"][0].update(
+            result="PASS", evidence_urls=["https://github.com/baobab-platform/thamani/actions/runs/123"]))
+        self.rejects(lambda d: d["packages"][8]["runtime"].update(status="PASS"))
+        self.rejects(lambda d: d["packages"][8].update(actual_completion_date="2026-10-24"))
+
     def test_source_and_ci_references_are_immutable_and_owner_scoped(self):
         self.rejects(lambda d: d["baselines"][0].update(sha="main"))
         self.rejects(lambda d: d["baselines"][0].update(ci_urls=[]))
