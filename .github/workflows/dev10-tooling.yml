@@ -11,14 +11,14 @@ jobs:
   source-matrix:
     runs-on: ubuntu-26.04
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: baobab-platform/baobab-dev
           ref: a161d52f32974327ac35cb1519918be08547815e
           path: .dev10-provider
           persist-credentials: false
-      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6
         with:
           python-version: "3.13"
       - run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Authenticate Actions image read
         env:
           TOKEN: ${{ github.token }}

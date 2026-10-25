@@ -1,5 +1,4 @@
 """Actual workspace image/capability checks; never container acceptance."""
-import copy
 import importlib.util
 import json
 from pathlib import Path
@@ -77,6 +76,38 @@ validation:
             p.write_text(s.replace('profile: frontend','profile: full\n  profile: frontend'))
             with self.assertRaises(ValueError):m.check(root,CAT)
             p.write_text(s.replace('1.4.4-frontend','1.4.3-frontend'))
+            with self.assertRaises(ValueError):m.check(root,CAT)
+
+    def test_devcontainer_dockerfile_is_relative_to_config_not_context(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);self.fixture(root,json.dumps({'build':{'context':'..','dockerfile':'Dockerfile'}}))
+            (root/'Dockerfile').write_text('FROM ubuntu:26.04\n')
+            (root/'.devcontainer/Dockerfile').write_text('FROM '+IMAGE+'\n')
+            self.assertEqual(IMAGE,m.check(root,CAT)['image'])
+            (root/'Dockerfile').write_text('FROM '+IMAGE+'\n')
+            (root/'.devcontainer/Dockerfile').write_text('FROM ubuntu:26.04\n')
+            with self.assertRaises(ValueError):m.check(root,CAT)
+
+    def test_compose_build_args_override_preserves_actual_context_dockerfile_target(self):
+        for shorthand in (False,True):
+            with self.subTest(shorthand=shorthand),tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp);self.fixture(root,json.dumps({'dockerComposeFile':['base.yml','override.yml'],'service':'workspace'}))
+                (root/'.devcontainer/actual').mkdir()
+                (root/'.devcontainer/actual/Dockerfile').write_text('FROM ubuntu:26.04 AS actual\n')
+                (root/'.devcontainer/Dockerfile').write_text('FROM '+IMAGE+'\n')
+                build='actual' if shorthand else {'context':'actual','dockerfile':'Dockerfile','target':'actual'}
+                (root/'.devcontainer/base.yml').write_text(json.dumps({'services':{'workspace':{'build':build}}}))
+                (root/'.devcontainer/override.yml').write_text(json.dumps({'services':{'workspace':{'build':{'args':{'BASE':IMAGE}}}}}))
+                with self.assertRaises(ValueError):m.check(root,CAT)
+                (root/'.devcontainer/actual/Dockerfile').write_text('ARG BASE\nFROM ${BASE} AS actual\n')
+                self.assertEqual(IMAGE,m.check(root,CAT)['image'])
+
+    def test_stage_local_arg_cannot_select_later_from_and_sources_are_exclusive(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);self.fixture(root,json.dumps({'build':{'dockerfile':'Dockerfile'}}))
+            (root/'.devcontainer/Dockerfile').write_text('FROM ubuntu:26.04 AS first\nARG BASE='+IMAGE+'\nFROM ${BASE}\n')
+            with self.assertRaises(ValueError):m.check(root,CAT)
+            (root/'.devcontainer/devcontainer.json').write_text(json.dumps({'image':IMAGE,'dockerComposeFile':'unused.yml'}))
             with self.assertRaises(ValueError):m.check(root,CAT)
 
 

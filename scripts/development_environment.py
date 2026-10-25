@@ -81,18 +81,22 @@ def version(value):
     return tuple(map(int,value.split('.')))
 
 
-def docker_base(root, folder, build, expected):
+def docker_base(root, folder, build, expected, *, relative_to_config=False):
     if isinstance(build,str): build={'context':build}
     require(isinstance(build,dict),'invalid build configuration')
     context=(folder/build.get('context','.')).resolve()
-    path=inside(root,context/build.get('dockerfile','Dockerfile'))
-    args=dict(build.get('args',{})); stages={}; final=False
+    require(context.is_relative_to(root.resolve()) and context.is_dir(),'build context outside repository or missing')
+    path=inside(root,(folder if relative_to_config else context)/build.get('dockerfile','Dockerfile'))
+    overrides=build.get('args',{});require(isinstance(overrides,dict),'build args mapping required')
+    args={}; stages={}; final=False; started=False
     for line in path.read_text().splitlines():
         line=line.strip()
-        if line.startswith('ARG '):
+        require('<<' not in line,'Dockerfile heredoc analysis unsupported')
+        if line.startswith('ARG ') and not started:
             key,sep,value=line[4:].partition('=')
-            if key not in args and sep: args[key]=value
+            args[key]=overrides.get(key,value if sep else '')
         if not re.match(r'FROM\s',line,re.I): continue
+        started=True
         fields=line.split()[1:]
         fields=[field for field in fields if not field.startswith('--platform=')]
         require(fields,'missing FROM image')
@@ -108,7 +112,7 @@ def effective_image(root, config, expected):
     require(isinstance(config,dict),'Dev Container must be an object')
     require(sum(k in config for k in ('image','build','dockerComposeFile'))==1,'ambiguous Dev Container source')
     if 'build' in config:
-        return docker_base(root,root/'.devcontainer',config['build'],expected)
+        return docker_base(root,root/'.devcontainer',config['build'],expected,relative_to_config=True)
     if 'image' in config:
         image=config['image']
         require(isinstance(image,str),'image must be text')
@@ -127,7 +131,14 @@ def effective_image(root, config, expected):
         row=data.get('services',{}).get(service,{})
         require(isinstance(row,dict),'invalid Compose workspace')
         require('extends' not in row,'unsupported Compose service extends')
-        selected.update(row)
+        row=dict(row)
+        if isinstance(row.get('build'),str):row['build']={'context':row['build']}
+        def merge(base,extra):
+            result=dict(base)
+            for key,value in extra.items():
+                result[key]=merge(result[key],value) if isinstance(result.get(key),dict) and isinstance(value,dict) else value
+            return result
+        selected=merge(selected,row)
         found=found or bool(row)
     require(found,'Compose workspace service missing')
     if 'build' in selected:
