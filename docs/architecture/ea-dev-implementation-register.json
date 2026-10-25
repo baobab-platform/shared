@@ -1,6 +1,6 @@
 {
   "schema": "ea-dev-implementation-register.v1",
-  "observed_on": "2026-10-24",
+  "observed_on": "2026-10-25",
   "purpose": "READ_MODEL_NOT_AUTHORITY",
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
@@ -1263,7 +1263,7 @@
           "detail": "Canonical bound resource/audited effect, controlled absent-subscription, unentitled-resource and retired-binding cases lack the independent entitlement/binding positive prerequisite. Direct Pulse component reads cannot qualify INT-07."
         }
       ],
-      "next_action": "Establish independent canonical subscription/grant/binding provenance, provider eligibility and an actual entitled resource invocation with audited effect; then rerun the unchanged INT-07 obligations including absent subscription, unentitled resource and retired binding.",
+      "next_action": "Revisit after baobab-subscriptions onboarding: establish independent subscription/grant provenance, normal provider eligibility and CP binding, and actual entitled resource invocation/audited effect; rerun unchanged INT-07 absent-subscription, unentitled-resource and retired-binding obligations.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
@@ -1277,16 +1277,16 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "NOT_AUDITED",
+      "progress": "SOURCE_IN_PROGRESS",
+      "assessment": "IMPLEMENTED_PENDING_REVIEW",
       "source_baselines": [],
-      "source_note": "Not audited for this DEV-00 source review; owner must reconcile existing code and receipts before assigning a progress milestone.",
-      "observed_on": "2026-10-24",
+      "source_note": "Trade #172 implements the first DEV-07 native Medusa/PostgreSQL component suite and current public assortment correction. TypeScript/lint/format and 899 local unit tests pass; actual owner PostgreSQL report and final-head CI are pending. No joined INT-05 acceptance is inferred.",
+      "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
-      "mandatory_ci": "NOT_ASSESSED",
+      "mandatory_ci": "PENDING_THIS_PR",
       "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "evidence_class": "LOCAL_TESTED",
       "runtime": {
         "status": "NOT_OBSERVED",
         "canonical_scenarios": [
@@ -1298,11 +1298,15 @@
       },
       "blockers": [
         {
-          "kind": "NOT_ASSESSED",
-          "detail": "Not audited for this DEV-00 source review; owner must reconcile existing code and receipts before assigning a progress milestone."
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "Final owner PostgreSQL runtime, artifact/hash verification and current-head CI remain pending."
+        },
+        {
+          "kind": "NOT_IMPLEMENTED",
+          "detail": "Joined IAM/CP buyer Principal/Organisation/Market authority, supplier/ERP onboarding, entitled private catalogue/pricing, exact RFQ/quotation providers and controlled approval, composed buyer native commitment/replay, real ERP/documentary/Regulations and cross-jurisdiction authority remain unqualified. Native components cannot accept INT-05."
         }
       ],
-      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "next_action": "Verify the native component report, then compose actual IAM/CP buyer and Market authority, qualify exact RFQ/quotation lifecycle and native commitment fence, and connect available ERP/documentary/Regulations providers with explicit unavailable cases.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
