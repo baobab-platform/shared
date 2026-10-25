@@ -55,6 +55,28 @@ B2B_COMPONENT_CASES = {
     'shipment-and-document-access',
     'cross-jurisdiction-seller-authority',
 }
+LOGISTICS_CASES = {
+    'b2b-customer-quote',
+    'b2b-partner-booking',
+    'native-tracking',
+    'native-proof-of-event',
+    'independent-customer-partner-organisations',
+    'own-shipment-access',
+    'unrelated-shipment-denied',
+    'cross-tenant-denied',
+    'wrong-market-denied',
+    'unapproved-transport-legal-actor-denied',
+    'invented-carrier-denied',
+    'invented-eta-denied',
+    'invented-custody-denied',
+    'recipient-scope-denied',
+    'absent-grant-denied',
+    'expired-revoked-authority-denied',
+    'booking-duplicate-replay-denied',
+    'dependency-outage-and-recovery',
+    'unqualified-b2c-interface-denied',
+    'teardown',
+}
 SHA = re.compile(r"[0-9a-f]{40}")
 PROGRESS = {"NOT_ASSESSED", "NOT_STARTED", "SOURCE_IN_PROGRESS", "SOURCE_MERGED",
             "LOCAL_TESTED", "REAL_COMPONENT_SYNTHETIC_DATA"}
@@ -216,6 +238,8 @@ def validate(data: dict, root: Path = ROOT) -> None:
         # remains permitted before the first runtime observation.
         if key == "DEV-07" and (names or runtime["status"] != "NOT_OBSERVED"):
             require(set(names) == B2B_COMPONENT_CASES, "DEV-07 component/joined inventory cannot shrink")
+        if key == "DEV-08" and (names or runtime["status"] != "NOT_OBSERVED"):
+            require(set(names) == LOGISTICS_CASES, "DEV-08 logistics obligations cannot shrink")
         if (runtime["status"] == "PASS" or package["progress"] == "REAL_COMPONENT_SYNTHETIC_DATA"
                 or package["evidence_class"] == "REAL_COMPONENT_SYNTHETIC_DATA"):
             # Evidence provenance is independent of package acceptance: real

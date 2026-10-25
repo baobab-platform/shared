@@ -293,6 +293,23 @@
         "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210945",
         "https://github.com/baobab-platform/baobab-trade/actions/runs/40157208140"
       ]
+    },
+    {
+      "key": "dev08-tha",
+      "repo": "thamani",
+      "sha": "8a18b0b1613b236f6107b3a6e2e76f9339184b46",
+      "pr": 42,
+      "scope": "DEV-08 source-only admission and dependency hardening: all60 synthetic unit/component tests and authenticated owner build/browser/security gates pass;25 successful checks/7 applicable skips. All20 actual INT-04 logistics obligations BLOCKED on real TMS/contracts/adapters. No native transport receipt, provider qualification or host teardown.",
+      "reviewed_head_sha": "ae59299e0dc5bfacd8bfec61ed3cacbb341266d9",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/thamani/actions/runs/40160409478",
+        "https://github.com/baobab-platform/thamani/actions/runs/40160409093",
+        "https://github.com/baobab-platform/thamani/actions/runs/40160408847",
+        "https://github.com/baobab-platform/thamani/actions/runs/40160408836",
+        "https://github.com/baobab-platform/thamani/actions/runs/40160408839",
+        "https://github.com/baobab-platform/thamani/actions/runs/40160406885"
+      ]
     }
   ],
   "packages": [
@@ -1538,32 +1555,155 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "NOT_AUDITED",
-      "source_baselines": [],
-      "source_note": "Not audited for this DEV-00 source review; prototype and actual transport qualification remain distinct.",
-      "observed_on": "2026-10-24",
+      "progress": "SOURCE_MERGED",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "dev08-tha"
+      ],
+      "source_note": "Thamani #42 merged at 8a18b0b1613b236f6107b3a6e2e76f9339184b46 after review of ae59299e0dc5bfacd8bfec61ed3cacbb341266d9 and25 successful checks/7 applicable skips. Source-only admission now requires actual IAM/CP actor/Market/binding and native object relationship/permission, monotonic clock/lease rechecks and minimal evidence projection. All60 synthetic unit/component tests and authenticated frozen-lock/build/browser/security checks pass, including patched Zod/Undici leaves. TMS main9a4761f6 remains architecture/templates; all20 live obligations remain BLOCKED. No real TMS operation, runtime receipt or host teardown observed.",
+      "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
-      "mandatory_ci": "NOT_ASSESSED",
+      "mandatory_ci": "SUCCESS",
       "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "evidence_class": "LOCAL_TESTED",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "BLOCKED",
         "canonical_scenarios": [
           "INT-04"
         ],
         "evidence_urls": [],
         "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "cases": [
+          {
+            "case": "b2b-customer-quote",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "b2b-partner-booking",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "native-tracking",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "native-proof-of-event",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "independent-customer-partner-organisations",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "own-shipment-access",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "unrelated-shipment-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "cross-tenant-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "wrong-market-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "unapproved-transport-legal-actor-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "invented-carrier-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "invented-eta-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "invented-custody-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "recipient-scope-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "absent-grant-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "expired-revoked-authority-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "booking-duplicate-replay-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "dependency-outage-and-recovery",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "unqualified-b2c-interface-denied",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "teardown",
+            "result": "BLOCKED",
+            "reason": "TMS_PROVIDER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          }
+        ]
       },
       "blockers": [
         {
-          "kind": "NOT_ASSESSED",
-          "detail": "Not audited for this DEV-00 source review; prototype and actual transport qualification remain distinct."
+          "kind": "NOT_IMPLEMENTED",
+          "detail": "No runnable TMS provider, consumed canonical logistics wire contracts or joined IAM/CP legal/Market/object-policy adapters exist. Live quote/booking/tracking/event, carrier acknowledgement, documentary/regulatory and teardown acceptance cannot be inferred from synthetic source or UX tests."
         }
       ],
-      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "next_action": "Implement/qualify the owning TMS runtime and accepted contracts; compose actual customer/partner commercial and provider-bound legal/Market/object authority, then execute all INT-04 cases and verified Infrastructure teardown.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
