@@ -84,3 +84,7 @@ A ProductSubscription's commercial classification, and why it holds, is Control 
 - **`com.baobab-platform.product.subscription.classified.v1`** is published on every (re)classification.
 
 Classification never changes CapabilityGrant semantics. INTERNAL still grants through ProductSubscription → ProductVersion → CapabilityComposition → CapabilityGrant.
+
+## Current-state workload read (ADR-SHARED-044)
+
+The closed current-state and deny-only financial preflight schemas are in `current-authority.schema.json`. A CP snapshot is not monetary permission. Version 1 contains no positive Kill Bill dispatch outcome: the payer, price, legal mandate and provider account have distinct owners.
