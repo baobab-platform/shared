@@ -380,6 +380,24 @@
         "https://github.com/baobab-platform/baobab-subscriptions/actions/runs/40229165061",
         "https://github.com/baobab-platform/baobab-subscriptions/actions/runs/40229160800"
       ]
+    },
+    {
+      "key": "subscriptions-onboarding-infrastructure",
+      "repo": "infrastructure",
+      "sha": "00e6cd37515d1be731fa9b1f8da03d43ad11f4bc",
+      "pr": 59,
+      "reviewed_head_sha": "fe67b431abd884c8d48f82f096c0ca6a223ad9fc",
+      "scope": "Credential-isolated native IAM/CP/Subscriptions/PG17 component: 17 PASS/3 independent BLOCKED; actual current tuple, issuer expiry/revocation, engine persistence/replay/restart, CP outage/recovery and owned-resource cleanup. No independent INTERNAL eligibility, real Kill Bill, financial/protected/production qualification. Tested PR merge 5d503f655e8db486e8203109d4947c3fd39c51de.",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40231472160",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40231471201",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40231471214",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40231471210",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40231471273",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40231471216",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40231467744"
+      ]
     }
   ],
   "packages": [
@@ -1794,9 +1812,10 @@
         "dev09-erp",
         "dev09-ory",
         "subscriptions-onboarding-cp",
-        "subscriptions-onboarding-engine"
+        "subscriptions-onboarding-engine",
+        "subscriptions-onboarding-infrastructure"
       ],
-      "source_note": "Merged ERP #111/#112/#113. Fresh real iDempiere 13/PG17/CP/Hydra component proof plus native company-B setup and acceptance-mode GL. Fixed composed roster: 42 PASS / 6 BLOCKED; original receipts retain their separate 40/8 and 4/3 inventories. Native fixture bootstrap and synthetic human/legal facts confer no protected, provider or production authority. See docs/architecture/ea-dev-09-finance-component-qualification.md. Subscriptions #49/50/51 and CP #438/439 now implement adapter/current-read and development tuple/revocation gates; owner CI passes. Connected INTERNAL eligibility and real Kill Bill/financial qualification remain unproven; the older not-implemented adapter blocker is corrected without advancing runtime cases. Independently verified Subscriptions component receipt: 16 native PASS/3 independent BLOCKED, original hashes/source identity and scoped teardown checked; full INTERNAL/onboarding remains unqualified.",
+      "source_note": "Merged ERP #111/#112/#113. Fresh real iDempiere 13/PG17/CP/Hydra component proof plus native company-B setup and acceptance-mode GL. Fixed composed roster: 42 PASS / 6 BLOCKED; original receipts retain their separate 40/8 and 4/3 inventories. Native fixture bootstrap and synthetic human/legal facts confer no protected, provider or production authority. See docs/architecture/ea-dev-09-finance-component-qualification.md. Subscriptions #49/50/51 and CP #438/439 now implement adapter/current-read and development tuple/revocation gates; owner CI passes. Connected INTERNAL eligibility and real Kill Bill/financial qualification remain unproven; the older not-implemented adapter blocker is corrected without advancing runtime cases. Fresh credential-isolated Subscriptions native receipt: 17 PASS/3 independent BLOCKED, original artifact/report hashes, source identity and scoped teardown independently checked; initial 16/3 receipt retained unchanged as historical. No INTERNAL/onboarding or real provider qualification is inferred.",
       "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
@@ -1816,7 +1835,8 @@
         "evidence_urls": [
           "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571",
           "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873",
-          "https://github.com/baobab-platform/infrastructure/actions/runs/40230444543"
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40230444543",
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40231471210"
         ],
         "cleanup": "COMPLETE",
         "cases": [
@@ -2166,7 +2186,9 @@
             "case": "subscriptions-internal-current-authority",
             "result": "BLOCKED",
             "reason": "CONNECTED_WORKLOAD_READ_OBSERVED_INTERNAL_ELIGIBILITY_UNQUALIFIED",
-            "evidence_urls": []
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40231471210/artifacts/12613007751"
+            ]
           },
           {
             "case": "subscriptions-commercial-killbill",
@@ -2204,7 +2226,7 @@
           "detail": "Kratos-backed CP human authority and independent verified legal facts are not qualified by native workload/component tests. Subscriptions INTERNAL current-authority onboarding, Payments owner-service lifecycle and Trade COMMIT are not joined. Full DEV-09/INT-08, event/regulatory/recovery joins and protected acceptance remain open."
         }
       ],
-      "next_action": "Onboard Subscriptions with current IAM/CP authority and its original negative cases, then revisit DEV-06/INT-07 with CP binding/resource enforcement and unchanged negatives. Implement real Kill Bill and supported owner Payments/ERP/Trade joins; separately qualify human/legal authority, external settlement and protected entry without treating development fixtures as acceptance.",
+      "next_action": "Establish independent current CP INTERNAL eligibility and its controlled revocation differential to finish Subscriptions onboarding, then revisit DEV-06/INT-07 with CP binding/resource enforcement and unchanged negatives. Qualify real Kill Bill and supported owner Payments/ERP/Trade joins; separately qualify human/legal authority, external settlement and protected entry without treating development fixtures as acceptance.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

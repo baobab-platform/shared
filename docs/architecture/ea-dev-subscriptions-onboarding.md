@@ -65,14 +65,14 @@ reclassified as revocation-qualified. Maintenance/configuration and rollback:
 [engine runbook](https://github.com/baobab-platform/baobab-subscriptions/blob/bdba962514b2ee5083dc95feba1343b02391f60a/docs/development/connected-onboarding.md).
 
 [Infrastructure #59](https://github.com/baobab-platform/infrastructure/pull/59)
-adds the connected disposable native suite. Its fixed sixteen native observations
-must pass independently of three BLOCKED INTERNAL/provider obligations. Native
-CI evidence below proves the bounded component increment; remaining mandatory
-legacy checks still gate the Infrastructure merge. This is not full onboarding
+adds the connected disposable native suite. Its fixed seventeen native observations
+must pass independently of three BLOCKED INTERNAL/provider obligations. Fresh final-head native
+CI evidence below proves the bounded component increment; all applicable
+legacy checks also passed before the Infrastructure merge. This is not full onboarding
 completion. In particular the COMMERCIAL fixture cannot manufacture the INTERNAL
 positive prerequisite, so DEV-06/INT-07 remains deferred.
 
-## Independently verified native component receipt
+## Initial historical native component receipt — superseded for the current gate
 
 [Infrastructure native run 40230444543](https://github.com/baobab-platform/infrastructure/actions/runs/40230444543) executed reviewed head `73d56d3eccea6ee222b23e4404eed4e0fa1de3e9`, tested PR merge `3e9588b6499ded01663d226443ef1f5c2c4d3972`. Owner pins are the CP and Subscriptions merge commits above, Shared #396 and IAM `0ad103606b9705fcb33c468ea01b54d8ce76f9ae`.
 
@@ -89,3 +89,41 @@ Cleanup COMPLETE covers only run-owned containers, built images, volumes, networ
 Earlier failed attempts remain failed and satisfy no final-head gate. Corrected harness defects included source-lock selection, OAuth client authentication and the owner lifecycle-receiver flag. Regressions now prevent those configuration errors from silently passing.
 
 DEV-09 remains **42 PASS / 6 BLOCKED**. Its INTERNAL blocker recognises the connected workload read while retaining missing eligibility. DEV-06/INT-07 stays deferred until that actual prerequisite is proven.
+
+
+The initial receipt above predates the final credential-isolation review. The
+harness initially reused CP's random database password for the separate engine
+store. That defect was found before merging Infrastructure #59. Current source
+allocates an independent Subscriptions secret and adds a seventeenth required
+native observation: its own-store TCP login succeeds and the same engine
+credential receives a specific authentication refusal at the running CP database.
+A transport outage cannot satisfy it. The previous report/hash bytes remain
+unchanged as historical evidence; fresh final-head native evidence is required
+before this new obligation or the revised harness can pass its merge gate.
+
+
+## Final credential-isolated native receipt — 25 October 2026
+
+[Native run 40231471210](https://github.com/baobab-platform/infrastructure/actions/runs/40231471210)
+executed reviewed Infrastructure head `fe67b431abd884c8d48f82f096c0ca6a223ad9fc`
+as tested PR merge `5d503f655e8db486e8203109d4947c3fd39c51de`.
+[Artifact 12613007751](https://github.com/baobab-platform/infrastructure/actions/runs/40231471210/artifacts/12613007751)
+ZIP SHA-256 is `5924677ccb71eb969d9c5863771176e359e2bbf22220cbc293060c4b77748491`,
+independently verified against GitHub metadata. Original report SHA-256 is
+`993d8ac582291d334efc05c9a7533fc33f49df548f9dc11175b30c465f42d112`;
+both original report and base lifecycle receipt match their original-byte hashes.
+The new original report/hash pair is retained in
+[its separate evidence directory](evidence/subscriptions-2026-10-25/final-40231471210/),
+leaving the initial receipt unchanged. Metadata expiry: `2026-11-08T20:39:06Z`.
+
+All **20 exact cells** were checked: **17 native PASS / 3 independent BLOCKED**,
+with no failures. Owner source pins match the merged CP/Subscriptions/Shared
+commits above and the same IAM baseline. The additional database differential
+proves a successful own-store TCP login and specific CP authentication refusal
+using the engine credential. The original sixteen native observations, three
+blocked reasons, seven false qualification/money flags and scoped COMPLETE
+owned-resource cleanup are preserved. Recovery inside the lab and independent
+host recovery both passed. This replaces the earlier receipt for the current
+harness gate without converting INTERNAL or provider obligations into passes.
+
+Infrastructure #59 merged as `00e6cd37515d1be731fa9b1f8da03d43ad11f4bc` after all 38 final-head checks completed (32 successful, six applicable skips) and all six review threads were resolved. The actual merged tree matches the reviewed head. The register pins this actual merge; the receipt truthfully retains the distinct tested PR merge SHA.

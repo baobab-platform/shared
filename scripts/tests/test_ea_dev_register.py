@@ -41,6 +41,26 @@ class RegisterTests(unittest.TestCase):
             self.assertIs(False,report[key])
         self.assertEqual('COMPLETE_RUN_OWNED_CONTAINERS_IMAGES_VOLUMES_NETWORKS_PRIVATE_STATE',report['cleanup'])
 
+    def test_subscriptions_final_receipt_adds_native_database_isolation_without_promoting_authority(self):
+        evidence=ROOT/'docs/architecture/evidence/subscriptions-2026-10-25'
+        folder=evidence/'final-40231471210'
+        raw=(folder/'report.json').read_bytes()
+        digest=json.loads((folder/'report.sha256.json').read_bytes())['sha256']
+        self.assertEqual('993d8ac582291d334efc05c9a7533fc33f49df548f9dc11175b30c465f42d112',digest)
+        self.assertEqual(digest,hashlib.sha256(raw).hexdigest())
+        report=json.loads(raw)
+        initial=json.loads((evidence/'final-40230444543/report.json').read_bytes())
+        self.assertEqual('5d503f655e8db486e8203109d4947c3fd39c51de',report['source_sha'])
+        self.assertEqual(initial['source_pins'],report['source_pins'])
+        expected={**initial['cases'],'engine-cp-database-denied':{'result':'PASS','reason':'OBSERVED'}}
+        self.assertEqual(expected,report['cases'])
+        self.assertEqual(20,len(report['cases']))
+        self.assertEqual('SUCCESS',report['result'])
+        self.assertEqual(initial['cleanup'],report['cleanup'])
+        for key in ('internal_authority_qualified','full_onboarding_qualified','int07_qualified',
+                    'provider_qualified','protected_acceptance','production_authorized','money_moved'):
+            self.assertIs(False,report[key])
+
     def setUp(self):
         self.live = json.loads(module.REGISTER.read_text(encoding="utf-8"))
         # Mutation tests use a stable source-only fixture, not today's progress
