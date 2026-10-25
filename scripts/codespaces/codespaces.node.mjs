@@ -9,7 +9,7 @@ const config=JSON.parse(readFileSync(resolve(root,".devcontainer/devcontainer.js
 const manifest=JSON.parse(readFileSync(resolve(root,"package.json"),"utf8"));
 test("private image pinned to publisher v1.4.4 digest and prebuild contains no registry auth",()=>{
   assert.match(config.image,/^ghcr\.io\/baobab-platform\/baobab-dev:1\.4\.4(?:-frontend)?@sha256:[a-f0-9]{64}$/);
-  assert.equal(config.remoteUser,"vscode");assert.equal(config.waitFor,"updateContentCommand");
+  assert.equal(config.remoteUser,"vscode");assert.equal(config.waitFor,"postCreateCommand");
   assert.match(config.updateContentCommand,/node --test/);
   assert.doesNotMatch(config.updateContentCommand,/install|private-npm|bootstrap/);
   assert.match(config.postCreateCommand,/bootstrap\.mjs/);
@@ -44,3 +44,9 @@ test("refuse tokenless external package or nonmatching runtime before install",(
 });
 
 test("publisher workspace links never fetch an already-declared local package",()=>{assert.deepEqual(externalPackages([{name:"@baobab-platform/experience-ui",dependencies:{"@baobab-platform/experience-tokens":"workspace:^"}},{name:"@baobab-platform/experience-tokens",dependencies:{}}]),[]);});
+
+test("Node exact repository pin is enforced before install",()=>{
+  let calls=0;
+  assert.equal(bootstrap({manifests:[],runtime:"24.22.0",run:()=>{calls++;return {status:0};},error:()=>{}}),2);
+  assert.equal(calls,0);
+});

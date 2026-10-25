@@ -94,6 +94,12 @@ class RegisterTests(unittest.TestCase):
         self.assertEqual(42, sum(c["result"] == "PASS" for c in package["runtime"]["cases"]))
         self.assertEqual(6, sum(c["result"] == "BLOCKED" for c in package["runtime"]["cases"]))
 
+    def test_dev10_onboarding_obligations_and_source_limits_remain_explicit(self):
+        self.rejects(lambda d: d["packages"][10]["runtime"]["cases"].pop())
+        self.rejects(lambda d: d["packages"][10]["runtime"]["cases"][0].update(result="PASS"))
+        self.rejects(lambda d: d["packages"][10]["runtime"].update(status="PASS"))
+        self.rejects(lambda d: d["packages"][10].update(actual_completion_date="2026-10-24"))
+
     def test_missing_and_duplicate_packages_are_rejected(self):
         self.rejects(lambda d: d["packages"].pop())
         self.rejects(lambda d: d["packages"].__setitem__(1, d["packages"][0]))

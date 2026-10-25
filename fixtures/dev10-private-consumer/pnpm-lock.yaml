@@ -1,0 +1,18 @@
+lockfileVersion: '9.0'
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+importers:
+  .:
+    dependencies:
+      '@baobab-platform/experience-tokens':
+        specifier: 0.3.1
+        version: 0.3.1
+packages:
+  '@baobab-platform/experience-tokens@0.3.1':
+    resolution:
+      integrity: sha512-lUHUINcCglprrMjYVjD05L/gqifmuSgfBT7nBK9LR4GWlDE9lNLEMM1z1EinHB/bF5NyX3OGto16wrNB8jW0Lw==
+      tarball: https://npm.pkg.github.com/download/@baobab-platform/experience-tokens/0.3.1/8b1926774cf4b7b4de3ca5c755383571b5c31201
+    engines: {node: '>=24 <25'}
+snapshots:
+  '@baobab-platform/experience-tokens@0.3.1': {}

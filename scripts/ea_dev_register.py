@@ -127,6 +127,17 @@ FINANCE_COMPONENT_CASES = {
     'external-provider-settlement',
     'trade-native-commit',
 }
+TOOLING_CASES = {
+    'affected-consumer-upgrade-branch',
+    'clean-hosted-codespace-noninteractive-onboarding',
+    'codespace-user-private-image-and-package-access',
+    'coordinated-rollback-drill',
+    'exact-node-pnpm-fleet-pins',
+    'manifest-and-language-compatibility',
+    'physical-postgresql-migration-separation',
+    'secure-provider-image-and-lock',
+}
+
 SHA = re.compile(r"[0-9a-f]{40}")
 PROGRESS = {"NOT_ASSESSED", "NOT_STARTED", "SOURCE_IN_PROGRESS", "SOURCE_MERGED",
             "LOCAL_TESTED", "REAL_COMPONENT_SYNTHETIC_DATA"}
@@ -292,6 +303,8 @@ def validate(data: dict, root: Path = ROOT) -> None:
             require(set(names) == LOGISTICS_CASES, "DEV-08 logistics obligations cannot shrink")
         if key == "DEV-09" and (names or runtime["status"] != "NOT_OBSERVED"):
             require(set(names) == FINANCE_COMPONENT_CASES, "DEV-09 native/joined finance inventory cannot shrink")
+        if key == "DEV-10" and (names or runtime["status"] != "NOT_OBSERVED"):
+            require(set(names) == TOOLING_CASES, "DEV-10 source and actual onboarding obligations cannot shrink")
         if (runtime["status"] == "PASS" or package["progress"] == "REAL_COMPONENT_SYNTHETIC_DATA"
                 or package["evidence_class"] == "REAL_COMPONENT_SYNTHETIC_DATA"):
             # Evidence provenance is independent of package acceptance: real

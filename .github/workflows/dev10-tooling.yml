@@ -1,0 +1,54 @@
+name: DEV-10 environment and private consumer
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: read
+jobs:
+  source-matrix:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: baobab-platform/baobab-dev
+          ref: a161d52f32974327ac35cb1519918be08547815e
+          path: .dev10-provider
+          persist-credentials: false
+      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
+      - run: python3 -B scripts/check_dev10_matrix.py --provider-root .dev10-provider
+      - run: python3 -B -m unittest discover -s .github/foundation-tests -p test_development_environment.py -v
+  private-consumer:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Authenticate Actions image read
+        env:
+          TOKEN: ${{ github.token }}
+        run: printf '%s' "$TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin >/dev/null
+      - name: Exact image runtime and actual private archive installation in a fresh store
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          image=ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371
+          docker run --rm --user "$(id -u):$(id -g)" -e GITHUB_TOKEN \
+            -e HOME=/tmp/dev10-home -e CI=true -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
+            -v "$GITHUB_WORKSPACE:/workspace:ro" -w /workspace "$image" bash -c '
+              set -euo pipefail
+              mkdir -p "$HOME"
+              test "$(node --version)" = "v$(cat .node-version)"
+              test "$(pnpm --version)" = "11.24.0"
+              node scripts/codespaces/private-npm.mjs
+              cp -R fixtures/dev10-private-consumer /tmp/dev10-private-consumer
+              pnpm --dir /tmp/dev10-private-consumer install --frozen-lockfile --store-dir /tmp/dev10-fresh-store
+              test -s /tmp/dev10-private-consumer/node_modules/@baobab-platform/experience-tokens/dist/base.css
+              node --test scripts/codespaces/*.node.mjs
+            '
