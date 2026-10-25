@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and actual DEV-01..05 receipts. DEV-05 native component results are 12 PASS/2 canonical-provider BLOCKED with verified hashes/teardown; they do not qualify NAB-03. DEV-06 candidate source/runtime progress is separately reported; no canonical provider, legal, protected or production acceptance is inferred.",
+  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and actual DEV-01..05 receipts. DEV-05 native component results are 12 PASS/2 canonical-provider BLOCKED with verified hashes/teardown; they do not qualify NAB-03. DEV-06 candidate source/runtime progress is separately reported; no canonical provider, legal, protected or production acceptance is inferred. DEV-09 observed on 2026-10-25 from the linked native component receipt; earlier package observation dates remain unchanged.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -309,6 +309,42 @@
         "https://github.com/baobab-platform/thamani/actions/runs/40160408836",
         "https://github.com/baobab-platform/thamani/actions/runs/40160408839",
         "https://github.com/baobab-platform/thamani/actions/runs/40160406885"
+      ]
+    },
+    {
+      "key": "dev09-erp",
+      "repo": "baobab-erp",
+      "sha": "62c5e1d6bfc438f17eb442ab26a8e218e5c2cb2b",
+      "pr": 112,
+      "scope": "Native ERP DEV-09 receipt: 39 persisted iDempiere purchase/recording assertions and owned Compose teardown PASS; eight joined finance obligations BLOCKED. Includes source native company/org ownership hardening and 39-case JDBC/PG suite. Synthetic issuer/legal rows/payment evidence; no bank/PSP settlement, current estate IAM, company-B JVM qualification, Subscriptions onboarding or full INT-08 acceptance.",
+      "reviewed_head_sha": "d205edebd14a970d6c438ac2878b313b72c9aac6",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40164469582",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40164469161",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40164469383",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40164469335",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40164469183",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40164469192",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40164467399"
+      ]
+    },
+    {
+      "key": "dev09-ory",
+      "repo": "baobab-erp",
+      "sha": "182f48c74c2e738b937345694011f87032517e11",
+      "pr": 113,
+      "scope": "Real Hydra workload/CP contexts and independent native company B. Native InitialClientSetup and synthetic GL accounts are fixture bootstrap only; after restart the unchanged acceptance veto authorises B-only balanced Fact_Acct under an exact CP-persisted decision. Connected component receipt 4 PASS / 3 BLOCKED; native base receipt 40 PASS / 8 BLOCKED. Composed fixed DEV-09 roster 42 PASS / 6 BLOCKED, not full INT-08 or protected/provider acceptance. Synthetic CP human/legal facts; no money moves.",
+      "reviewed_head_sha": "ba4493768dda313ca1f21567ca67942c3cd990a3",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40177788171",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787813",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787758",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787671",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40177785611",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/40177782636"
       ]
     }
   ],
@@ -1718,18 +1754,21 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "NOT_AUDITED",
-      "source_baselines": [],
-      "source_note": "Not audited for this DEV-00 source review; no native JVM/DB or financial acceptance inferred.",
-      "observed_on": "2026-10-24",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "dev09-erp",
+        "dev09-ory"
+      ],
+      "source_note": "Merged ERP #111/#112/#113. Fresh real iDempiere 13/PG17/CP/Hydra component proof plus native company-B setup and acceptance-mode GL. Fixed composed roster: 42 PASS / 6 BLOCKED; original receipts retain their separate 40/8 and 4/3 inventories. Native fixture bootstrap and synthetic human/legal facts confer no protected, provider or production authority. See docs/architecture/ea-dev-09-finance-component-qualification.md.",
+      "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
-      "mandatory_ci": "NOT_ASSESSED",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "mandatory_ci": "SUCCESS",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "BLOCKED",
         "canonical_scenarios": [
           "INT-08",
           "FIN-01",
@@ -1738,17 +1777,397 @@
           "FIN-04",
           "FIN-05"
         ],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "evidence_urls": [
+          "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571",
+          "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+        ],
+        "cleanup": "COMPLETE",
+        "cases": [
+          {
+            "case": "erp-a-s01",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s02",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s03",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s04",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s05",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s06",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s07",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s08",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s09",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s10",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s11",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s12",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s13",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s14",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s15",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s16",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s17",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s18",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s19",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s20",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s21",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s22",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s23",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s24",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s25",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s26",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s04b",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-s22b",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b01",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b02",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b03",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b04",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b05",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b06",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b07",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b08",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b09",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b10",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "erp-a-b11",
+            "result": "PASS",
+            "reason": "PERSISTED_NATIVE_ASSERTION",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "owned-resource-teardown",
+            "result": "PASS",
+            "reason": "RUN_OWNED_COMPOSE_CONTAINERS_VOLUMES_NETWORKS_AND_TEMP_FILES",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "current-iam-and-cp-joined-authority",
+            "result": "BLOCKED",
+            "reason": "REAL_HYDRA_WORKLOAD_AND_CURRENT_CP_CONTEXT_PROVEN; KRATOS_CP_HUMAN_BINDING_AND_INDEPENDENT_LEGAL_FACTS_UNQUALIFIED",
+            "evidence_urls": []
+          },
+          {
+            "case": "independent-company-org-isolation",
+            "result": "PASS",
+            "reason": "NATIVE_COMPANY_B_SETUP_AND_ACCEPTANCE_MODE_B_ONLY_BALANCED_FACT_ACCT_WITH_CURRENT_CP_DECISION; SYNTHETIC_LEGAL_CONTEXT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "gl-journal-joined-provenance",
+            "result": "PASS",
+            "reason": "NATIVE_COMPANY_B_SETUP_AND_ACCEPTANCE_MODE_B_ONLY_BALANCED_FACT_ACCT_WITH_CURRENT_CP_DECISION; SYNTHETIC_LEGAL_CONTEXT",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+            ]
+          },
+          {
+            "case": "subscriptions-internal-current-authority",
+            "result": "BLOCKED",
+            "reason": "SUBSCRIPTIONS_NOT_JOINED",
+            "evidence_urls": []
+          },
+          {
+            "case": "subscriptions-commercial-killbill",
+            "result": "BLOCKED",
+            "reason": "KILL_BILL_ADAPTER_NOT_IMPLEMENTED",
+            "evidence_urls": []
+          },
+          {
+            "case": "payments-simulated-lifecycle",
+            "result": "BLOCKED",
+            "reason": "PAYMENTS_NOT_JOINED",
+            "evidence_urls": []
+          },
+          {
+            "case": "external-provider-settlement",
+            "result": "BLOCKED",
+            "reason": "NO_BANK_OR_PSP_PROVIDER_QUALIFIED",
+            "evidence_urls": []
+          },
+          {
+            "case": "trade-native-commit",
+            "result": "BLOCKED",
+            "reason": "TRADE_NOT_JOINED",
+            "evidence_urls": []
+          }
+        ]
       },
       "blockers": [
         {
-          "kind": "NOT_ASSESSED",
-          "detail": "Not audited for this DEV-00 source review; no native JVM/DB or financial acceptance inferred."
+          "kind": "NOT_IMPLEMENTED",
+          "detail": "Kill Bill adapter and commercial billing Payments handoff/outbox relay remain unimplemented. Public Payments sandbox moves no money; no qualified bank/PSP settlement."
+        },
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "Kratos-backed CP human authority and independent verified legal facts are not qualified by native workload/component tests. Subscriptions INTERNAL current-authority onboarding, Payments owner-service lifecycle and Trade COMMIT are not joined. Full DEV-09/INT-08, event/regulatory/recovery joins and protected acceptance remain open."
         }
       ],
-      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "next_action": "Onboard Subscriptions with current IAM/CP authority and its original negative cases, then revisit DEV-06/INT-07 with CP binding/resource enforcement and unchanged negatives. Implement real Kill Bill and supported owner Payments/ERP/Trade joins; separately qualify human/legal authority, external settlement and protected entry without treating development fixtures as acceptance.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

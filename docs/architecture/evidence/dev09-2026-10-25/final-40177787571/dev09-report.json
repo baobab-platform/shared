@@ -1,0 +1,280 @@
+{
+  "schema": "dev09-erp-component-evidence.v1",
+  "observed_at": "2026-10-25T08:49:51.105174+00:00",
+  "source_sha": "28bf6655c2c158b8be1cd3c6c075c518e891b777",
+  "cp_sha": "50a130576f6b126066a56e97a09676b2015f1261",
+  "shared_pins": {
+    "contracts.lock.yaml": "e1da44e90903ab7f6fe9a9060604f9bff2f13666",
+    "lock_sha256": "9846e11d736e56784e219f55133c7258bb2fb14d659a14a213efccb7366a21e3"
+  },
+  "image_ids": {
+    "erp": "sha256:afd184bb91559d08e184a5f0b77e13322d7803fe314af8df0d349f6b78d8674c",
+    "cp": "sha256:1acc1ecbf0cf3d2ddd343b7c5b8e4b89b65f8dc7855757b9606580e5c716500a",
+    "issuer": "sha256:75c543f2f7d00218096d8d9dedf47d1cfd1a35f9d9a93e4e2edde42099aa249c"
+  },
+  "run_url": "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571",
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "environment": "ISOLATED_DEVELOPMENT",
+  "scope": "ERP-A/B purchase recording, native persistence and own Compose cleanup; test issuer, synthetic legal rows and payment evidence",
+  "int08_qualified": false,
+  "current_iam_qualified": false,
+  "provider_qualified": false,
+  "protected_acceptance": false,
+  "production_authorized": false,
+  "money_moved": false,
+  "cleanup": {
+    "status": "COMPLETE",
+    "scope": "RUN_OWNED_COMPOSE_CONTAINERS_VOLUMES_NETWORKS_AND_TEMP_FILES",
+    "project": "baobab-erp-a-1a35578f2cdc8f92",
+    "remaining": {
+      "container": 0,
+      "volume": 0,
+      "network": 0
+    },
+    "temporary_directory_removed": true,
+    "host_or_image_teardown": false
+  },
+  "result": "BLOCKED",
+  "cases": [
+    {
+      "case": "erp-a-s01",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s02",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s03",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s04",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s05",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s06",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s07",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s08",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s09",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s10",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s11",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s12",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s13",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s14",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s15",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s16",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s17",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s18",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s19",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s20",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s21",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s22",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s23",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s24",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s25",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s26",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s04b",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-s22b",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b01",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b02",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b03",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b04",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b05",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b06",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b07",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b08",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b09",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b10",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "erp-a-b11",
+      "result": "PASS",
+      "reason": "PERSISTED_NATIVE_ASSERTION"
+    },
+    {
+      "case": "owned-resource-teardown",
+      "result": "PASS",
+      "reason": "RUN_OWNED_COMPOSE_CONTAINERS_VOLUMES_NETWORKS_AND_TEMP_FILES"
+    },
+    {
+      "case": "current-iam-and-cp-joined-authority",
+      "result": "BLOCKED",
+      "reason": "NATIVE_HYDRA_WORKLOAD_WITH_SYNTHETIC_CP_ADMIN_LEGAL_AUTHORITY_NOT_INDEPENDENTLY_QUALIFIED"
+    },
+    {
+      "case": "independent-company-org-isolation",
+      "result": "BLOCKED",
+      "reason": "SECOND_NATIVE_COMPANY_ORG_NOT_EXERCISED"
+    },
+    {
+      "case": "gl-journal-joined-provenance",
+      "result": "BLOCKED",
+      "reason": "SEPARATE_GATE_D_NOT_THIS_PROFILE"
+    },
+    {
+      "case": "subscriptions-internal-current-authority",
+      "result": "BLOCKED",
+      "reason": "SUBSCRIPTIONS_NOT_JOINED"
+    },
+    {
+      "case": "subscriptions-commercial-killbill",
+      "result": "BLOCKED",
+      "reason": "KILL_BILL_ADAPTER_NOT_IMPLEMENTED"
+    },
+    {
+      "case": "payments-simulated-lifecycle",
+      "result": "BLOCKED",
+      "reason": "PAYMENTS_NOT_JOINED"
+    },
+    {
+      "case": "external-provider-settlement",
+      "result": "BLOCKED",
+      "reason": "NO_BANK_OR_PSP_PROVIDER_QUALIFIED"
+    },
+    {
+      "case": "trade-native-commit",
+      "result": "BLOCKED",
+      "reason": "TRADE_NOT_JOINED"
+    }
+  ]
+}
