@@ -276,6 +276,23 @@
         "https://github.com/baobab-platform/infrastructure/actions/runs/40119777300",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40119771152"
       ]
+    },
+    {
+      "key": "dev07-trade",
+      "repo": "baobab-trade",
+      "sha": "afea037ba8e32154ac920667609ac1016a9fb02a",
+      "pr": 172,
+      "scope": "DEV-07 native Medusa/PostgreSQL components only: 16 PASS/9 joined BLOCKED; real persisted missing-role refusal, UG/ZA catalogue, mandatory current clearance and native active-fixture cleanup. No joined IAM/CP/BFF, canonical INT-05/provider/protected qualification or Infrastructure host teardown. 27 successful checks and 8 applicable skips.",
+      "reviewed_head_sha": "0b99f4aed188361bfaafd198ed5ae577585a3322",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157211635",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157211228",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157211246",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210945",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40157208140"
+      ]
     }
   ],
   "packages": [
@@ -1277,14 +1294,16 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "SOURCE_IN_PROGRESS",
-      "assessment": "IMPLEMENTED_PENDING_REVIEW",
-      "source_baselines": [],
-      "source_note": "Trade #172 implements native Medusa/PostgreSQL component qualification and current public assortment correction. Actual native result: 16 PASS/9 joined BLOCKED, no failures; original source/hash and active-fixture cleanup verified. Final broader owner CI and merge remain pending. This is route-handler/persistence proof, not joined IAM/CP/BFF or Infrastructure teardown.",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "source_baselines": [
+        "dev07-trade"
+      ],
+      "source_note": "Trade #172 merged at afea037ba8e32154ac920667609ac1016a9fb02a after review of 0b99f4aed188361bfaafd198ed5ae577585a3322 and 27 successful checks / 8 applicable skips. Fresh native result: 16 PASS/9 joined BLOCKED, no failures; original artifact/receipt hashes, tested source and native active-fixture cleanup independently verified. Evidence covers actual Medusa/PostgreSQL services and route-handler execution; joined IAM/CP/BFF authority and Infrastructure host teardown remain unqualified.",
       "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
-      "mandatory_ci": "PENDING_THIS_PR",
+      "mandatory_ci": "SUCCESS",
       "environment": "ISOLATED_DEVELOPMENT",
       "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
@@ -1293,7 +1312,7 @@
           "INT-05"
         ],
         "evidence_urls": [
-          "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+          "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
         ],
         "cleanup": "COMPLETE",
         "cases": [
@@ -1302,7 +1321,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1310,7 +1329,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1318,7 +1337,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1326,7 +1345,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1334,7 +1353,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1342,7 +1361,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1350,7 +1369,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1358,7 +1377,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1366,7 +1385,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1374,7 +1393,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1382,7 +1401,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1390,7 +1409,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1398,7 +1417,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1406,7 +1425,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1414,7 +1433,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1422,7 +1441,7 @@
             "result": "PASS",
             "reason": "OBSERVED_NATIVE_COMPONENT",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1430,7 +1449,7 @@
             "result": "BLOCKED",
             "reason": "CONNECTED_BUYER_AUTHORITY_NOT_QUALIFIED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1438,7 +1457,7 @@
             "result": "BLOCKED",
             "reason": "CONNECTED_SUPPLIER_PROVIDER_NOT_QUALIFIED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1446,7 +1465,7 @@
             "result": "BLOCKED",
             "reason": "CANONICAL_BUYER_MARKET_AUTHORITY_NOT_IMPLEMENTED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1454,7 +1473,7 @@
             "result": "BLOCKED",
             "reason": "CANONICAL_RFQ_PROVIDER_NOT_IMPLEMENTED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1462,7 +1481,7 @@
             "result": "BLOCKED",
             "reason": "CANONICAL_QUOTATION_PROVIDER_NOT_IMPLEMENTED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1470,7 +1489,7 @@
             "result": "BLOCKED",
             "reason": "COMPOSED_BUYER_COMMIT_FENCE_NOT_QUALIFIED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1478,7 +1497,7 @@
             "result": "BLOCKED",
             "reason": "CONNECTED_ERP_PROVIDER_NOT_QUALIFIED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1486,7 +1505,7 @@
             "result": "BLOCKED",
             "reason": "CONNECTED_DOCUMENTARY_PROVIDER_NOT_QUALIFIED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           },
           {
@@ -1494,22 +1513,18 @@
             "result": "BLOCKED",
             "reason": "CONNECTED_LEGAL_ACTOR_AUTHORITY_NOT_QUALIFIED",
             "evidence_urls": [
-              "https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115"
+              "https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941"
             ]
           }
         ]
       },
       "blockers": [
         {
-          "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "The native PostgreSQL suite passed and its source/hash pair was independently verified; final broader owner CI and source merge remain pending."
-        },
-        {
           "kind": "NOT_IMPLEMENTED",
           "detail": "Joined IAM/CP buyer Principal/Organisation/Market authority, supplier/ERP onboarding, entitled private catalogue/pricing, exact RFQ/quotation providers and controlled approval, composed buyer native commitment/replay, real ERP/documentary/Regulations and cross-jurisdiction authority remain unqualified. Native components cannot accept INT-05."
         }
       ],
-      "next_action": "Verify the native component report, then compose actual IAM/CP buyer and Market authority, qualify exact RFQ/quotation lifecycle and native commitment fence, and connect available ERP/documentary/Regulations providers with explicit unavailable cases.",
+      "next_action": "Compose actual IAM/CP buyer Principal/Organisation/Market authority, qualify exact RFQ/quotation lifecycle and composed native commitment/replay enforcement, and connect available supplier/ERP/documentary/Regulations providers with explicit unavailable cases.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

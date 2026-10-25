@@ -1,0 +1,115 @@
+{
+  "schema": "baobab-trade.dev07-components.v1",
+  "canonical_scenario": "INT-05",
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "scope": "NATIVE_MEDUSA_POSTGRES_COMPONENTS_ONLY",
+  "source_sha": "6e48045b78759f36b7703073f684490281c733ac",
+  "synthetic_principal_reference_only": true,
+  "current_iam_cp_buyer_qualified": false,
+  "int05_qualified": false,
+  "provider_qualified": false,
+  "protected_acceptance": false,
+  "production_authorized": false,
+  "cases": {
+    "independent-buyer-relationships": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "persisted-principal-reference": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "other-buyer-relationship-refused": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "unknown-customer-refused": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "revoked-membership-refused": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "role-bound-market-grants": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "absent-role-refused": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "missing-canonical-market-fails-closed": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "ug-native-catalogue": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "za-native-catalogue": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "public-clearance-cannot-be-relaxed": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "current-market-assortment": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "expired-market-assortment-refused": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "future-market-assortment-refused": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "withdrawn-market-assortment-refused": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "owned-active-fixtures-removed": {
+      "result": "PASS",
+      "reason": "OBSERVED_NATIVE_COMPONENT"
+    },
+    "current-iam-cp-buyer-principal": {
+      "result": "BLOCKED",
+      "reason": "CONNECTED_BUYER_AUTHORITY_NOT_QUALIFIED"
+    },
+    "supplier-organisation-and-erp-onboarding": {
+      "result": "BLOCKED",
+      "reason": "CONNECTED_SUPPLIER_PROVIDER_NOT_QUALIFIED"
+    },
+    "entitled-private-catalogue-and-price": {
+      "result": "BLOCKED",
+      "reason": "CANONICAL_BUYER_MARKET_AUTHORITY_NOT_IMPLEMENTED"
+    },
+    "rfq-and-controlled-approval": {
+      "result": "BLOCKED",
+      "reason": "CANONICAL_RFQ_PROVIDER_NOT_IMPLEMENTED"
+    },
+    "quotation-lifecycle": {
+      "result": "BLOCKED",
+      "reason": "CANONICAL_QUOTATION_PROVIDER_NOT_IMPLEMENTED"
+    },
+    "guarded-native-order-and-replay": {
+      "result": "BLOCKED",
+      "reason": "COMPOSED_BUYER_COMMIT_FENCE_NOT_QUALIFIED"
+    },
+    "erp-native-step": {
+      "result": "BLOCKED",
+      "reason": "CONNECTED_ERP_PROVIDER_NOT_QUALIFIED"
+    },
+    "shipment-and-document-access": {
+      "result": "BLOCKED",
+      "reason": "CONNECTED_DOCUMENTARY_PROVIDER_NOT_QUALIFIED"
+    },
+    "cross-jurisdiction-seller-authority": {
+      "result": "BLOCKED",
+      "reason": "CONNECTED_LEGAL_ACTOR_AUTHORITY_NOT_QUALIFIED"
+    }
+  }
+}

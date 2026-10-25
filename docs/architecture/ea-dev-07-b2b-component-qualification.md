@@ -66,7 +66,7 @@ price/document isolation and duplicate/replay through actual execution paths.
 A native module test, local policy ALLOW, Medusa customer token or public catalogue
 result cannot substitute for these obligations.
 
-## Verified native observation — 25 October 2026
+## Initial verified native observation — 25 October 2026
 
 [Trade run 40156275115](https://github.com/baobab-platform/baobab-trade/actions/runs/40156275115)
 retains `dev07-native-b2b-components`, artifact `12584404889`. The downloaded ZIP
@@ -85,3 +85,31 @@ The requested workflow retention is 30 days, but the returned artifact metadata
 is authoritative: its expiry is 9 November 2026. The original sanitized [report](evidence/dev07-2026-10-25/report.json) and
 [hash pair](evidence/dev07-2026-10-25/report.sha256.json) are retained unchanged
 in this repository, so receipt custody survives archive expiry.
+
+## Final reviewed source and native observation — 25 October 2026
+
+Trade #172 merged at `afea037ba8e32154ac920667609ac1016a9fb02a` after review of
+head `0b99f4aed188361bfaafd198ed5ae577585a3322`. All 35 reported checks completed:
+27 successful checks and eight applicable skips. This includes the full core
+Medusa/PostgreSQL regression job, Trade-A TA-08, production-infrastructure,
+conformance and security checks, with no unresolved review threads.
+
+The final candidate reads the missing-role policy from an actual persisted
+membership and removes stale report output before running observations. Fresh
+[run 40157210941](https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941)
+retains artifact `12584737149`, `dev07-native-b2b-components`. Its downloaded ZIP
+SHA-256 is `0a8c284f20d8962b5911b89be810581d52e5c6a3e87960f380e5d5c42429b2db`.
+The unchanged original [final report](evidence/dev07-2026-10-25/final-report-40157210941.json)
+and [hash pair](evidence/dev07-2026-10-25/final-report-40157210941.sha256.json)
+are retained alongside the initial historical pair. The final report SHA-256 is
+`fdaa834ac57dc4ac473dc34724709d6c2a5353a3cfe6fc40953bb66fbb2222fb`.
+Both archive and report hashes were independently checked after download.
+
+The receipt source `6e48045b78759f36b7703073f684490281c733ac` matches the final
+head's tested PR merge. Its exact result is **16 PASS, 9 BLOCKED, no failures**.
+All 25 engineering observations remain visible. Local Principal references stay
+explicitly synthetic; joined IAM/CP buyer, INT-05, provider, protected and
+production qualification flags remain false. Native active-fixture cleanup was
+read back; this does not certify Infrastructure host teardown. The final artifact
+metadata expires on 9 November 2026, while the retained original report/hash
+bytes remain available in this repository.
