@@ -77,6 +77,56 @@ LOGISTICS_CASES = {
     'unqualified-b2c-interface-denied',
     'teardown',
 }
+FINANCE_COMPONENT_CASES = {
+    'erp-a-s01',
+    'erp-a-s02',
+    'erp-a-s03',
+    'erp-a-s04',
+    'erp-a-s05',
+    'erp-a-s06',
+    'erp-a-s07',
+    'erp-a-s08',
+    'erp-a-s09',
+    'erp-a-s10',
+    'erp-a-s11',
+    'erp-a-s12',
+    'erp-a-s13',
+    'erp-a-s14',
+    'erp-a-s15',
+    'erp-a-s16',
+    'erp-a-s17',
+    'erp-a-s18',
+    'erp-a-s19',
+    'erp-a-s20',
+    'erp-a-s21',
+    'erp-a-s22',
+    'erp-a-s23',
+    'erp-a-s24',
+    'erp-a-s25',
+    'erp-a-s26',
+    'erp-a-s04b',
+    'erp-a-s22b',
+    'erp-a-b01',
+    'erp-a-b02',
+    'erp-a-b03',
+    'erp-a-b04',
+    'erp-a-b05',
+    'erp-a-b06',
+    'erp-a-b07',
+    'erp-a-b08',
+    'erp-a-b09',
+    'erp-a-b10',
+    'erp-a-b11',
+    'owned-resource-teardown',
+    'current-iam-and-cp-joined-authority',
+    'independent-company-org-isolation',
+    'gl-journal-joined-provenance',
+    'subscriptions-internal-current-authority',
+    'subscriptions-commercial-killbill',
+    'payments-simulated-lifecycle',
+    'external-provider-settlement',
+    'trade-native-commit',
+}
 SHA = re.compile(r"[0-9a-f]{40}")
 PROGRESS = {"NOT_ASSESSED", "NOT_STARTED", "SOURCE_IN_PROGRESS", "SOURCE_MERGED",
             "LOCAL_TESTED", "REAL_COMPONENT_SYNTHETIC_DATA"}
@@ -240,6 +290,8 @@ def validate(data: dict, root: Path = ROOT) -> None:
             require(set(names) == B2B_COMPONENT_CASES, "DEV-07 component/joined inventory cannot shrink")
         if key == "DEV-08" and (names or runtime["status"] != "NOT_OBSERVED"):
             require(set(names) == LOGISTICS_CASES, "DEV-08 logistics obligations cannot shrink")
+        if key == "DEV-09" and (names or runtime["status"] != "NOT_OBSERVED"):
+            require(set(names) == FINANCE_COMPONENT_CASES, "DEV-09 native/joined finance inventory cannot shrink")
         if (runtime["status"] == "PASS" or package["progress"] == "REAL_COMPONENT_SYNTHETIC_DATA"
                 or package["evidence_class"] == "REAL_COMPONENT_SYNTHETIC_DATA"):
             # Evidence provenance is independent of package acceptance: real

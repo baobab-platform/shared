@@ -4,7 +4,7 @@ Generated from [the JSON register](ea-dev-implementation-register.json); edit JS
 
 **Observed:** 2026-10-25. **Register validation:** SOURCE reporting only. Runtime evidence is scoped to the linked package receipts. **Protected staging, external certification and production:** not accepted.
 
-Selected merged CP/IAM/Infrastructure sources and actual DEV-01..05 receipts. DEV-05 native component results are 12 PASS/2 canonical-provider BLOCKED with verified hashes/teardown; they do not qualify NAB-03. DEV-06 candidate source/runtime progress is separately reported; no canonical provider, legal, protected or production acceptance is inferred.
+Selected merged CP/IAM/Infrastructure sources and actual DEV-01..05 receipts. DEV-05 native component results are 12 PASS/2 canonical-provider BLOCKED with verified hashes/teardown; they do not qualify NAB-03. DEV-06 candidate source/runtime progress is separately reported; no canonical provider, legal, protected or production acceptance is inferred. DEV-09 observed on 2026-10-25 from the linked native component receipt; earlier package observation dates remain unchanged.
 
 Observations become STALE after 7 days; compare the observation date with today. CI validates structure and does not refresh evidence.
 
@@ -21,7 +21,7 @@ Observations become STALE after 7 days; compare the observation date with today.
 | **DEV-06** — External client without estate | Infrastructure / CP / IAM / selected provider | DEV-03 | REAL_COMPONENT_SYNTHETIC_DATA / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | SUCCESS / BLOCKED | Revisit after baobab-subscriptions onboarding: establish independent subscription/grant provenance, normal provider eligibility and CP binding, and actual entitled resource invocation/audited effect; rerun unchanged INT-07 absent-subscription, unentitled-resource and retired-binding obligations. |
 | **DEV-07** — ZuriBeans B2B capability slice | ZuriBeans / Trade / ERP / Trade Docs / Regulations | DEV-03 | REAL_COMPONENT_SYNTHETIC_DATA / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-25 | SUCCESS / BLOCKED | Compose actual IAM/CP buyer Principal/Organisation/Market authority, qualify exact RFQ/quotation lifecycle and composed native commitment/replay enforcement, and connect available supplier/ERP/documentary/Regulations providers with explicit unavailable cases. |
 | **DEV-08** — Thamani B2B logistics capability slice | Thamani / TMS / Trade Docs / Regulations / Infrastructure | DEV-03 | SOURCE_MERGED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-25 | SUCCESS / BLOCKED | Implement/qualify the owning TMS runtime and accepted contracts; compose actual customer/partner commercial and provider-bound legal/Market/object authority, then execute all INT-04 cases and verified Infrastructure teardown. |
-| **DEV-09** — ERP, finance and Subscriptions references | ERP / Payments / Subscriptions / Finance / Infrastructure | DEV-02, DEV-03 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
+| **DEV-09** — ERP, finance and Subscriptions references | ERP / Payments / Subscriptions / Finance / Infrastructure | DEV-02, DEV-03 | REAL_COMPONENT_SYNTHETIC_DATA / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-25 | SUCCESS / BLOCKED | Qualify the real Ory/CP and independently provisioned native-company increment in ERP #113, then onboard Subscriptions with current CP authority and its original negatives. Preserve DEV-06/INT-07 deferral until that onboarding; implement real Kill Bill and supported owner Payments/ERP/Trade joins without claiming settlement or protected acceptance. |
 | **DEV-10** — Developer tooling and contracts | baobab-dev / Shared Foundation / consumers | DEV-01 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
 | **DEV-11** — Observability, browser experience and CI test routing | Infrastructure / Shared / estates | DEV-01 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
 | **DEV-12** — Database, migration and resilience drills | Persistent-engine owners / Infrastructure | DEV-01, DEV-02 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
@@ -51,6 +51,7 @@ Observations become STALE after 7 days; compare the observation date with today.
 | dev06-infrastructure | [eeea864f3764038223793fd5dc3ed88791751914](https://github.com/baobab-platform/infrastructure/commit/eeea864f3764038223793fd5dc3ed88791751914) ([PR #58](https://github.com/baobab-platform/infrastructure/pull/58)) | `a45e4792614407eb0fc1ef55b1dc9482f7a993e0` | Native external API-only IAM/CP/Pulse/PG17/Qdrant component observation: 14 PASS, 4 canonical-entitlement/binding BLOCKED; 49 source/failure/custody tests. Verified source identity, receipt hashes, zero estates and complete owned teardown; no canonical INT-07/provider/protected qualification.; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/40119778054), [run 2](https://github.com/baobab-platform/infrastructure/actions/runs/40119777292), [run 3](https://github.com/baobab-platform/infrastructure/actions/runs/40119777293), [run 4](https://github.com/baobab-platform/infrastructure/actions/runs/40119777295), [run 5](https://github.com/baobab-platform/infrastructure/actions/runs/40119777298), [run 6](https://github.com/baobab-platform/infrastructure/actions/runs/40119777300), [run 7](https://github.com/baobab-platform/infrastructure/actions/runs/40119771152) |
 | dev07-trade | [afea037ba8e32154ac920667609ac1016a9fb02a](https://github.com/baobab-platform/baobab-trade/commit/afea037ba8e32154ac920667609ac1016a9fb02a) ([PR #172](https://github.com/baobab-platform/baobab-trade/pull/172)) | `0b99f4aed188361bfaafd198ed5ae577585a3322` | DEV-07 native Medusa/PostgreSQL components only: 16 PASS/9 joined BLOCKED; real persisted missing-role refusal, UG/ZA catalogue, mandatory current clearance and native active-fixture cleanup. No joined IAM/CP/BFF, canonical INT-05/provider/protected qualification or Infrastructure host teardown. 27 successful checks and 8 applicable skips.; [run 1](https://github.com/baobab-platform/baobab-trade/actions/runs/40157210941), [run 2](https://github.com/baobab-platform/baobab-trade/actions/runs/40157211635), [run 3](https://github.com/baobab-platform/baobab-trade/actions/runs/40157211228), [run 4](https://github.com/baobab-platform/baobab-trade/actions/runs/40157211246), [run 5](https://github.com/baobab-platform/baobab-trade/actions/runs/40157210945), [run 6](https://github.com/baobab-platform/baobab-trade/actions/runs/40157208140) |
 | dev08-tha | [8a18b0b1613b236f6107b3a6e2e76f9339184b46](https://github.com/baobab-platform/thamani/commit/8a18b0b1613b236f6107b3a6e2e76f9339184b46) ([PR #42](https://github.com/baobab-platform/thamani/pull/42)) | `ae59299e0dc5bfacd8bfec61ed3cacbb341266d9` | DEV-08 source-only admission and dependency hardening: all60 synthetic unit/component tests and authenticated owner build/browser/security gates pass;25 successful checks/7 applicable skips. All20 actual INT-04 logistics obligations BLOCKED on real TMS/contracts/adapters. No native transport receipt, provider qualification or host teardown.; [run 1](https://github.com/baobab-platform/thamani/actions/runs/40160409478), [run 2](https://github.com/baobab-platform/thamani/actions/runs/40160409093), [run 3](https://github.com/baobab-platform/thamani/actions/runs/40160408847), [run 4](https://github.com/baobab-platform/thamani/actions/runs/40160408836), [run 5](https://github.com/baobab-platform/thamani/actions/runs/40160408839), [run 6](https://github.com/baobab-platform/thamani/actions/runs/40160406885) |
+| dev09-erp | [62c5e1d6bfc438f17eb442ab26a8e218e5c2cb2b](https://github.com/baobab-platform/baobab-erp/commit/62c5e1d6bfc438f17eb442ab26a8e218e5c2cb2b) ([PR #112](https://github.com/baobab-platform/baobab-erp/pull/112)) | `d205edebd14a970d6c438ac2878b313b72c9aac6` | Native ERP DEV-09 receipt: 39 persisted iDempiere purchase/recording assertions and owned Compose teardown PASS; eight joined finance obligations BLOCKED. Includes source native company/org ownership hardening and 39-case JDBC/PG suite. Synthetic issuer/legal rows/payment evidence; no bank/PSP settlement, current estate IAM, company-B JVM qualification, Subscriptions onboarding or full INT-08 acceptance.; [run 1](https://github.com/baobab-platform/baobab-erp/actions/runs/40164469582), [run 2](https://github.com/baobab-platform/baobab-erp/actions/runs/40164469161), [run 3](https://github.com/baobab-platform/baobab-erp/actions/runs/40164469383), [run 4](https://github.com/baobab-platform/baobab-erp/actions/runs/40164469335), [run 5](https://github.com/baobab-platform/baobab-erp/actions/runs/40164469183), [run 6](https://github.com/baobab-platform/baobab-erp/actions/runs/40164469192), [run 7](https://github.com/baobab-platform/baobab-erp/actions/runs/40164467399) |
 
 ## Case obligations requiring runtime evidence
 
@@ -191,3 +192,51 @@ Descriptive labels preserve the existing INT-03C obligations and NAB-03 subcases
 | DEV-08 | dependency-outage-and-recovery | BLOCKED | TMS_PROVIDER_NOT_IMPLEMENTED |
 | DEV-08 | unqualified-b2c-interface-denied | BLOCKED | TMS_PROVIDER_NOT_IMPLEMENTED |
 | DEV-08 | teardown | BLOCKED | TMS_PROVIDER_NOT_IMPLEMENTED |
+| DEV-09 | erp-a-s01 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s02 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s03 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s04 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s05 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s06 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s07 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s08 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s09 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s10 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s11 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s12 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s13 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s14 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s15 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s16 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s17 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s18 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s19 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s20 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s21 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s22 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s23 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s24 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s25 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s26 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s04b | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-s22b | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b01 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b02 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b03 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b04 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b05 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b06 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b07 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b08 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b09 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b10 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | erp-a-b11 | PASS | PERSISTED_NATIVE_ASSERTION |
+| DEV-09 | owned-resource-teardown | PASS | RUN_OWNED_COMPOSE_CONTAINERS_VOLUMES_NETWORKS_AND_TEMP_FILES |
+| DEV-09 | current-iam-and-cp-joined-authority | BLOCKED | TEST_ISSUER_AND_SYNTHETIC_AUTHORITY_ROWS_ONLY |
+| DEV-09 | independent-company-org-isolation | BLOCKED | SECOND_NATIVE_COMPANY_ORG_NOT_EXERCISED |
+| DEV-09 | gl-journal-joined-provenance | BLOCKED | SEPARATE_GATE_D_NOT_THIS_PROFILE |
+| DEV-09 | subscriptions-internal-current-authority | BLOCKED | SUBSCRIPTIONS_NOT_JOINED |
+| DEV-09 | subscriptions-commercial-killbill | BLOCKED | KILL_BILL_ADAPTER_NOT_IMPLEMENTED |
+| DEV-09 | payments-simulated-lifecycle | BLOCKED | PAYMENTS_NOT_JOINED |
+| DEV-09 | external-provider-settlement | BLOCKED | NO_BANK_OR_PSP_PROVIDER_QUALIFIED |
+| DEV-09 | trade-native-commit | BLOCKED | TRADE_NOT_JOINED |
