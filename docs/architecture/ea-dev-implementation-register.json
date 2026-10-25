@@ -346,6 +346,40 @@
         "https://github.com/baobab-platform/baobab-erp/actions/runs/40177785611",
         "https://github.com/baobab-platform/baobab-erp/actions/runs/40177782636"
       ]
+    },
+    {
+      "key": "subscriptions-onboarding-cp",
+      "repo": "baobab-cp",
+      "sha": "8644cefd64e2dfe869c58f5ef6ab1667e731a1e2",
+      "pr": 439,
+      "reviewed_head_sha": "c6922d62ca105fc0a9c346f9a61bd3836ce80c6b",
+      "scope": "Source and owner PG17 tests: guarded leased COMMERCIAL subscription fixtures and merged Shared current-authority/workload adoption. No INTERNAL eligibility, capability or financial qualification.",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40229014901",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40229014394",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40229014123",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40229014143",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40229014133",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40229014141",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40229014081",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40229011334"
+      ]
+    },
+    {
+      "key": "subscriptions-onboarding-engine",
+      "repo": "baobab-subscriptions",
+      "sha": "bdba962514b2ee5083dc95feba1343b02391f60a",
+      "pr": 51,
+      "reviewed_head_sha": "93d3eb3cec0237d96e551971070948a8d9b8285a",
+      "scope": "Source and Java21/PG17 owner CI: exact current CP tuple before ensure/resume/usage/replay, current issuer revocation, immutable current-authority JAR schemas and bounded remote checks outside transactions with local concurrency fence. Runtime onboarding and INTERNAL/financial acceptance remain separate.",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-subscriptions/actions/runs/40229165793",
+        "https://github.com/baobab-platform/baobab-subscriptions/actions/runs/40229165290",
+        "https://github.com/baobab-platform/baobab-subscriptions/actions/runs/40229165061",
+        "https://github.com/baobab-platform/baobab-subscriptions/actions/runs/40229160800"
+      ]
     }
   ],
   "packages": [
@@ -1758,9 +1792,11 @@
       "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
       "source_baselines": [
         "dev09-erp",
-        "dev09-ory"
+        "dev09-ory",
+        "subscriptions-onboarding-cp",
+        "subscriptions-onboarding-engine"
       ],
-      "source_note": "Merged ERP #111/#112/#113. Fresh real iDempiere 13/PG17/CP/Hydra component proof plus native company-B setup and acceptance-mode GL. Fixed composed roster: 42 PASS / 6 BLOCKED; original receipts retain their separate 40/8 and 4/3 inventories. Native fixture bootstrap and synthetic human/legal facts confer no protected, provider or production authority. See docs/architecture/ea-dev-09-finance-component-qualification.md.",
+      "source_note": "Merged ERP #111/#112/#113. Fresh real iDempiere 13/PG17/CP/Hydra component proof plus native company-B setup and acceptance-mode GL. Fixed composed roster: 42 PASS / 6 BLOCKED; original receipts retain their separate 40/8 and 4/3 inventories. Native fixture bootstrap and synthetic human/legal facts confer no protected, provider or production authority. See docs/architecture/ea-dev-09-finance-component-qualification.md. Subscriptions #49/50/51 and CP #438/439 now implement adapter/current-read and development tuple/revocation gates; owner CI passes. Connected INTERNAL eligibility and real Kill Bill/financial qualification remain unproven; the older not-implemented adapter blocker is corrected without advancing runtime cases.",
       "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
@@ -2134,7 +2170,7 @@
           {
             "case": "subscriptions-commercial-killbill",
             "result": "BLOCKED",
-            "reason": "KILL_BILL_ADAPTER_NOT_IMPLEMENTED",
+            "reason": "KILL_BILL_PROVIDER_AND_FINANCIAL_AUTHORITY_NOT_QUALIFIED",
             "evidence_urls": []
           },
           {
@@ -2160,7 +2196,7 @@
       "blockers": [
         {
           "kind": "NOT_IMPLEMENTED",
-          "detail": "Kill Bill adapter and commercial billing Payments handoff/outbox relay remain unimplemented. Public Payments sandbox moves no money; no qualified bank/PSP settlement."
+          "detail": "Kill Bill adapter and current CP read/preflight source now exist. Genuine Kill Bill provider/financial qualification, commercial Payments handoff and outbox relay remain open; the preflight is deny-only and dispatch disabled. Public Payments sandbox moves no money; no bank/PSP settlement is qualified."
         },
         {
           "kind": "IMPLEMENTED_NOT_TESTED",
