@@ -17,6 +17,30 @@ spec.loader.exec_module(module)
 
 
 class RegisterTests(unittest.TestCase):
+    def test_subscriptions_original_native_receipt_preserves_independent_internal_gates(self):
+        folder=ROOT/'docs/architecture/evidence/subscriptions-2026-10-25/final-40230444543'
+        raw=(folder/'report.json').read_bytes()
+        digest=json.loads((folder/'report.sha256.json').read_bytes())['sha256']
+        self.assertEqual('562ef7b5d043b1e1b0a3bfabd31d338d80ec3959b4743e6a0ef9e193df99f8fa',digest)
+        self.assertEqual(digest,hashlib.sha256(raw).hexdigest())
+        report=json.loads(raw)
+        self.assertEqual('3e9588b6499ded01663d226443ef1f5c2c4d3972',report['source_sha'])
+        native={'native-issuer-clients','current-cp-snapshot','commercial-projection-persistence',
+            'wrong-tenant-denied','wrong-audience-denied','missing-scope-denied','foreign-client-denied',
+            'revision-before-replay','classification-denied','cp-outage-denied','cp-recovery',
+            'issuer-expiry-denied','issuer-revocation-denied','event-durable-replay-conflict',
+            'native-restart-persistence','teardown'}
+        blocked={'current-internal-positive':'INDEPENDENT_INTERNAL_ELIGIBILITY_NOT_ESTABLISHED',
+            'internal-revoked-eligibility-differential':'VALID_INTERNAL_POSITIVE_PREREQUISITE_MISSING',
+            'killbill-native-provider':'REAL_KILLBILL_PROVIDER_NOT_QUALIFIED'}
+        self.assertEqual(native|blocked.keys(),set(report['cases']))
+        for case in native:self.assertEqual({'result':'PASS','reason':'OBSERVED'},report['cases'][case])
+        for case,reason in blocked.items():self.assertEqual({'result':'BLOCKED','reason':reason},report['cases'][case])
+        for key in ('internal_authority_qualified','full_onboarding_qualified','int07_qualified',
+                    'provider_qualified','protected_acceptance','production_authorized','money_moved'):
+            self.assertIs(False,report[key])
+        self.assertEqual('COMPLETE_RUN_OWNED_CONTAINERS_IMAGES_VOLUMES_NETWORKS_PRIVATE_STATE',report['cleanup'])
+
     def setUp(self):
         self.live = json.loads(module.REGISTER.read_text(encoding="utf-8"))
         # Mutation tests use a stable source-only fixture, not today's progress

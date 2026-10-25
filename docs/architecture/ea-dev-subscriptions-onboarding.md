@@ -67,6 +67,25 @@ reclassified as revocation-qualified. Maintenance/configuration and rollback:
 [Infrastructure #59](https://github.com/baobab-platform/infrastructure/pull/59)
 adds the connected disposable native suite. Its fixed sixteen native observations
 must pass independently of three BLOCKED INTERNAL/provider obligations. Native
-CI and final-head evidence are still pending; source merge is not onboarding
+CI evidence below proves the bounded component increment; remaining mandatory
+legacy checks still gate the Infrastructure merge. This is not full onboarding
 completion. In particular the COMMERCIAL fixture cannot manufacture the INTERNAL
 positive prerequisite, so DEV-06/INT-07 remains deferred.
+
+## Independently verified native component receipt
+
+[Infrastructure native run 40230444543](https://github.com/baobab-platform/infrastructure/actions/runs/40230444543) executed reviewed head `73d56d3eccea6ee222b23e4404eed4e0fa1de3e9`, tested PR merge `3e9588b6499ded01663d226443ef1f5c2c4d3972`. Owner pins are the CP and Subscriptions merge commits above, Shared #396 and IAM `0ad103606b9705fcb33c468ea01b54d8ce76f9ae`.
+
+[Artifact 12611814810](https://github.com/baobab-platform/infrastructure/actions/runs/40230444543/artifacts/12611814810) archive SHA-256: `47d69eecad20fd54e36072135e1e3b67b20420062ed2db9e51dbb05f12a02888`. The downloaded ZIP digest was independently compared with GitHub metadata. Original report SHA-256: `562ef7b5d043b1e1b0a3bfabd31d338d80ec3959b4743e6a0ef9e193df99f8fa`. The original report and base lifecycle receipt match their original-byte companion hashes; source pins and tested merge identity agree.
+
+Original report bytes are retained in [the distinct immutable evidence directory](evidence/subscriptions-2026-10-25/final-40230444543/). Actual artifact expiry is `2026-11-08T20:25:29Z`, from GitHub metadata.
+
+All nineteen cells were inspected: **16 native PASS / 3 independent BLOCKED**, no failures. Passes cover native issuer client readback, current CP state, COMMERCIAL engine persistence, tenant/audience/client/scope/classification denials, revision checks before replay, expiry, revocation while unexpired, durable event replay/conflict, restart, CP outage/recovery and teardown. Monetary readiness remains BLOCKED/simulated. Independent native store readback confirms one projection and one durable event receipt.
+
+The three unchanged blocked obligations are current INTERNAL positive eligibility, its controlled revoked-eligibility differential (which needs that positive first), and genuine Kill Bill native provider qualification. Full onboarding, INTERNAL, INT-07, provider, protected and production qualification flags remain false; no money moved. This component inventory overlaps other engineering inventories and must not be added to DEV-09's canonical 48-case register.
+
+Cleanup COMPLETE covers only run-owned containers, built images, volumes, networks and private state. Added issuer clients were deleted and tokens observed inactive before physical cleanup. Host/third-party base-image destruction is not claimed.
+
+Earlier failed attempts remain failed and satisfy no final-head gate. Corrected harness defects included source-lock selection, OAuth client authentication and the owner lifecycle-receiver flag. Regressions now prevent those configuration errors from silently passing.
+
+DEV-09 remains **42 PASS / 6 BLOCKED**. Its INTERNAL blocker recognises the connected workload read while retaining missing eligibility. DEV-06/INT-07 stays deferred until that actual prerequisite is proven.

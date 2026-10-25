@@ -1796,7 +1796,7 @@
         "subscriptions-onboarding-cp",
         "subscriptions-onboarding-engine"
       ],
-      "source_note": "Merged ERP #111/#112/#113. Fresh real iDempiere 13/PG17/CP/Hydra component proof plus native company-B setup and acceptance-mode GL. Fixed composed roster: 42 PASS / 6 BLOCKED; original receipts retain their separate 40/8 and 4/3 inventories. Native fixture bootstrap and synthetic human/legal facts confer no protected, provider or production authority. See docs/architecture/ea-dev-09-finance-component-qualification.md. Subscriptions #49/50/51 and CP #438/439 now implement adapter/current-read and development tuple/revocation gates; owner CI passes. Connected INTERNAL eligibility and real Kill Bill/financial qualification remain unproven; the older not-implemented adapter blocker is corrected without advancing runtime cases.",
+      "source_note": "Merged ERP #111/#112/#113. Fresh real iDempiere 13/PG17/CP/Hydra component proof plus native company-B setup and acceptance-mode GL. Fixed composed roster: 42 PASS / 6 BLOCKED; original receipts retain their separate 40/8 and 4/3 inventories. Native fixture bootstrap and synthetic human/legal facts confer no protected, provider or production authority. See docs/architecture/ea-dev-09-finance-component-qualification.md. Subscriptions #49/50/51 and CP #438/439 now implement adapter/current-read and development tuple/revocation gates; owner CI passes. Connected INTERNAL eligibility and real Kill Bill/financial qualification remain unproven; the older not-implemented adapter blocker is corrected without advancing runtime cases. Independently verified Subscriptions component receipt: 16 native PASS/3 independent BLOCKED, original hashes/source identity and scoped teardown checked; full INTERNAL/onboarding remains unqualified.",
       "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
@@ -1815,7 +1815,8 @@
         ],
         "evidence_urls": [
           "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571",
-          "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873"
+          "https://github.com/baobab-platform/baobab-erp/actions/runs/40177787571/artifacts/12592893873",
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40230444543"
         ],
         "cleanup": "COMPLETE",
         "cases": [
@@ -2164,7 +2165,7 @@
           {
             "case": "subscriptions-internal-current-authority",
             "result": "BLOCKED",
-            "reason": "SUBSCRIPTIONS_NOT_JOINED",
+            "reason": "CONNECTED_WORKLOAD_READ_OBSERVED_INTERNAL_ELIGIBILITY_UNQUALIFIED",
             "evidence_urls": []
           },
           {
