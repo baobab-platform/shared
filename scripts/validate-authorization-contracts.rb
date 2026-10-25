@@ -411,6 +411,46 @@ development_expected.merge!(JSON.parse(<<~'JSON'))
   }
 }
 JSON
+# Subscriptions development proof has exact ceilings, not production activation.
+development_expected.merge!(JSON.parse(<<~'JSON'))
+{
+  "baobab-dev-cp-subscriptions": {
+    "repository": "baobab-platform/baobab-cp",
+    "owner": "baobab-platform/baobab-cp",
+    "runtime": "ADR-SHARED-043 disposable CP subscription command and event producer",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-subscriptions"
+    ],
+    "allowed_scopes": [
+      "billing:manage",
+      "billing:read",
+      "billing:observe",
+      "usage:record"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-cp",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-subscriptions-assessor": {
+    "repository": "baobab-platform/baobab-subscriptions",
+    "owner": "baobab-platform/baobab-subscriptions",
+    "runtime": "ADR-SHARED-043 disposable Subscriptions current CP authority reader",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane"
+    ],
+    "allowed_scopes": [
+      "subscription:internal-authority",
+      "subscription:current-workload-read",
+      "subscription:commercial-authority"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-subscriptions",
+    "status": "ACTIVE"
+  }
+}
+JSON
 development_expected.each do |name, expected|
   fail_contract("development identity #{name} exceeds its exact ADR-043 ceiling") unless workloads[name] == expected
 end
