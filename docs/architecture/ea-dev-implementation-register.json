@@ -2250,7 +2250,7 @@
       "blockers": [
         {
           "kind": "RUNTIME_FAILED",
-          "detail": "baobab-dev #48 full security/container and toolchain lock checks fail despite successful actual published-image locked onboarding. Required checks must pass before merge; no suppression added."
+          "detail": "baobab-dev #48 full security/container and toolchain lock checks fail. Initial published-image verification failed under an unmapped UID and was masked by following tests; strict propagation/native-user and fault-injection fixes require fresh CI. Required checks must pass before merge; no suppression added."
         },
         {
           "kind": "IMPLEMENTED_NOT_TESTED",

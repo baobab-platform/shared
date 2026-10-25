@@ -32,7 +32,7 @@ Node installation, exact pnpm/Yarn pins, optional exact Node checks and
 noninteractive Corepack. Failed npm ci never falls back to npm install.
 Requirements installations require hashes. Eight controlled-process regressions
 exercise the actual lifecycle script. Owner CI additionally runs its real locked
-uv project installation inside the published image as the runner UID.
+uv project installation inside the published image with a correctly owned native-user workspace.
 
 ## Versioned source and image matrix
 
@@ -48,7 +48,12 @@ The initial published-image observation is
 review candidate `274b6faf31fcfdddc31cbc2edcb7d302a1453cdf`.
 It resolved full image 1.4.4 to
 `sha256:9603f0e7402aa85771e904db1c20f2ecc02f705131b266cb4ec3d1c24ea58ae4`
-and executed locked onboarding successfully. Actual observed tools were Python
+and installed the locked uv dependencies. Its final verifier failed under an
+unmapped raw host UID (passwd/Flutter-cache errors), and a following successful
+unit command masked that failure. This was a false-green lifecycle job; it is
+not onboarding evidence. The provider fix uses strict inner-shell failure
+propagation, the image native user/owned copy, and a separate exit-42 verifier
+fault-injection test. Actual observed tools were Python
 3.14.4, uv 0.12.18, Node 24.21.0, pnpm 11.24.0 and PostgreSQL client 17.11.
 The current provider source configuration instead says Python 3.14.6 and uv
 0.12.23. The matrix keeps source configuration separate from published bytes;
@@ -68,8 +73,8 @@ does not replace final-head CI of a later provider candidate.
 
 ## Unresolved gates
 
-The provider PR is **unmerged**. Its successful onboarding test does not override
-failing full CI. Initial security checks found certifi PYSEC-2026-4320 and fixed
+The provider PR is **unmerged**. Dependency installation or any successful targeted experiment does not override
+failing lifecycle/full CI. Initial security checks found certifi PYSEC-2026-4320 and fixed
 high-severity Go stdlib/x/net vulnerabilities embedded in Docker buildx/compose,
 GitHub CLI, Task, Terraform and yq. The Python lock has been regenerated with the
 published uv 0.12.18 to patch certifi without a lock-format upgrade. Provider

@@ -23,7 +23,8 @@
       "pnpm": "11.24.0",
       "postgres_client": "17.11",
       "run_url": "https://github.com/baobab-platform/baobab-dev/actions/runs/40181062042",
-      "source_scope": "Initial historical PR48 head 274b6faf31fcfdddc31cbc2edcb7d302a1453cdf; tooling execution only, not security qualification or current final-head CI"
+      "source_scope": "Initial historical PR48 head 274b6faf31fcfdddc31cbc2edcb7d302a1453cdf: measured versions and locked uv installation only. Final verification failed under an unmapped raw UID, then was masked by following unit tests; not onboarding/security qualification.",
+      "onboarding_result": "FAILED_FINAL_VERIFICATION_MASKED_BY_FOLLOWING_TESTS"
     }
   },
   "repositories": [
