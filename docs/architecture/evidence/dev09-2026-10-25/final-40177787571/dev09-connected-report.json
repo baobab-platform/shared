@@ -1,0 +1,47 @@
+{
+  "schema": "dev09-erp-connected-components.v1",
+  "erp_source_sha": "28bf6655c2c158b8be1cd3c6c075c518e891b777",
+  "cp_source_sha": "50a130576f6b126066a56e97a09676b2015f1261",
+  "iam_source_sha": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+  "evidence_class": "REAL_ORY_CP_NATIVE_PG_COMPONENT_SYNTHETIC_LEGAL_CONTEXT",
+  "environment": "ISOLATED_INTEGRATION",
+  "result": "BLOCKED",
+  "cases": [
+    {
+      "id": "hydra-client-credentials-cp-current",
+      "result": "PASS"
+    },
+    {
+      "id": "distinct-native-company-org-ownership",
+      "result": "PASS"
+    },
+    {
+      "id": "mixed-tenant-org-denial",
+      "result": "PASS"
+    },
+    {
+      "id": "kratos-backed-human-cp-authority",
+      "result": "BLOCKED",
+      "reason": "CP_ADMINISTRATIVE_TOKENS_SYNTHETIC"
+    },
+    {
+      "id": "second-native-company-jvm-accounting",
+      "result": "PASS",
+      "reason": "INDEPENDENT_PROTECTED_AND_JOINED_CROSS_ENGINE_ACCOUNTING_STILL_UNPROVEN"
+    },
+    {
+      "id": "independent-legal-provider",
+      "result": "BLOCKED",
+      "reason": "SYNTHETIC_REGISTER_AND_MANDATE_ROWS"
+    },
+    {
+      "id": "subscriptions-payments-gl-settlement",
+      "result": "BLOCKED",
+      "reason": "NO_JOINED_OWNER_PROVIDER_ACCEPTANCE"
+    }
+  ],
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "money_moved": false,
+  "full_dev09_qualified": false
+}

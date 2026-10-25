@@ -70,6 +70,30 @@ class RegisterTests(unittest.TestCase):
             self.assertIs(report[flag], False)
         self.assertFalse(report["cleanup"]["host_or_image_teardown"])
 
+    def test_dev09_final_original_receipts_and_composed_partial_gate(self):
+        folder = ROOT / "docs/architecture/evidence/dev09-2026-10-25/final-40177787571"
+        reports = []
+        for name in ("dev09-report", "dev09-connected-report"):
+            raw = (folder / (name + ".json")).read_bytes()
+            hashed = json.loads((folder / (name + ".sha256.json")).read_bytes())
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), hashed["sha256"])
+            report = json.loads(raw)
+            self.assertEqual("28bf6655c2c158b8be1cd3c6c075c518e891b777",
+                             report.get("source_sha", report.get("erp_source_sha")))
+            for flag in ("production_authorized", "protected_acceptance", "money_moved"):
+                self.assertIs(report[flag], False)
+            reports.append(report)
+        self.assertEqual(40, sum(c["result"] == "PASS" for c in reports[0]["cases"]))
+        self.assertEqual(8, sum(c["result"] == "BLOCKED" for c in reports[0]["cases"]))
+        self.assertEqual(4, sum(c["result"] == "PASS" for c in reports[1]["cases"]))
+        self.assertEqual(3, sum(c["result"] == "BLOCKED" for c in reports[1]["cases"]))
+        self.assertIs(reports[1]["full_dev09_qualified"], False)
+        package = self.live["packages"][9]
+        self.assertEqual("BLOCKED", package["runtime"]["status"])
+        self.assertIsNone(package["actual_completion_date"])
+        self.assertEqual(42, sum(c["result"] == "PASS" for c in package["runtime"]["cases"]))
+        self.assertEqual(6, sum(c["result"] == "BLOCKED" for c in package["runtime"]["cases"]))
+
     def test_missing_and_duplicate_packages_are_rejected(self):
         self.rejects(lambda d: d["packages"].pop())
         self.rejects(lambda d: d["packages"].__setitem__(1, d["packages"][0]))
