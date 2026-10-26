@@ -291,6 +291,19 @@ def validate_catalogue(contracts: Contracts) -> list[str]:
             for definition in document.get("capabilities") or []:
                 if isinstance(definition, dict) and "capability_key" in definition:
                     defined_at.setdefault(definition["capability_key"], []).append(rel)
+        elif (rel.startswith("development/v1/examples/engines/")
+              and rel.endswith(".json")
+              and document.get("schema") == "baobab.engine-integration-profile.v1"):
+            # DEV-14 profiles *select* canonical capability keys; they do not
+            # define new capabilities or replace the ADR-SHARED-017 catalogue.
+            # This exception is path- and type-scoped, and schema checked.
+            # Any other ad-hoc capability manifest must still fail closed.
+            failures.extend(
+                f"contracts/{rel}: {error}"
+                for error in contracts.errors(
+                    "development/v1/engine-integration-profile.schema.json", document
+                )
+            )
         elif not is_registration_bundle(document) and rel != CATALOGUE and has_capability_list(document):
             failures.append(f"contracts/{rel} lists capabilities in an unrecognised manifest shape; canonical "
                             "definitions use capability.schema.json#/$defs/CapabilityDefinitionDocument")

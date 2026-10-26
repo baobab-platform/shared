@@ -457,6 +457,103 @@ development_expected.merge!(JSON.parse(<<~'JSON'))
   }
 }
 JSON
+# DEV-14/15 explicit registered development ceilings. Profiles cannot allocate clients.
+development_expected.merge!(JSON.parse(<<~'JSON'))
+{
+  "baobab-dev-pulse-onboarding": {
+    "repository": "baobab-platform/infrastructure",
+    "owner": "baobab-platform/infrastructure",
+    "runtime": "DEV-14/15 disposable pulse-intelligence caller",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-pulse"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "intelligence:evidence:search",
+      "intelligence:research-mission:manage"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/infrastructure",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-pulse-onboarding-neighbour": {
+    "repository": "baobab-platform/infrastructure",
+    "owner": "baobab-platform/infrastructure",
+    "runtime": "DEV-14/15 disposable pulse-intelligence neighbour",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-pulse"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "intelligence:evidence:search",
+      "intelligence:research-mission:manage"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/infrastructure",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-payments-onboarding": {
+    "repository": "baobab-platform/infrastructure",
+    "owner": "baobab-platform/infrastructure",
+    "runtime": "DEV-14/15 disposable payments-sandbox caller",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-payments"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "payment:execute",
+      "payment:read",
+      "payment:refund"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/infrastructure",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-payments-onboarding-neighbour": {
+    "repository": "baobab-platform/infrastructure",
+    "owner": "baobab-platform/infrastructure",
+    "runtime": "DEV-14/15 disposable payments-sandbox neighbour",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane",
+      "baobab-payments"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "payment:execute",
+      "payment:read",
+      "payment:refund"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/infrastructure",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-payments-validator": {
+    "repository": "baobab-platform/baobab-payments",
+    "owner": "baobab-platform/baobab-payments",
+    "runtime": "DEV-14/15 disposable payments-sandbox validator",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane"
+    ],
+    "allowed_scopes": [
+      "context:validate"
+    ],
+    "validates_audiences": [
+      "baobab-payments"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-payments",
+    "status": "ACTIVE"
+  }
+}
+JSON
 development_expected.each do |name, expected|
   fail_contract("development identity #{name} exceeds its exact ADR-043 ceiling") unless workloads[name] == expected
 end

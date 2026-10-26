@@ -204,6 +204,37 @@ class CatalogueTest(unittest.TestCase):
         self.assertTrue(any("is not a catalogue source" in f for f in failures), failures)
         self.assertTrue(any("commerce.order.create is defined" in f and "not indexed" in f for f in failures), failures)
 
+    def test_dev14_profiles_select_capabilities_without_becoming_definitions(self):
+        # Profiles are a distinct, schema-validated DEV-14 contract, not
+        # capability definitions or EngineRegistration bundles.
+        self.assertEqual(self.failures(), [])
+        path = self.root / "development/v1/examples/engines/payments-sandbox.json"
+        document = json.loads(path.read_text())
+        document["reporting"]["production_authorized"] = True
+        path.write_text(json.dumps(document))
+        self.assertFails("reporting/production_authorized")
+
+    def test_dev14_discriminator_cannot_hide_unknown_manifests(self):
+        path = self.root / "development/v1/examples/engines/payments-sandbox.json"
+        document = json.loads(path.read_text())
+
+        # The exemption requires both the designated namespace and type.
+        disguised = self.root / "trade/v1/disguised-profile.json"
+        disguised.write_text(json.dumps(document))
+        self.assertFails("unrecognised manifest shape")
+        disguised.unlink()
+
+        document.pop("schema")
+        path.write_text(json.dumps(document))
+        self.assertFails("unrecognised manifest shape")
+
+    def test_dev14_profile_cannot_smuggle_capability_definitions(self):
+        path = self.root / "development/v1/examples/engines/payments-sandbox.json"
+        document = json.loads(path.read_text())
+        document["schema"] = {"name": "baobab-capability-definitions", "version": "1.0"}
+        path.write_text(json.dumps(document))
+        self.assertFails("is not a catalogue source")
+
     def test_ad_hoc_capability_manifest_shape_rejected(self):
         (self.root / "trade/v1/extra.yaml").write_text("version: 1\ncapabilities:\n  - capability_key: commerce.order.create\n")
         self.assertFails("unrecognised manifest shape")
