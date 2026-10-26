@@ -31,6 +31,20 @@ class EngineIntegrationProfiles(unittest.TestCase):
                 self.assertEqual(receipt['scope'], 'SOURCE_PROFILE_VALIDATION_ONLY')
                 self.assertFalse(receipt['production_authorized'])
 
+    def test_payments_startup_registration_retains_native_invocation(self):
+        # CP reloads this complete registration at startup. Missing invocation
+        # removes an owner's route; metadata drift also churns provider version.
+        import capability_catalogue as catalogue
+        import development_environment as environment
+        declaration=environment.yaml_file(ROOT/'contracts/capability/v1/examples/provider-declaration.yaml')
+        generated=catalogue.generate_registration(catalogue.Contracts(ROOT/'contracts'),declaration,'baobab-payments.sandbox')
+        committed=json.loads((ROOT/'contracts/payments/v1/capabilities.json').read_text())
+        self.assertEqual(generated['provider'],committed['provider'])
+        self.assertEqual(committed['provider']['invocation'],{'service_reference':'service://baobab-payments/payments','protocol':'http'})
+        self.assertEqual(committed['provider']['lifecycle'],'DRAFT')
+        self.assertTrue(committed['provider']['simulated'])
+        self.assertFalse(committed['provider']['production_permitted'])
+
     def test_headless_profiles_reference_existing_authorities_and_minimal_services(self):
         for p in (self.pulse,self.payments):
             actual=profile.validate(p)

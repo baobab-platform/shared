@@ -26,6 +26,9 @@ providers:
     implementation_key: sandbox
     simulated: true
     production_permitted: false
+    invocation:
+      service_reference: service://baobab-payments/payments
+      protocol: http
     support:
       - capability_key: payment.intent.create
         contract_versions: [1]
