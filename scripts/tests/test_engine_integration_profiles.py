@@ -46,6 +46,8 @@ class EngineIntegrationProfiles(unittest.TestCase):
         self.rejects(lambda p:p['services']['required'][2]['depends_on'].append('unavailable'))
         self.rejects(lambda p:p['services']['optional'].append(p['services']['required'].pop()))
         self.rejects(lambda p:p['services']['required'][3].update(owner='baobab-cp'))
+        for key in ('iam','control-plane','subject'):
+            self.rejects(lambda p:next(s for s in p['services']['required'] if s['key']==key).update(kind='redis',owner=p['subject_engine']))
 
     def test_iam_clients_cannot_expand_registry_or_borrow_validator_rights(self):
         self.rejects(lambda p:p['iam']['caller']['scopes'].append('context:validate'))

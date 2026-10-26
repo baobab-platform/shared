@@ -51,7 +51,9 @@ def validate(profile, *, shared_root=ROOT, engine_root=None):
     keyed={s['key']:s for s in nodes}
     require(len(keyed)==len(nodes),'DUPLICATE_SERVICE')
     required={s['key'] for s in profile['services']['required']}
-    if profile['mode']=='l4':require({'iam','control-plane','subject'}<=required,'L4_BACKBONE_REQUIRED')
+    if profile['mode']=='l4':
+        require({'iam','control-plane','subject'}<=required,'L4_BACKBONE_REQUIRED')
+        require(all(keyed[key]['kind']==kind for key,kind in (('iam','iam'),('control-plane','control-plane'),('subject','engine'))),'L4_BACKBONE_KIND_REQUIRED')
     require(len([s for s in nodes if s['kind']=='engine'])==1 and keyed.get('subject',{}).get('owner')==engine,'ONE_SUBJECT_REQUIRED')
     for s in nodes:
         require(set(s['depends_on'])<=set(keyed),'MISSING_SERVICE_DEPENDENCY')
