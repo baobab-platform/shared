@@ -5,54 +5,19 @@
   "profiles": {
     "full": {
       "minimum_version": "1.4.4",
-      "tag_suffix": "",
-      "capabilities": [
-        "database.postgresql",
-        "development.docker",
-        "development.github_cli",
-        "development.maven",
-        "languages.flutter",
-        "languages.java",
-        "languages.node",
-        "languages.python",
-        "package_managers.pnpm",
-        "package_managers.poetry",
-        "package_managers.uv",
-        "security.cosign"
-      ]
+      "tag_suffix": ""
     },
     "frontend": {
       "minimum_version": "1.4.4",
-      "tag_suffix": "-frontend",
-      "capabilities": [
-        "development.github_cli",
-        "frontend_tooling.turbo",
-        "languages.node",
-        "package_managers.pnpm"
-      ]
+      "tag_suffix": "-frontend"
     },
     "frontend-e2e": {
       "minimum_version": "1.4.4",
-      "tag_suffix": "-frontend-e2e",
-      "capabilities": [
-        "development.github_cli",
-        "frontend_tooling.lighthouse",
-        "frontend_tooling.playwright",
-        "frontend_tooling.sharp",
-        "frontend_tooling.turbo",
-        "languages.node",
-        "package_managers.pnpm"
-      ]
+      "tag_suffix": "-frontend-e2e"
     },
     "infra": {
       "minimum_version": "1.4.4",
-      "tag_suffix": "-infra",
-      "capabilities": [
-        "development.aws_cli",
-        "development.docker",
-        "development.github_cli",
-        "development.terraform"
-      ]
+      "tag_suffix": "-infra"
     }
   }
 }

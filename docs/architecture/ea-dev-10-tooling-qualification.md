@@ -2,7 +2,9 @@
 
 Observed 2026-10-25. This is a scoped engineering increment of the accepted
 EA-DEV plan, not completion of clean Codespaces or fleet upgrade acceptance.
-DEV-06/INT-07 remains deferred until Subscriptions onboarding.
+DEV-06 development engineering has since qualified through Shared #400 and
+Infrastructure #60. Certified-provider INT-07 acceptance remains separate;
+this tooling increment does not block safe DEV-05 CMS engineering.
 
 ## Implemented source
 
@@ -114,3 +116,4 @@ completion date.
    that tuple, rebuilds the disposable workspace and reruns frozen installation.
    Revoke run-owned credentials, remove run-owned resources and retain receipts;
    database restore/rollback remains independently owned and evidenced.
+

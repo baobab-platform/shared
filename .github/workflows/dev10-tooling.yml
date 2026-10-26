@@ -52,3 +52,4 @@ jobs:
               test -s /tmp/dev10-private-consumer/node_modules/@baobab-platform/experience-tokens/dist/base.css
               node --test scripts/codespaces/*.node.mjs
             '
+

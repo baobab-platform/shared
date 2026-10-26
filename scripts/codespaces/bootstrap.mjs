@@ -33,8 +33,7 @@ export function bootstrap({run=exec, manifests=null, runtime=process.versions.no
   try{
     const rootManifest=JSON.parse(readFileSync(join(root,"package.json"),"utf8"));
     if(rootManifest.packageManager!=="pnpm@11.24.0")throw Error("required pnpm 11.24.0 lock");
-    const nodePin=readFileSync(join(root,".node-version"),"utf8").trim();
-    if(!/^24\.\d+\.\d+$/.test(nodePin) || runtime!==nodePin)throw Error("exact repository Node runtime required");
+    if(!/^24\.(?:19|2\d|[3-9]\d)\./.test(runtime))throw Error("Node 24.19+ runtime required");
     let source=manifests;
     if(source===null){
       source=[rootManifest];

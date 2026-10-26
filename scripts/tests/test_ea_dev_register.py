@@ -17,6 +17,50 @@ spec.loader.exec_module(module)
 
 
 class RegisterTests(unittest.TestCase):
+    def test_subscriptions_original_native_receipt_preserves_independent_internal_gates(self):
+        folder=ROOT/'docs/architecture/evidence/subscriptions-2026-10-25/final-40230444543'
+        raw=(folder/'report.json').read_bytes()
+        digest=json.loads((folder/'report.sha256.json').read_bytes())['sha256']
+        self.assertEqual('562ef7b5d043b1e1b0a3bfabd31d338d80ec3959b4743e6a0ef9e193df99f8fa',digest)
+        self.assertEqual(digest,hashlib.sha256(raw).hexdigest())
+        report=json.loads(raw)
+        self.assertEqual('3e9588b6499ded01663d226443ef1f5c2c4d3972',report['source_sha'])
+        native={'native-issuer-clients','current-cp-snapshot','commercial-projection-persistence',
+            'wrong-tenant-denied','wrong-audience-denied','missing-scope-denied','foreign-client-denied',
+            'revision-before-replay','classification-denied','cp-outage-denied','cp-recovery',
+            'issuer-expiry-denied','issuer-revocation-denied','event-durable-replay-conflict',
+            'native-restart-persistence','teardown'}
+        blocked={'current-internal-positive':'INDEPENDENT_INTERNAL_ELIGIBILITY_NOT_ESTABLISHED',
+            'internal-revoked-eligibility-differential':'VALID_INTERNAL_POSITIVE_PREREQUISITE_MISSING',
+            'killbill-native-provider':'REAL_KILLBILL_PROVIDER_NOT_QUALIFIED'}
+        self.assertEqual(native|blocked.keys(),set(report['cases']))
+        for case in native:self.assertEqual({'result':'PASS','reason':'OBSERVED'},report['cases'][case])
+        for case,reason in blocked.items():self.assertEqual({'result':'BLOCKED','reason':reason},report['cases'][case])
+        for key in ('internal_authority_qualified','full_onboarding_qualified','int07_qualified',
+                    'provider_qualified','protected_acceptance','production_authorized','money_moved'):
+            self.assertIs(False,report[key])
+        self.assertEqual('COMPLETE_RUN_OWNED_CONTAINERS_IMAGES_VOLUMES_NETWORKS_PRIVATE_STATE',report['cleanup'])
+
+    def test_subscriptions_final_receipt_adds_native_database_isolation_without_promoting_authority(self):
+        evidence=ROOT/'docs/architecture/evidence/subscriptions-2026-10-25'
+        folder=evidence/'final-40231471210'
+        raw=(folder/'report.json').read_bytes()
+        digest=json.loads((folder/'report.sha256.json').read_bytes())['sha256']
+        self.assertEqual('993d8ac582291d334efc05c9a7533fc33f49df548f9dc11175b30c465f42d112',digest)
+        self.assertEqual(digest,hashlib.sha256(raw).hexdigest())
+        report=json.loads(raw)
+        initial=json.loads((evidence/'final-40230444543/report.json').read_bytes())
+        self.assertEqual('5d503f655e8db486e8203109d4947c3fd39c51de',report['source_sha'])
+        self.assertEqual(initial['source_pins'],report['source_pins'])
+        expected={**initial['cases'],'engine-cp-database-denied':{'result':'PASS','reason':'OBSERVED'}}
+        self.assertEqual(expected,report['cases'])
+        self.assertEqual(20,len(report['cases']))
+        self.assertEqual('SUCCESS',report['result'])
+        self.assertEqual(initial['cleanup'],report['cleanup'])
+        for key in ('internal_authority_qualified','full_onboarding_qualified','int07_qualified',
+                    'provider_qualified','protected_acceptance','production_authorized','money_moved'):
+            self.assertIs(False,report[key])
+
     def setUp(self):
         self.live = json.loads(module.REGISTER.read_text(encoding="utf-8"))
         # Mutation tests use a stable source-only fixture, not today's progress
@@ -43,6 +87,14 @@ class RegisterTests(unittest.TestCase):
     def test_inventory_and_generated_view_are_valid(self):
         module.validate(self.live)
         self.assertEqual(module.render(self.live), module.VIEW.read_text(encoding="utf-8"))
+
+    def test_dev06_cannot_hide_bound_resource_or_independent_negative_controls(self):
+        module.validate(self.data)
+        for case in module.EXTERNAL_API_CASES:
+            with self.subTest(case=case):
+                self.rejects(lambda d: d['packages'][6]['runtime'].update(
+                    cases=[row for row in d['packages'][6]['runtime']['cases'] if row['case'] != case]))
+        self.rejects(lambda d: d['packages'][6]['runtime']['cases'][0].update(case='replacement-case'))
 
     def test_dev09_native_inventory_cannot_hide_joined_finance_obligations(self):
         package = self.data["packages"][9]
@@ -99,6 +151,7 @@ class RegisterTests(unittest.TestCase):
         self.rejects(lambda d: d["packages"][10]["runtime"]["cases"][0].update(result="PASS"))
         self.rejects(lambda d: d["packages"][10]["runtime"].update(status="PASS"))
         self.rejects(lambda d: d["packages"][10].update(actual_completion_date="2026-10-24"))
+
 
     def test_missing_and_duplicate_packages_are_rejected(self):
         self.rejects(lambda d: d["packages"].pop())
@@ -368,3 +421,5 @@ class RegisterTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+

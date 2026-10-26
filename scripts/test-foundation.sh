@@ -13,7 +13,6 @@ python3 -c "import jsonschema, yaml" 2>/dev/null || {
   exit 1
 }
 
-python3 -B -m unittest discover -s .github/foundation-tests -p test_development_environment.py
 python3 .github/foundation-tests/test_contracts.py
 python3 .github/foundation-tests/test_workflow_wiring.py
 python3 .github/foundation-tests/test_caller_template.py

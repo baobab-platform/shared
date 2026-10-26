@@ -1,0 +1,113 @@
+{
+  "cases": {
+    "classification-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "commercial-projection-persistence": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "cp-outage-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "cp-recovery": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "current-cp-snapshot": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "current-internal-positive": {
+      "reason": "INDEPENDENT_INTERNAL_ELIGIBILITY_NOT_ESTABLISHED",
+      "result": "BLOCKED"
+    },
+    "engine-cp-database-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "event-durable-replay-conflict": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "foreign-client-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "internal-revoked-eligibility-differential": {
+      "reason": "VALID_INTERNAL_POSITIVE_PREREQUISITE_MISSING",
+      "result": "BLOCKED"
+    },
+    "issuer-expiry-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "issuer-revocation-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "killbill-native-provider": {
+      "reason": "REAL_KILLBILL_PROVIDER_NOT_QUALIFIED",
+      "result": "BLOCKED"
+    },
+    "missing-scope-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "native-issuer-clients": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "native-restart-persistence": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "revision-before-replay": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "teardown": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "wrong-audience-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    },
+    "wrong-tenant-denied": {
+      "reason": "OBSERVED",
+      "result": "PASS"
+    }
+  },
+  "cleanup": "COMPLETE_RUN_OWNED_CONTAINERS_IMAGES_VOLUMES_NETWORKS_PRIVATE_STATE",
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "full_onboarding_qualified": false,
+  "image_ids": {
+    "cp": "sha256:206669dca8ca06ee8bba460a272f6dca100828eee2d610797cc327ee9f4e24f4",
+    "subscriptions": "sha256:104494ef86c27fa13a0f49980e7977d42669d1fe7ac124eae47b028529344008"
+  },
+  "int07_qualified": false,
+  "internal_authority_qualified": false,
+  "money_moved": false,
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "provider_qualified": false,
+  "result": "SUCCESS",
+  "runtime_images": {
+    "edge": "nginx@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de",
+    "hydra": "oryd/hydra:v26.2.0@sha256:ff67c7fb5f95074fa53374d41151713554960504b340cd3f95b09e65deaea2a9",
+    "kratos": "oryd/kratos:v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643",
+    "postgres": "postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+    "probe": "python@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c"
+  },
+  "schema": "infrastructure.subscriptions.onboarding.v1",
+  "source_pins": {
+    "baobab-cp": "8644cefd64e2dfe869c58f5ef6ab1667e731a1e2",
+    "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+    "baobab-subscriptions": "bdba962514b2ee5083dc95feba1343b02391f60a",
+    "shared": "ae48e8cf6e4cd47314f36d9d318a33f30d409453"
+  },
+  "source_sha": "5d503f655e8db486e8203109d4947c3fd39c51de"
+}

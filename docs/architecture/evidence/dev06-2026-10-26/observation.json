@@ -1,0 +1,138 @@
+{
+  "artifact_id": 12631547492,
+  "artifact_sha256": "87be57733b7ef87cfe4732010af914f9153054ca1795822ee70e088646757a93",
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "external": {
+    "canonical_provider_qualified": false,
+    "canonical_scenario": "INT-07",
+    "cases": {
+      "absent-subscription-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "bound-resource-and-audited-effect": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "dependency-outage-and-recovery": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "expired-token-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "fake-estate-injection-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "forged-tenant-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "independent-registered-workload": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "nabhold-tenant-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "own-context": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "retired-binding-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "revoked-token-replay-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "teardown": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "thamani-tenant-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "unentitled-resource-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "wrong-audience-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "wrong-owner-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "zero-estates": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "zuribeans-tenant-denied": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      }
+    },
+    "component_checks": {
+      "actual_oci_publication": true,
+      "canonical_resolution_denied": true,
+      "controlled_absent_subscription": true,
+      "controlled_retired_binding": true,
+      "controlled_unentitled_resource": true,
+      "current_cp_subject_validation": true,
+      "current_grant_provenance": true,
+      "independent_cp_resolution_readback": true,
+      "native_canonical_hydration": true,
+      "native_clients_deleted": true,
+      "native_cross_tenant_no_leak": true,
+      "native_pulse_dependencies": true,
+      "native_tokens_inactive": true,
+      "normal_provider_activation": true,
+      "owned_resources_absent": true,
+      "private_state_absent": true,
+      "real_external_resource_read": true,
+      "resource_audit_persisted": true,
+      "restricted_evidence_denied": true,
+      "zero_estates_read_after": true,
+      "zero_estates_read_before": true
+    },
+    "int07_qualified": false,
+    "production_authorized": false,
+    "protected_acceptance": false,
+    "run_id": "5626d6a6212fb46956b17666bbb3354a",
+    "schema": "infrastructure.dev06.int07-observed.v1",
+    "scope": "DEV06_EXTERNAL_API_ONLY_COMPONENT_DEVELOPMENT",
+    "synthetic_only": true
+  },
+  "external_oci_manifest_digest": "sha256:a47f81bd177b6f0c8bcd63504c1d20e4f6f19481b4a438a74572b336b99e8d26",
+  "external_runtime_identity_verified": true,
+  "observed_on": "2026-10-26",
+  "original_report_sha256": {
+    "dev01-5626d6a6212fb46956b17666bbb3354a/completed/receipt.json": "f74a8d5cab013000c4df6eac81fd4716bc49d25258bb75e690ddc19690cf4aca",
+    "dev06-external-suite.json": "f74a8d5cab013000c4df6eac81fd4716bc49d25258bb75e690ddc19690cf4aca"
+  },
+  "purpose": "DERIVED_READ_MODEL_NOT_ORIGINAL_RECEIPT_OR_AUTHORITY",
+  "reviewed_head_sha": "5bac4b15b9873ea483d23083075e9f6df8854ed7",
+  "run_id": "5626d6a6212fb46956b17666bbb3354a",
+  "run_url": "https://github.com/baobab-platform/infrastructure/actions/runs/40280112921",
+  "schema": "ea-dev06.bound-resource-observation.v1",
+  "source_pins": {
+    "baobab-cp": "87fcab5f1eb9f7db73d5b01e8ff7016a829bbb05",
+    "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+    "baobab-pulse": "4a24c29833374d15e50c2559b3b4173400563a81",
+    "shared": "db6756e872d8db73f529b1a9eaf7f49f6d66edc1"
+  },
+  "teardown_verified": true,
+  "tested_merge_parents": [
+    "00e6cd37515d1be731fa9b1f8da03d43ad11f4bc",
+    "5bac4b15b9873ea483d23083075e9f6df8854ed7"
+  ],
+  "tested_merge_sha": "cf8bd857e67392be88eae016a40490a9d8f61f8b",
+  "tested_tree_sha": "753355a5a965e6616059b8d1ceb01d6a1fc121f0"
+}

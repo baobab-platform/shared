@@ -28,6 +28,15 @@ CMS_CASES = {
     "wrong-owner-or-context", "neighbour-tenant", "draft-or-preview", "withdrawn-content",
     "dependency-outage-and-restoration", "validator-negatives", "teardown",
 }
+EXTERNAL_API_CASES = {
+    'zero-estates', 'independent-registered-workload', 'own-context',
+    'nabhold-tenant-denied', 'zuribeans-tenant-denied', 'thamani-tenant-denied',
+    'forged-tenant-denied', 'fake-estate-injection-denied', 'wrong-owner-denied',
+    'wrong-audience-denied', 'expired-token-denied', 'revoked-token-replay-denied',
+    'dependency-outage-and-recovery', 'bound-resource-and-audited-effect',
+    'absent-subscription-denied', 'retired-binding-denied',
+    'unentitled-resource-denied', 'teardown',
+}
 B2B_COMPONENT_CASES = {
     'independent-buyer-relationships',
     'persisted-principal-reference',
@@ -293,6 +302,8 @@ def validate(data: dict, root: Path = ROOT) -> None:
         if key in {"DEV-04", "DEV-05"}:
             require(set(names) == (IDENTITY_CASES if key == "DEV-04" else CMS_CASES),
                     "seven INT-03C and fourteen NAB-03 obligations cannot change")
+        if key == "DEV-06" and (names or runtime["status"] != "NOT_OBSERVED"):
+            require(set(names) == EXTERNAL_API_CASES, "DEV-06 external API obligations cannot shrink")
         # DEV-07's fixed engineering inventory preserves the joined INT-05
         # obligations alongside component observations; they cannot disappear
         # to manufacture a completed gate. An unaudited empty source roster
@@ -405,3 +416,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+

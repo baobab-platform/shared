@@ -104,7 +104,13 @@ workloads.each do |client_id, entry|
     scope = scopes[name]
     fail_contract("workload #{client_id} allows unregistered scope #{name}") if scope.nil?
     fail_contract("workload #{client_id} allows #{name}, which is not a workload scope") unless Array(scope["allowed_actors"]).include?("workload")
-    fail_contract("workload #{client_id} allows privileged scope #{name}") if scope["privileged"]
+    # ADR-SHARED-044 current reads/preflight are sensitive workload-only ports,
+    # not human administration. Permit only this exact ADR-043 proof client;
+    # its complete row is pinned below and no positive financial scope exists.
+    subscription_probe = client_id == "baobab-dev-subscriptions-assessor" &&
+      entry["environment"] == "development" &&
+      %w[subscription:current-workload-read subscription:commercial-authority].include?(name)
+    fail_contract("workload #{client_id} allows privileged scope #{name}") if scope["privileged"] && !subscription_probe
     shared = Array(scope["audience"]) & audiences
     fail_contract("workload #{client_id} allows #{name}, which is not issued for any of its audiences #{audiences}") if shared.empty?
     used.concat(shared)
@@ -407,6 +413,46 @@ development_expected.merge!(JSON.parse(<<~'JSON'))
     ],
     "credential_type": "client_credentials",
     "rotation_owner": "baobab-platform/baobab-pulse",
+    "status": "ACTIVE"
+  }
+}
+JSON
+# Subscriptions development proof has exact ceilings, not production activation.
+development_expected.merge!(JSON.parse(<<~'JSON'))
+{
+  "baobab-dev-cp-subscriptions": {
+    "repository": "baobab-platform/baobab-cp",
+    "owner": "baobab-platform/baobab-cp",
+    "runtime": "ADR-SHARED-043 disposable CP subscription command and event producer",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-subscriptions"
+    ],
+    "allowed_scopes": [
+      "billing:manage",
+      "billing:read",
+      "billing:observe",
+      "usage:record"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-cp",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-subscriptions-assessor": {
+    "repository": "baobab-platform/baobab-subscriptions",
+    "owner": "baobab-platform/baobab-subscriptions",
+    "runtime": "ADR-SHARED-043 disposable Subscriptions current CP authority reader",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane"
+    ],
+    "allowed_scopes": [
+      "subscription:internal-authority",
+      "subscription:current-workload-read",
+      "subscription:commercial-authority"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-subscriptions",
     "status": "ACTIVE"
   }
 }

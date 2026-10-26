@@ -47,3 +47,4 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--provider-root', type=Path)
     check(p.parse_args().provider_root)
+
