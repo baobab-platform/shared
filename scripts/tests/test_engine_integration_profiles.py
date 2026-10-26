@@ -20,6 +20,17 @@ class EngineIntegrationProfiles(unittest.TestCase):
         data=copy.deepcopy(self.pulse);change(data)
         with self.assertRaises((ValueError,ValidationError)):profile.validate(data)
 
+    def test_every_shipped_engine_profile_is_semantically_validated(self):
+        # Do not let a later profile pass catalogue schema checks without
+        # running DEV-14 semantic authority, owner, and service-graph checks.
+        examples = sorted((ROOT / 'contracts/development/v1/examples/engines').glob('*.json'))
+        self.assertGreaterEqual(len(examples), 2)
+        for path in examples:
+            with self.subTest(profile=path.name):
+                receipt = profile.validate(profile.read_profile(path))
+                self.assertEqual(receipt['scope'], 'SOURCE_PROFILE_VALIDATION_ONLY')
+                self.assertFalse(receipt['production_authorized'])
+
     def test_headless_profiles_reference_existing_authorities_and_minimal_services(self):
         for p in (self.pulse,self.payments):
             actual=profile.validate(p)
