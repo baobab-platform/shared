@@ -127,3 +127,44 @@ host recovery both passed. This replaces the earlier receipt for the current
 harness gate without converting INTERNAL or provider obligations into passes.
 
 Infrastructure #59 merged as `00e6cd37515d1be731fa9b1f8da03d43ad11f4bc` after all 38 final-head checks completed (32 successful, six applicable skips) and all six review threads were resolved. The actual merged tree matches the reviewed head. The register pins this actual merge; the receipt truthfully retains the distinct tested PR merge SHA.
+
+
+## Current INTERNAL authority source correction — 26 October 2026
+
+CP #440 separates historical classification explanation from a live subscription
+authority decision. A current group-eligible explanation could previously return
+a positive waiver decision even when the subscription was SUSPENDED, expired or
+not yet effective. The corrected path requires the exact ACTIVE and effective
+subscription/classification tuple, matching current primary Organisation and
+fresh governed eligibility. Tenant-bound callers cannot cause a foreign lookup.
+
+One tenant-scoped SQL join reads the subscription and its pointed-to immutable
+classification; the authority path no longer loads the full classification
+history. Tests deliberately omit the history implementation to prevent its
+accidental reintroduction. This improves query shape without a latency claim.
+The decision is a bounded sequence of current CP reads, not an atomic CP/engine
+fence, and its short response lease starts before evaluation.
+
+Owner PG17 tests use synthetic governed relationships and admission actors. They
+exercise persisted status/date changes and control-relationship revocation with
+unchanged classification/grants. Such source/owner evidence cannot establish
+independently verified legal eligibility. The previous Infrastructure 17/3 receipt
+is immutable at its original pins; it does not certify this new CP source.
+Full INTERNAL/onboarding/INT-07, provider and protected/production gates stay
+partial, DEV-06 remains deferred and DEV-10 remains paused.
+
+Final-head owner [Go/PG17 CI run 40250742014](https://github.com/baobab-platform/baobab-cp/actions/runs/40250742014),
+[job 121341861769](https://github.com/baobab-platform/baobab-cp/actions/runs/40250742014/job/121341861769),
+executed reviewed head `3abbde23ccac29bda854b75d24f4228fb38c61a9` as
+tested PR merge `c2b88669dcc303b9981574cea094245d45710956`. The named
+`TestCurrentInternalAuthorityNativeStatusDatesAndRevocation` test emitted an
+explicit PASS (no SKIP); all race-enabled owner tests, vet and formatting passed.
+The local environment lacked PG17, so its skipped native test was never counted.
+The named CI step requires a nonempty test database configuration.
+
+The new runbook explains response/error semantics, effective-date boundaries,
+query shape, source/runtime limits and safe rollback.
+
+CP #440 merged as `181a03a6f4644fdcddcd5ba67ae674049fd6235b` after all 31 final-head checks completed (25 successful, six applicable skips), with no unresolved review threads. The actual merged tree matches reviewed head. The register appends a distinct immutable source baseline; no prior source baseline, original receipt bytes, runtime case result or acceptance flag is rewritten.
+
+[Current INTERNAL authority operator runbook](https://github.com/baobab-platform/baobab-cp/blob/181a03a6f4644fdcddcd5ba67ae674049fd6235b/docs/development/current-internal-authority.md).
