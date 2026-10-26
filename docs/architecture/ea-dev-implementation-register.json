@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 remains 12 PASS/2 canonical-provider BLOCKED with verified hashes/teardown; NAB-03 is not qualified. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged.",
+  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 remains 12 PASS/2 canonical-provider BLOCKED with verified hashes/teardown; NAB-03 is not qualified. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -2326,30 +2326,83 @@
         "DEV-01"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "NOT_AUDITED",
+      "progress": "SOURCE_IN_PROGRESS",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
       "source_baselines": [],
-      "source_note": "Not audited for this DEV-00 source review; toolchain changes require their own compatibility evidence.",
-      "observed_on": "2026-10-24",
+      "source_note": "DEV-10 source increment: effective-image/capability preflight, exact Shared Node/pnpm and post-create readiness, immutable private-archive CI fixture, checked twelve-source compatibility matrix and upgrade/rollback procedure. Provider PR48 implements locked onboarding but remains unmerged with failing security/toolchain gates; no fresh Codespace or fleet rollout is qualified.",
+      "observed_on": "2026-10-25",
       "target_date": "2026-12-13",
       "actual_completion_date": null,
-      "mandatory_ci": "NOT_ASSESSED",
+      "mandatory_ci": "PENDING_THIS_PR",
       "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "evidence_class": "LOCAL_TESTED",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "BLOCKED",
         "canonical_scenarios": [],
         "evidence_urls": [],
         "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "cases": [
+          {
+            "case": "manifest-and-language-compatibility",
+            "result": "BLOCKED",
+            "reason": "SOURCE_CHECK_IMPLEMENTED; TMS_DECLARATION_AND_SUBSCRIPTIONS_PAYMENTS_RUNTIME_GAPS",
+            "evidence_urls": []
+          },
+          {
+            "case": "exact-node-pnpm-fleet-pins",
+            "result": "BLOCKED",
+            "reason": "SHARED_PIN_IMPLEMENTED; REMAINING_CONSUMER_ADOPTION_UNQUALIFIED",
+            "evidence_urls": []
+          },
+          {
+            "case": "codespace-user-private-image-and-package-access",
+            "result": "BLOCKED",
+            "reason": "ACTIONS_ACCESS_IS_NOT_CODESPACES_USER_ENTITLEMENT",
+            "evidence_urls": []
+          },
+          {
+            "case": "clean-hosted-codespace-noninteractive-onboarding",
+            "result": "BLOCKED",
+            "reason": "NO_FRESH_HOSTED_CODESPACE_OBSERVED",
+            "evidence_urls": []
+          },
+          {
+            "case": "secure-provider-image-and-lock",
+            "result": "BLOCKED",
+            "reason": "PROVIDER_PR48_SECURITY_AND_TOOLCHAIN_LOCK_CHECKS_FAILING",
+            "evidence_urls": []
+          },
+          {
+            "case": "affected-consumer-upgrade-branch",
+            "result": "BLOCKED",
+            "reason": "NO_NEW_TOOLCHAIN_RELEASE_OR_FULL_CONSUMER_UPGRADE_QUALIFICATION",
+            "evidence_urls": []
+          },
+          {
+            "case": "physical-postgresql-migration-separation",
+            "result": "BLOCKED",
+            "reason": "PG16_TO_PG17_PHYSICAL_MIGRATION_NOT_OBSERVED; NEVER_REUSE_VOLUME",
+            "evidence_urls": []
+          },
+          {
+            "case": "coordinated-rollback-drill",
+            "result": "BLOCKED",
+            "reason": "PROCEDURE_IMPLEMENTED; ACTUAL_FLEET_ROLLBACK_NOT_OBSERVED",
+            "evidence_urls": []
+          }
+        ]
       },
       "blockers": [
         {
-          "kind": "NOT_ASSESSED",
-          "detail": "Not audited for this DEV-00 source review; toolchain changes require their own compatibility evidence."
+          "kind": "RUNTIME_FAILED",
+          "detail": "baobab-dev #48 full security/container and toolchain lock checks fail. Initial published-image verification failed under an unmapped UID and was masked by following tests; strict propagation/native-user and fault-injection fixes require fresh CI. Required checks must pass before merge; no suppression added."
+        },
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "Fresh user Codespaces entitlement/lifecycle, affected consumer rollout and candidate upgrade, physical PG migration/restore and actual rollback remain unqualified. Java21/PG17 Subscriptions and Rust Payments Dev Container gaps and absent TMS declaration are explicit in the source matrix."
         }
       ],
-      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "next_action": "Repair provider vulnerabilities and reconcile its reviewed lock without bypassing checks; qualify PR48 final-head owner CI. Adopt the checked Shared Foundation and exact project pins per consumer, prepare Subscriptions Java21/isolated PG17 and Payments Rust tooling, then observe clean user Codespaces and upgrade/rollback drills. DEV-06 development engineering is qualified under Shared #400; certified-provider INT-07 remains separate. DEV-10 provider promotion stays held and does not block safe CMS engineering.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
