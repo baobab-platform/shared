@@ -1,0 +1,313 @@
+{
+  "applicability_skips": 6,
+  "artifact_id": 12656975104,
+  "artifact_sha256": "b304aaf730cfd5917ee3a8f9ef2360adc6c2fbe7aeff6c35eccc4d97a71935d8",
+  "artifact_url": "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104",
+  "ci_run_ids": [
+    40332472597,
+    40332470785,
+    40332470298,
+    40332470365,
+    40332470313,
+    40332470331
+  ],
+  "cms": {
+    "canonical_provider_qualified": false,
+    "cases": {
+      "dependency-outage-and-restoration": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "disabled-caller": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "draft-or-preview": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "expired-caller-token": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "missing-grant": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "neighbour-tenant": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "published-home-nav-footer": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "revoked-caller-token": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "teardown": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "validator-negatives": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "withdrawn-content": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "wrong-audience-token": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "wrong-credential": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      },
+      "wrong-owner-or-context": {
+        "reason": "OBSERVED",
+        "result": "PASS"
+      }
+    },
+    "component_checks": {
+      "actual_oci_publication": true,
+      "bff_secure_opaque_cookie": true,
+      "bff_token_free_session": true,
+      "canonical_capability_denied": true,
+      "cp_outage_observed": true,
+      "cp_validator_subject_accepted": true,
+      "current_capability_authority": true,
+      "denied_resource_no_read_effect": true,
+      "estate_bound_content_visible": true,
+      "estate_canonical_path_unavailable": true,
+      "fresh_after_revoke": true,
+      "independent_cp_resolution_readback": true,
+      "issuer_readback_active": true,
+      "native_bff_login_session": true,
+      "native_bff_logout_custody": true,
+      "native_clients_deleted": true,
+      "native_cms_published_home_navigation_footer": true,
+      "native_read_audit_persisted": true,
+      "native_tokens_inactive": true,
+      "normal_provider_activation": true,
+      "owned_resources_absent": true,
+      "private_state_absent": true,
+      "provider_declared_partial": false,
+      "provider_outage_restored": true,
+      "revoked_before_expiry": true
+    },
+    "nab03_qualified": true,
+    "production_authorized": false,
+    "protected_acceptance": false,
+    "run_id": "5b4d213fa5a5023491890d11bbe6f760",
+    "schema": "infrastructure.dev05.nab03-observed.v1",
+    "scope": "DEV05_NATIVE_CMS_DEVELOPMENT_ONLY",
+    "synthetic_only": true
+  },
+  "cms_oci_manifest_digest": "sha256:65655f966d9aed1b7adb09ecae61f554db00a669d14995b6f44f1e38f9c65237",
+  "cms_runtime_identity_verified": true,
+  "dev06_cases_passed": 18,
+  "dev06_regression": {
+    "artifact_id": 12655465922,
+    "artifact_sha256": "744e74c4738145a1959bba4a2fc57e2f19493702ddc7c24b641ada05132f836e",
+    "external": {
+      "canonical_provider_qualified": false,
+      "canonical_scenario": "INT-07",
+      "cases": {
+        "absent-subscription-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "bound-resource-and-audited-effect": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "dependency-outage-and-recovery": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "expired-token-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "fake-estate-injection-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "forged-tenant-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "independent-registered-workload": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "nabhold-tenant-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "own-context": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "retired-binding-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "revoked-token-replay-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "teardown": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "thamani-tenant-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "unentitled-resource-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "wrong-audience-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "wrong-owner-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "zero-estates": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "zuribeans-tenant-denied": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        }
+      },
+      "component_checks": {
+        "actual_oci_publication": true,
+        "canonical_resolution_denied": true,
+        "controlled_absent_subscription": true,
+        "controlled_retired_binding": true,
+        "controlled_unentitled_resource": true,
+        "current_cp_subject_validation": true,
+        "current_grant_provenance": true,
+        "independent_cp_resolution_readback": true,
+        "native_canonical_hydration": true,
+        "native_clients_deleted": true,
+        "native_cross_tenant_no_leak": true,
+        "native_pulse_dependencies": true,
+        "native_tokens_inactive": true,
+        "normal_provider_activation": true,
+        "owned_resources_absent": true,
+        "private_state_absent": true,
+        "real_external_resource_read": true,
+        "resource_audit_persisted": true,
+        "restricted_evidence_denied": true,
+        "zero_estates_read_after": true,
+        "zero_estates_read_before": true
+      },
+      "int07_qualified": false,
+      "production_authorized": false,
+      "protected_acceptance": false,
+      "run_id": "ef03826769dec236128fcdca8e755280",
+      "schema": "infrastructure.dev06.int07-observed.v1",
+      "scope": "DEV06_EXTERNAL_API_ONLY_COMPONENT_DEVELOPMENT",
+      "synthetic_only": true
+    },
+    "external_oci_manifest_digest": "sha256:e399a0547d6fe8ef97d7ed5ad6d86381599cd7de9a0340e751b695a9bd8130f0",
+    "external_runtime_identity_verified": true,
+    "original_report_sha256": {
+      "dev01-ef03826769dec236128fcdca8e755280/completed/receipt.json": "c9a1a81a5103cc780f4acd932289f74785d4b626b9e2e3026d1ae867b81b16e0",
+      "dev06-external-suite.json": "c9a1a81a5103cc780f4acd932289f74785d4b626b9e2e3026d1ae867b81b16e0"
+    },
+    "source_pins": {
+      "baobab-cp": "8cab5cc534ffce1d7b3e64b625d8214eb810c4c1",
+      "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+      "baobab-pulse": "4a24c29833374d15e50c2559b3b4173400563a81",
+      "shared": "0d95d9c546caae570a20cce7187c8dfbc18c4b68"
+    },
+    "teardown_verified": true
+  },
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "mandatory_checks_passed": true,
+  "mandatory_ci_retry": {
+    "initial_artifact_id": 12656960670,
+    "initial_artifact_sha256": "27a92adad7f77a8a8ef092f760a49ca496a35cd0f4b8bd482633f7df5f3892a2",
+    "initial_diagnostic": "login_normal_mfa TimeoutError FORM_U1P1T0O0",
+    "initial_job_id": 121605268261,
+    "initial_teardown_verified": true,
+    "known_issue": "BA-AUD-001",
+    "retry_artifact_id": 12656857387,
+    "retry_job_id": 121611313570,
+    "retry_status": "PASS_SAME_COMMIT",
+    "retry_teardown_verified": true,
+    "root_cause_repaired": false
+  },
+  "merged_sha": "8713e06c2445abbe8e2b1f37ed85df9e16db13af",
+  "merged_tree_sha": "84336e6cfbaa93fefb1a4e373ac51a47f6d3d280",
+  "observed_on": "2026-10-26",
+  "original_report_sha256": {
+    "dev01-5b4d213fa5a5023491890d11bbe6f760/completed/receipt.json": "b24749f1e648fa1e1682197601f0c4ad9be039de5325c7aa6ccaaf7d151d806a",
+    "dev05-cms-suite.json": "b24749f1e648fa1e1682197601f0c4ad9be039de5325c7aa6ccaaf7d151d806a"
+  },
+  "prior_failed_dev05_runs": [
+    {
+      "result": "FAILURE_RETAINED_NOT_RECLASSIFIED",
+      "reviewed_head_sha": "3199eb471c9fe9006b1d016b155a9144dcfb19ea",
+      "workflow_run_id": 40292200074
+    },
+    {
+      "result": "FAILURE_RETAINED_NOT_RECLASSIFIED",
+      "reviewed_head_sha": "786b28b3c554c1422f9679ea792fd0bda22ee33a",
+      "workflow_run_id": 40295611385
+    },
+    {
+      "result": "FAILURE_RETAINED_NOT_RECLASSIFIED",
+      "reviewed_head_sha": "54d86efd41417039b842d42c9ed6b4f5feac815c",
+      "workflow_run_id": 40327303867
+    },
+    {
+      "result": "FAILURE_RETAINED_NOT_RECLASSIFIED",
+      "reviewed_head_sha": "01fccee7dd5351a20dcbb3a03f435fad72f7c529",
+      "workflow_run_id": 40329288046
+    },
+    {
+      "result": "FAILURE_RETAINED_NOT_RECLASSIFIED",
+      "reviewed_head_sha": "56154f338fdb91c2e53372e944f57982cb83befe",
+      "workflow_run_id": 40330849361
+    },
+    {
+      "result": "FAILURE_RETAINED_NOT_RECLASSIFIED",
+      "reviewed_head_sha": "d0d6510d33b47db1ea5ecc95a07df42da1897821",
+      "workflow_run_id": 40331317892
+    }
+  ],
+  "purpose": "DERIVED_READ_MODEL_NOT_ORIGINAL_RECEIPT_OR_AUTHORITY",
+  "reviewed_head_sha": "8967b03bf3c7df450a16a8054997edd69967f518",
+  "reviewed_tree_sha": "84336e6cfbaa93fefb1a4e373ac51a47f6d3d280",
+  "run_id": "5b4d213fa5a5023491890d11bbe6f760",
+  "run_url": "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+  "schema": "ea-dev05.governed-content-observation.v1",
+  "source_pins": {
+    "baobab-cms": "7d5af361977c7df31a2f63e296ac25e955378e59",
+    "baobab-cp": "8cab5cc534ffce1d7b3e64b625d8214eb810c4c1",
+    "baobab-iam": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+    "nabhold": "403a14e6510767d1b5ee586126dafd52a85059a9",
+    "shared": "0d95d9c546caae570a20cce7187c8dfbc18c4b68"
+  },
+  "successful_checks": 32,
+  "teardown_verified": true,
+  "tested_merge_parents": [
+    "0d1ff64a537c0e287aa4a435e53f02e34c30f66a",
+    "8967b03bf3c7df450a16a8054997edd69967f518"
+  ],
+  "tested_merge_sha": "034c79af149cb7e50c5fba3539bfc89b03ecb817",
+  "tested_tree_sha": "84336e6cfbaa93fefb1a4e373ac51a47f6d3d280",
+  "workflow_run_id": 40332470298
+}
