@@ -88,6 +88,14 @@ class RegisterTests(unittest.TestCase):
         module.validate(self.live)
         self.assertEqual(module.render(self.live), module.VIEW.read_text(encoding="utf-8"))
 
+    def test_dev06_cannot_hide_bound_resource_or_independent_negative_controls(self):
+        module.validate(self.data)
+        for case in module.EXTERNAL_API_CASES:
+            with self.subTest(case=case):
+                self.rejects(lambda d: d['packages'][6]['runtime'].update(
+                    cases=[row for row in d['packages'][6]['runtime']['cases'] if row['case'] != case]))
+        self.rejects(lambda d: d['packages'][6]['runtime']['cases'][0].update(case='replacement-case'))
+
     def test_dev09_native_inventory_cannot_hide_joined_finance_obligations(self):
         package = self.data["packages"][9]
         package["runtime"]["cases"] = [
@@ -406,3 +414,4 @@ class RegisterTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
