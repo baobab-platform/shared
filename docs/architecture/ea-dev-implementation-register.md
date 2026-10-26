@@ -4,7 +4,7 @@ Generated from [the JSON register](ea-dev-implementation-register.json); edit JS
 
 **Observed:** 2026-10-26. **Register validation:** SOURCE reporting only. Runtime evidence is scoped to the linked package receipts. **Protected staging, external certification and production:** not accepted.
 
-Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 now has all fourteen unchanged NAB-03 development cases PASS through the real CP-governed CMS/BFF path, independently hash-verified native audit/CP joins and teardown. The historical 12 PASS/2 BLOCKED and subsequent failed candidates remain unchanged. Protected and production approval are separate. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates.
+Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 now has all fourteen unchanged NAB-03 development cases PASS through the real CP-governed CMS/BFF path, independently hash-verified native audit/CP joins and teardown. The historical 12 PASS/2 BLOCKED and subsequent failed candidates remain unchanged. Protected and production approval are separate. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates. DEV-14/15 update: merged Infrastructure #64 and owner fixes now provide independently hash-verified connected receipts: Pulse 20 PASS and Payments 18 PASS / 5 BLOCKED, with complete issuer/host cleanup. Both packages remain PARTIAL; image/Codespaces, legal/mandate and native event-replay gaps are explicit. Original evidence timestamps are UTC (the same observations are 27 October SAST); historical package observations and receipts are unchanged. Engine-template #11 aligns the executable owner protocol. The updated baobab-dev #50 source remains held for image security qualification. No staging/production/provider certification is accepted.
 
 Observations become STALE after 7 days; compare the observation date with today. CI validates structure and does not refresh evidence.
 
@@ -26,8 +26,8 @@ Observations become STALE after 7 days; compare the observation date with today.
 | **DEV-11** — Observability, browser experience and CI test routing | Infrastructure / Shared / estates | DEV-01 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
 | **DEV-12** — Database, migration and resilience drills | Persistent-engine owners / Infrastructure | DEV-01, DEV-02 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
 | **DEV-13** — Independent staging/production entry | Infrastructure / Security and Operations / legal and domain owners | DEV-04, DEV-05, DEV-06, DEV-07, DEV-08, DEV-09, DEV-10, DEV-11, DEV-12 | NOT_ASSESSED / NOT_AUDITED | 2026-10-24 | NOT_ASSESSED / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
-| **DEV-14** — Reusable engine onboarding framework | Shared / Infrastructure / baobab-dev / engine-template | DEV-01, DEV-02, DEV-03 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
-| **DEV-15** — Pulse/Payments first-adopter runtime profiles | Infrastructure / Pulse / Payments / IAM / CP | DEV-14, DEV-03 | NOT_ASSESSED / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-24 | BASELINE_ONLY / NOT_OBSERVED | Owner reconciles the current source and mandatory cases, then implements the next scoped increment. |
+| **DEV-14** — Reusable engine onboarding framework | Shared / Infrastructure / baobab-dev / engine-template | DEV-01, DEV-02, DEV-03 | REAL_COMPONENT_SYNTHETIC_DATA / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-26 | SUCCESS / BLOCKED | Complete developer image security/reproducibility and fresh Codespaces qualification without changing accepted Node 24/Python 3.14/pnpm 11 baselines. Retain engine-template #11 connected protocol and genuine common IAM/CP backbone. Payments-specific blocked cases remain explicit; per user direction, return to DEV-06/INT-07 current-source requalification while unavailable gates remain open. |
+| **DEV-15** — Pulse/Payments first-adopter runtime profiles | Infrastructure / Pulse / Payments / IAM / CP | DEV-14, DEV-03 | REAL_COMPONENT_SYNTHETIC_DATA / PARTIAL_SOURCE_RUNTIME_UNPROVEN | 2026-10-26 | SUCCESS / BLOCKED | Implement and qualify actual applicable native/legal and event-replay paths with current authority and unchanged negatives; preserve 38 PASS / 5 BLOCKED across the two profiles and retain all original receipts. Until those dependencies exist, pursue the separate DEV-06/INT-07 current-source increment, retaining independent provider certification and protected approval. |
 
 ## Verified source baselines
 
@@ -66,6 +66,12 @@ Observations become STALE after 7 days; compare the observation date with today.
 | dev05-governed-nabhold | [7db56b5b7826425699e9b5163788f35aaf42d857](https://github.com/baobab-platform/nabhold/commit/7db56b5b7826425699e9b5163788f35aaf42d857) ([PR #97](https://github.com/baobab-platform/nabhold/pull/97)) | `403a14e6510767d1b5ee586126dafd52a85059a9` | Includes #95 exact CP/CMS resource audiences and fixed content/v1 path, #96 bounded diagnostics, and #97 whole-second OAuth expiry comparison with strict actual expiry, deadline and hard lifetime ceiling. Full frozen private-consumer owner CI passed.; [run 1](https://github.com/baobab-platform/nabhold/actions/runs/40330794368), [run 2](https://github.com/baobab-platform/nabhold/actions/runs/40330793581), [run 3](https://github.com/baobab-platform/nabhold/actions/runs/40330792932) |
 | dev05-governed-infrastructure | [8713e06c2445abbe8e2b1f37ed85df9e16db13af](https://github.com/baobab-platform/infrastructure/commit/8713e06c2445abbe8e2b1f37ed85df9e16db13af) ([PR #61](https://github.com/baobab-platform/infrastructure/pull/61)) | `8967b03bf3c7df450a16a8054997edd69967f518` | All fourteen original NAB-03 cases PASS: rendered BFF content, current native PEP, independent native audit/CP joins, distinct revoked/absent entitlement controls without allowed-read effects, restoration and independently verified cleanup. All eighteen DEV-06 cases and 21 checks rerun. Original archive/report hashes and tested/reviewed/merged trees independently verified. Synthetic development only.; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/40332472597), [run 2](https://github.com/baobab-platform/infrastructure/actions/runs/40332470785), [run 3](https://github.com/baobab-platform/infrastructure/actions/runs/40332470298), [run 4](https://github.com/baobab-platform/infrastructure/actions/runs/40332470365), [run 5](https://github.com/baobab-platform/infrastructure/actions/runs/40332470313), [run 6](https://github.com/baobab-platform/infrastructure/actions/runs/40332470331) |
 | dev05-governed-shared | [0d95d9c546caae570a20cce7187c8dfbc18c4b68](https://github.com/baobab-platform/shared/commit/0d95d9c546caae570a20cce7187c8dfbc18c4b68) ([PR #394](https://github.com/baobab-platform/shared/pull/394)) | `a035b5a9b56962ef862af1d77813d37d40de449f` | Merged Shared #394 effective Dev Container capability preflight and actual immutable private-archive consumer CI; selected by the joined DEV-05 source lock. Node 24/pnpm 11 baseline retained. This source merge does not qualify the unmerged baobab-dev #48 provider image, fresh Codespaces, fleet rollout or DEV-10 exit.; [run 1](https://github.com/baobab-platform/shared/actions/runs/40287762351), [run 2](https://github.com/baobab-platform/shared/actions/runs/40287762318), [run 3](https://github.com/baobab-platform/shared/actions/runs/40287762356), [run 4](https://github.com/baobab-platform/shared/actions/runs/40287762330), [run 5](https://github.com/baobab-platform/shared/actions/runs/40287762459) |
+| dev1415-shared | [32b71f3335e566daeb58246f17fcbbf162cf7f53](https://github.com/baobab-platform/shared/commit/32b71f3335e566daeb58246f17fcbbf162cf7f53) ([PR #403](https://github.com/baobab-platform/shared/pull/403)) | `78314895e9ba89004175b45d28db73819ddb9105` | Closed DEV-14 descriptor and registered development ceilings from #402, plus #403 startup registration parity. Canonical capability meanings are unchanged; invocation metadata cannot activate or certify a provider.; [run 1](https://github.com/baobab-platform/shared/actions/runs/40418508788) |
+| dev1415-cp | [055568a6ce2f2c22dd76273329b57b12429188bd](https://github.com/baobab-platform/baobab-cp/commit/055568a6ce2f2c22dd76273329b57b12429188bd) ([PR #445](https://github.com/baobab-platform/baobab-cp/pull/445)) | `bb86a784c7c289e36743c6a4e0e6510775108bc8` | Includes #444 descriptor-driven leased caller/neighbour authority, unassigned validator and normal provider lifecycle/composition/bindings. #445 proves real PG17 startup replay preserves the owner invocation and provider version without activation; 32 applicable checks passed.; [run 1](https://github.com/baobab-platform/baobab-cp/actions/runs/40418928218) |
+| dev1415-pulse | [d58143f72bcdfa02ec0c99fab74896e183a0912f](https://github.com/baobab-platform/baobab-pulse/commit/d58143f72bcdfa02ec0c99fab74896e183a0912f) ([PR #62](https://github.com/baobab-platform/baobab-pulse/pull/62)) | `c1c4e4c8de50cdd89785608e02f5bbba3359fd10` | Current CP authority at native mission/read/replay boundaries and PG transaction expiry fence. Canonical tenant, scope, classification, entry and version are rechecked independently of Qdrant. Source/component CI does not itself qualify a connected profile.; [run 1](https://github.com/baobab-platform/baobab-pulse/actions/runs/40386734789) |
+| dev1415-payments | [cf7305379adbed7085c281cd4a1e24621ae41667](https://github.com/baobab-platform/baobab-payments/commit/cf7305379adbed7085c281cd4a1e24621ae41667) ([PR #45](https://github.com/baobab-platform/baobab-payments/pull/45)) | `65ea800f03cfe3ebb7f12a47f54b78607804bb41` | Includes #44 current context/capability authority before sandbox execution and replay; #45 preserves retry body identity across refreshed CP context headers and checks identical replay/native read. Real Rust service, in-memory simulated outcomes, no PSP settlement or certified legal mandate.; [run 1](https://github.com/baobab-platform/baobab-payments/actions/runs/40417393878) |
+| dev1415-infrastructure | [144af0b28387a9f6f90bca742b9ee135a648f678](https://github.com/baobab-platform/infrastructure/commit/144af0b28387a9f6f90bca742b9ee135a648f678) ([PR #64](https://github.com/baobab-platform/infrastructure/pull/64)) | `86bb4b651153ebd2b695deb00c83992bcb079077` | All 46 final-head checks and ten validation workflows passed. Tested merge fb12651e29c5d285d3f646599135dc6052e13edb matches reviewed/merged tree. Pulse 20 PASS; Payments 18 PASS / 5 BLOCKED. Original ZIP/receipt SHA256 pairs independently verified; four authority withdrawals, principal disable, actual process recovery, issuer cleanup and independent host absence. Package acceptance remains false.; [run 1](https://github.com/baobab-platform/infrastructure/actions/runs/40419804204) |
+| dev14-template | [6af15dcb1097bd3a5006ee4d463e608ec13311fa](https://github.com/baobab-platform/engine-template/commit/6af15dcb1097bd3a5006ee4d463e608ec13311fa) ([PR #11](https://github.com/baobab-platform/engine-template/pull/11)) | `64c8817da51dcc4b6d602417d2e019a45fabe636` | Aligns the template with six connected owner phases while retaining five component arguments. Every unimplemented phase refuses. Seven applicable source validation checks passed; source scaffold tests do not confer engine runtime acceptance.; [run 1](https://github.com/baobab-platform/engine-template/actions/runs/40421304497) |
 
 ## Case obligations requiring runtime evidence
 
@@ -262,3 +268,64 @@ Descriptive labels preserve the existing INT-03C obligations and NAB-03 subcases
 | DEV-10 | affected-consumer-upgrade-branch | BLOCKED | NO_NEW_TOOLCHAIN_RELEASE_OR_FULL_CONSUMER_UPGRADE_QUALIFICATION |
 | DEV-10 | physical-postgresql-migration-separation | BLOCKED | PG16_TO_PG17_PHYSICAL_MIGRATION_NOT_OBSERVED; NEVER_REUSE_VOLUME |
 | DEV-10 | coordinated-rollback-drill | BLOCKED | PROCEDURE_IMPLEMENTED; ACTUAL_FLEET_ROLLBACK_NOT_OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-01 | PASS | OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-02 | PASS | OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-03 | PASS | OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-04 | PASS | OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-05 | PASS | OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-06 | PASS | OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-07 | PASS | OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-08 | PASS | OBSERVED |
+| DEV-14 | pulse-intelligence:ENG-ONB-09 | PASS | OBSERVED |
+| DEV-14 | payments-sandbox:ENG-ONB-01 | PASS | OBSERVED |
+| DEV-14 | payments-sandbox:ENG-ONB-02 | PASS | OBSERVED |
+| DEV-14 | payments-sandbox:ENG-ONB-03 | BLOCKED | AUTHORITY_UNQUALIFIED |
+| DEV-14 | payments-sandbox:ENG-ONB-04 | PASS | OBSERVED |
+| DEV-14 | payments-sandbox:ENG-ONB-05 | PASS | OBSERVED |
+| DEV-14 | payments-sandbox:ENG-ONB-06 | BLOCKED | NATIVE_NOT_IMPLEMENTED |
+| DEV-14 | payments-sandbox:ENG-ONB-07 | PASS | OBSERVED |
+| DEV-14 | payments-sandbox:ENG-ONB-08 | PASS | OBSERVED |
+| DEV-14 | payments-sandbox:ENG-ONB-09 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-01 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-02 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-03 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-04 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-05 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-06 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-07 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-08 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:ENG-ONB-09 | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-CANONICAL-SEARCH | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-CLASSIFICATION | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-INVALID-EVENT-CONTEXT | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-MISSION-CREATE-GET | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-MISSION-REPLAY-CONFLICT | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-ORPHAN-VECTOR | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-PROJECTION-MISMATCH | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-PROJECTION-REBUILD | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-QDRANT-OUTAGE-RECOVERY | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-REVOKED-ACCESS | PASS | OBSERVED |
+| DEV-15 | pulse-intelligence:PULSE-WRONG-TENANT | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:ENG-ONB-01 | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:ENG-ONB-02 | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:ENG-ONB-03 | BLOCKED | AUTHORITY_UNQUALIFIED |
+| DEV-15 | payments-sandbox:ENG-ONB-04 | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:ENG-ONB-05 | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:ENG-ONB-06 | BLOCKED | NATIVE_NOT_IMPLEMENTED |
+| DEV-15 | payments-sandbox:ENG-ONB-07 | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:ENG-ONB-08 | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:ENG-ONB-09 | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-ACTOR-MARKET-CURRENCY | BLOCKED | AUTHORITY_UNQUALIFIED |
+| DEV-15 | payments-sandbox:PAYMENTS-CANCEL | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-CROSS-TENANT | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-EVENT-REPLAY | BLOCKED | NATIVE_NOT_IMPLEMENTED |
+| DEV-15 | payments-sandbox:PAYMENTS-IDEMPOTENCY-CONFLICT | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-INTENT-CONFIRM-AUTHORIZE-CAPTURE | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-LOST-RESPONSE-RETRY | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-MISSING-MANDATE | BLOCKED | AUTHORITY_UNQUALIFIED |
+| DEV-15 | payments-sandbox:PAYMENTS-OVER-REFUND | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-PSP-NOT-CONFIGURED | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-REFUND | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-REVOKED-GRANT | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-SIMULATION-TRUTH | PASS | OBSERVED |
+| DEV-15 | payments-sandbox:PAYMENTS-UNTRUSTED-WEBHOOK | PASS | OBSERVED |

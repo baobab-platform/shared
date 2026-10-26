@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 now has all fourteen unchanged NAB-03 development cases PASS through the real CP-governed CMS/BFF path, independently hash-verified native audit/CP joins and teardown. The historical 12 PASS/2 BLOCKED and subsequent failed candidates remain unchanged. Protected and production approval are separate. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates.",
+  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 now has all fourteen unchanged NAB-03 development cases PASS through the real CP-governed CMS/BFF path, independently hash-verified native audit/CP joins and teardown. The historical 12 PASS/2 BLOCKED and subsequent failed candidates remain unchanged. Protected and production approval are separate. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates. DEV-14/15 update: merged Infrastructure #64 and owner fixes now provide independently hash-verified connected receipts: Pulse 20 PASS and Payments 18 PASS / 5 BLOCKED, with complete issuer/host cleanup. Both packages remain PARTIAL; image/Codespaces, legal/mandate and native event-replay gaps are explicit. Original evidence timestamps are UTC (the same observations are 27 October SAST); historical package observations and receipts are unchanged. Engine-template #11 aligns the executable owner protocol. The updated baobab-dev #50 source remains held for image security qualification. No staging/production/provider certification is accepted.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -559,6 +559,78 @@
         "https://github.com/baobab-platform/shared/actions/runs/40287762356",
         "https://github.com/baobab-platform/shared/actions/runs/40287762330",
         "https://github.com/baobab-platform/shared/actions/runs/40287762459"
+      ]
+    },
+    {
+      "key": "dev1415-shared",
+      "repo": "shared",
+      "sha": "32b71f3335e566daeb58246f17fcbbf162cf7f53",
+      "pr": 403,
+      "reviewed_head_sha": "78314895e9ba89004175b45d28db73819ddb9105",
+      "ci_status": "SUCCESS",
+      "scope": "Closed DEV-14 descriptor and registered development ceilings from #402, plus #403 startup registration parity. Canonical capability meanings are unchanged; invocation metadata cannot activate or certify a provider.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/shared/actions/runs/40418508788"
+      ]
+    },
+    {
+      "key": "dev1415-cp",
+      "repo": "baobab-cp",
+      "sha": "055568a6ce2f2c22dd76273329b57b12429188bd",
+      "pr": 445,
+      "reviewed_head_sha": "bb86a784c7c289e36743c6a4e0e6510775108bc8",
+      "ci_status": "SUCCESS",
+      "scope": "Includes #444 descriptor-driven leased caller/neighbour authority, unassigned validator and normal provider lifecycle/composition/bindings. #445 proves real PG17 startup replay preserves the owner invocation and provider version without activation; 32 applicable checks passed.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40418928218"
+      ]
+    },
+    {
+      "key": "dev1415-pulse",
+      "repo": "baobab-pulse",
+      "sha": "d58143f72bcdfa02ec0c99fab74896e183a0912f",
+      "pr": 62,
+      "reviewed_head_sha": "c1c4e4c8de50cdd89785608e02f5bbba3359fd10",
+      "ci_status": "SUCCESS",
+      "scope": "Current CP authority at native mission/read/replay boundaries and PG transaction expiry fence. Canonical tenant, scope, classification, entry and version are rechecked independently of Qdrant. Source/component CI does not itself qualify a connected profile.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-pulse/actions/runs/40386734789"
+      ]
+    },
+    {
+      "key": "dev1415-payments",
+      "repo": "baobab-payments",
+      "sha": "cf7305379adbed7085c281cd4a1e24621ae41667",
+      "pr": 45,
+      "reviewed_head_sha": "65ea800f03cfe3ebb7f12a47f54b78607804bb41",
+      "ci_status": "SUCCESS",
+      "scope": "Includes #44 current context/capability authority before sandbox execution and replay; #45 preserves retry body identity across refreshed CP context headers and checks identical replay/native read. Real Rust service, in-memory simulated outcomes, no PSP settlement or certified legal mandate.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-payments/actions/runs/40417393878"
+      ]
+    },
+    {
+      "key": "dev1415-infrastructure",
+      "repo": "infrastructure",
+      "sha": "144af0b28387a9f6f90bca742b9ee135a648f678",
+      "pr": 64,
+      "reviewed_head_sha": "86bb4b651153ebd2b695deb00c83992bcb079077",
+      "ci_status": "SUCCESS",
+      "scope": "All 46 final-head checks and ten validation workflows passed. Tested merge fb12651e29c5d285d3f646599135dc6052e13edb matches reviewed/merged tree. Pulse 20 PASS; Payments 18 PASS / 5 BLOCKED. Original ZIP/receipt SHA256 pairs independently verified; four authority withdrawals, principal disable, actual process recovery, issuer cleanup and independent host absence. Package acceptance remains false.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204"
+      ]
+    },
+    {
+      "key": "dev14-template",
+      "repo": "engine-template",
+      "sha": "6af15dcb1097bd3a5006ee4d463e608ec13311fa",
+      "pr": 11,
+      "reviewed_head_sha": "64c8817da51dcc4b6d602417d2e019a45fabe636",
+      "ci_status": "SUCCESS",
+      "scope": "Aligns the template with six connected owner phases while retaining five component arguments. Every unimplemented phase refuses. Seven applicable source validation checks passed; source scaffold tests do not confer engine runtime acceptance.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/engine-template/actions/runs/40421304497"
       ]
     }
   ],
@@ -2634,32 +2706,193 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
       "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
       "source_baselines": [
-        "shared"
+        "dev1415-shared",
+        "dev1415-cp",
+        "dev1415-pulse",
+        "dev1415-payments",
+        "dev1415-infrastructure",
+        "dev14-template"
       ],
-      "source_note": "Accepted delivery specification exists; new descriptor and CLI adoption not established by this audit.",
-      "observed_on": "2026-10-24",
+      "source_note": "Merged reusable descriptor, genuine Hydra issuance and current CP-governed native execution at exact source/image pins in Infrastructure #64. Pulse receipt 5cbf683d5bd444ee35dbe4fbaaedcf6faea161b0ba04879fc9fbddd56f0e650e; Payments receipt 51a824c6151cfb8bff62a54bba61ae8e603897d9016a4d5ce95ca9c9de31ef3a. Pulse 20 PASS (all nine ENG-ONB plus eleven domain cases), Payments 18 PASS / 5 BLOCKED (two common and three domain). Ten Pulse native audits independently join CP; all seven selected capability deltas are observed. Both profiles verify four authority withdrawals, disabled principal, real CP/issuer recovery and issuer/host cleanup; Pulse also recovers PG17/Qdrant. Profile prefixes distinguish original case IDs, not new canonical scenarios. Evidence timestamps are 26 October UTC / 27 October SAST. Neither package is accepted.",
+      "observed_on": "2026-10-26",
       "target_date": null,
       "actual_completion_date": null,
-      "mandatory_ci": "BASELINE_ONLY",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "mandatory_ci": "SUCCESS",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "BLOCKED",
         "canonical_scenarios": [],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "evidence_urls": [
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954",
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+        ],
+        "cleanup": "COMPLETE",
+        "cases": [
+          {
+            "case": "pulse-intelligence:ENG-ONB-01",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-02",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-03",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-04",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-05",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-06",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-07",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-08",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-09",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-01",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-02",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-03",
+            "result": "BLOCKED",
+            "reason": "AUTHORITY_UNQUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-04",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-05",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-06",
+            "result": "BLOCKED",
+            "reason": "NATIVE_NOT_IMPLEMENTED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-07",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-08",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-09",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          }
+        ]
       },
       "blockers": [
         {
-          "kind": "NOT_ASSESSED",
-          "detail": "Accepted delivery specification exists; new descriptor and CLI adoption not established by this audit."
+          "kind": "RUNTIME_FAILED",
+          "detail": "baobab-dev #50 final amd64/arm64 image scans failed at 533f5452661aff611b5dd34664bb84fdb47ddf3f. Doctor-only follow-up f4bd3f157f47114a5f1466514e3fb030113a9525 updates the Shared pin and Python 3.14 ceiling; it does not remediate or qualify that image. DEV-10 promotion remains held; temporary suppressions are not clearance."
+        },
+        {
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "Fresh interactive Codespaces, GHCR/private consumer and owner toolchain compatibility remain unqualified. Actions uses the same DevContainer definition but is not fresh interactive Codespace evidence."
+        },
+        {
+          "kind": "MISSING_EXTERNAL_INPUT",
+          "detail": "Payments ENG-ONB-03 legal actor/mandate authority and ENG-ONB-06 native event-replay security remain BLOCKED; the framework cannot manufacture these adopter permissions or facts."
         }
       ],
-      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "next_action": "Complete developer image security/reproducibility and fresh Codespaces qualification without changing accepted Node 24/Python 3.14/pnpm 11 baselines. Retain engine-template #11 connected protocol and genuine common IAM/CP backbone. Payments-specific blocked cases remain explicit; per user direction, return to DEV-06/INT-07 current-source requalification while unavailable gates remain open.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
@@ -2674,36 +2907,393 @@
         "DEV-03"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
       "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
       "source_baselines": [
-        "shared"
+        "dev1415-shared",
+        "dev1415-cp",
+        "dev1415-pulse",
+        "dev1415-payments",
+        "dev1415-infrastructure",
+        "dev14-template"
       ],
-      "source_note": "Accepted Pulse/Payments goals exist; no first-adopter current-profile runtime receipt established. CMS is not a prerequisite.",
-      "observed_on": "2026-10-24",
+      "source_note": "Merged reusable descriptor, genuine Hydra issuance and current CP-governed native execution at exact source/image pins in Infrastructure #64. Pulse receipt 5cbf683d5bd444ee35dbe4fbaaedcf6faea161b0ba04879fc9fbddd56f0e650e; Payments receipt 51a824c6151cfb8bff62a54bba61ae8e603897d9016a4d5ce95ca9c9de31ef3a. Pulse 20 PASS (all nine ENG-ONB plus eleven domain cases), Payments 18 PASS / 5 BLOCKED (two common and three domain). Ten Pulse native audits independently join CP; all seven selected capability deltas are observed. Both profiles verify four authority withdrawals, disabled principal, real CP/issuer recovery and issuer/host cleanup; Pulse also recovers PG17/Qdrant. Profile prefixes distinguish original case IDs, not new canonical scenarios. Evidence timestamps are 26 October UTC / 27 October SAST. Neither package is accepted.",
+      "observed_on": "2026-10-26",
       "target_date": null,
       "actual_completion_date": null,
-      "mandatory_ci": "BASELINE_ONLY",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "mandatory_ci": "SUCCESS",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "BLOCKED",
         "canonical_scenarios": [
           "L4-ENG-01",
           "L4-CP-02",
           "L4-CP-03"
         ],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "evidence_urls": [
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954",
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+        ],
+        "cleanup": "COMPLETE",
+        "cases": [
+          {
+            "case": "pulse-intelligence:ENG-ONB-01",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-02",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-03",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-04",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-05",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-06",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-07",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-08",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:ENG-ONB-09",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-CANONICAL-SEARCH",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-CLASSIFICATION",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-INVALID-EVENT-CONTEXT",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-MISSION-CREATE-GET",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-MISSION-REPLAY-CONFLICT",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-ORPHAN-VECTOR",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-PROJECTION-MISMATCH",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-PROJECTION-REBUILD",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-QDRANT-OUTAGE-RECOVERY",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-REVOKED-ACCESS",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "pulse-intelligence:PULSE-WRONG-TENANT",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697567954"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-01",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-02",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-03",
+            "result": "BLOCKED",
+            "reason": "AUTHORITY_UNQUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-04",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-05",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-06",
+            "result": "BLOCKED",
+            "reason": "NATIVE_NOT_IMPLEMENTED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-07",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-08",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:ENG-ONB-09",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-ACTOR-MARKET-CURRENCY",
+            "result": "BLOCKED",
+            "reason": "AUTHORITY_UNQUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-CANCEL",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-CROSS-TENANT",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-EVENT-REPLAY",
+            "result": "BLOCKED",
+            "reason": "NATIVE_NOT_IMPLEMENTED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-IDEMPOTENCY-CONFLICT",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-INTENT-CONFIRM-AUTHORIZE-CAPTURE",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-LOST-RESPONSE-RETRY",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-MISSING-MANDATE",
+            "result": "BLOCKED",
+            "reason": "AUTHORITY_UNQUALIFIED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-OVER-REFUND",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-PSP-NOT-CONFIGURED",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-REFUND",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-REVOKED-GRANT",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-SIMULATION-TRUTH",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          },
+          {
+            "case": "payments-sandbox:PAYMENTS-UNTRUSTED-WEBHOOK",
+            "result": "PASS",
+            "reason": "OBSERVED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40419804204/artifacts/12697307474"
+            ]
+          }
+        ]
       },
       "blockers": [
         {
-          "kind": "NOT_ASSESSED",
-          "detail": "Accepted Pulse/Payments goals exist; no first-adopter current-profile runtime receipt established. CMS is not a prerequisite."
+          "kind": "MISSING_EXTERNAL_INPUT",
+          "detail": "PAYMENTS-ACTOR-MARKET-CURRENCY and PAYMENTS-MISSING-MANDATE remain AUTHORITY_UNQUALIFIED, as does dependent ENG-ONB-03. Synthetic tenant permission and simulated payment success are not current verified legal-actor/mandate authority."
+        },
+        {
+          "kind": "NOT_IMPLEMENTED",
+          "detail": "PAYMENTS-EVENT-REPLAY and dependent ENG-ONB-06 remain NATIVE_NOT_IMPLEMENTED. The sandbox profile has no independently qualified native event relay/replay path; no financial or subscription entitlement is inferred."
         }
       ],
-      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "next_action": "Implement and qualify actual applicable native/legal and event-replay paths with current authority and unchanged negatives; preserve 38 PASS / 5 BLOCKED across the two profiles and retain all original receipts. Until those dependencies exist, pursue the separate DEV-06/INT-07 current-source increment, retaining independent provider certification and protected approval.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
