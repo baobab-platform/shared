@@ -251,6 +251,8 @@ jobs:
         run: python scripts/validate-identity-runtime-contracts.py
       - name: Test isolated development provisioning contract (ADR-SHARED-043)
         run: python scripts/tests/test_development_profiles.py
+      - name: Validate unprivileged engine integration profiles (DEV-14)
+        run: python scripts/tests/test_engine_integration_profiles.py
       - name: Test canonical workload-token scope grammar
         run: python scripts/tests/test_workload_token_contract.py
       - name: Test buyer identity handoff boundary (IAM ADR-0010 section 0)
