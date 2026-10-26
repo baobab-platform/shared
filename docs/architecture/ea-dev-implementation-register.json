@@ -5,7 +5,7 @@
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 remains 12 PASS/2 canonical-provider BLOCKED with verified hashes/teardown; NAB-03 is not qualified. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates.",
+  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 now has all fourteen unchanged NAB-03 development cases PASS through the real CP-governed CMS/BFF path, independently hash-verified native audit/CP joins and teardown. The historical 12 PASS/2 BLOCKED and subsequent failed candidates remain unchanged. Protected and production approval are separate. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -483,6 +483,82 @@
         "https://github.com/baobab-platform/infrastructure/actions/runs/40280113073",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40280112921",
         "https://github.com/baobab-platform/infrastructure/actions/runs/40280112907"
+      ]
+    },
+    {
+      "key": "dev05-governed-cp",
+      "repo": "baobab-cp",
+      "sha": "8cab5cc534ffce1d7b3e64b625d8214eb810c4c1",
+      "pr": 443,
+      "reviewed_head_sha": "5c140a39e809fc9ba0e1ea1f450ff549714b9d18",
+      "scope": "Closed CMS owner profile over normal catalogue, real OCI/readiness, maker/checker release/provider activation, current TRIAL composition and binding; owner PG17 and joined development proof. No certification or protected authority.",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40289870307",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40289868927",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40289868232",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40289868374",
+        "https://github.com/baobab-platform/baobab-cp/actions/runs/40289868120"
+      ]
+    },
+    {
+      "key": "dev05-governed-cms",
+      "repo": "baobab-cms",
+      "sha": "7d5af361977c7df31a2f63e296ac25e955378e59",
+      "pr": 52,
+      "reviewed_head_sha": "e8171998a4b37a7d1e3e6058a0d0a57d65f1d1c9",
+      "scope": "Includes CMS #51 current caller capability PEP and mandatory durable read audit; #52 retains the supplied CP Market in exact native synthetic publication scope, refusing scope broadening. All mandatory owner checks passed; joined proof separately retained.",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-cms/actions/runs/40328268519",
+        "https://github.com/baobab-platform/baobab-cms/actions/runs/40328266808"
+      ]
+    },
+    {
+      "key": "dev05-governed-nabhold",
+      "repo": "nabhold",
+      "sha": "7db56b5b7826425699e9b5163788f35aaf42d857",
+      "pr": 97,
+      "reviewed_head_sha": "403a14e6510767d1b5ee586126dafd52a85059a9",
+      "scope": "Includes #95 exact CP/CMS resource audiences and fixed content/v1 path, #96 bounded diagnostics, and #97 whole-second OAuth expiry comparison with strict actual expiry, deadline and hard lifetime ceiling. Full frozen private-consumer owner CI passed.",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/nabhold/actions/runs/40330794368",
+        "https://github.com/baobab-platform/nabhold/actions/runs/40330793581",
+        "https://github.com/baobab-platform/nabhold/actions/runs/40330792932"
+      ]
+    },
+    {
+      "key": "dev05-governed-infrastructure",
+      "repo": "infrastructure",
+      "sha": "8713e06c2445abbe8e2b1f37ed85df9e16db13af",
+      "pr": 61,
+      "reviewed_head_sha": "8967b03bf3c7df450a16a8054997edd69967f518",
+      "scope": "All fourteen original NAB-03 cases PASS: rendered BFF content, current native PEP, independent native audit/CP joins, distinct revoked/absent entitlement controls without allowed-read effects, restoration and independently verified cleanup. All eighteen DEV-06 cases and 21 checks rerun. Original archive/report hashes and tested/reviewed/merged trees independently verified. Synthetic development only.",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40332472597",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40332470785",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40332470365",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40332470313",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40332470331"
+      ]
+    },
+    {
+      "key": "dev05-governed-shared",
+      "repo": "shared",
+      "sha": "0d95d9c546caae570a20cce7187c8dfbc18c4b68",
+      "pr": 394,
+      "reviewed_head_sha": "a035b5a9b56962ef862af1d77813d37d40de449f",
+      "ci_status": "SUCCESS",
+      "scope": "Merged Shared #394 effective Dev Container capability preflight and actual immutable private-archive consumer CI; selected by the joined DEV-05 source lock. Node 24/pnpm 11 baseline retained. This source merge does not qualify the unmerged baobab-dev #48 provider image, fresh Codespaces, fleet rollout or DEV-10 exit.",
+      "ci_urls": [
+        "https://github.com/baobab-platform/shared/actions/runs/40287762351",
+        "https://github.com/baobab-platform/shared/actions/runs/40287762318",
+        "https://github.com/baobab-platform/shared/actions/runs/40287762356",
+        "https://github.com/baobab-platform/shared/actions/runs/40287762330",
+        "https://github.com/baobab-platform/shared/actions/runs/40287762459"
       ]
     }
   ],
@@ -1117,7 +1193,7 @@
         ]
       },
       "blockers": [],
-      "next_action": "DEV-05: qualify the original fourteen NAB-03 cases over actual IAM/CP/BFF/CMS services; preserve provider, legal and protected acceptance boundaries.",
+      "next_action": "DEV-05 development qualification is complete. Deliver DEV-14 common onboarding and DEV-15 headless adopters; preserve independent certified-provider, staging and production gates.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
@@ -1133,21 +1209,26 @@
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
       "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
-      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
+      "assessment": "ACCEPTED",
       "source_baselines": [
         "shared",
         "infra-49",
-        "dev05-infrastructure"
+        "dev05-infrastructure",
+        "dev05-governed-cp",
+        "dev05-governed-cms",
+        "dev05-governed-nabhold",
+        "dev05-governed-infrastructure",
+        "dev05-governed-shared"
       ],
-      "source_note": "Infrastructure #57 and CMS #50 merged after final-head CI/review. Actual native CMS/BFF: 12 PASS, 2 canonical-provider BLOCKED; completed receipt hashes and owned teardown verified. Canonical NAB-03 remains unqualified.",
-      "observed_on": "2026-10-24",
+      "source_note": "Infrastructure #61 final head 8967b03bf3c7df450a16a8054997edd69967f518 passed all fourteen unchanged NAB-03 cases in run 40332470298. Normal CP release/provider activation and current entitlement/binding are enforced before native CMS reads, with durable Payload audit independently joined to CP resolution. The real BFF renders published heading/footer content; revoked and absent entitlement controls deny CMS/BFF content without new allowed-read audit, then normal restoration succeeds. Archive and original report hash pairs, runtime identities and complete issuer/host/private-state teardown independently verified. Merged as 8713e06c2445abbe8e2b1f37ed85df9e16db13af; reviewed, tested and merged tree identities match. Historical #57 12 PASS/2 BLOCKED and intervening failed receipts remain unchanged. Acceptance is synthetic development only; provider certification, protected browser/session, legal and production approval are not inferred. INT-02 initially failed at the known BA-AUD-001 MFA timeout in job 121605268261; same-commit targeted retry job 121611313570 passed. The initial artifact hash and verified cleanup are retained; no MFA root-cause repair is established.",
+      "observed_on": "2026-10-26",
       "target_date": "2026-11-15",
-      "actual_completion_date": null,
+      "actual_completion_date": "2026-10-26",
       "mandatory_ci": "SUCCESS",
       "environment": "ISOLATED_DEVELOPMENT",
       "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "BLOCKED",
+        "status": "PASS",
         "canonical_scenarios": [
           "INT-03",
           "NAB-01",
@@ -1156,7 +1237,8 @@
           "NAB-04"
         ],
         "evidence_urls": [
-          "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+          "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
         ],
         "cleanup": "COMPLETE",
         "cases": [
@@ -1164,7 +1246,8 @@
             "case": "dependency-outage-and-restoration",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1172,7 +1255,8 @@
             "case": "disabled-caller",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1180,7 +1264,8 @@
             "case": "draft-or-preview",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1188,39 +1273,44 @@
             "case": "expired-caller-token",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
           {
             "case": "missing-grant",
-            "result": "BLOCKED",
+            "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
-            "reason": "CANONICAL_CAPABILITY_NOT_RESOLVED"
+            "reason": "OBSERVED"
           },
           {
             "case": "neighbour-tenant",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
           {
             "case": "published-home-nav-footer",
-            "result": "BLOCKED",
+            "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
-            "reason": "PROVIDER_NOT_ELIGIBLE"
+            "reason": "OBSERVED"
           },
           {
             "case": "revoked-caller-token",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1228,7 +1318,8 @@
             "case": "teardown",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1236,7 +1327,8 @@
             "case": "validator-negatives",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1244,7 +1336,8 @@
             "case": "withdrawn-content",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1252,7 +1345,8 @@
             "case": "wrong-audience-token",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1260,7 +1354,8 @@
             "case": "wrong-credential",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           },
@@ -1268,19 +1363,15 @@
             "case": "wrong-owner-or-context",
             "result": "PASS",
             "evidence_urls": [
-              "https://github.com/baobab-platform/infrastructure/actions/runs/40115479241"
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298",
+              "https://github.com/baobab-platform/infrastructure/actions/runs/40332470298/artifacts/12656975104"
             ],
             "reason": "OBSERVED"
           }
         ]
       },
-      "blockers": [
-        {
-          "kind": "NOT_IMPLEMENTED",
-          "detail": "CMS provider remains PARTIAL; canonical capability resolution and its controlled missing-grant prerequisite are not qualified."
-        }
-      ],
-      "next_action": "Complete actual CMS provider support and normal CP eligibility/binding/grant qualification, then rerun the unchanged original fourteen-case NAB-03 inventory.",
+      "blockers": [],
+      "next_action": "Proceed to DEV-14 reusable onboarding and DEV-15 headless exemplars. Provider certification, protected browser/session qualification, staging and production promotion retain separate scoped gates.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
@@ -1470,7 +1561,7 @@
         ]
       },
       "blockers": [],
-      "next_action": "Complete DEV-05 normal CMS provider/native capability enforcement and rerun all fourteen NAB-03 cases; then deliver DEV-14 common onboarding and DEV-15 headless adopters. Preserve separate certified-provider INT-07, staging and production gates.",
+      "next_action": "DEV-05 development qualification is complete. Deliver DEV-14 common onboarding and DEV-15 headless adopters; preserve independent certified-provider, staging and production gates.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
