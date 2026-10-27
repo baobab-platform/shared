@@ -24,6 +24,13 @@ The issuer-only correction was tested by [40490001220](https://github.com/baobab
 | Trade Docs | `d622f541cbf545230ab000e3321f5870bc954fa9` | Runtime URLs/kernel boundary and source inventory: health/kernel scaffold, not an issuance/document-access provider |
 | Regulations | `10516f9e4155bc771d0499227b5ccf4a20b28568` | Provider declaration and source inventory; its existence is not DEV-07 joined acceptance |
 
+Shared #405, CP #446 and IAM #139 are merged. Their reviewed heads remain
+Infrastructure's exact owner pins (`2fde03e2f5f3a8a6cbc1e2081b4859fdccc1bb53`,
+`695f08112898f65b17a4ec90b680720526b64dc4` and
+`03d4d7c026d524a265403af9606d0b9e46f71783` respectively). Do not retain an
+obsolete companion-approval hold or call those pins their merge SHAs. New
+Trade #177 source remains a corrective candidate until its own review/CI.
+
 These immutable snapshots are not claims that unrelated files or later commits were exhaustively reviewed. Infrastructure's actual owner pins are recorded in each receipt; current main snapshots above must not be substituted for the source actually executed.
 
 ## Corrected implementation findings
