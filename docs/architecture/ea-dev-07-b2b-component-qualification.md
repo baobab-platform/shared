@@ -123,8 +123,10 @@ failed original reports/hashes are retained separately from the 25 October
 baseline. Trade #177 corrects issuer equality, native buyer ID minting,
 malformed spending/budget facts and documentary lease validation. Infrastructure
 #66 pins reviewed owner source and adds closed, credential-free native refusal
-diagnostics. Final corrected native execution and full CI must pass before
-qualification. Canonical RFQ/quotation, BFF HTTP, atomic buyer/seller/spend
+diagnostics. The corrected exact-source run 40492142720 now records all eight live
+component cases PASS with independent issuer/CP revocation and host teardown;
+full final-head CI/review remains required. This is bounded component
+qualification only. Canonical RFQ/quotation, BFF HTTP, atomic buyer/seller/spend
 composition and joined ERP/documentary operations remain incomplete or
 unqualified. The universal fence stays SHADOW under Accepted Decision 9.
 No historical receipt, INT-05 case or provider/protected/production status is

@@ -50,7 +50,7 @@ Corrections are in [Trade #177](https://github.com/baobab-platform/baobab-trade/
 
 | DEV-07 obligation | Current result | Required next engineering / actual proof |
 | --- | --- | --- |
-| Independent buyer Organisation and canonical human Principal | Owner fixture and real issuer/CP joins exist; eight-case native handoff is under repair. | All eight native cases PASS at reviewed final source, independent CP binding revocation, issuer cleanup and host teardown. Also qualify the real estate BFF HTTP path. |
+| Independent buyer Organisation and canonical human Principal | Owner fixture and real issuer/CP joins exist; eight-case native handoff now has all eight cases PASS at the final corrected candidate. | Retain the exact-source eight-case proof and independent CP binding revocation/issuer/host cleanup. The real estate BFF HTTP path still requires qualification. |
 | Supplier Organisation and ERP onboarding | Not joined by the buyer qualifier. Portal records/reference contracts are insufficient. | Actual independent supplier admission/linkage, owner readback, wrong-party denial and available ERP adapter execution; absent provider stays BLOCKED. |
 | Market catalogue | Historical native UG/ZA public assortment proof exists. | Keep markets separate, require current clearance; add CP-bound buyer Market/local-key mapping and entitled private catalogue/pricing with foreign-buyer/Market denial. Public assortment grants no purchase permission. |
 | RFQ and controlled approval | Canonical contracts and pure operation/spend policy exist; Trade declares `commercial.rfq.manage` planned and has no canonical RFQ route/lifecycle. | Persist versioned RFQs and lifecycle/outbox under current buyer/seller authority; governed approval and distinct approver checks, no grant, material edit, duplicate/replay and tenant/Market negatives. Keep binding and non-binding effects explicit under Decisions 5–7. |
@@ -73,4 +73,28 @@ Rollback restores reviewed source pins and disables only the failing development
 
 ## Current runtime disposition
 
-The final corrected candidate is awaiting a fresh native run. Until a reviewed exact-source result demonstrates otherwise: `iam_cp_native_component_qualified=false`, `bff_http_qualified=false`, `int05_qualified=false`, `provider_qualified=false`, `protected_acceptance=false`, `production_authorized=false`. This audit does not declare DEV-07 complete.
+[Infrastructure run 40492142720](https://github.com/baobab-platform/infrastructure/actions/runs/40492142720)
+now proves **all eight component cases PASS** at reviewed Infrastructure head
+`9ef5b5a376840041a8ea4fef868c133b9287785e`, tested merge
+`e43b789b5e168c25318d3480a1f50982612b2322`, Trade owner source
+`bda46ba2815f6938d8c6502f0d847e09c87c2fc6`.
+Independent CP binding revocation, issuer cleanup and complete labelled host
+teardown are all true. The observed run is `6fb71dc6448aef44b473e66201346e21`.
+
+Artifact `12729580345` ZIP SHA-256:
+`fa365c83860594e27b2ee8e47700febd183c07e8e57f403c4be25c9ace8d7b95`.
+Original `dev07-buyer-suite.json` SHA-256:
+`1fdedbd45a8080f0bc9c58b38d593f7522dc4396735850bc792f6133ea6eed73`.
+Both archive and every downloaded report/hash pair were independently checked.
+The original passing report/hash bytes are retained separately under
+`docs/architecture/evidence/dev07-audit-2026-10-27/40492142720/`.
+Earlier failed candidates and the 25 October 25-case inventory remain unchanged.
+
+Only `iam_cp_native_component_qualified=true` is established by this new
+Infrastructure observation. The nested Trade report still correctly says host
+teardown NOT_OBSERVED; the Infrastructure owner supplies the independently
+observed host proof. `bff_http_qualified=false`, `int05_qualified=false`,
+`provider_qualified=false`, `protected_acceptance=false` and
+`production_authorized=false` remain required. Final-head mandatory CI and
+review remain merge prerequisites; this component proof does not declare
+DEV-07 complete.

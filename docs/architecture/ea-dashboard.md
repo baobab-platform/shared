@@ -19,8 +19,10 @@ records six actionable findings, exact inspected sources, retained failed runtim
 receipts and the remaining owner-specific gaps. Corrections are in
 [Trade #177](https://github.com/baobab-platform/baobab-trade/pull/177) and
 [Infrastructure #66](https://github.com/baobab-platform/infrastructure/pull/66).
-The first issuer-only repair did not qualify native buyer context. The final
-corrected candidate requires its own native run and final-head CI. DEV-07/INT-05
+The first issuer-only repair did not qualify native buyer context. The corrected candidate now has all eight native buyer cases PASS in
+Infrastructure run 40492142720, with independently hash-verified report bytes,
+CP binding revocation, issuer cleanup and complete host teardown. Full
+final-head CI/review remains required. DEV-07/INT-05
 remains PARTIAL/BLOCKED; the historical 16 PASS / 9 BLOCKED inventory remains
 unchanged. Incomplete RFQ/quotation, BFF, buyer commit composition, ERP and
 positive documentary providers are engineering dependencies, not a general
