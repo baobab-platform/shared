@@ -98,3 +98,27 @@ observed host proof. `bff_http_qualified=false`, `int05_qualified=false`,
 `production_authorized=false` remain required. Final-head mandatory CI and
 review remain merge prerequisites; this component proof does not declare
 DEV-07 complete.
+
+## Final source publication and merge review — 27 October 2026
+
+All corrective source and evidence PRs are merged after final-head CI and
+review, with no unresolved inline threads:
+
+| PR | Reviewed head | Merge commit | Final checks |
+| --- | --- | --- | --- |
+| Trade #177 | `bda46ba2815f6938d8c6502f0d847e09c87c2fc6` | `b8164f6c3a5bd940f968194d9b74c66e05a94350` | All 34 reported checks completed with successful/applicable skipped outcomes; full core PostgreSQL regression, TA-08, build, lint/typecheck, 935 unit tests and security pass. |
+| Infrastructure #66 | `9ef5b5a376840041a8ea4fef868c133b9287785e` | `0538e5040a9080a7dd9bd937bc24f2d892d6af22` | All 43 reported checks completed with successful/applicable skipped outcomes; all eight live buyer cases, existing profiles, independent cleanup and host teardown pass. |
+| Shared #406 | `f714b3975ee48792bdb643ff0b6548cffaf13812` | `c1d66ee2bb63c8d0d6a9aa8757dfe8157cb0679f` | All 32 reported checks completed with successful/applicable skipped outcomes; original passing/failed evidence and audit published. |
+
+The new Trade regression artifacts from run 40492136773 were independently
+hash-checked: native B2B remains 16 PASS / 9 BLOCKED and supplemental native
+buyer-context remains 11 PASS, at tested merge
+`db237f9e19e273aecaf425c3689b95de1bfef1cf` of the reviewed final head.
+They are separate from the original 25 October receipts and the eight-case
+Infrastructure identity proof; their counts are not added to canonical INT-05.
+
+The source/CI merge gate described earlier in this dated audit is now closed.
+The next work is the actual estate BFF handoff and available supplier joins,
+then canonical RFQ/quotation and atomic buyer/seller/reservation composition,
+followed by qualified ERP/documentary operations. All remaining scope and
+acceptance limitations in the matrix above still apply. DEV-07 remains partial.

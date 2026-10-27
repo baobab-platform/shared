@@ -632,6 +632,35 @@
       "ci_urls": [
         "https://github.com/baobab-platform/engine-template/actions/runs/40421304497"
       ]
+    },
+    {
+      "key": "dev07-trade-corrections",
+      "repo": "baobab-trade",
+      "sha": "b8164f6c3a5bd940f968194d9b74c66e05a94350",
+      "pr": 177,
+      "scope": "Corrective issuer/ID/spending/documentary source; full core PG17, TA-08 and 935 unit tests pass. Native B2B 16 PASS/9 BLOCKED and supplemental context 11 PASS remain bounded components, not INT-05/provider/protected acceptance.",
+      "reviewed_head_sha": "bda46ba2815f6938d8c6502f0d847e09c87c2fc6",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40492136773",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40492136885",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40492137371",
+        "https://github.com/baobab-platform/baobab-trade/actions/runs/40492138407"
+      ]
+    },
+    {
+      "key": "dev07-live-buyer-infrastructure",
+      "repo": "infrastructure",
+      "sha": "0538e5040a9080a7dd9bd937bc24f2d892d6af22",
+      "pr": 66,
+      "scope": "Independent exact-source eight-case IAM/CP/native Trade handler proof with CP binding revocation, issuer cleanup and complete labelled host teardown; report/hash originals retained. BFF HTTP, full INT-05, provider/protected/production remain unqualified.",
+      "reviewed_head_sha": "9ef5b5a376840041a8ea4fef868c133b9287785e",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40492142720",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40492142522",
+        "https://github.com/baobab-platform/infrastructure/actions/runs/40492144512"
+      ]
     }
   ],
   "packages": [
@@ -1650,9 +1679,11 @@
       "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
       "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
       "source_baselines": [
-        "dev07-trade"
+        "dev07-trade",
+        "dev07-trade-corrections",
+        "dev07-live-buyer-infrastructure"
       ],
-      "source_note": "Trade #172 merged at afea037ba8e32154ac920667609ac1016a9fb02a after review of 0b99f4aed188361bfaafd198ed5ae577585a3322 and 27 successful checks / 8 applicable skips. Fresh native result: 16 PASS/9 joined BLOCKED, no failures; original artifact/receipt hashes, tested source and native active-fixture cleanup independently verified. Evidence covers actual Medusa/PostgreSQL services and route-handler execution; joined IAM/CP/BFF authority and Infrastructure host teardown remain unqualified. 27 October source-conformance audit: Trade #176 merged; Trade #177 and Infrastructure #66 are corrective candidates. Issuer-only native run 40490001220 failed at buyer context after real issuer/CP joins; failed sanitized evidence is retained separately. New buyer-ID, spending-source, documentary-lease and diagnostic corrections require final-head CI and a fresh native run; no historical case status is promoted. See docs/assessments/trade/2026-10-27-dev07-workstream-conformance-audit.md. Subsequent corrected run 40492142720 at Infrastructure 9ef5b5a376840041a8ea4fef868c133b9287785e / Trade bda46ba2815f6938d8c6502f0d847e09c87c2fc6 independently proves all eight IAM/CP/native-handler cases PASS and issuer/CP binding/host cleanup. Original report SHA-256 1fdedbd45a8080f0bc9c58b38d593f7522dc4396735850bc792f6133ea6eed73 is retained separately. This is a supplemental component observation; the historical 25-case inventory, dates, INT-05/BFF/provider/protected/production status remain unchanged.",
+      "source_note": "Trade #172 merged at afea037ba8e32154ac920667609ac1016a9fb02a after review of 0b99f4aed188361bfaafd198ed5ae577585a3322 and 27 successful checks / 8 applicable skips. Fresh native result: 16 PASS/9 joined BLOCKED, no failures; original artifact/receipt hashes, tested source and native active-fixture cleanup independently verified. Evidence covers actual Medusa/PostgreSQL services and route-handler execution; joined IAM/CP/BFF authority and Infrastructure host teardown remain unqualified. 27 October source-conformance audit: Trade #176 merged; Trade #177 and Infrastructure #66 are corrective candidates. Issuer-only native run 40490001220 failed at buyer context after real issuer/CP joins; failed sanitized evidence is retained separately. New buyer-ID, spending-source, documentary-lease and diagnostic corrections require final-head CI and a fresh native run; no historical case status is promoted. See docs/assessments/trade/2026-10-27-dev07-workstream-conformance-audit.md. Subsequent corrected run 40492142720 at Infrastructure 9ef5b5a376840041a8ea4fef868c133b9287785e / Trade bda46ba2815f6938d8c6502f0d847e09c87c2fc6 independently proves all eight IAM/CP/native-handler cases PASS and issuer/CP binding/host cleanup. Original report SHA-256 1fdedbd45a8080f0bc9c58b38d593f7522dc4396735850bc792f6133ea6eed73 is retained separately. This is a supplemental component observation; the historical 25-case inventory, dates, INT-05/BFF/provider/protected/production status remain unchanged. Final publication: Trade #177 merged at b8164f6c3a5bd940f968194d9b74c66e05a94350 after all 34 reported checks completed; Infrastructure #66 merged at 0538e5040a9080a7dd9bd937bc24f2d892d6af22 after all 43 reported checks completed. Both final heads have no unresolved review threads. Shared #406 published the audit/evidence at c1d66ee2bb63c8d0d6a9aa8757dfe8157cb0679f. These corrective source gates are closed; all remaining joined obligations stay partial.",
       "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
@@ -1877,7 +1908,7 @@
           "detail": "Joined IAM/CP buyer Principal/Organisation/Market authority, supplier/ERP onboarding, entitled private catalogue/pricing, exact RFQ/quotation providers and controlled approval, composed buyer native commitment/replay, real ERP/documentary/Regulations and cross-jurisdiction authority remain unqualified. Native components cannot accept INT-05."
         }
       ],
-      "next_action": "Complete final-head CI/review for corrected IAM/CP/native buyer evidence in Trade #177 and Infrastructure #66, then qualify the estate BFF and available supplier joins; implement canonical RFQ/quotation and atomic buyer/seller/reservation consumption; qualify ERP/document access only where actual providers exist. Preserve all original INT-05 negatives and explicit per-operation blockers.",
+      "next_action": "Qualify the actual estate BFF handoff and available supplier joins; implement canonical RFQ/quotation and atomic buyer/seller/reservation consumption; qualify ERP/document access only where actual providers exist. Retain the passing eight-case identity/cleanup evidence and preserve all original INT-05 negatives and per-operation blockers.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,

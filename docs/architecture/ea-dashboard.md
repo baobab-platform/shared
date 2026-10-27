@@ -21,8 +21,8 @@ receipts and the remaining owner-specific gaps. Corrections are in
 [Infrastructure #66](https://github.com/baobab-platform/infrastructure/pull/66).
 The first issuer-only repair did not qualify native buyer context. The corrected candidate now has all eight native buyer cases PASS in
 Infrastructure run 40492142720, with independently hash-verified report bytes,
-CP binding revocation, issuer cleanup and complete host teardown. Full
-final-head CI/review remains required. DEV-07/INT-05
+CP binding revocation, issuer cleanup and complete host teardown. Trade #177 and Infrastructure #66 subsequently merged after full final-head
+CI/review; the corrective merge gate is closed. DEV-07/INT-05
 remains PARTIAL/BLOCKED; the historical 16 PASS / 9 BLOCKED inventory remains
 unchanged. Incomplete RFQ/quotation, BFF, buyer commit composition, ERP and
 positive documentary providers are engineering dependencies, not a general
@@ -440,3 +440,12 @@ focused/broader/race tests and all 45 final-head checks passing plus zero-findin
 automated review, and is merged at `63db55c87fda13762fc438a6d32a885a63ddb353`. Source candidates confer
 no provider certification, Principal, grant, binding or real release authority.
 INT-03, EA Gates D/E, protected staging and production remain unaccepted.
+
+**27 October final corrective merge:** Trade #177 (`b8164f6c`) and Infrastructure
+#66 (`0538e504`) are merged after full final-head CI/review; Shared #406
+(`c1d66ee2`) retains the audit and original passing/failed evidence. The
+eight-case live identity component proof is qualified, with independent
+revocation and host teardown. The next action is estate BFF/supplier joins,
+canonical RFQ/quotation and atomic buyer/seller/spend composition, followed by
+available ERP/documentary providers. DEV-07/INT-05 remains partial; no provider,
+protected or production acceptance follows.

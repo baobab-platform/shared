@@ -20,3 +20,7 @@ c44051eb3b06e2d2364116ea1d4b33f77563079d:contracts/identity/v1/runtime-capabilit
 # DEV-07 passing original receipt: same reviewed configuration-file SHA-256
 # metadata as the failed receipts above, not a secret or htpasswd contents.
 de6e71d5ecf1c12757d0984199e97bc82159a7c3:docs/architecture/evidence/dev07-audit-2026-10-27/40492142720/dev07-buyer-suite.json:generic-api-key:88
+
+# Human-readable EA-DEV read-model baseline key dev07-trade-corrections,
+# not an API key, credential or private configuration value.
+a75398de8f393671b6a621c95f11257bcfa690f8:docs/architecture/ea-dev-implementation-register.json:generic-api-key:637
