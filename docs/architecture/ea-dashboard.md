@@ -12,6 +12,22 @@ This header and the current v2.3 sections **supersede older 'current' claims in 
 
 **23 October 2026 — EA-REL active release-delivery companion (NOT a protected go-live approval):** [EA-REL progressive production-release programme](ea-v2.3-progressive-production-release-programme-2026-10-23.md) defines **CP/IAM as the first candidate production foundation** with infrastructure/ops and separately witnessed staging and production evidence; other CMS/estate and headless engines may be added independently only with their exact tested provider/contract and tenant-market operation eligibility. All protected environment, statutory, provider, independent approver and live operations gates remain **NOT ACCEPTED** until actual evidence is recorded. The current dated gate table below is not silently overwritten by this planning note.
 
+## 27 October 2026 — DEV-07 audit and corrective implementation
+
+[The DEV-07 conformance audit](../assessments/trade/2026-10-27-dev07-workstream-conformance-audit.md)
+records six actionable findings, exact inspected sources, retained failed runtime
+receipts and the remaining owner-specific gaps. Corrections are in
+[Trade #177](https://github.com/baobab-platform/baobab-trade/pull/177) and
+[Infrastructure #66](https://github.com/baobab-platform/infrastructure/pull/66).
+The first issuer-only repair did not qualify native buyer context. The corrected candidate now has all eight native buyer cases PASS in
+Infrastructure run 40492142720, with independently hash-verified report bytes,
+CP binding revocation, issuer cleanup and complete host teardown. Full
+final-head CI/review remains required. DEV-07/INT-05
+remains PARTIAL/BLOCKED; the historical 16 PASS / 9 BLOCKED inventory remains
+unchanged. Incomplete RFQ/quotation, BFF, buyer commit composition, ERP and
+positive documentary providers are engineering dependencies, not a general
+independent-human development approval hold.
+
 ## 24 October 2026 — DEV-00 decision and gate reconciliation
 
 [DEV-00 precedence and CI policy](ea-dev-00-gate-reconciliation.md) is the single

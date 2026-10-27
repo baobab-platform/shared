@@ -10,3 +10,13 @@ c44051eb3b06e2d2364116ea1d4b33f77563079d:contracts/identity/v1/runtime-capabilit
 # DEV-03 original receipt: SHA-256 digest of the private generated configuration
 # file, not htpasswd contents, a password hash, or an API key. Preserve evidence bytes.
 788f654649e7824b2098338ed63f7853f091eedc:docs/architecture/evidence/dev03-2026-10-24/dev01-0150912c3279a2b1679b1e3f9f3b6ef1/completed/receipt.json:generic-api-key:40
+
+# DEV-07 original failed receipts: SHA-256 digests of private generated configuration
+# files, not htpasswd contents, password hashes or API keys. Independently reviewed
+# as lifecycle.native_config_hashes; keep original evidence bytes and all other scans.
+52d382c0647301c7e46db3e1ea1fe49bfe99ca26:docs/architecture/evidence/dev07-audit-2026-10-27/40484450678/dev07-buyer-suite.json:generic-api-key:88
+52d382c0647301c7e46db3e1ea1fe49bfe99ca26:docs/architecture/evidence/dev07-audit-2026-10-27/40490001220/dev07-buyer-suite.json:generic-api-key:88
+
+# DEV-07 passing original receipt: same reviewed configuration-file SHA-256
+# metadata as the failed receipts above, not a secret or htpasswd contents.
+de6e71d5ecf1c12757d0984199e97bc82159a7c3:docs/architecture/evidence/dev07-audit-2026-10-27/40492142720/dev07-buyer-suite.json:generic-api-key:88

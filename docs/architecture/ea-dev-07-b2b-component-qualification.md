@@ -113,3 +113,21 @@ production qualification flags remain false. Native active-fixture cleanup was
 read back; this does not certify Infrastructure host teardown. The final artifact
 metadata expires on 9 November 2026, while the retained original report/hash
 bytes remain available in this repository.
+
+## 27 October 2026 — workstream conformance audit and corrective candidates
+
+The [DEV-07 conformance audit](../assessments/trade/2026-10-27-dev07-workstream-conformance-audit.md)
+traces all delivery obligations across their owners. Infrastructure #66's
+actual eight-case buyer handoff failed after successful issuer and CP joins;
+failed original reports/hashes are retained separately from the 25 October
+baseline. Trade #177 corrects issuer equality, native buyer ID minting,
+malformed spending/budget facts and documentary lease validation. Infrastructure
+#66 pins reviewed owner source and adds closed, credential-free native refusal
+diagnostics. The corrected exact-source run 40492142720 now records all eight live
+component cases PASS with independent issuer/CP revocation and host teardown;
+full final-head CI/review remains required. This is bounded component
+qualification only. Canonical RFQ/quotation, BFF HTTP, atomic buyer/seller/spend
+composition and joined ERP/documentary operations remain incomplete or
+unqualified. The universal fence stays SHADOW under Accepted Decision 9.
+No historical receipt, INT-05 case or provider/protected/production status is
+promoted by these source corrections.
