@@ -1,0 +1,115 @@
+{
+  "bff_http_qualified": false,
+  "iam_cp_native_component_qualified": false,
+  "int05_qualified": false,
+  "lifecycle": {
+    "authority": null,
+    "cms": null,
+    "cms_config_hashes": null,
+    "cms_lock_sha256": null,
+    "cms_oci_manifest_digest": null,
+    "cms_runtime_identity_verified": false,
+    "contract_hashes": {
+      "development/v1/enterprise-profiles.schema.json": "24592792f3fb95f825e5397b5ae56fa9b3a63818569a30d8f6c0738484c31a24",
+      "development/v1/examples/nabhold-group.json": "764c6c6d4977f988841b03153ce0ddddd0b9c8895555df6677798739a07fbbc3",
+      "identity/v1/workload-registry.yaml": "615ad36a0952c556c64d7a2d8be6cabb81861ec18f19136a1098f3981b47bde5"
+    },
+    "dev07_binding_revocation_verified": true,
+    "dev07_buyer": {
+      "bff_http_qualified": false,
+      "cases": {
+        "cp-principal-estate-organisation-market": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "issuer-issuance-and-independent-readback": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "issuer-revocation-before-expiry": {
+          "reason": "NOT_EXECUTED",
+          "result": "BLOCKED"
+        },
+        "membership-suspension-denial": {
+          "reason": "NOT_EXECUTED",
+          "result": "BLOCKED"
+        },
+        "native-buyer-context": {
+          "reason": "ASSERTION_FAILED",
+          "result": "FAIL"
+        },
+        "owned-buyer-bff-native-cleanup": {
+          "reason": "OBSERVED",
+          "result": "PASS"
+        },
+        "wrong-audience-denial": {
+          "reason": "NOT_EXECUTED",
+          "result": "BLOCKED"
+        },
+        "wrong-company-denial": {
+          "reason": "NOT_EXECUTED",
+          "result": "BLOCKED"
+        }
+      },
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+      "host_teardown": "NOT_OBSERVED",
+      "iam_cp_component_qualified": false,
+      "int05_qualified": false,
+      "production_authorized": false,
+      "protected_acceptance": false,
+      "provider_qualified": false,
+      "schema": "baobab-trade.dev07-iam-cp-components.v1",
+      "scope": "LIVE_IAM_CP_NATIVE_TRADE_HANDLER",
+      "source_sha": "ae6717f258c36724c63de52e3ebe03a51a54c01c"
+    },
+    "dev07_issuer_cleanup": true,
+    "domain_qualification": "NOT_EXECUTED",
+    "engine_integration": null,
+    "engine_lock_sha256": null,
+    "engine_oci_manifest_digest": null,
+    "engine_runtime_identity_verified": false,
+    "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+    "external": null,
+    "external_lock_sha256": null,
+    "external_oci_manifest_digest": null,
+    "external_runtime_identity_verified": false,
+    "harness_sha": "aae8c617c8e6a0307af9568640adb8979f833bb6",
+    "image_ids": {
+      "cp": "sha256:6419b995329b3f72e8bb47d6297083dbf4219148fd2ecd17ab4a38109abddd0b",
+      "trade-buyer-tool": "sha256:0343f5f8089e39a8fcffb8f04dba92da7fb96f3fe0fc1c1eb9a9b41c4c092e2f"
+    },
+    "int03c": null,
+    "int03c_qualified": false,
+    "lifecycle_passed": true,
+    "lock_sha256": "9a7caadec21eac71a101f3f5e855eceb9bb7b604107f34484c9f83507f945aaa",
+    "nab03_qualified": false,
+    "native_config_hashes": {
+      "hydra.yml": "9f5107871aea8a905cd7f1871df9f2780fad76f729d1e1c8d4763080b00232d6",
+      "introspection.htpasswd": "11248ec732d40417cf7794ef2c7b34daa9339ed7dd5494af8d245dac156a5b63",
+      "kratos/identity.schema.json": "080c937141d2829c12771d99e09d81ee5139e2ad3a3bbfbde9fa4232ebf88262",
+      "kratos/kratos.yml": "474f9758b08ee93bcd6ca6fb39c57a0ce3dd9d90aa33a443e6e44453ced6d7fb"
+    },
+    "production_authorized": false,
+    "protected_acceptance": false,
+    "run_id": "8fa107a6b1c82678064d68b927b38ebe",
+    "runtime_images": {
+      "edge": "nginx@sha256:5616878291a2eed594aee8db4dade5878cf7edcb475e59193904b198d9b830de",
+      "hydra": "oryd/hydra:v26.2.0@sha256:ff67c7fb5f95074fa53374d41151713554960504b340cd3f95b09e65deaea2a9",
+      "kratos": "oryd/kratos:v26.2.0@sha256:2a13bb8d362c7a7ae33bd7c0f5168aee46921f15c916a06346db91c06dc76643",
+      "postgres": "postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+      "probe": "python@sha256:f3fa41d74a768c2fce8016b98c191ae8c1bacd8f1152870a3f9f87d350920b7c"
+    },
+    "schema": "infrastructure.dev01.lifecycle.observed.v1",
+    "source_pins": {
+      "baobab-cp": "695f08112898f65b17a4ec90b680720526b64dc4",
+      "baobab-iam": "03d4d7c026d524a265403af9606d0b9e46f71783",
+      "baobab-trade": "ae6717f258c36724c63de52e3ebe03a51a54c01c",
+      "shared": "2fde03e2f5f3a8a6cbc1e2081b4859fdccc1bb53"
+    },
+    "teardown_verified": true
+  },
+  "production_authorized": false,
+  "protected_acceptance": false,
+  "provider_qualified": false,
+  "schema": "infrastructure.dev07-buyer-qualified.v1"
+}

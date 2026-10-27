@@ -1652,7 +1652,7 @@
       "source_baselines": [
         "dev07-trade"
       ],
-      "source_note": "Trade #172 merged at afea037ba8e32154ac920667609ac1016a9fb02a after review of 0b99f4aed188361bfaafd198ed5ae577585a3322 and 27 successful checks / 8 applicable skips. Fresh native result: 16 PASS/9 joined BLOCKED, no failures; original artifact/receipt hashes, tested source and native active-fixture cleanup independently verified. Evidence covers actual Medusa/PostgreSQL services and route-handler execution; joined IAM/CP/BFF authority and Infrastructure host teardown remain unqualified.",
+      "source_note": "Trade #172 merged at afea037ba8e32154ac920667609ac1016a9fb02a after review of 0b99f4aed188361bfaafd198ed5ae577585a3322 and 27 successful checks / 8 applicable skips. Fresh native result: 16 PASS/9 joined BLOCKED, no failures; original artifact/receipt hashes, tested source and native active-fixture cleanup independently verified. Evidence covers actual Medusa/PostgreSQL services and route-handler execution; joined IAM/CP/BFF authority and Infrastructure host teardown remain unqualified. 27 October source-conformance audit: Trade #176 merged; Trade #177 and Infrastructure #66 are corrective candidates. Issuer-only native run 40490001220 failed at buyer context after real issuer/CP joins; failed sanitized evidence is retained separately. New buyer-ID, spending-source, documentary-lease and diagnostic corrections require final-head CI and a fresh native run; no historical case status is promoted. See docs/assessments/trade/2026-10-27-dev07-workstream-conformance-audit.md.",
       "observed_on": "2026-10-25",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
@@ -1877,7 +1877,7 @@
           "detail": "Joined IAM/CP buyer Principal/Organisation/Market authority, supplier/ERP onboarding, entitled private catalogue/pricing, exact RFQ/quotation providers and controlled approval, composed buyer native commitment/replay, real ERP/documentary/Regulations and cross-jurisdiction authority remain unqualified. Native components cannot accept INT-05."
         }
       ],
-      "next_action": "Compose actual IAM/CP buyer Principal/Organisation/Market authority, qualify exact RFQ/quotation lifecycle and composed native commitment/replay enforcement, and connect available supplier/ERP/documentary/Regulations providers with explicit unavailable cases.",
+      "next_action": "Qualify the corrected exact-source IAM/CP/native buyer path through Trade #177 and Infrastructure #66, then estate BFF and available supplier joins; implement canonical RFQ/quotation and atomic buyer/seller/reservation consumption; qualify ERP/document access only where actual providers exist. Preserve all original INT-05 negatives and explicit per-operation blockers.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
