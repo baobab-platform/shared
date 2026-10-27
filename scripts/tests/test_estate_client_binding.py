@@ -70,12 +70,12 @@ def parse(value):
 
 
 class EstateClientBinding(unittest.TestCase):
-    def test_native_cp_topology_identifiers_are_carried_unchanged(self):
+    def test_native_cp_surrogates_are_not_public_topology_identifiers(self):
         engine = "019a0915-a8c0-7000-8000-000000000001"
         estate = "019a0915-a8c0-7000-8000-000000000002"
-        self.assertEqual([], errors("EstateBindingResolveRequest", request(engine_instance_id=engine, requested_digital_estate_id=estate)))
+        self.assertNotEqual([], errors("EstateBindingResolveRequest", request(engine_instance_id=engine, requested_digital_estate_id=estate)))
         document = dict(ATTESTATION, engine_instance_id=engine, digital_estate_id=estate)
-        self.assertEqual([], errors("EstateBindingAttestation", document))
+        self.assertNotEqual([], errors("EstateBindingAttestation", document))
         self.assertNotEqual([], errors("EstateBindingResolveRequest", request(engine_instance_id="not-a-canonical-engine")))
 
     def test_request_carries_evidence_and_no_authority(self):

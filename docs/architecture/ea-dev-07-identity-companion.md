@@ -12,12 +12,12 @@ production Trade and estate entries retain their previous ceilings. Buyer JIT
 registration, native commitment submission and commerce-profile resolution
 remain unallocated in this increment. `trade:buy` remains human-only.
 
-The native CP Digital Estate and engine-instance UUIDs are now accepted by the
-corresponding wire definitions alongside previously valid opaque IDs. This
-additive representation repair carries the *same* owner-issued identifier;
-it creates no alias, inferred mapping, authority or replacement estate. CP's
-registry must still validate the exact estate, tenant, instance, environment,
-status and lease. A well-formed identifier never proves registration.
+ADR-SHARED-012 remains unchanged: public engine-instance IDs are `ei_` keys;
+CP's topology UUIDs remain internal surrogates. The CP companion reads the
+existing public engine-instance key and adds the corresponding CP-owned public
+estate key to its native estate table. No consumer derives an alias, and no
+Shared identifier grammar is broadened. CP verifies the public keys against
+the exact existing leased native rows before binding them.
 
 Owning delivery:
 
