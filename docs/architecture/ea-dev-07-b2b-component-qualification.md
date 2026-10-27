@@ -131,3 +131,12 @@ composition and joined ERP/documentary operations remain incomplete or
 unqualified. The universal fence stays SHADOW under Accepted Decision 9.
 No historical receipt, INT-05 case or provider/protected/production status is
 promoted by these source corrections.
+
+**27 October final corrective merge:** Trade #177 (`b8164f6c`) and Infrastructure
+#66 (`0538e504`) are merged after full final-head CI/review; Shared #406
+(`c1d66ee2`) retains the audit and original passing/failed evidence. The
+eight-case live identity component proof is qualified, with independent
+revocation and host teardown. The next action is estate BFF/supplier joins,
+canonical RFQ/quotation and atomic buyer/seller/spend composition, followed by
+available ERP/documentary providers. DEV-07/INT-05 remains partial; no provider,
+protected or production acceptance follows.
