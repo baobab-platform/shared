@@ -70,6 +70,14 @@ def parse(value):
 
 
 class EstateClientBinding(unittest.TestCase):
+    def test_native_cp_surrogates_are_not_public_topology_identifiers(self):
+        engine = "019a0915-a8c0-7000-8000-000000000001"
+        estate = "019a0915-a8c0-7000-8000-000000000002"
+        self.assertNotEqual([], errors("EstateBindingResolveRequest", request(engine_instance_id=engine, requested_digital_estate_id=estate)))
+        document = dict(ATTESTATION, engine_instance_id=engine, digital_estate_id=estate)
+        self.assertNotEqual([], errors("EstateBindingAttestation", document))
+        self.assertNotEqual([], errors("EstateBindingResolveRequest", request(engine_instance_id="not-a-canonical-engine")))
+
     def test_request_carries_evidence_and_no_authority(self):
         self.assertEqual([], errors("EstateBindingResolveRequest", request()))
         self.assertEqual([], errors("EstateBindingResolveRequest", request(requested_digital_estate_id="estate_synthetic")))
@@ -118,7 +126,7 @@ class EstateClientBinding(unittest.TestCase):
         self.assertIn("BINDING_AMBIGUOUS", responses["409"]["description"])
         self.assertLessEqual({"200", "400", "401", "403", "404", "409", "503"}, set(responses))
 
-    def test_operation_is_a_scoped_unallocated_control_plane_surface(self):
+    def test_operation_is_a_scoped_development_only_control_plane_surface(self):
         operation = API["paths"]["/internal/estate/v1/client-bindings/resolve"]["post"]
         self.assertEqual([{"EstateBindingWorkload": ["estate:client-binding:resolve"]}], operation["security"])
         scope = SCOPES["estate:client-binding:resolve"]
@@ -130,8 +138,16 @@ class EstateClientBinding(unittest.TestCase):
                          (handoff["audience"], handoff["allowed_actors"], handoff["grants_authority"]))
         for client_id, entry in WORKLOADS["workloads"].items():
             with self.subTest(workload=client_id):
-                self.assertNotIn("estate:client-binding:resolve", entry.get("allowed_scopes", []))
-                self.assertNotIn("trade:buyer-handoff", entry.get("allowed_scopes", []))
+                if client_id == "baobab-dev-trade-buyer-validator":
+                    self.assertEqual(entry["environment"], "development")
+                    self.assertEqual(entry["subject_principal_audiences"], ["baobab-trade"])
+                else:
+                    self.assertNotIn("estate:client-binding:resolve", entry.get("allowed_scopes", []))
+                if client_id == "baobab-dev-zuribeans-bff":
+                    self.assertEqual(entry["environment"], "development")
+                    self.assertEqual(entry["allowed_scopes"], ["trade:buyer-handoff"])
+                else:
+                    self.assertNotIn("trade:buyer-handoff", entry.get("allowed_scopes", []))
 
 
 if __name__ == "__main__":
