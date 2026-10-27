@@ -374,6 +374,50 @@ development_expected = JSON.parse(<<~JSON)
     "credential_type": "client_credentials",
     "rotation_owner": "baobab-platform/equator-estate",
     "status": "ACTIVE"
+  },
+  "baobab-dev-trade-buyer-validator": {
+    "repository": "baobab-platform/baobab-trade",
+    "owner": "baobab-platform/baobab-trade",
+    "runtime": "DEV-07 leased synthetic buyer Principal and estate resolver",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane"
+    ],
+    "allowed_scopes": [
+      "context:resolve",
+      "identity:principal:resolve",
+      "estate:client-binding:resolve"
+    ],
+    "subject_principal_audiences": [
+      "baobab-trade"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-trade",
+    "status": "ACTIVE"
+  },
+  "baobab-dev-zuribeans-bff": {
+    "repository": "baobab-platform/zuribeans",
+    "owner": "baobab-platform/zuribeans",
+    "runtime": "DEV-07 leased synthetic confidential buyer BFF caller",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-trade"
+    ],
+    "allowed_scopes": [
+      "trade:buyer-handoff"
+    ],
+    "human_token_profile": {
+      "purpose": "ESTATE_BFF_BUYER",
+      "audiences": [
+        "baobab-trade"
+      ],
+      "scopes": [
+        "trade:buy"
+      ]
+    },
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/zuribeans",
+    "status": "ACTIVE"
   }
 }
 JSON

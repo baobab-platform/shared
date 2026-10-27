@@ -131,7 +131,11 @@ class PrincipalResolution(unittest.TestCase):
                 self.assertEqual(scopes[name]["allowed_actors"], ["workload"])
                 self.assertIs(scopes[name]["grants_authority"], False)
                 for workload, entry in workloads.items():
-                    self.assertNotIn(name, entry["allowed_scopes"], workload)
+                    if workload == "baobab-dev-trade-buyer-validator" and name == "identity:principal:resolve":
+                        self.assertIn(name, entry["allowed_scopes"])
+                        self.assertEqual(entry["environment"], "development")
+                    else:
+                        self.assertNotIn(name, entry["allowed_scopes"], workload)
 
     def test_denial_codes_are_closed(self):
         self.assertEqual(set(SCHEMA["$defs"]["PrincipalResolutionDenialCode"]["enum"]), {

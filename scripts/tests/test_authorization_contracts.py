@@ -174,8 +174,13 @@ class ValidatorHumanTokenProfileTests(unittest.TestCase):
         canonical = yaml.safe_load((ROOT / "contracts/identity/v1/workload-registry.yaml").read_text())["workloads"]
         for client_id, entry in canonical.items():
             with self.subTest(workload=client_id):
-                self.assertNotIn("human_token_profile", entry)
-                self.assertNotIn("trade:buyer-handoff", entry.get("allowed_scopes", []))
+                if client_id == "baobab-dev-zuribeans-bff":
+                    self.assertEqual(entry["environment"], "development")
+                    self.assertEqual(entry["human_token_profile"], {"purpose": "ESTATE_BFF_BUYER", "audiences": ["baobab-trade"], "scopes": ["trade:buy"]})
+                    self.assertEqual(entry["allowed_scopes"], ["trade:buyer-handoff"])
+                else:
+                    self.assertNotIn("human_token_profile", entry)
+                    self.assertNotIn("trade:buyer-handoff", entry.get("allowed_scopes", []))
 
     def test_a_confidential_bff_with_both_validates(self):
         result = self.validate()
