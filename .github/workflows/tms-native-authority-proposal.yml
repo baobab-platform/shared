@@ -1,0 +1,35 @@
+name: Shared TMS Native Authority Proposal Conformance
+on:
+  pull_request:
+    paths:
+      - "proposals/tms-native-execution/**"
+      - "docs/architecture/proposals/tms-native-execution-authority-v1.md"
+      - "test/tms-native-execution-proposal.test.mjs"
+      - ".github/workflows/tms-native-authority-proposal.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  proposal-is-not-authority:
+    name: Proposed TMS schema, no active contract or issuer allocation
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout Shared proposal
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+      - name: Validate draft authority contract with no activation
+        run: |
+          node --test test/tms-native-execution-proposal.test.mjs
+          node -e 'const fs=require("node:fs");const s=JSON.parse(fs.readFileSync("proposals/tms-native-execution/v1/decision.schema.json","utf8"));if(!s["$id"].includes("/proposals/")||s.additionalProperties!==false)process.exit(1)'
+      - name: Assert no TMS validator was granted by this proposal
+        run: |
+          if grep -Eq '^[[:space:]]+baobab(-dev)?-tms[^:]*:' contracts/identity/v1/workload-registry.yaml; then
+            echo "::error::TMS workload allocation needs a separate accepted Shared/IAM/CP decision"; exit 1
+          fi
+          echo "PROPOSED; no current IAM/CP TMS-native authority or runtime grant."
