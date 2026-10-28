@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/proposals/tms-native-execution/v1/decision.schema.json",
+  "title": "PROPOSED TMS native-effect authority decision - NOT ACCEPTED",
+  "description": "Proposal only. CP must issue a current authenticated decision after IAM verification and mandate, capability, provider-binding, plan and lease readback. This schema alone is not authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision_id",
+    "decision",
+    "operation",
+    "tenant_id",
+    "operating_organisation_id",
+    "legal_entity_id",
+    "market_id",
+    "principal_id",
+    "workload_client_id",
+    "capability_binding_id",
+    "capability_binding_revision",
+    "native_provider_kind",
+    "provider_release_digest",
+    "resource_type",
+    "resource_id",
+    "intent_digest",
+    "fencing_generation",
+    "issued_at",
+    "expires_at",
+    "environment"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision": {
+      "enum": [
+        "ALLOW",
+        "DENY"
+      ]
+    },
+    "operation": {
+      "enum": [
+        "tms.plan.revise",
+        "tms.booking.intent.create",
+        "tms.booking.submit",
+        "tms.booking.reconcile",
+        "tms.capacity.hold",
+        "tms.capacity.release",
+        "tms.movement.dispatch",
+        "tms.native.provision",
+        "tms.native.suspend",
+        "tms.native.deprovision"
+      ]
+    },
+    "tenant_id": {
+      "type": "string",
+      "pattern": "^tn_[a-z0-9]+$"
+    },
+    "operating_organisation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "legal_entity_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "market_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "principal_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workload_client_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_binding_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_binding_revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "native_provider_kind": {
+      "enum": [
+        "FLEETBASE_FLEETOPS",
+        "OPEN_TMS"
+      ]
+    },
+    "provider_release_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "resource_type": {
+      "enum": [
+        "TransportPlan",
+        "TransportBooking",
+        "CapacityReservation",
+        "TransportMovement",
+        "NativeProviderInstance"
+      ]
+    },
+    "resource_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "intent_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "fencing_generation": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "approval_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "environment": {
+      "enum": [
+        "development",
+        "staging",
+        "production"
+      ]
+    },
+    "denial_reason": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
