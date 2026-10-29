@@ -78,4 +78,28 @@ ERP #116 remains manufacturing/costing; ERP #117 separately tracks provider-neut
 
 DEV-07 remains open for real RFQ/quotation lifecycle, actual atomic buyer commitment authority, native ERP/provider and documentary integration. Supplier outbox/row-lock/ERP identity corrections already merged in ZuriBeans #138/#139 remain valid component work. Trade #181's bounded workload transport passed 34 checks and merged at `c659dd933104f50cd9b6cebcf1f42ba1b2ce3d27`.
 
-Infrastructure #67's BFF HTTP proof remains unqualified: the retained failed receipt has no accepted component report, despite independent CP/issuer cleanup and host teardown. Closed cleanup-stage diagnostics identified native API-key deletion before revocation. Pinned Medusa 2.21.2 explicitly refuses this. Trade #182 revokes the exact owned key immediately, independently reads back revocation, then deletes it; foreign/secret keys and failed/future revocation remain errors. Infrastructure #67 pins the corrected immutable Trade fixture source for a fresh real run; its qualification remains pending until the completed receipt and all final checks pass. Do not rewrite it as PASS, replace historical INT-05 evidence or infer production readiness from source CI.
+Infrastructure #67's earlier BFF HTTP attempt remained unqualified: its failed receipt had no accepted component report despite independent CP/issuer cleanup and host teardown. Closed cleanup-stage diagnostics identified native API-key deletion before revocation, which pinned Medusa 2.21.2 explicitly refuses. Trade #182 corrected the exact owned key's immediate revocation, independent revocation readback and deletion; foreign/secret keys and failed/future revocation remain errors. #182 is merged at `435207d3729efb1be5162bee15034584348ecb8b`. The failed attempt remains historical evidence; the fresh qualification below does not relabel it.
+
+## Fresh DEV-07 BFF HTTP component qualification
+
+Infrastructure #67 reviewed head `712c140eefb923408cf6d7fe08b2329f80f51940` passed the real [development qualification run 40831958591](https://github.com/baobab-platform/infrastructure/actions/runs/40831958591), including job `123308088424`. CI checked the candidate merge `d2ee4e8a2182d7b04b53a5bb858217b049ee5ef0` against base `0538e5040a9080a7dd9bd937bc24f2d892d6af22`. All eight associated workflows succeeded; all 33 applicable jobs passed, with seven inapplicable jobs skipped. Both inline review threads are resolved; the edge recreation correction applies its new network alias before health probes.
+
+The retained [artifact 12879880298](https://github.com/baobab-platform/infrastructure/actions/runs/40831958591/artifacts/12879880298), `dev07-bff-http-evidence`, was downloaded independently and its ZIP digest and both JSON report/hash pairs verified. Run `2662afd16258eff15c628b2584831f4b` records all eight observations true: native Next/IAM session, current CP-matched Trade HTTP context, CSRF denial, foreign Organisation denial, membership suspension, Redis custody outage/recovery, issuer-consent revocation before session expiry, and native fixture cleanup. Independent runtime identity, CP binding withdrawal, issuer cleanup and host teardown are true.
+
+| Evidence | SHA-256 |
+| --- | --- |
+| Artifact ZIP | `9577f9d1ea9fc0a957899bbee2d8d1d96044b937d84e664418791b7c16e3ca9a` |
+| Final BFF suite | `96736c8bac5991db04ae964136b6422701b1b4873d362649c85588edb8881a3b` |
+| Completed lifecycle receipt | `dceafb576160fa71252d5c799c6a67482c52a5eea63d8423a12cbe1fc7de125f` |
+
+The exact tested owners remain Shared `2fde03e2f5f3a8a6cbc1e2081b4859fdccc1bb53`, CP `695f08112898f65b17a4ec90b680720526b64dc4`, IAM `f7c13704b3161e72075bd245ae439dc839624625`, Trade `99f819459ddd1b026f1bcc915856a56ee2acfbbc`, and ZuriBeans `71296d8a08b46074e0fdd95c60576ffceec478a5`. This proves those immutable versions, not later CP/IAM/TMS changes. Future owner changes require requalification.
+
+**Outcome:** the final wrapper records `bff_http_qualified=true` only after independent disposal. The private component correctly retains `bff_http_qualified=false`, since it cannot witness host teardown. Evidence class remains `REAL_COMPONENT_SYNTHETIC_DATA`; `domain_qualification=NOT_EXECUTED`. INT-05, provider, protected and production qualification remain false. The original direct-handler cases, historical INT-05 evidence and all 30 EA-XB operational cases remain unchanged.
+
+### Next DEV-07 engineering sequence
+
+1. Implement and qualify the real Trade-owned RFQ/quotation lifecycle using current IAM/CP authority, supplier membership and tenant/Organisation/Market isolation.
+2. Implement and prove buyer authority at the native database commitment boundary, including receipt/reservation, exact amount/currency, replay/concurrency and rollback negatives.
+3. Connect native ERP and document providers with governed mappings and exact documentary versions; prove their positive and denial paths independently.
+
+BFF HTTP context success cannot substitute for any of these commercial/provider gates. No purchasing operation or native commitment fence is activated by this component qualification.
