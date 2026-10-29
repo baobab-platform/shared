@@ -94,7 +94,6 @@ updates:
     #   Enables automated filtering, labeling rules, CODEOWNERS routing, and CI auto-merge scripts.
     labels:
       - "dependencies"
-      - "github-actions"
 
     # --------------------------------------------------------------------------
     # Commit Message Conventions (Conventional Commits)
