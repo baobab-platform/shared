@@ -72,7 +72,7 @@ class CorrectiveArchitectureProposalTest(unittest.TestCase):
                         if x["id"] == "COOPERATIVE-TO-TENANT")
         self.assertEqual(scenario["applicable_case_ids"], ["XBN-01", "XBN-02", "XBN-03"])
         self.assertEqual(validator.applicable_case_ids(scenario["claims"]), scenario["applicable_case_ids"])
-        self.assertTrue(set(scenario["excluded_cases"]) >= {"XBN-04", "XBN-05", "XBN-06", "XBN-07"})
+        self.assertGreaterEqual(set(scenario["excluded_cases"]), {"XBN-04", "XBN-05", "XBN-06", "XBN-07"})
 
     def test_cannot_drop_required_case_or_forge_applicability(self):
         for mutation in ("drop", "false_claim", "unknown_claim", "non_boolean", "hide_exclusion", "invent_pass"):
@@ -89,7 +89,7 @@ class CorrectiveArchitectureProposalTest(unittest.TestCase):
     def test_bilateral_and_crm_obligations_cannot_be_waived_when_claimed(self):
         for scenario in PROPOSAL["reference_scenarios"]:
             if scenario["claims"]["bilateral_accounting"]:
-                self.assertTrue(set(scenario["applicable_case_ids"]) >= {"XBN-04", "XBN-05", "XBN-06", "XBN-07"})
+                self.assertGreaterEqual(set(scenario["applicable_case_ids"]), {"XBN-04", "XBN-05", "XBN-06", "XBN-07"})
             if scenario["buyer_variant"] == "NON_TENANT":
                 self.assertNotIn("XBN-04", scenario["applicable_case_ids"])
                 self.assertIn("XBC-06", scenario["applicable_case_ids"])
