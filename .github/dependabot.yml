@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 1579)
+Total output lines: 122
+
 # ==============================================================================
 # GitHub Dependabot Configuration File (.github/dependabot.yml)
 # ==============================================================================
@@ -51,13 +54,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-      timezone: "Africa/Johannesburg"
-
-    # --------------------------------------------------------------------------
-    # Concurrent Pull Request Boundary
-    # --------------------------------------------------------------------------
-    # PURPOSE:
-    #   Sets an upper threshold on the number of open PRs Dependabot can maintain concurrently.
+      time…79 tokens truncated… can maintain concurrently.
     # RATIONALE:
     #   Prevents repository flood and reviewer fatigue during periods with multiple updates.
     # LOGIC:
