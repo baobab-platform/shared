@@ -61,3 +61,5 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 | [ADR-SHARED-043 — Development Provisioning and Environment Approval Boundaries](ADR-SHARED-043-Development-Provisioning-and-Environment-Approval-Boundaries.md) | **Accepted 2026-10-23 — Standing isolated development authorisation across engines/estates; independent human approvals at protected staging/production** |
 
 | [EA v2.3 — Cross-Border Business Execution expansion (EA-XB), 29 October 2026](../architecture/ea-v2.3-cross-border-business-execution-2026-10-29.md) | **ACCEPTED programme objective** by Platform Owner direction; reviewed CI-green merge publishes design; XBE-01..18 operational cases **NOT_RUN**, independent provider/legal/production acceptance not conferred |
+
+| [EA-XB v1.1 — Cross-Border Enterprise Corrective Architecture](../architecture/ea-xb-v1.1-enterprise-corrective-architecture-2026-10-29.md) | **PROPOSED — Platform Owner review required**. Companion acceptance profiles remain design-only; existing accepted EA-XB #411 / L4 baseline remains authoritative until explicit approval. |
