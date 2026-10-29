@@ -77,3 +77,18 @@ This template illustrates what must be recorded; it does not create a canonical 
 The Platform Owner approves workstream sequencing through Accepted EA v2.3; **no domain's execution authority is transferred by these rows**. Shared owns the L4 canonical scenario registry and contracts, CP owns current grants/provider bindings, IAM owns credentials/issuance, each domain owner owns execution and appropriate expert reviewers own independent legal/PSP/carrier/payroll acceptance.
 
 Owners may extend this *companion* matrix for product/engineering work while preserving evidence history. New common L4 scenario identifiers, capability keys, actor roles or Shared contract semantics require an independently accepted Shared decision and consumer conformance—not a silent row rename.
+
+
+## 5. EA-XB — independent cross-border business outcome acceptance (29 October 2026)
+
+**Programme objective accepted by Platform Owner; all operational scenarios NOT_RUN.** [EA-XB programme](ea-v2.3-cross-border-business-execution-2026-10-29.md) introduces an **additional programme acceptance class**, not a change to this companion's existing historical rows and not a replacement for the [single authoritative L4 case registry](ea-v2.2-integration-acceptance-matrix.md). The structural inventory is the [EA-XB XBE-01..18 matrix](ea-xb-cross-border-acceptance-matrix.json); \`python scripts/validate_ea_xb_acceptance.py\` and its tests enforce case completeness but do **not** execute any business transaction.
+
+| Business-outcome gate | Required positive evidence | Non-negotiable negative/absence | At adoption |
+| --- | --- | --- | --- |
+| **XB-00** source acceptance | Reviewed publication, machine-validated all 18 mandatory design cases and owner assignment | No historical L4 row rewritten, synthetic test or CI labelled external/protected acceptance | Candidate source; not operational |
+| **XBE-01..04** unrelated business admission and actors | ZA manufacturer independent COMMERCIAL EXTERNAL_CLIENT; UG buyer without and then with independent tenant; current bilateral actor/Market/grants | No forced DigitalEstate; wrong audience, corporate inheritance, wrong legal actor/tenant, revoked grant and duplicate identity refused | NOT_RUN |
+| **XBE-05..10** trade/procurement/production | Real Trade quote/commit, import of components, actual iDempiere13 BOM/work order/stock valuation, WIP, lot and QA genealogy | Native bypass, uncertain valuation, B2C fallback, null spending grant, wrong entity and quarantine refused | NOT_RUN |
+| **XBE-11..14** regulations/documents/logistics | ZA→UG source- and date-pinned tariff/origin/conformity determination, custody-controlled document and shipping/import acceptance | No fictional preference/customs decision, unsupported carrier, fabricated ETA, silent release or wrong recipient | NOT_RUN |
+| **XBE-15..18** bilateral financial/result assurance | Independent ERP journals AR/AP/FX, authorised PSP outcome, event-replay recovery, tenant-offboarding rights and restore/teardown | No shared mutable ledger, fake bank movement, blind payment retry, leaked counterparty data, orphan runtime or false restore | NOT_RUN |
+
+A programme-level cross-border PASS requires **all 18 mandatory cases PASS at the claimed execution trust class** with evidence pinned to actual owning engines, current context, technical/legal source and independent negative results. \`NOT_RUN\`, \`BLOCKED\`, \`FAIL\` or \`NOT_APPLICABLE\` anywhere prevents aggregate acceptance. Design publication and CI gate are not operational acceptance. Domain owners and expert reviewers retain all their existing authorities.
