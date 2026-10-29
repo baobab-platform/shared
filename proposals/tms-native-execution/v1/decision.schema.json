@@ -1,0 +1,703 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/proposals/tms-native-execution/v1/decision.schema.json",
+  "title": "Accepted TMS native-authority design — development contract candidate, not an active API",
+  "description": "Architecture accepted under owner direction after Shared #409 conformance correction. An authenticated online CP claim/readback plus current TMS policy is required; JSON validity and possession confer no authority. Active contract/registry adoption and runtime qualification remain separate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision_id",
+    "decision",
+    "operation",
+    "authority_plane",
+    "resource_type",
+    "resource_id",
+    "resource_revision",
+    "intent_digest",
+    "subject_issuer",
+    "subject_id",
+    "subject_audience",
+    "subject_client_id",
+    "subject_actor_type",
+    "validator_client_id",
+    "correlation_id",
+    "issued_at",
+    "expires_at",
+    "environment"
+  ],
+  "properties": {
+    "decision_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "decision": {
+      "enum": ["ALLOW", "DENY"]
+    },
+    "operation": {
+      "enum": [
+        "tms.plan.revise",
+        "tms.booking.intent.create",
+        "tms.booking.submit",
+        "tms.booking.reconcile",
+        "tms.capacity.hold",
+        "tms.capacity.release",
+        "tms.movement.dispatch",
+        "tms.native.provision",
+        "tms.native.suspend",
+        "tms.native.deprovision"
+      ]
+    },
+    "authority_plane": {
+      "enum": ["DATA", "CONTROL"]
+    },
+    "resource_type": {
+      "enum": [
+        "TransportPlan",
+        "TransportBooking",
+        "CapacityReservation",
+        "TransportMovement",
+        "NativeProviderInstance"
+      ]
+    },
+    "resource_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    },
+    "resource_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "intent_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "subject_issuer": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048,
+      "pattern": "^https://[^/?#@\\s]+(?:/[^?#\\s]*)?$"
+    },
+    "subject_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+    },
+    "subject_audience": {
+      "const": "baobab-tms"
+    },
+    "subject_client_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+    },
+    "subject_actor_type": {
+      "enum": ["HUMAN", "WORKLOAD"]
+    },
+    "validator_client_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+    },
+    "correlation_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "environment": {
+      "const": "development"
+    },
+    "context_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "principal_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "validator_principal_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "tenant_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/tenantId"
+    },
+    "primary_organisation_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "operating_organisation_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "legal_entity_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/legalEntityId"
+    },
+    "market_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/resourceId"
+    },
+    "market_participation_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    },
+    "isolation_profile_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/resourceId"
+    },
+    "cp_provider_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    },
+    "cp_engine_instance_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/engineInstanceId"
+    },
+    "capability_binding_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    },
+    "capability_binding_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "native_binding_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "native_binding_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "native_provider_kind": {
+      "enum": ["FLEETBASE_FLEETOPS", "OPEN_TMS"]
+    },
+    "provider_release_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "native_deployment_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    },
+    "policy_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "claim_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "fencing_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "execution_attempt_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/uuid"
+    },
+    "operation_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/operationId"
+    },
+    "execution_attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "plan_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/provisioningPlanId"
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "desired_state_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "approval_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/approvalDecisionId"
+    },
+    "transport_plan_id": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    },
+    "transport_plan_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "transport_plan_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "transport_plan_approval_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    },
+    "carrier_purchase_approval_reference": {
+      "$ref": "https://contracts.baobab-platform.com/control-plane/v1/domain.schema.json#/$defs/canonicalEntityId"
+    },
+    "denial_reason": {
+      "enum": [
+        "CALLER_NOT_PERMITTED",
+        "SUBJECT_NOT_CURRENT",
+        "PRINCIPAL_NOT_RESOLVED",
+        "CONTEXT_REJECTED",
+        "SCOPE_MISMATCH",
+        "MANDATE_NOT_CURRENT",
+        "ENTITLEMENT_ABSENT",
+        "PROVIDER_NOT_ELIGIBLE",
+        "BINDING_NOT_CURRENT",
+        "PLAN_NOT_CURRENT",
+        "APPROVAL_REQUIRED",
+        "ISOLATION_NOT_VERIFIED",
+        "CLAIM_NOT_CURRENT",
+        "AUTHORITY_UNAVAILABLE"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "ALLOW"
+          }
+        },
+        "required": ["decision"]
+      },
+      "then": {
+        "required": [
+          "context_id",
+          "principal_id",
+          "validator_principal_id",
+          "tenant_id",
+          "primary_organisation_id",
+          "operating_organisation_id",
+          "legal_entity_id",
+          "market_id",
+          "market_participation_reference",
+          "isolation_profile_id",
+          "cp_provider_id",
+          "cp_engine_instance_id",
+          "capability_binding_id",
+          "capability_binding_revision",
+          "native_binding_id",
+          "native_binding_revision",
+          "native_provider_kind",
+          "provider_release_digest",
+          "native_deployment_id",
+          "policy_digest",
+          "claim_id",
+          "fencing_generation",
+          "execution_attempt_id"
+        ],
+        "not": {
+          "required": ["denial_reason"]
+        }
+      },
+      "else": {
+        "required": ["denial_reason"],
+        "not": {
+          "anyOf": [
+            {
+              "required": ["context_id"]
+            },
+            {
+              "required": ["principal_id"]
+            },
+            {
+              "required": ["validator_principal_id"]
+            },
+            {
+              "required": ["tenant_id"]
+            },
+            {
+              "required": ["primary_organisation_id"]
+            },
+            {
+              "required": ["operating_organisation_id"]
+            },
+            {
+              "required": ["legal_entity_id"]
+            },
+            {
+              "required": ["market_id"]
+            },
+            {
+              "required": ["market_participation_reference"]
+            },
+            {
+              "required": ["isolation_profile_id"]
+            },
+            {
+              "required": ["cp_provider_id"]
+            },
+            {
+              "required": ["cp_engine_instance_id"]
+            },
+            {
+              "required": ["capability_binding_id"]
+            },
+            {
+              "required": ["capability_binding_revision"]
+            },
+            {
+              "required": ["native_binding_id"]
+            },
+            {
+              "required": ["native_binding_revision"]
+            },
+            {
+              "required": ["native_provider_kind"]
+            },
+            {
+              "required": ["provider_release_digest"]
+            },
+            {
+              "required": ["native_deployment_id"]
+            },
+            {
+              "required": ["policy_digest"]
+            },
+            {
+              "required": ["claim_id"]
+            },
+            {
+              "required": ["fencing_generation"]
+            },
+            {
+              "required": ["execution_attempt_id"]
+            },
+            {
+              "required": ["operation_id"]
+            },
+            {
+              "required": ["execution_attempt"]
+            },
+            {
+              "required": ["plan_id"]
+            },
+            {
+              "required": ["plan_digest"]
+            },
+            {
+              "required": ["desired_state_digest"]
+            },
+            {
+              "required": ["approval_reference"]
+            },
+            {
+              "required": ["transport_plan_id"]
+            },
+            {
+              "required": ["transport_plan_revision"]
+            },
+            {
+              "required": ["transport_plan_digest"]
+            },
+            {
+              "required": ["transport_plan_approval_reference"]
+            },
+            {
+              "required": ["carrier_purchase_approval_reference"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.plan.revise"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "TransportPlan"
+          },
+          "authority_plane": {
+            "const": "DATA"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.booking.intent.create"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "TransportBooking"
+          },
+          "authority_plane": {
+            "const": "DATA"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.booking.submit"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "TransportBooking"
+          },
+          "authority_plane": {
+            "const": "DATA"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.booking.reconcile"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "TransportBooking"
+          },
+          "authority_plane": {
+            "const": "DATA"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.capacity.hold"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "CapacityReservation"
+          },
+          "authority_plane": {
+            "const": "DATA"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.capacity.release"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "CapacityReservation"
+          },
+          "authority_plane": {
+            "const": "DATA"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.movement.dispatch"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "TransportMovement"
+          },
+          "authority_plane": {
+            "const": "DATA"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.native.provision"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "NativeProviderInstance"
+          },
+          "authority_plane": {
+            "const": "CONTROL"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.native.suspend"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "NativeProviderInstance"
+          },
+          "authority_plane": {
+            "const": "CONTROL"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": {
+            "const": "tms.native.deprovision"
+          }
+        },
+        "required": ["operation"]
+      },
+      "then": {
+        "properties": {
+          "resource_type": {
+            "const": "NativeProviderInstance"
+          },
+          "authority_plane": {
+            "const": "CONTROL"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "ALLOW"
+          },
+          "authority_plane": {
+            "const": "CONTROL"
+          }
+        },
+        "required": ["decision", "authority_plane"]
+      },
+      "then": {
+        "required": [
+          "operation_id",
+          "execution_attempt",
+          "plan_id",
+          "plan_digest",
+          "desired_state_digest",
+          "approval_reference"
+        ],
+        "properties": {
+          "subject_actor_type": {
+            "const": "WORKLOAD"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "ALLOW"
+          },
+          "operation": {
+            "enum": ["tms.booking.submit", "tms.movement.dispatch"]
+          }
+        },
+        "required": ["decision", "operation"]
+      },
+      "then": {
+        "required": [
+          "transport_plan_id",
+          "transport_plan_revision",
+          "transport_plan_digest",
+          "transport_plan_approval_reference"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "ALLOW"
+          },
+          "operation": {
+            "const": "tms.booking.submit"
+          }
+        },
+        "required": ["decision", "operation"]
+      },
+      "then": {
+        "required": ["carrier_purchase_approval_reference"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "authority_plane": {
+            "const": "DATA"
+          }
+        },
+        "required": ["authority_plane"]
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": ["operation_id"]
+            },
+            {
+              "required": ["execution_attempt"]
+            },
+            {
+              "required": ["plan_id"]
+            },
+            {
+              "required": ["plan_digest"]
+            },
+            {
+              "required": ["desired_state_digest"]
+            },
+            {
+              "required": ["approval_reference"]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
