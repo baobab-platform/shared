@@ -1,5 +1,7 @@
 # EA v2.3 — Product, engineering and cross-ADR acceptance / adoption matrix
 
+> **EA-XB v1.1 design reconciliation (29 October 2026):** upon its reviewed CI-green acceptance merge, [the corrective design](ea-xb-v1.1-enterprise-corrective-architecture-2026-10-29.md) and [case applicability inventory](ea-xb-v1.1-proposed-acceptance-profiles.json) govern future qualification claims. This preserves the cross-border execution objective and all historical XBE/L4 identifiers and receipts. Manufacturing obligations apply to MFG, external buyer AP is unobservable without separately authorised evidence, and onboarding alone requires XBN-01..03. The original 18-case manifest remains unchanged as historical design, not a universal sector-independent gate. All runtime, provider, legal and protected release gates remain independent.
+
 **Status:** Accepted programme acceptance companion to [EA v2.3](EA-implementation-plan-v2.3-2026-10-20.md), 20 October 2026.
 **Evidence class:** Designated acceptance obligations; not a record that the listed execution receipts already exist.
 **Architecture:** ADR-SHARED-036–041, existing Shared/engine/estate accepted owner decisions, Nabhold Go-Live v2.0.

@@ -142,6 +142,7 @@ on:
       - "scripts/engine_integration_profile.py"
       - "scripts/ea_dev_register.py"
       - "scripts/validate_ea_xb_acceptance.py"
+      - "scripts/validate_ea_xb_v11_proposal.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
@@ -192,6 +193,7 @@ on:
       - "scripts/engine_integration_profile.py"
       - "scripts/ea_dev_register.py"
       - "scripts/validate_ea_xb_acceptance.py"
+      - "scripts/validate_ea_xb_v11_proposal.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
@@ -235,6 +237,10 @@ jobs:
         run: |
           python scripts/validate_ea_xb_acceptance.py
           python scripts/tests/test_ea_xb_acceptance.py
+      - name: Validate EA-XB v1.1 design and scenario applicability (no runtime approval)
+        run: |
+          python scripts/validate_ea_xb_v11_proposal.py
+          python scripts/tests/test_ea_xb_v11_proposal.py
       - name: Validate EA-DEV register and decision reconciliation (DEV-00)
         run: |
           python scripts/ea_dev_register.py --check
