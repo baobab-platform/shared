@@ -1,0 +1,328 @@
+{
+  "schema": "ea-xb-acceptance-design.v1",
+  "programme": "EA-XB",
+  "decision_date": "2026-10-29",
+  "authority": "docs/architecture/ea-v2.3-cross-border-business-execution-2026-10-29.md",
+  "source_plan": "docs/architecture/EA-implementation-plan-v2.3-2026-10-20.md",
+  "canonical_l4_registry": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
+  "evidence_class": "DESIGN_ONLY",
+  "run_status": "NOT_EXECUTED",
+  "scenario_topology": {
+    "exporter": {
+      "ref": "ZA-MFG-01",
+      "market": "ZA",
+      "platform_relationship": "EXTERNAL_CLIENT",
+      "subscription": "COMMERCIAL",
+      "digital_estate_required": false,
+      "synthetic": true
+    },
+    "importer": {
+      "ref": "UG-BUY-01",
+      "market": "UG",
+      "variant": [
+        "EXTERNAL_COUNTERPARTY_NO_TENANT",
+        "INDEPENDENT_EXTERNAL_CLIENT_TENANT"
+      ],
+      "synthetic": true
+    },
+    "component_supplier": {
+      "ref": "EXT-COMP-01",
+      "platform_subscription_required": false,
+      "synthetic": true
+    },
+    "corridor": {
+      "origin_market": "ZA",
+      "destination_market": "UG",
+      "product": "industrial pump systems",
+      "tariff_code": null,
+      "origin_preference": null,
+      "incoterm": null,
+      "customs_approval": null,
+      "transaction_quantity_example": 20,
+      "contract_currency": "USD",
+      "exporter_account_currency": "ZAR",
+      "importer_account_currency": "UGX"
+    }
+  },
+  "release_policy": {
+    "case_ids_prefix": "XBE",
+    "all_mandatory": true,
+    "admission": "NO_AGGREGATE_PASS_WHEN_REQUIRED_CASE_NOT_PASS",
+    "implementation_state_separate_from_contracts_and_production": true,
+    "protected_production_approval_requires_independent_acceptance": true,
+    "synthetic_legal_and_provider_fixtures_cannot_assert_external_compliance": true,
+    "canonical_l4_ids_unchanged": true
+  },
+  "cases": [
+    {
+      "id": "XBE-01",
+      "name": "Independent manufacturer admission",
+      "owners": [
+        "CP",
+        "IAM",
+        "Subscriptions"
+      ],
+      "positive": "Unrelated ZA external customer is admitted with CP-issued independent tenant, legal actor and explicit entitlement; zero DigitalEstate succeeds.",
+      "negative": "Nabhold INTERNAL classification, group inherited admin, forged legal entity, fake estate and missing grant are denied.",
+      "required_evidence": "Independent CP tenancy/context, no Nabhold access, plan/apply and no-estate snapshots.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-02",
+      "name": "Unsubscribed buyer exchange",
+      "owners": [
+        "Trade",
+        "CP",
+        "IAM"
+      ],
+      "positive": "UG-BUY-01 can buy from ZA-MFG-01 through governed external-party commercial flow without a Baobab tenant or vendor API requirement.",
+      "negative": "A supplier/buyer application cannot manufacture canonical verified identity or claim direct tenant access; unknown buyer is refused.",
+      "required_evidence": "External counterpart and scoped contract, denied tenant API, authorised buyer process.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-03",
+      "name": "Buyer promotes to independent tenant",
+      "owners": [
+        "CP",
+        "IAM",
+        "Trade"
+      ],
+      "positive": "UG-BUY-01 becomes own EXTERNAL_CLIENT tenant with its already verified canonical Organisation identity; relationships persist only as authorised.",
+      "negative": "Duplicate canonical ID, automatic access to seller records, group-privileged scope or retroactive edits are denied.",
+      "required_evidence": "Organisation reconciliation, idempotent provisioning, current grants and independent projections.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-04",
+      "name": "Current bilateral legal actor authority",
+      "owners": [
+        "CP",
+        "IAM",
+        "Trade"
+      ],
+      "positive": "Current seller and buyer legal actor, Market, site, role, capability and mandate are independently resolved at execution.",
+      "negative": "Wrong audience, revoked grant, expired mandate, mismatched legal actor or another tenant cannot execute.",
+      "required_evidence": "Real IAM token, CP decision/expiry, native commit veto and denial readback.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-05",
+      "name": "Quote and buyer commitment",
+      "owners": [
+        "Trade",
+        "CP",
+        "baobab-erp"
+      ],
+      "positive": "RFQ, quotation, commercial terms and buyer commitment are persisted at the authorised Trade native commit fence.",
+      "negative": "B2C classification fallback, stale spend approval, null limit, forged quote or duplicate commitment cannot bypass the fence.",
+      "required_evidence": "Bound actor decision, quote/version, money commitment, idempotent DB readback.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-06",
+      "name": "Imported component procurement",
+      "owners": [
+        "baobab-erp",
+        "Trade",
+        "Regulations"
+      ],
+      "positive": "External component supplier purchase contract/order and customs-import provenance reach manufacturer's ERP under its legal actor.",
+      "negative": "Missing KYB, unauthorised PO, foreign AD_Client/AD_Org, unverified customs basis and synthetic supplier tenant assumption are rejected.",
+      "required_evidence": "Native purchase and matching state with CP decision and source classification.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-07",
+      "name": "Goods receipt and landed cost",
+      "owners": [
+        "baobab-erp",
+        "Regulations",
+        "Trade Docs"
+      ],
+      "positive": "Real native material receipt attributes imported lots, freight/duties/costing to correct inventory and payable.",
+      "negative": "Quarantined lot, mismatched landed cost, duplicate receipt, customs unknown and negative inventory bypass rejected.",
+      "required_evidence": "Stock quantity, invoice match, cost/valuation postings and negative DB rollback.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-08",
+      "name": "Manufacturing BOM and work order",
+      "owners": [
+        "baobab-erp",
+        "Shared",
+        "CP"
+      ],
+      "positive": "Approved versioned BOM and manufacturing order consume permitted inputs and maintain full provenance from imported components.",
+      "negative": "Unmapped component, BOM version drift, wrong manufacturer client/org, unqualified production plugin or missing authority refused.",
+      "required_evidence": "Real iDempiere 13 process/API, BOM version, component supply and native veto.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-09",
+      "name": "Native production financial consequence",
+      "owners": [
+        "baobab-erp",
+        "CP",
+        "Shared"
+      ],
+      "positive": "Native consumption, WIP, output and finished goods generate balanced, correctly attributed Fact_Acct without inventing inventory.",
+      "negative": "Direct SQL bypass, stale posting period, foreign organisation, unbalanced journal or double production order fail closed.",
+      "required_evidence": "iDempiere JVM/PG17 work order, Fact_Acct, transaction boundary and rollback proof.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-10",
+      "name": "Quality, serial and lot genealogy",
+      "owners": [
+        "baobab-erp",
+        "Regulations",
+        "Trade Docs"
+      ],
+      "positive": "Inspection accepted finished pumps have traceable serial/lot chain to imported input and controlled release.",
+      "negative": "Failed quality inspection, unknown source lot, forged genealogy, unapproved serial reassignment or release on quarantine denied.",
+      "required_evidence": "End-to-end input/output link, test result, hold/release author and immutable history.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-11",
+      "name": "Country-rule and origin determination",
+      "owners": [
+        "Regulations",
+        "Trade Docs",
+        "baobab-erp"
+      ],
+      "positive": "Evaluate effective-dated ZA exporter/UG importer requirements, actual product-specific origin and tariff evidence with source-pinned decision.",
+      "negative": "Assembly alone does not assert preferential origin; ambiguous HS, expired source, unknown rule or missing origin data yields UNKNOWN/BLOCKED.",
+      "required_evidence": "Rule hash/effective date, source provenance, input BOM/valuation, reasoned decision and denial.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-12",
+      "name": "Customs documentary requirements",
+      "owners": [
+        "Trade Docs",
+        "Regulations",
+        "Trade"
+      ],
+      "positive": "Complete legally required evidence workflow for configured corridor with versioned documents and authorised release decisions.",
+      "negative": "Missing/revoked document, stale evidence, mismatched consignee, unauthenticated official clearance or inferred permit disallowed.",
+      "required_evidence": "Versioned controlled docs, issuer, decision, custody and denied access.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-13",
+      "name": "Shipment and carrier orchestration",
+      "owners": [
+        "TMS",
+        "Trade",
+        "Trade Docs"
+      ],
+      "positive": "Independent manufacturer books through certified transport provider, receives state and evidence from accepted carrier.",
+      "negative": "No Thamani compulsory, fake ETA/booking, repeated carrier booking, unauthorized tracking/custody access or false carrier qualification denied.",
+      "required_evidence": "Real provider identity/version, signed status, custody handoff, receipt/replay controls.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-14",
+      "name": "Export and import reciprocal fulfilment",
+      "owners": [
+        "Trade",
+        "TMS",
+        "Regulations"
+      ],
+      "positive": "Actual export handover and UG buyer receipt are independent consequences of verified origin/customs/transit and delivery records.",
+      "negative": "No shipment or importer receipt on unverified release, lost custody, wrong destination, duplicate delivery or revoked clearance.",
+      "required_evidence": "Cross-party shipment document, commercial transfer terms, delivery verification and separate ledgers.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-15",
+      "name": "Bilateral AR/AP, FX and landed cost",
+      "owners": [
+        "baobab-erp",
+        "CP",
+        "Trade"
+      ],
+      "positive": "Exporter AR/GL (ZAR), Ugandan buyer AP/GL (UGX) and USD contractual amount reconcile with recognised FX and landed cost, separately governed.",
+      "negative": "Shared mutable invoice, mismatched currency, rate basis, legal actor or balance; journal posting through native bypass denied.",
+      "required_evidence": "Two independent real native client journals, cross-document reference, rate/rounding and balancing evidence.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-16",
+      "name": "Payment and settlement reconciliation",
+      "owners": [
+        "Payments",
+        "baobab-erp",
+        "CP"
+      ],
+      "positive": "Verified buyer settlement instruction is authorised and reconciled to independent payables and receivables when provider outcome known.",
+      "negative": "ERP payment record cannot move money; wrong destination/amount, revoked authority, PSP timeout or uncertain result cannot trigger blind replay.",
+      "required_evidence": "Separate Payments dispatch/PSP receipt, payer/merchant identity, idempotency, ERP readback.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-17",
+      "name": "Cross-engine replay and failure recovery",
+      "owners": [
+        "Infrastructure",
+        "Trade",
+        "baobab-erp"
+      ],
+      "positive": "Version-pinned events/outbox/inbox, source migration pins, interrupted recovery and quarantine reconcile exactly once across participants.",
+      "negative": "Duplicate source event, unsupported version, broker outage, partial success or conflicting replay must not duplicate purchase/production/payments.",
+      "required_evidence": "Crash recovery receipt, negative DLQ/replay, independent hash/source validation and teardown.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    },
+    {
+      "id": "XBE-18",
+      "name": "Tenant isolation, historical rights and recovery",
+      "owners": [
+        "CP",
+        "Infrastructure",
+        "IAM"
+      ],
+      "positive": "Independent external buyer offboarding/revocation preserves immutable cross-border evidence while all former live access is denied; restore tested.",
+      "negative": "Cross-tenant ledger/CRM/doc read, corporate ownership shortcut, stale identity, forgotten secret, failed restore or incomplete teardown fails.",
+      "required_evidence": "Revocation/absence proof, independent data denial, historic immutable custody, restore and host cleanup.",
+      "required": true,
+      "status": "NOT_RUN",
+      "evidence": null
+    }
+  ]
+}
