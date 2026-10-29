@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Structural check of a PROPOSED EA-XB v1.1 programme profile.
+"""Structural check of the accepted-design EA-XB v1.1 programme profile.
 
 The immutable v1.0 XBE design remains subject to its pre-existing validator.
 This checks completeness, independent applicability, bidirectional readiness
@@ -29,12 +29,90 @@ EXPECTED = {
 LEGACY_IDS = tuple(f"XBE-{i:02d}" for i in range(1, 19))
 CASES = frozenset(x for group in EXPECTED.values() for x in group)
 REQUIRED_SCENARIOS = {
-    "AGR-COFFEE-UG-ZA": (["XB-CORE", "XB-AGR", "XB-LOG"], "EXTERNAL_OR_QUALIFIED_AS_EVIDENCED"),
+    "AGR-COFFEE-UG-ZA": (["XB-CORE", "XB-AGR", "XB-LOG"], "NON_TENANT"),
     "MFG-PUMPS-ZA-UG-EXTERNAL": (["XB-CORE", "XB-MFG", "XB-LOG"], "NON_TENANT"),
     "MFG-PUMPS-ZA-UG-DUAL": (["XB-CORE", "XB-MFG", "XB-NET", "XB-LOG"], "DUAL_QUALIFIED_TENANT"),
     "COOPERATIVE-TO-TENANT": (["XB-NET"], "IDENTITY_CONTINUITY_ONLY"),
     "AGR-COOPERATIVE-NET-EXPORT": (["XB-CORE", "XB-AGR", "XB-NET", "XB-LOG"], "DUAL_QUALIFIED_TENANT"),
 }
+
+
+CLAIM_NAMES = ('cross_border',
+ 'agriculture',
+ 'manufacturing',
+ 'physical_movement',
+ 'external_counterparty',
+ 'existing_counterparty_admission',
+ 'bilateral_accounting',
+ 'heterogeneous_providers',
+ 'crm',
+ 'agricultural_processing',
+ 'cooperative_representation')
+SCENARIO_CLAIMS = {'AGR-COFFEE-UG-ZA': ['agricultural_processing',
+                      'agriculture',
+                      'cooperative_representation',
+                      'cross_border',
+                      'external_counterparty',
+                      'physical_movement'],
+ 'MFG-PUMPS-ZA-UG-EXTERNAL': ['cross_border',
+                              'external_counterparty',
+                              'manufacturing',
+                              'physical_movement'],
+ 'MFG-PUMPS-ZA-UG-DUAL': ['bilateral_accounting',
+                          'crm',
+                          'cross_border',
+                          'existing_counterparty_admission',
+                          'heterogeneous_providers',
+                          'manufacturing',
+                          'physical_movement'],
+ 'COOPERATIVE-TO-TENANT': ['existing_counterparty_admission'],
+ 'AGR-COOPERATIVE-NET-EXPORT': ['agricultural_processing',
+                                'agriculture',
+                                'bilateral_accounting',
+                                'cooperative_representation',
+                                'crm',
+                                'cross_border',
+                                'existing_counterparty_admission',
+                                'heterogeneous_providers',
+                                'physical_movement']}
+REQUIRED_WHEN = {'XBC-01': ['cross_border'],
+ 'XBC-02': ['cross_border'],
+ 'XBC-03': ['cross_border'],
+ 'XBC-04': ['cross_border'],
+ 'XBC-05': ['cross_border'],
+ 'XBC-06': ['cross_border', 'external_counterparty'],
+ 'XBC-07': ['cross_border'],
+ 'XBC-08': ['cross_border'],
+ 'XBC-09': ['cross_border'],
+ 'XBC-10': ['cross_border'],
+ 'XBA-01': ['agriculture'],
+ 'XBA-02': ['agriculture'],
+ 'XBA-03': ['agriculture', 'agricultural_processing'],
+ 'XBA-04': ['agriculture'],
+ 'XBA-05': ['agriculture', 'cooperative_representation'],
+ 'XBM-01': ['manufacturing'],
+ 'XBM-02': ['manufacturing'],
+ 'XBM-03': ['manufacturing'],
+ 'XBM-04': ['manufacturing'],
+ 'XBN-01': ['existing_counterparty_admission'],
+ 'XBN-02': ['existing_counterparty_admission'],
+ 'XBN-03': ['existing_counterparty_admission'],
+ 'XBN-04': ['bilateral_accounting'],
+ 'XBN-05': ['heterogeneous_providers'],
+ 'XBN-06': ['crm'],
+ 'XBN-07': ['crm'],
+ 'XBL-01': ['physical_movement'],
+ 'XBL-02': ['physical_movement'],
+ 'XBL-03': ['physical_movement'],
+ 'XBL-04': ['physical_movement']}
+
+
+def applicable_case_ids(claims: dict[str, bool]) -> list[str]:
+    """Closed scenario predicates; excluded obligations are never execution PASS."""
+    if set(claims) != set(CLAIM_NAMES) or any(type(v) is not bool for v in claims.values()):
+        raise ValueError("unknown, missing or non-boolean scenario claim")
+    return [cid for cid, conditions in REQUIRED_WHEN.items()
+            if all(claims[fact] for fact in conditions)]
 
 
 def check_manifest(doc: dict[str, Any], historical: dict[str, Any]) -> list[str]:
@@ -45,7 +123,13 @@ def check_manifest(doc: dict[str, Any], historical: dict[str, Any]) -> list[str]
             errors.append(message)
 
     need(doc.get("schema") == "ea-xb-profile-proposal.v1", "unknown proposal schema")
-    need(doc.get("status") == "PROPOSED_FOR_REVIEW", "proposal cannot claim acceptance")
+    need(doc.get("status") == "ACCEPTED_DESIGN", "unknown design acceptance status")
+    need(doc.get("design_approval") == {
+        "authority": "Platform Owner direction in Shared #413 and implementation audit request, 2026-10-29",
+        "scope": "D1-D7 and all 18 legacy case mappings; design only",
+        "effective_on": "REVIEWED_CI_GREEN_MERGE",
+        "runtime_approval": False,
+    }, "design approval must not imply runtime approval")
     need(doc.get("design_evidence_class") == "DESIGN_ONLY", "proposal cannot claim runtime")
     need(doc.get("execution_status") == "NOT_EXECUTED", "no executed profile evidence")
     need(doc.get("predecessor") == "docs/architecture/ea-xb-cross-border-acceptance-matrix.json",
@@ -61,6 +145,7 @@ def check_manifest(doc: dict[str, Any], historical: dict[str, Any]) -> list[str]
             "non_tenant_foreign_ledger_unobservable",
             "qualified_dual_erp_proof_only_when_both_are_authorised",
             "no_automatic_provider_or_legal_approval", "no_auto_activated_capability_keys",
+            "case_applicability_declared_before_run", "excluded_cases_never_pass",
         ):
             need(governance.get(flag) is True, "governance obligation disabled: " + flag)
 
@@ -93,6 +178,8 @@ def check_manifest(doc: dict[str, Any], historical: dict[str, Any]) -> list[str]
         case_index[cid] = item
         need(cid in CASES, "unknown proposed case ID " + str(cid))
         need(item.get("required") is True, str(cid) + " mandatory obligation missing")
+        need(item.get("required_when_all") == REQUIRED_WHEN.get(cid),
+             str(cid) + " case applicability predicate changed")
         need(item.get("status") == "NOT_RUN" and item.get("evidence") is None,
              str(cid) + " fabricated execution evidence")
         if isinstance(cid, str) and cid in CASES:
@@ -150,7 +237,32 @@ def check_manifest(doc: dict[str, Any], historical: dict[str, Any]) -> list[str]
             if expect:
                 need(x.get("required_profiles") == expect[0], str(sid) + " incorrect profile scope")
                 need(x.get("buyer_variant") == expect[1], str(sid) + " buyer evidence variant changed")
-            need(x.get("status") == "NOT_RUN", str(sid) + " cannot claim live run")
+            need(x.get("status") == "NOT_RUN" and x.get("evidence") is None,
+                 str(sid) + " cannot claim live run")
+            claims = x.get("claims")
+            if not isinstance(claims, dict):
+                errors.append(str(sid) + " scenario claims missing")
+                continue
+            try:
+                applicable = applicable_case_ids(claims)
+            except ValueError as exc:
+                errors.append(str(sid) + " " + str(exc))
+                continue
+            expected_claims = {key: key in SCENARIO_CLAIMS.get(sid, []) for key in CLAIM_NAMES}
+            need(claims == expected_claims, str(sid) + " scenario claim scope changed")
+            need(x.get("applicable_case_ids") == applicable,
+                 str(sid) + " applicable cases missing, duplicated or bypassed")
+            excluded = x.get("excluded_cases")
+            need(isinstance(excluded, dict) and set(excluded) == CASES - set(applicable),
+                 str(sid) + " exclusions must exactly partition all 30 cases")
+            if isinstance(excluded, dict):
+                for cid, reason in excluded.items():
+                    need(isinstance(reason, str) and reason.startswith("NOT_APPLICABLE: ")
+                         and len(reason) > 50 and "no PASS" in reason,
+                         str(sid) + " missing exclusion reason for " + str(cid))
+            selected_profiles = {"XB-" + case_index[cid]["profile"] for cid in applicable}
+            need(set(x.get("required_profiles", [])) == selected_profiles,
+                 str(sid) + " selected profiles contradict applicable cases")
         need(names == set(REQUIRED_SCENARIOS), "missing reference scenarios")
     return errors
 
@@ -168,9 +280,9 @@ def validate() -> list[str]:
         errors.append("missing corrective document")
     else:
         body = DOCUMENT_PATH.read_text(encoding="utf-8")
-        for required in ("**Status:** PROPOSED", "XB-CORE", "XB-AGR", "XB-MFG",
+        for required in ("**Status:** ACCEPTED DESIGN", "XB-CORE", "XB-AGR", "XB-MFG",
                          "XB-NET", "XB-LOG", "XBE-15", "baobab-crm", "ERP #116",
-                         "explicitly approved"):
+                         "effective upon reviewed CI-green merge"):
             if required not in body:
                 errors.append("document absent requirement " + required)
     return errors
@@ -180,6 +292,6 @@ if __name__ == "__main__":
     failures = validate()
     if failures:
         for failure in failures:
-            print("EA-XB v1.1 PROPOSAL INVALID: " + failure, file=sys.stderr)
+            print("EA-XB v1.1 DESIGN INVALID: " + failure, file=sys.stderr)
         sys.exit(1)
-    print("EA-XB v1.1: 30 design cases, 18 historic XBE mappings and 5 scenario variants validated. NO RUN OR APPROVAL CLAIMED.")
+    print("EA-XB v1.1: 30 design cases, 18 historical mappings and 5 scoped variants validated. NO RUNTIME APPROVAL CLAIMED.")

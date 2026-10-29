@@ -1,4 +1,6 @@
 # Baobab Platform Enterprise Architecture Implementation Plan v2.3
+
+> **EA-XB v1.1 design reconciliation (29 October 2026):** upon its reviewed CI-green acceptance merge, [the corrective design](ea-xb-v1.1-enterprise-corrective-architecture-2026-10-29.md) and [case applicability inventory](ea-xb-v1.1-proposed-acceptance-profiles.json) govern future qualification claims. This preserves the cross-border execution objective and all historical XBE/L4 identifiers and receipts. Manufacturing obligations apply to MFG, external buyer AP is unobservable without separately authorised evidence, and onboarding alone requires XBN-01..03. The original 18-case manifest remains unchanged as historical design, not a universal sector-independent gate. All runtime, provider, legal and protected release gates remain independent.
 ## African Enterprise Excellence, Integrated Execution and Cross-Repository Product Readiness
 
 **Status:** **ACCEPTED — Normative EA Programme Implementation Plan**

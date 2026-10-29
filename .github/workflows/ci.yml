@@ -237,7 +237,7 @@ jobs:
         run: |
           python scripts/validate_ea_xb_acceptance.py
           python scripts/tests/test_ea_xb_acceptance.py
-      - name: Validate proposed EA-XB v1.1 corrective profile design (review only)
+      - name: Validate EA-XB v1.1 design and scenario applicability (no runtime approval)
         run: |
           python scripts/validate_ea_xb_v11_proposal.py
           python scripts/tests/test_ea_xb_v11_proposal.py

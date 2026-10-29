@@ -30,7 +30,7 @@ class CorrectiveArchitectureProposalTest(unittest.TestCase):
         self.assertEqual([x["original_case_id"] for x in PROPOSAL["legacy_xbe_crosswalk"]],
                          list(validator.LEGACY_IDS))
         self.assertEqual(PROPOSAL["execution_status"], "NOT_EXECUTED")
-        self.assertEqual(PROPOSAL["status"], "PROPOSED_FOR_REVIEW")
+        self.assertEqual(PROPOSAL["status"], "ACCEPTED_DESIGN")
 
     def test_rejects_unscoped_manufacturing_as_universal_requirement(self):
         altered = copy.deepcopy(PROPOSAL)
@@ -51,7 +51,7 @@ class CorrectiveArchitectureProposalTest(unittest.TestCase):
         altered["status"] = "ACCEPTED"
         altered["cases"][0]["status"] = "PASS"
         errors = " ".join(validator.check_manifest(altered, BASELINE))
-        self.assertIn("cannot claim acceptance", errors)
+        self.assertIn("unknown design acceptance status", errors)
         self.assertIn("fabricated execution evidence", errors)
 
     def test_rejects_loss_of_legacy_case_mapping(self):
@@ -67,11 +67,46 @@ class CorrectiveArchitectureProposalTest(unittest.TestCase):
         self.assertIn("governance obligation disabled", errors)
         self.assertIn("XBE-15 must split", errors)
 
+    def test_onboarding_requires_only_identity_and_isolation(self):
+        scenario = next(x for x in PROPOSAL["reference_scenarios"]
+                        if x["id"] == "COOPERATIVE-TO-TENANT")
+        self.assertEqual(scenario["applicable_case_ids"], ["XBN-01", "XBN-02", "XBN-03"])
+        self.assertEqual(validator.applicable_case_ids(scenario["claims"]), scenario["applicable_case_ids"])
+        self.assertTrue(set(scenario["excluded_cases"]) >= {"XBN-04", "XBN-05", "XBN-06", "XBN-07"})
+
+    def test_cannot_drop_required_case_or_forge_applicability(self):
+        for mutation in ("drop", "false_claim", "unknown_claim", "non_boolean", "hide_exclusion", "invent_pass"):
+            altered = copy.deepcopy(PROPOSAL)
+            target = altered["reference_scenarios"][3]
+            if mutation == "drop": target["applicable_case_ids"].pop()
+            if mutation == "false_claim": target["claims"]["existing_counterparty_admission"] = False
+            if mutation == "unknown_claim": target["claims"]["optional"] = True
+            if mutation == "non_boolean": target["claims"]["crm"] = "false"
+            if mutation == "hide_exclusion": target["excluded_cases"].pop("XBN-04")
+            if mutation == "invent_pass": target["status"] = "PASS"
+            self.assertTrue(validator.check_manifest(altered, BASELINE), mutation)
+
+    def test_bilateral_and_crm_obligations_cannot_be_waived_when_claimed(self):
+        for scenario in PROPOSAL["reference_scenarios"]:
+            if scenario["claims"]["bilateral_accounting"]:
+                self.assertTrue(set(scenario["applicable_case_ids"]) >= {"XBN-04", "XBN-05", "XBN-06", "XBN-07"})
+            if scenario["buyer_variant"] == "NON_TENANT":
+                self.assertNotIn("XBN-04", scenario["applicable_case_ids"])
+                self.assertIn("XBC-06", scenario["applicable_case_ids"])
+
+    def test_manifest_cannot_change_case_predicate_or_runtime_approval(self):
+        altered = copy.deepcopy(PROPOSAL)
+        altered["cases"][0]["required_when_all"] = []
+        altered["design_approval"]["runtime_approval"] = True
+        errors = " ".join(validator.check_manifest(altered, BASELINE))
+        self.assertIn("case applicability predicate changed", errors)
+        self.assertIn("must not imply runtime approval", errors)
+
     def test_no_unreviewed_new_canonical_keys(self):
         doc = validator.DOCUMENT_PATH.read_text(encoding="utf-8")
         self.assertIn("NOT REGISTERED", doc)
         self.assertIn("No provider monopoly", doc)
-        self.assertIn("explicit Platform Owner acceptance", doc)
+        self.assertIn("Platform Owner", doc)
 
 
 if __name__ == "__main__":

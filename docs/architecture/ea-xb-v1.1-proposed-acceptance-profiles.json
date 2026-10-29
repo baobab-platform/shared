@@ -1,6 +1,6 @@
 {
   "schema": "ea-xb-profile-proposal.v1",
-  "status": "PROPOSED_FOR_REVIEW",
+  "status": "ACCEPTED_DESIGN",
   "proposed_date": "2026-10-29",
   "authority": "docs/architecture/ea-xb-v1.1-enterprise-corrective-architecture-2026-10-29.md",
   "predecessor": "docs/architecture/ea-xb-cross-border-acceptance-matrix.json",
@@ -15,7 +15,9 @@
     "non_tenant_foreign_ledger_unobservable": true,
     "qualified_dual_erp_proof_only_when_both_are_authorised": true,
     "no_automatic_provider_or_legal_approval": true,
-    "no_auto_activated_capability_keys": true
+    "no_auto_activated_capability_keys": true,
+    "case_applicability_declared_before_run": true,
+    "excluded_cases_never_pass": true
   },
   "profiles": {
     "XB-CORE": {
@@ -98,8 +100,56 @@
         "XB-AGR",
         "XB-LOG"
       ],
-      "buyer_variant": "EXTERNAL_OR_QUALIFIED_AS_EVIDENCED",
-      "status": "NOT_RUN"
+      "buyer_variant": "NON_TENANT",
+      "status": "NOT_RUN",
+      "claims": {
+        "cross_border": true,
+        "agriculture": true,
+        "manufacturing": false,
+        "physical_movement": true,
+        "external_counterparty": true,
+        "existing_counterparty_admission": false,
+        "bilateral_accounting": false,
+        "heterogeneous_providers": false,
+        "crm": false,
+        "agricultural_processing": true,
+        "cooperative_representation": true
+      },
+      "applicable_case_ids": [
+        "XBC-01",
+        "XBC-02",
+        "XBC-03",
+        "XBC-04",
+        "XBC-05",
+        "XBC-06",
+        "XBC-07",
+        "XBC-08",
+        "XBC-09",
+        "XBC-10",
+        "XBA-01",
+        "XBA-02",
+        "XBA-03",
+        "XBA-04",
+        "XBA-05",
+        "XBL-01",
+        "XBL-02",
+        "XBL-03",
+        "XBL-04"
+      ],
+      "excluded_cases": {
+        "XBM-01": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-02": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-03": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-04": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-01": "NOT_APPLICABLE: existing_counterparty_admission not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-02": "NOT_APPLICABLE: existing_counterparty_admission not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-03": "NOT_APPLICABLE: existing_counterparty_admission not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-04": "NOT_APPLICABLE: bilateral_accounting not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-05": "NOT_APPLICABLE: heterogeneous_providers not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-06": "NOT_APPLICABLE: crm not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-07": "NOT_APPLICABLE: crm not claimed; no PASS or profile-wide qualification conferred."
+      },
+      "evidence": null
     },
     {
       "id": "MFG-PUMPS-ZA-UG-EXTERNAL",
@@ -110,7 +160,55 @@
         "XB-LOG"
       ],
       "buyer_variant": "NON_TENANT",
-      "status": "NOT_RUN"
+      "status": "NOT_RUN",
+      "claims": {
+        "cross_border": true,
+        "agriculture": false,
+        "manufacturing": true,
+        "physical_movement": true,
+        "external_counterparty": true,
+        "existing_counterparty_admission": false,
+        "bilateral_accounting": false,
+        "heterogeneous_providers": false,
+        "crm": false,
+        "agricultural_processing": false,
+        "cooperative_representation": false
+      },
+      "applicable_case_ids": [
+        "XBC-01",
+        "XBC-02",
+        "XBC-03",
+        "XBC-04",
+        "XBC-05",
+        "XBC-06",
+        "XBC-07",
+        "XBC-08",
+        "XBC-09",
+        "XBC-10",
+        "XBM-01",
+        "XBM-02",
+        "XBM-03",
+        "XBM-04",
+        "XBL-01",
+        "XBL-02",
+        "XBL-03",
+        "XBL-04"
+      ],
+      "excluded_cases": {
+        "XBA-01": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-02": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-03": "NOT_APPLICABLE: agriculture, agricultural_processing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-04": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-05": "NOT_APPLICABLE: agriculture, cooperative_representation not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-01": "NOT_APPLICABLE: existing_counterparty_admission not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-02": "NOT_APPLICABLE: existing_counterparty_admission not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-03": "NOT_APPLICABLE: existing_counterparty_admission not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-04": "NOT_APPLICABLE: bilateral_accounting not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-05": "NOT_APPLICABLE: heterogeneous_providers not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-06": "NOT_APPLICABLE: crm not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-07": "NOT_APPLICABLE: crm not claimed; no PASS or profile-wide qualification conferred."
+      },
+      "evidence": null
     },
     {
       "id": "MFG-PUMPS-ZA-UG-DUAL",
@@ -122,7 +220,55 @@
         "XB-LOG"
       ],
       "buyer_variant": "DUAL_QUALIFIED_TENANT",
-      "status": "NOT_RUN"
+      "status": "NOT_RUN",
+      "claims": {
+        "cross_border": true,
+        "agriculture": false,
+        "manufacturing": true,
+        "physical_movement": true,
+        "external_counterparty": false,
+        "existing_counterparty_admission": true,
+        "bilateral_accounting": true,
+        "heterogeneous_providers": true,
+        "crm": true,
+        "agricultural_processing": false,
+        "cooperative_representation": false
+      },
+      "applicable_case_ids": [
+        "XBC-01",
+        "XBC-02",
+        "XBC-03",
+        "XBC-04",
+        "XBC-05",
+        "XBC-07",
+        "XBC-08",
+        "XBC-09",
+        "XBC-10",
+        "XBM-01",
+        "XBM-02",
+        "XBM-03",
+        "XBM-04",
+        "XBN-01",
+        "XBN-02",
+        "XBN-03",
+        "XBN-04",
+        "XBN-05",
+        "XBN-06",
+        "XBN-07",
+        "XBL-01",
+        "XBL-02",
+        "XBL-03",
+        "XBL-04"
+      ],
+      "excluded_cases": {
+        "XBC-06": "NOT_APPLICABLE: external_counterparty not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-01": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-02": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-03": "NOT_APPLICABLE: agriculture, agricultural_processing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-04": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-05": "NOT_APPLICABLE: agriculture, cooperative_representation not claimed; no PASS or profile-wide qualification conferred."
+      },
+      "evidence": null
     },
     {
       "id": "COOPERATIVE-TO-TENANT",
@@ -131,7 +277,55 @@
         "XB-NET"
       ],
       "buyer_variant": "IDENTITY_CONTINUITY_ONLY",
-      "status": "NOT_RUN"
+      "status": "NOT_RUN",
+      "claims": {
+        "cross_border": false,
+        "agriculture": false,
+        "manufacturing": false,
+        "physical_movement": false,
+        "external_counterparty": false,
+        "existing_counterparty_admission": true,
+        "bilateral_accounting": false,
+        "heterogeneous_providers": false,
+        "crm": false,
+        "agricultural_processing": false,
+        "cooperative_representation": false
+      },
+      "applicable_case_ids": [
+        "XBN-01",
+        "XBN-02",
+        "XBN-03"
+      ],
+      "excluded_cases": {
+        "XBC-01": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-02": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-03": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-04": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-05": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-06": "NOT_APPLICABLE: cross_border, external_counterparty not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-07": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-08": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-09": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBC-10": "NOT_APPLICABLE: cross_border not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-01": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-02": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-03": "NOT_APPLICABLE: agriculture, agricultural_processing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-04": "NOT_APPLICABLE: agriculture not claimed; no PASS or profile-wide qualification conferred.",
+        "XBA-05": "NOT_APPLICABLE: agriculture, cooperative_representation not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-01": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-02": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-03": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-04": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-04": "NOT_APPLICABLE: bilateral_accounting not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-05": "NOT_APPLICABLE: heterogeneous_providers not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-06": "NOT_APPLICABLE: crm not claimed; no PASS or profile-wide qualification conferred.",
+        "XBN-07": "NOT_APPLICABLE: crm not claimed; no PASS or profile-wide qualification conferred.",
+        "XBL-01": "NOT_APPLICABLE: physical_movement not claimed; no PASS or profile-wide qualification conferred.",
+        "XBL-02": "NOT_APPLICABLE: physical_movement not claimed; no PASS or profile-wide qualification conferred.",
+        "XBL-03": "NOT_APPLICABLE: physical_movement not claimed; no PASS or profile-wide qualification conferred.",
+        "XBL-04": "NOT_APPLICABLE: physical_movement not claimed; no PASS or profile-wide qualification conferred."
+      },
+      "evidence": null
     },
     {
       "id": "AGR-COOPERATIVE-NET-EXPORT",
@@ -143,7 +337,55 @@
         "XB-LOG"
       ],
       "buyer_variant": "DUAL_QUALIFIED_TENANT",
-      "status": "NOT_RUN"
+      "status": "NOT_RUN",
+      "claims": {
+        "cross_border": true,
+        "agriculture": true,
+        "manufacturing": false,
+        "physical_movement": true,
+        "external_counterparty": false,
+        "existing_counterparty_admission": true,
+        "bilateral_accounting": true,
+        "heterogeneous_providers": true,
+        "crm": true,
+        "agricultural_processing": true,
+        "cooperative_representation": true
+      },
+      "applicable_case_ids": [
+        "XBC-01",
+        "XBC-02",
+        "XBC-03",
+        "XBC-04",
+        "XBC-05",
+        "XBC-07",
+        "XBC-08",
+        "XBC-09",
+        "XBC-10",
+        "XBA-01",
+        "XBA-02",
+        "XBA-03",
+        "XBA-04",
+        "XBA-05",
+        "XBN-01",
+        "XBN-02",
+        "XBN-03",
+        "XBN-04",
+        "XBN-05",
+        "XBN-06",
+        "XBN-07",
+        "XBL-01",
+        "XBL-02",
+        "XBL-03",
+        "XBL-04"
+      ],
+      "excluded_cases": {
+        "XBC-06": "NOT_APPLICABLE: external_counterparty not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-01": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-02": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-03": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred.",
+        "XBM-04": "NOT_APPLICABLE: manufacturing not claimed; no PASS or profile-wide qualification conferred."
+      },
+      "evidence": null
     }
   ],
   "legacy_xbe_crosswalk": [
@@ -337,23 +579,29 @@
       "required_evidence": "IAM-issued token, CP binding decision and native operation denial.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBC-02",
       "profile": "CORE",
-      "title": "CRM-to-Trade and native commercial commitment",
+      "title": "Current native commercial commitment",
       "owners": [
         "Trade",
         "CP",
         "baobab-erp"
       ],
-      "positive": "RFQ/quotation to native Trade order commits only with current bilateral role/Market/spend and approval; CRM can propose but not commit.",
+      "positive": "RFQ/quotation to native Trade order commits only with current seller authority and independently evidenced buyer identity, consent, role, Market, spend and approval. CRM is optional and can propose only; XBN-07 qualifies an actual CRM handoff.",
       "negative": "Opportunity marked won, null spend, B2C fallback, self approval, duplicate native write or approval drift denied.",
       "required_evidence": "Exact quote/version, capability grant, spend, signed approval, native commit and replay.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBC-03",
@@ -369,7 +617,10 @@
       "required_evidence": "Correlation identity, party ownership, contract version and idempotent mapping readback.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBC-04",
@@ -385,7 +636,10 @@
       "required_evidence": "Issuer/source, exact version hash, purpose, legal basis, delivery acknowledgement and revocation.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBC-05",
@@ -401,7 +655,10 @@
       "required_evidence": "Rule/source/effective date, official source or qualified adapter, independent authority observation and denial.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBC-06",
@@ -417,7 +674,11 @@
       "required_evidence": "Authenticated partner intent/contract, external recipient proof, no-tenant audit and identity negative.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border",
+        "external_counterparty"
+      ]
     },
     {
       "id": "XBC-07",
@@ -433,7 +694,10 @@
       "required_evidence": "Actual real PostgreSQL 17/iDempiere readback, legal actor pin, balances and source tie-out.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBC-08",
@@ -449,7 +713,10 @@
       "required_evidence": "Provider attestation, webhook signature/idempotency, bank/payment observation and ledger reconciliation.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBC-09",
@@ -465,7 +732,10 @@
       "required_evidence": "Run-pinned owner outbox/inbox, negative rollback, compensation and teardown receipts.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBC-10",
@@ -481,7 +751,10 @@
       "required_evidence": "Cross-tenant denial, privilege revocation, immutable audited custody, disaster restore and teardown.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "cross_border"
+      ]
     },
     {
       "id": "XBA-01",
@@ -497,7 +770,10 @@
       "required_evidence": "Source supplier/producer and rights evidence, origin lot/quality/custody lineage.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "agriculture"
+      ]
     },
     {
       "id": "XBA-02",
@@ -513,7 +789,10 @@
       "required_evidence": "Native receipt/ERP AP, quality grade, weight and contractual evidence with negative.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "agriculture"
+      ]
     },
     {
       "id": "XBA-03",
@@ -529,7 +808,11 @@
       "required_evidence": "Batch genealogy, QA release actor, input/output quantities and inventory valuation.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "agriculture",
+        "agricultural_processing"
+      ]
     },
     {
       "id": "XBA-04",
@@ -540,12 +823,15 @@
         "Trade Docs",
         "Trade"
       ],
-      "positive": "UG→ZA coffee/vanilla product and date specific origin, phyto/SPS, export/import customs and document requirements independently evaluated.",
+      "positive": "Each claimed agricultural direction, product and effective date independently determines origin, phyto/SPS, export/import customs and documentary requirements; UG-to-ZA coffee is a reference, never authority for another corridor.",
       "negative": "Industrial equipment tariff, unsupported country reversal, missing origin/permit or stale SPS evidence treated as clearance.",
       "required_evidence": "Source-dated regulatory profile, official evidence and separate import/export decisions.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "agriculture"
+      ]
     },
     {
       "id": "XBA-05",
@@ -561,7 +847,11 @@
       "required_evidence": "Representation and consent basis, independent SoD, role-bound source and disclosure negatives.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "agriculture",
+        "cooperative_representation"
+      ]
     },
     {
       "id": "XBM-01",
@@ -577,7 +867,10 @@
       "required_evidence": "Pinned installed bundle/schema/commit, BOM version, authority and native deny-by-name test.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "manufacturing"
+      ]
     },
     {
       "id": "XBM-02",
@@ -593,7 +886,10 @@
       "required_evidence": "Real native stock moves, input/output genealogy, customs/source references and conservation evidence.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "manufacturing"
+      ]
     },
     {
       "id": "XBM-03",
@@ -609,7 +905,10 @@
       "required_evidence": "Actual JVM/DB run, native transaction/fence, balanced posting and rollback.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "manufacturing"
+      ]
     },
     {
       "id": "XBM-04",
@@ -620,12 +919,15 @@
         "baobab-erp",
         "Trade Docs"
       ],
-      "positive": "Product-specific ZA→UG industrial tariff, transformation-origin rule, BOM/material source, inspection and UNBS applicability evaluated from current evidence.",
+      "positive": "Product-specific ZA\u2192UG industrial tariff, transformation-origin rule, BOM/material source, inspection and UNBS applicability evaluated from current evidence.",
       "negative": "South African assembly alone asserts AfCFTA preference, unknown HS/PVoC automatically approves or missing source grants clearance.",
       "required_evidence": "Versioned rule/HS/effective date, BOM/value inputs, standard/product evidence and legal decision.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "manufacturing"
+      ]
     },
     {
       "id": "XBN-01",
@@ -641,7 +943,10 @@
       "required_evidence": "Verified identity and representative proof, reconciliation, duplicate/hijack denial.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "existing_counterparty_admission"
+      ]
     },
     {
       "id": "XBN-02",
@@ -657,7 +962,10 @@
       "required_evidence": "Before/after tenant-private record hash, isolation and disclosure grant boundary.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "existing_counterparty_admission"
+      ]
     },
     {
       "id": "XBN-03",
@@ -673,7 +981,10 @@
       "required_evidence": "Two-tenant provider binding/readback, negative inherited grant and historic immutable custody.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "existing_counterparty_admission"
+      ]
     },
     {
       "id": "XBN-04",
@@ -689,7 +1000,10 @@
       "required_evidence": "Separate native tenant/ERP/GL readbacks, matching disclosed invoice, settlement and independent principals.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "bilateral_accounting"
+      ]
     },
     {
       "id": "XBN-05",
@@ -705,7 +1019,10 @@
       "required_evidence": "Distinct adapters/provider routing, canonical refs, contract parity and denial.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "heterogeneous_providers"
+      ]
     },
     {
       "id": "XBN-06",
@@ -721,7 +1038,10 @@
       "required_evidence": "CRM adapter tenant selection, data rights, reconciliation, negative cross-scope queries.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "crm"
+      ]
     },
     {
       "id": "XBN-07",
@@ -737,7 +1057,10 @@
       "required_evidence": "Handoff reference, native Trade authorization, duplicate replay, denial reflected in CRM.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "crm"
+      ]
     },
     {
       "id": "XBL-01",
@@ -753,7 +1076,10 @@
       "required_evidence": "Actual provider binding and signature, booking response and failed eligibility negative.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "physical_movement"
+      ]
     },
     {
       "id": "XBL-02",
@@ -769,7 +1095,10 @@
       "required_evidence": "Authenticated movement, event replay, correlation and provider receipt.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "physical_movement"
+      ]
     },
     {
       "id": "XBL-03",
@@ -785,7 +1114,10 @@
       "required_evidence": "POD issuer, receipt/version, quantity variance, insurer/carrier exception trace.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "physical_movement"
+      ]
     },
     {
       "id": "XBL-04",
@@ -801,7 +1133,16 @@
       "required_evidence": "Actual cost components, authorised ERP posting, variance and idempotent reconciliation.",
       "required": true,
       "status": "NOT_RUN",
-      "evidence": null
+      "evidence": null,
+      "required_when_all": [
+        "physical_movement"
+      ]
     }
-  ]
+  ],
+  "design_approval": {
+    "authority": "Platform Owner direction in Shared #413 and implementation audit request, 2026-10-29",
+    "scope": "D1-D7 and all 18 legacy case mappings; design only",
+    "effective_on": "REVIEWED_CI_GREEN_MERGE",
+    "runtime_approval": false
+  }
 }

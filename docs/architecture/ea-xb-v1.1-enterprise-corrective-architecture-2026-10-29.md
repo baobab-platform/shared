@@ -1,16 +1,16 @@
 # EA-XB v1.1 — Enterprise Corrective Architecture: Cross-Border Operations and Business Networks
 
-**Status:** PROPOSED — FOR PLATFORM OWNER REVIEW. **Not accepted or effective until expressly approved and merged.**
+**Status:** ACCEPTED DESIGN — Platform Owner conditionally authorised acceptance after review and correction on 29 October 2026. Effective for future qualification claims upon reviewed CI-green merge. **Execution remains NOT_EXECUTED.**
 **Date:** 29 October 2026. **Owner:** Shared / Platform Architecture; participating domain owners retain their authority.
 **Basis:** Accepted Enterprise Architecture v2.3; merged Shared PR [#411](https://github.com/baobab-platform/shared/pull/411); [EA-XB v1.0 baseline](ea-v2.3-cross-border-business-execution-2026-10-29.md); immutable [XBE-01..18 design inventory](ea-xb-cross-border-acceptance-matrix.json). The baseline's business-execution objective is retained, but its implicit universal manufacturing gate is proposed for correction.
 **Proposed companion inventory:** [EA-XB v1.1 proposed acceptance profiles](ea-xb-v1.1-proposed-acceptance-profiles.json). Both this document and the new inventory are **design artifacts only**, not evidence of executed operations, certification or release authority.
-**Approval/merge rule:** Review and explicit Platform Owner acceptance required even when source CI is green. Nothing in this PR authorises a merge, a cross-tenant disclosure, a legal decision, a new capability key, provider activation or protected/production operations.
+**Approval/merge rule:** The Platform Owner requested audit, correction, acceptance and merge after satisfactory implementation and passing checks (Shared #413 review discussion and implementation audit request, 29 October 2026). This records acceptance of D1–D7 and the complete legacy crosswalk as architecture design; effectiveness requires the reviewed CI-green merge. Cross-tenant disclosure, legal decisions, new capability registration, provider activation and protected/production operations retain their independent gates.
 
 ## 1. Executive decision request
 
-**Proposed enterprise positioning:** Baobab is a capability-driven **enterprise operations platform** whose differentiating promise is **governed cross-border business execution between independently authorised enterprises**, including non-Baobab counterparties. Core enterprise systems and cross-border workflows are complementary: CRM originates/serves relationships; Trade governs commercial commitments; ERP governs procurement, manufacturing/processing, inventory and accounting; Regulations and Trade Docs govern distinct normative/documentary boundaries; TMS tracks physical execution; Payments executes money; Pulse advises; CP/IAM govern current participants and permissions.
+**Accepted enterprise positioning:** Baobab is a capability-driven **enterprise operations platform** whose differentiating promise is **governed cross-border business execution between independently authorised enterprises**, including non-Baobab counterparties. Core enterprise systems and cross-border workflows are complementary: CRM originates/serves relationships; Trade governs commercial commitments; ERP governs procurement, manufacturing/processing, inventory and accounting; Regulations and Trade Docs govern distinct normative/documentary boundaries; TMS tracks physical execution; Payments executes money; Pulse advises; CP/IAM govern current participants and permissions.
 
-**Seven corrective decisions requested:**
+**Seven corrective design decisions accepted (effective on merge):**
 
 | No. | Proposed decision | Replaces no accepted authority |
 | --- | --- | --- |
@@ -291,16 +291,22 @@ The [proposed machine-readable profile inventory](ea-xb-v1.1-proposed-acceptance
 | --- | --- | --- |
 | ZuriBeans UG→ZA coffee shipment | CORE + AGR + LOG | Any other corridor, origin preference, manufacturer BOM, buyer ERP, Nabhold roll-up |
 | ZA-MFG-01→UG equipment shipment | CORE + MFG + LOG | Coffee SPS pack, mandatory Thamani carrier, actual manufactured-origin preference |
-| BCU-like supplier becomes independent Baobab customer (without shipment) | NET only, with normal CP admission/identity gates | A cross-border execution PASS or group access |
+| BCU-like supplier becomes independent Baobab customer (without shipment) | NET: XBN-01..03 only, with normal CP admission/identity gates | A cross-border execution PASS or group access |
 | BCU-like Baobab tenant sells cross-border to another qualified Baobab tenant | CORE + AGR (if agricultural lot) + NET + LOG (if physical movement) | Globally shared CRM/order/ledger, automatically valid intercompany pricing |
 | Independent freight provider delivery | LOG for its service claim; CORE added if claiming **whole cross-border trade execution** | External trader's ERP or customs/legal compliance without evidence |
 | ZuriBeans R0 public website | Own CMS/digital-estate launch gates, not EA-XB | Trade or payment production acceptance |
+
+**Machine applicability is authoritative, not a prose exception.** Each of the five reference scenarios declares a closed set of boolean `claims`, the ordered `applicable_case_ids`, and a reasoned `excluded_cases` partition covering all 30 IDs before any run. Each case has a pinned `required_when_all` predicate. The validator independently computes the required cases and rejects omissions, duplicate IDs, unknown/non-boolean claims, changed reference scope and exclusions that hide mandatory cases. `required: true` means mandatory **when applicable**; excluded cases have no execution result and confer no PASS or whole-profile qualification.
+
+The onboarding-only reference requires XBN-01..03. XBN-04 applies only to claimed independently qualified bilateral accounting, XBN-05 to heterogeneous providers and XBN-06/07 to actual CRM use/handoff. The two bilateral reference transactions explicitly claim all these capabilities and must prove them. CORE is mandatory for cross-border execution; XBC-06's positive non-tenant exchange applies to the external-buyer variants, while the dual-tenant variants still retain CORE isolation and negative evidence. CRM is optional: XBC-02 always proves the native commercial fence, and XBN-07 separately proves CRM admission. Agriculture processing and cooperative representation are explicit claim predicates; a different corridor or product needs a separately reviewed manifest, never a reversed commodity rule pack. Missing evidence for an applicable claim is BLOCKED/NOT_RUN; changing facts after a failure cannot turn it into exclusion.
+
+The coffee reference is explicitly the non-tenant-buyer variant. The cooperative export and manufacturer dual variants cover independently qualified bilateral evidence. Neither substitutes for another's evidence. The historical 18-case manifest is retained byte-for-byte; accepted v1.1 composition governs future claims, while historical validators remain historical design checks.
 
 Each profile is evaluated at **exact** market direction, product/tariff classification, legal seller/importer/exporter, counterpart configuration, qualified provider/version, effective time and evidence class. A different profile/corridor cannot be masked by an aggregate green metric.
 
 ### 9.2 Historical case reconciliation
 
-The prior XBE-01..18 design inventory MUST remain byte-preserved for historical source and its checker may continue to validate its historical 18 mandatory scenario descriptions. **On v1.1 approval**, the new profile inventory becomes authoritative **for future new qualification claims only**. Every old ID has an exact owner-reviewed mapping; old receipts (if any) remain attached to their original case, evidence class and timestamp. No historical PASS inferred. XBE-15 explicitly maps to (a) seller-side qualified accounting in CORE and (b) independently qualified dual-party accounting in NET; the external-buyer variant does NOT pretend to assert buyer AP. XBE-08/09 remain mandatory for MFG, not AGR. The original Shared L4 scenarios are untouched.
+The prior XBE-01..18 design inventory MUST remain byte-preserved for historical source and its checker may continue to validate its historical 18 mandatory scenario descriptions. **Upon the reviewed v1.1 acceptance merge**, the new profile inventory becomes authoritative **for future new qualification claims only**. Every old ID has an exact owner-reviewed mapping; old receipts (if any) remain attached to their original case, evidence class and timestamp. No historical PASS inferred. XBE-15 explicitly maps to (a) seller-side qualified accounting in CORE and (b) independently qualified dual-party accounting in NET; the external-buyer variant does NOT pretend to assert buyer AP. XBE-08/09 remain mandatory for MFG, not AGR. The original Shared L4 scenarios are untouched.
 
 **Acceptance dimensions:** ARCH, CONTRACT, SOURCE, CI, CONNECTED-SYNTHETIC, EXTERNAL-SANDBOX, PROTECTED-STAGING, REAL-LEGAL/PROVIDER, OPS-GO. Do not combine them into a single numeric percentage or automatically promote a lesser trust class. Each mandatory applicable case has independent positive and negative receipts; missing critical evidence is BLOCKED/NOT_RUN, never SKIPPED as PASS. An explicit applicability decision is recorded *before* an execution run and reviewed; owners may not mark cases N/A to evade failing negatives.
 
@@ -337,7 +343,7 @@ flowchart TD
 
 ## 11. ADR/issue package for owner review
 
-Do **not** assign new Accepted ADR numbers or change existing statuses from this proposal. Suggested owning decisions, with numbers assigned only after register review:
+This acceptance approves programme design only. Do **not** assign new Accepted ADR numbers or change domain ADR/provider statuses from this design. Those decisions retain their own reviewed owner changes. Suggested owning decisions, with numbers assigned only after register review:
 
 | Repository / proposed decision | What must be decided and approved | Dependency |
 | --- | --- | --- |
@@ -371,20 +377,20 @@ Do **not** assign new Accepted ADR numbers or change existing statuses from this
 
 ## 13. Reviewer acceptance checklist
 
-- [ ] Retain the founding objective: cross-border **execution**, not only SaaS onboarding.
-- [ ] Preserve ZuriBeans R0/R1/R2/R3 and Uganda/South Africa bidirectionality.
-- [ ] Preserve all 18 historical XBE IDs and all canonical L4 case meanings.
-- [ ] Approve independent CORE, AGR, MFG, NET and LOG profiles and their applicability rules.
-- [ ] Approve explicit non-tenant buyer evidence and prohibit unsupported foreign GL claims.
-- [ ] Approve immutable correlation plus purpose-limited, exact-version, receipt-based document exchange.
-- [ ] Approve lawful existing-counterparty admission without identity duplication or inherited access.
-- [ ] Confirm BCU potential co-ownership and Kyagulanyi legal form remain unverified.
-- [ ] Keep Baobab CRM inside ERP repository, separately qualified and provider-neutral.
-- [ ] Confirm manufacturing and agricultural processes share provenance primitives, not false equivalence.
-- [ ] Require official effective-dated origin/customs/product requirements per direction and product.
-- [ ] Require owner-reviewed ADRs and current-qualified TMS/PSP/Regulations before production claims.
-- [ ] Explicitly authorise future merge; green CI alone is not user review or programme approval.
+- [x] Retain the founding objective: cross-border **execution**, not only SaaS onboarding.
+- [x] Preserve ZuriBeans R0/R1/R2/R3 and Uganda/South Africa bidirectionality.
+- [x] Preserve all 18 historical XBE IDs and all canonical L4 case meanings.
+- [x] Approve independent CORE, AGR, MFG, NET and LOG profiles and their applicability rules.
+- [x] Approve explicit non-tenant buyer evidence and prohibit unsupported foreign GL claims.
+- [x] Approve immutable correlation plus purpose-limited, exact-version, receipt-based document exchange.
+- [x] Approve lawful existing-counterparty admission without identity duplication or inherited access.
+- [x] Confirm BCU potential co-ownership and Kyagulanyi legal form remain unverified.
+- [x] Keep Baobab CRM inside ERP repository, separately qualified and provider-neutral.
+- [x] Confirm manufacturing and agricultural processes share provenance primitives, not false equivalence.
+- [x] Require official effective-dated origin/customs/product requirements per direction and product.
+- [x] Require owner-reviewed ADRs and current-qualified TMS/PSP/Regulations before production claims.
+- [x] Record the Platform Owner’s conditional merge authorisation; require satisfactory corrected final-head review and green CI before merge.
 
 ---
 
-**Proposal end-state:** EA-XB v1.0 remains the historical Accepted cross-border-execution objective. EA-XB v1.1, **if explicitly approved**, corrects business-outcome *composition, external evidence semantics, independent-enterprise continuity and CRM inclusion* while keeping enterprise-domain authority, real-component testing and independent approval intact. No real-world BCU/Kyagulanyi JV, incorporated company, regulatory decision, payment, shipment or provider qualification is asserted.
+**Accepted design end-state:** EA-XB v1.0 remains the historical Accepted cross-border-execution objective. EA-XB v1.1, **effective upon reviewed CI-green merge**, corrects business-outcome *composition, external evidence semantics, independent-enterprise continuity and CRM inclusion* while keeping enterprise-domain authority, real-component testing and independent approval intact. No real-world BCU/Kyagulanyi JV, incorporated company, regulatory decision, payment, shipment or provider qualification is asserted.
