@@ -12,6 +12,12 @@ This header and the current v2.3 sections **supersede older 'current' claims in 
 
 **23 October 2026 — EA-REL active release-delivery companion (NOT a protected go-live approval):** [EA-REL progressive production-release programme](ea-v2.3-progressive-production-release-programme-2026-10-23.md) defines **CP/IAM as the first candidate production foundation** with infrastructure/ops and separately witnessed staging and production evidence; other CMS/estate and headless engines may be added independently only with their exact tested provider/contract and tenant-market operation eligibility. All protected environment, statutory, provider, independent approver and live operations gates remain **NOT ACCEPTED** until actual evidence is recorded. The current dated gate table below is not silently overwritten by this planning note.
 
+## 29 October 2026 — EA-XB cross-border business-execution acceptance expansion
+
+**Platform Owner programme ruling:** cross-border business execution is the defining *next expansion* business-outcome acceptance objective, not merely the existence of onboarded SaaS tenants. The [EA-XB normative programme](ea-v2.3-cross-border-business-execution-2026-10-29.md) and [XBE-01..18 design inventory](ea-xb-cross-border-acceptance-matrix.json) specify a synthetic independently owned ZA manufacturer importing components, producing and exporting finished equipment to a UG buyer (non-tenant and separately subscribed variants). **All 18 cases are NOT_RUN; no connected provider, actual customs/money movement or production acceptance is claimed.** Programme publication/structural CI is not a real transaction receipt. Existing L4 INT-01..08 / finance/Regulations cases, DEV-00..15 and EA-REL independent protected-release gates remain unmodified. Execution follows owner XB-01..07 workstreams and must retain case-by-case positive/negative evidence and independent teardown.
+
+
+
 ## 27 October 2026 — DEV-07 audit and corrective implementation
 
 [The DEV-07 conformance audit](../assessments/trade/2026-10-27-dev07-workstream-conformance-audit.md)

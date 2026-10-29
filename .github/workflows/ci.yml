@@ -141,6 +141,7 @@ on:
       - ".baobab/contract-consumer-lock.schema.json"
       - "scripts/engine_integration_profile.py"
       - "scripts/ea_dev_register.py"
+      - "scripts/validate_ea_xb_acceptance.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
@@ -190,6 +191,7 @@ on:
       - ".baobab/contract-consumer-lock.schema.json"
       - "scripts/engine_integration_profile.py"
       - "scripts/ea_dev_register.py"
+      - "scripts/validate_ea_xb_acceptance.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
@@ -229,6 +231,10 @@ jobs:
         run: python scripts/tests/test_engineering_philosophy_governance.py
       - name: Validate Accepted EA v2.3 plan, 20-repo audit and historical precedence
         run: python scripts/tests/test_ea_v23_governance.py
+      - name: Validate EA-XB cross-border acceptance design and fail-closed matrix
+        run: |
+          python scripts/validate_ea_xb_acceptance.py
+          python scripts/tests/test_ea_xb_acceptance.py
       - name: Validate EA-DEV register and decision reconciliation (DEV-00)
         run: |
           python scripts/ea_dev_register.py --check
