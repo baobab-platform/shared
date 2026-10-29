@@ -245,6 +245,7 @@ jobs:
         run: |
           python scripts/ea_dev_register.py --check
           python scripts/tests/test_ea_dev_register.py
+          python scripts/tests/test_dev07_bff_http_evidence.py
       - name: Validate TradeDocument v2 contracts (ADR-SHARED-020 / RTD-04)
         run: python scripts/validate-trade-document-contracts.py
       - name: Validate cross-engine object references (ADR-SHARED-021 / RTD-05)

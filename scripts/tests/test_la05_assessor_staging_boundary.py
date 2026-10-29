@@ -11,6 +11,16 @@ NAMES = {
     "baobab-payments-legal-actor-assessor-staging": "baobab-payments",
     "baobab-trade-docs-legal-actor-assessor-staging": "baobab-trade-docs",
 }
+# Accepted owner-specific resolution transports added after LA-05G. They
+# remain non-authorising, workload-only and PROVISIONED; never live grants.
+OWNER_RESOLUTION_SCOPES = {
+    "baobab-trade-legal-actor-assessor-staging": {
+        "trade-seller-binding:attest", "trade-seller-binding:resolve", "trade-order-authority:resolve",
+    },
+    "baobab-erp-legal-actor-assessor-staging": {"erp-posting-authority:resolve"},
+    "baobab-payments-legal-actor-assessor-staging": {"payments-money-movement-authority:resolve"},
+    "baobab-trade-docs-legal-actor-assessor-staging": set(),
+}
 
 
 class LegalActorAssessorWorkloadBoundaryTests(unittest.TestCase):
@@ -59,6 +69,7 @@ class LegalActorAssessorWorkloadBoundaryTests(unittest.TestCase):
                 self.assertEqual(w["credential_type"], "federated_workload_token")
                 self.assertEqual(w["allowed_audiences"], ["baobab-control-plane"])
                 expected = {"context:resolve", "legal-actor:assess"}
+                expected.update(OWNER_RESOLUTION_SCOPES[name])
                 if name in {
                     "baobab-erp-legal-actor-assessor-staging",
                     "baobab-payments-legal-actor-assessor-staging",
@@ -70,6 +81,18 @@ class LegalActorAssessorWorkloadBoundaryTests(unittest.TestCase):
                               "merchant_id", "permissions", "granted_roles",
                               "private_key", "client_secret", "provider_entitlement"):
                     self.assertNotIn(field, w)
+
+    def test_owner_resolution_transports_remain_non_authorising_and_owner_private(self):
+        for owner, allowed in OWNER_RESOLUTION_SCOPES.items():
+            for name in allowed:
+                with self.subTest(scope=name):
+                    scope = self.scopes[name]
+                    self.assertEqual(["baobab-control-plane"], scope["audience"])
+                    self.assertEqual(["workload"], scope["allowed_actors"])
+                    self.assertIs(False, scope["grants_authority"])
+                    holders = {key for key, w in self.workloads.items()
+                               if name in w.get("allowed_scopes", [])}
+                    self.assertEqual({owner}, holders)
 
     def test_existing_production_workloads_not_silently_granted_assessor(self):
         for name, w in self.workloads.items():

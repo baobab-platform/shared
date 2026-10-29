@@ -1,0 +1,604 @@
+{
+  "schema": "ea-dev-w0-source-observation.v1",
+  "observed_on": "2026-10-29",
+  "purpose": "SOURCE_OBSERVATION_NOT_ACCEPTANCE",
+  "shared_governing_sha": "bef9981a8f0e646e7ffb3eb0f4fa7b15d3985b65",
+  "repositories": [
+    {
+      "repo": "shared",
+      "main_sha": "bef9981a8f0e646e7ffb3eb0f4fa7b15d3985b65",
+      "open_prs": [
+        {
+          "number": 416,
+          "head_sha": "58b984f5d6117e36fd7840c54c9ddb605761777b",
+          "base_sha": "e6a8e1480ed0c40b471211b2d3880a73767de624",
+          "branch": "dependabot/github_actions/main/actions/setup-java-816722acf8fd27c9d1e9ae6ee6085da07e0d44c1",
+          "title": "chore(deps): bump actions/setup-java from 97c5a5e13aa773f277f72c1287dda3c789f1366c to 816722acf8fd27c9d1e9ae6ee6085da07e0d44c1",
+          "implementation_on_main": false
+        },
+        {
+          "number": 415,
+          "head_sha": "0fefae51b0b39932ce8a6f41e97be26ec523a491",
+          "base_sha": "e6a8e1480ed0c40b471211b2d3880a73767de624",
+          "branch": "dependabot/github_actions/main/dtolnay/rust-toolchain-683b588c487a69d01f6c6ddf40f036ff682cc2c8",
+          "title": "chore(deps): bump dtolnay/rust-toolchain from 02cb101ec7c40f2c49e1d9714d64511d8e1b74de to 683b588c487a69d01f6c6ddf40f036ff682cc2c8",
+          "implementation_on_main": false
+        },
+        {
+          "number": 414,
+          "head_sha": "0957ebde95dd3ab43fc58cf4608b33b1bccb6cea",
+          "base_sha": "e6a8e1480ed0c40b471211b2d3880a73767de624",
+          "branch": "dependabot/github_actions/main/actions/setup-node-7.1.0",
+          "title": "chore(deps): bump actions/setup-node from 4.4.0 to 7.1.0",
+          "implementation_on_main": false
+        },
+        {
+          "number": 377,
+          "head_sha": "861dfee859404cbf59a5be7955df40d07194c085",
+          "base_sha": "21a8dac2d1d014321c8be676b80b81c5194c7e27",
+          "branch": "changeset-release/main",
+          "title": "chore(release): version shared packages",
+          "implementation_on_main": false
+        },
+        {
+          "number": 293,
+          "head_sha": "a3f3c5638ecf16d378fd9cf61fed3301dcc51999",
+          "base_sha": "b9f497f247f1c19be9b02a0d5eedd538daf9d84b",
+          "branch": "dependabot/github_actions/main/docker/build-push-action-7.4.0",
+          "title": "chore(deps): bump docker/build-push-action from 6.19.2 to 7.4.0",
+          "implementation_on_main": false
+        },
+        {
+          "number": 291,
+          "head_sha": "f4fbeaff66f549345c65d81623d8e60b7591f165",
+          "base_sha": "2aa057dcaa475450450ff1166e8e4c1cb8f5d33c",
+          "branch": "dependabot/github_actions/main/actions/setup-go-7.0.0",
+          "title": "chore(deps): bump actions/setup-go from 5.5.0 to 7.0.0",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "infrastructure",
+      "main_sha": "ce81ca83574804b4f81c7cb0969d970310b6576d",
+      "open_prs": [
+        {
+          "number": 33,
+          "head_sha": "277707f902c4b2a4e9fe7cfbb2e47585cf0bfde1",
+          "base_sha": "a7e5b842b87060695fa7ac47b0d2106e0a0a2331",
+          "branch": "dependabot/github_actions/actions/download-artifact-9000827ccba6bdab643e8b6fd33ac0654aef8333",
+          "title": "chore(deps): bump actions/download-artifact from 484a0b528fb4d7bd804637ccb632e47a0e638317 to 9000827ccba6bdab643e8b6fd33ac0654aef8333",
+          "implementation_on_main": false
+        },
+        {
+          "number": 32,
+          "head_sha": "1c5b3c8082c59fd9fb9dccdc1e5b912ec48c2eaa",
+          "base_sha": "a7e5b842b87060695fa7ac47b0d2106e0a0a2331",
+          "branch": "dependabot/github_actions/aquasecurity/trivy-action-ed142fd0673e97e23eac54620cfb913e5ce36c25",
+          "title": "chore(deps): bump aquasecurity/trivy-action from a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 to ed142fd0673e97e23eac54620cfb913e5ce36c25",
+          "implementation_on_main": false
+        },
+        {
+          "number": 31,
+          "head_sha": "af972b9d68a333d66d9c4cbda89514e111d70693",
+          "base_sha": "ce81ca83574804b4f81c7cb0969d970310b6576d",
+          "branch": "dependabot/github_actions/actions/upload-artifact-7.0.2",
+          "title": "build(deps): bump actions/upload-artifact from 4.6.2 to 7.0.2",
+          "implementation_on_main": false
+        },
+        {
+          "number": 30,
+          "head_sha": "cd6bf1da88d49fdded4b50b0d4afb0751c99e7c2",
+          "base_sha": "ce81ca83574804b4f81c7cb0969d970310b6576d",
+          "branch": "dependabot/github_actions/actions/checkout-7.0.1",
+          "title": "build(deps): bump actions/checkout from 4.2.2 to 7.0.1",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-trade",
+      "main_sha": "435207d3729efb1be5162bee15034584348ecb8b",
+      "open_prs": [
+        {
+          "number": 183,
+          "head_sha": "fae67638c0a6225efe97ed01d15216e77b5a0785",
+          "base_sha": "435207d3729efb1be5162bee15034584348ecb8b",
+          "branch": "feat/dev07-commercial-native-composition",
+          "title": "feat(DEV-07): native RFQ quotation lifecycle and buyer commitment composition",
+          "implementation_on_main": false
+        },
+        {
+          "number": 175,
+          "head_sha": "9d4861b4a261113d5b5c565c020979760baacd45",
+          "base_sha": "afea037ba8e32154ac920667609ac1016a9fb02a",
+          "branch": "dependabot/docker/main/node-26.12.1-alpine3.24",
+          "title": "chore(deps): bump node from 24.18.1-alpine3.24 to 26.12.1-alpine3.24",
+          "implementation_on_main": false
+        },
+        {
+          "number": 159,
+          "head_sha": "719657de8656e3733e020686de386fc83bceb1dd",
+          "base_sha": "5435e7bf3e5a056920fe5d95426abfb48b3b093e",
+          "branch": "dependabot/npm_and_yarn/main/vitest-5.0.5",
+          "title": "chore(deps-dev): bump vitest from 5.0.3 to 5.0.5",
+          "implementation_on_main": false
+        },
+        {
+          "number": 158,
+          "head_sha": "88be6ca1106014cfbe3a1137c7aa230dedc6e5ad",
+          "base_sha": "5435e7bf3e5a056920fe5d95426abfb48b3b093e",
+          "branch": "dependabot/npm_and_yarn/main/typescript-eslint/eslint-plugin-8.71.2",
+          "title": "chore(deps-dev): bump @typescript-eslint/eslint-plugin from 8.69.0 to 8.71.2",
+          "implementation_on_main": false
+        },
+        {
+          "number": 157,
+          "head_sha": "8783d7f64c7614765f01757c0e8ace9b4702aa62",
+          "base_sha": "5435e7bf3e5a056920fe5d95426abfb48b3b093e",
+          "branch": "dependabot/npm_and_yarn/main/typescript-eslint/parser-8.71.2",
+          "title": "chore(deps-dev): bump @typescript-eslint/parser from 8.69.0 to 8.71.2",
+          "implementation_on_main": false
+        },
+        {
+          "number": 156,
+          "head_sha": "39228d503fe4a9fc15cac5eb430225fa9fc6a65a",
+          "base_sha": "5435e7bf3e5a056920fe5d95426abfb48b3b093e",
+          "branch": "dependabot/npm_and_yarn/main/types/node-26.6.5",
+          "title": "chore(deps-dev): bump @types/node from 24.13.6 to 26.6.5",
+          "implementation_on_main": false
+        },
+        {
+          "number": 139,
+          "head_sha": "0e5ce9b6d7f475200d45aed3a04217c37058228e",
+          "base_sha": "1eaddb9a67fbd05b56311b1dc22e8efe151d0ab4",
+          "branch": "dependabot/npm_and_yarn/main/typescript-7.0.2",
+          "title": "chore(deps-dev): bump typescript from 5.7.2 to 7.0.2",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-cp",
+      "main_sha": "03e53eae95b6a277bd866a617653afb6634262bb",
+      "open_prs": [
+        {
+          "number": 453,
+          "head_sha": "6f4c923aaf4e5e9cb662d1b07722e6756199c607",
+          "base_sha": "03e53eae95b6a277bd866a617653afb6634262bb",
+          "branch": "dependabot/go_modules/go-modules-f31973b816",
+          "title": "build: bump the go-modules group across 1 directory with 7 updates",
+          "implementation_on_main": false
+        },
+        {
+          "number": 451,
+          "head_sha": "03ae0fc6e922f53fcb96f76b3e09283d784ac2d4",
+          "base_sha": "6b0ec5fa70b4ccc2b7ab9ff0cd8829a080d355ff",
+          "branch": "dependabot/docker/frontend/node-26.12.0-trixie-slim",
+          "title": "build: bump node from 24.21.0-trixie-slim to 26.12.0-trixie-slim in /frontend",
+          "implementation_on_main": false
+        },
+        {
+          "number": 450,
+          "head_sha": "ec6ddb8b0dffccaa39716c6bf1f17fa091084e95",
+          "base_sha": "6b0ec5fa70b4ccc2b7ab9ff0cd8829a080d355ff",
+          "branch": "dependabot/docker/distroless/static-debian13-18f4cc2",
+          "title": "build: bump distroless/static-debian13 from `e2e927e` to `18f4cc2`",
+          "implementation_on_main": false
+        },
+        {
+          "number": 423,
+          "head_sha": "136538353047dbca9426ed0be0e8f038b16001a2",
+          "base_sha": "6b0ec5fa70b4ccc2b7ab9ff0cd8829a080d355ff",
+          "branch": "dependabot/npm_and_yarn/frontend-2835e0c72c",
+          "title": "build: bump the frontend group across 1 directory with 12 updates",
+          "implementation_on_main": false
+        },
+        {
+          "number": 422,
+          "head_sha": "ef78d35f2c055f2dc604ccb4ed178421a418c7c4",
+          "base_sha": "3810b8222fa6df09b829e7c725d534af10b1155c",
+          "branch": "dependabot/docker/frontend/distroless/nodejs24-debian13-78f07ef",
+          "title": "build: bump distroless/nodejs24-debian13 from `9eeb7f5` to `78f07ef` in /frontend",
+          "implementation_on_main": false
+        },
+        {
+          "number": 421,
+          "head_sha": "36b8322fe87ed91eccf7b3fe449384025b424068",
+          "base_sha": "6b0ec5fa70b4ccc2b7ab9ff0cd8829a080d355ff",
+          "branch": "dependabot/github_actions/actions-a2d33a48db",
+          "title": "ci: bump the actions group across 1 directory with 3 updates",
+          "implementation_on_main": false
+        },
+        {
+          "number": 399,
+          "head_sha": "357fb2b899a5b8b87e89bcb139337ad266c42d46",
+          "base_sha": "358cdc84fe1e6a1dba4abdebb9c4f74b239b2117",
+          "branch": "dependabot/npm_and_yarn/types/node-26.6.5",
+          "title": "build: bump @types/node from 24.13.6 to 26.6.5",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-iam",
+      "main_sha": "7958a93808bf23dca8752598ca97fb0292a7ac4d",
+      "open_prs": [
+        {
+          "number": 144,
+          "head_sha": "fcd21915fc1376ad2d457fee82909b272629694c",
+          "base_sha": "7958a93808bf23dca8752598ca97fb0292a7ac4d",
+          "branch": "dependabot/go_modules/tests/consumer/cp/go_modules-5667282361",
+          "title": "build(deps): bump github.com/go-chi/chi/v5 from 5.3.2 to 5.4.0 in /tests/consumer/cp in the go_modules group across 1 directory",
+          "implementation_on_main": false
+        },
+        {
+          "number": 125,
+          "head_sha": "6d177f48e205d566487c892cd8a4fc0f595dc289",
+          "base_sha": "0ad103606b9705fcb33c468ea01b54d8ce76f9ae",
+          "branch": "dependabot/github_actions/actions-b739c8c5f3",
+          "title": "chore(deps): bump the actions group across 1 directory with 3 updates",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "zuribeans",
+      "main_sha": "555c8e51e73f7d133b9e8adef464de97beafcd70",
+      "open_prs": [
+        {
+          "number": 134,
+          "head_sha": "3030ce1b99b453221acf4b2dd9bb2af26872870d",
+          "base_sha": "8f2664c4a9200cdaaf2ccb3f2bb67aa32c48fc07",
+          "branch": "dependabot/docker/main/node-26.12.1-alpine3.24",
+          "title": "chore(deps): bump node from 24.20.0-alpine3.24 to 26.12.1-alpine3.24",
+          "implementation_on_main": false
+        },
+        {
+          "number": 133,
+          "head_sha": "a438ca58caa4d97282fb7ff57ca04e4e23f00e06",
+          "base_sha": "8f2664c4a9200cdaaf2ccb3f2bb67aa32c48fc07",
+          "branch": "dependabot/github_actions/main/actions/setup-node-7.1.0",
+          "title": "chore(deps): bump actions/setup-node from 7.0.0 to 7.1.0",
+          "implementation_on_main": false
+        },
+        {
+          "number": 132,
+          "head_sha": "7bdafd491b62ebf6149320251efef38a7b6a264c",
+          "base_sha": "8f2664c4a9200cdaaf2ccb3f2bb67aa32c48fc07",
+          "branch": "dependabot/github_actions/main/baobab-platform/shared/dot-github/workflows/foundation-repository-gates.yml-db6756e872d8db73f529b1a9eaf7f49f6d66edc1",
+          "title": "chore(deps): bump baobab-platform/shared/.github/workflows/foundation-repository-gates.yml from 756892fbdbcf0eb89bf62f720c372bad53748dea to db6756e872d8db73f529b1a9eaf7f49f6d66edc1",
+          "implementation_on_main": false
+        },
+        {
+          "number": 131,
+          "head_sha": "32942d1274b7ad74df30c6a698a526d6c9758aad",
+          "base_sha": "8f2664c4a9200cdaaf2ccb3f2bb67aa32c48fc07",
+          "branch": "feat/figma-homepage-high-fidelity-v2",
+          "title": "feat(ui): restore Figma Make homepage hero and editorial composition",
+          "implementation_on_main": false
+        },
+        {
+          "number": 122,
+          "head_sha": "d060e79c08be3c91602173742443dc6a111776ff",
+          "base_sha": "ddddd949a2dafbbe80322852e6158da75071ad7c",
+          "branch": "dependabot/npm_and_yarn/main/postcss-8.5.30",
+          "title": "chore(deps-dev): bump postcss from 8.5.26 to 8.5.31",
+          "implementation_on_main": false
+        },
+        {
+          "number": 121,
+          "head_sha": "879f5012bcdf764d5f2caf76149fa5b21e78e958",
+          "base_sha": "ddddd949a2dafbbe80322852e6158da75071ad7c",
+          "branch": "dependabot/npm_and_yarn/main/playwright/test-1.64.1",
+          "title": "chore(deps-dev): bump @playwright/test from 1.63.0 to 1.64.1",
+          "implementation_on_main": false
+        },
+        {
+          "number": 120,
+          "head_sha": "0c60e761f593d62f482703e045d3199f57caee0d",
+          "base_sha": "ddddd949a2dafbbe80322852e6158da75071ad7c",
+          "branch": "dependabot/npm_and_yarn/main/storybook-10.6.2",
+          "title": "chore(deps-dev): bump storybook from 10.6.2 to 10.6.3",
+          "implementation_on_main": false
+        },
+        {
+          "number": 119,
+          "head_sha": "ebfd98f0e45bdf416473c7cf57fb419585035967",
+          "base_sha": "1aa32959429ce97b9fb284f26350636a4a54352a",
+          "branch": "dependabot/github_actions/main/actions/upload-artifact-7.0.2",
+          "title": "chore(deps): bump actions/upload-artifact from 7.0.1 to 7.0.2",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-tms",
+      "main_sha": "aa0565a46b089d53ff6e9916df3ed0eec19dcf0d",
+      "open_prs": [],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-erp",
+      "main_sha": "75e564e68ddeb3bd25824f99c7f55a6841456344",
+      "open_prs": [
+        {
+          "number": 114,
+          "head_sha": "f4807acf1504ba8a9cb7a2cef689caeca4d21ba5",
+          "base_sha": "182f48c74c2e738b937345694011f87032517e11",
+          "branch": "dependabot/maven/idempiere/extensions/main/com.fasterxml.jackson-jackson-bom-2.22.4",
+          "title": "chore(deps): bump com.fasterxml.jackson:jackson-bom from 2.22.3 to 2.22.4 in /idempiere/extensions",
+          "implementation_on_main": false
+        },
+        {
+          "number": 109,
+          "head_sha": "6f2774e1d2356edb049a627d8c761af36b7eca01",
+          "base_sha": "0bcf6d1b9d0ec262a1400eb9ce83981305e5d32d",
+          "branch": "dependabot/maven/idempiere/extensions/main/org.postgresql-postgresql-42.7.14",
+          "title": "chore(deps-dev): bump org.postgresql:postgresql from 42.7.8 to 42.7.14 in /idempiere/extensions",
+          "implementation_on_main": false
+        },
+        {
+          "number": 108,
+          "head_sha": "8d575f5853f32f220bd4619906fed4a68522f75d",
+          "base_sha": "0bcf6d1b9d0ec262a1400eb9ce83981305e5d32d",
+          "branch": "dependabot/maven/idempiere/extensions/main/com.networknt-json-schema-validator-3.0.8",
+          "title": "chore(deps): bump com.networknt:json-schema-validator from 2.0.4 to 3.0.8 in /idempiere/extensions",
+          "implementation_on_main": false
+        },
+        {
+          "number": 107,
+          "head_sha": "d92a8f8415eef7464f9dbc953587fee5620b4008",
+          "base_sha": "0bcf6d1b9d0ec262a1400eb9ce83981305e5d32d",
+          "branch": "dependabot/github_actions/main/baobab-platform/shared/dot-github/workflows/security-secrets-scan.yml-2229fee5c2f12a93935c88877aee21e0a5d73e51",
+          "title": "chore(deps): bump baobab-platform/shared/.github/workflows/security-secrets-scan.yml from 317538bfa9cac7d0117420c12984d80d89d9f5ea to 2229fee5c2f12a93935c88877aee21e0a5d73e51",
+          "implementation_on_main": false
+        },
+        {
+          "number": 106,
+          "head_sha": "18e778a8e712c635ecad800501338148c9f66ec7",
+          "base_sha": "0bcf6d1b9d0ec262a1400eb9ce83981305e5d32d",
+          "branch": "dependabot/github_actions/main/baobab-platform/shared/dot-github/workflows/foundation-repository-gates.yml-2229fee5c2f12a93935c88877aee21e0a5d73e51",
+          "title": "chore(deps): bump baobab-platform/shared/.github/workflows/foundation-repository-gates.yml from b9f497f247f1c19be9b02a0d5eedd538daf9d84b to 2229fee5c2f12a93935c88877aee21e0a5d73e51",
+          "implementation_on_main": false
+        },
+        {
+          "number": 105,
+          "head_sha": "88ba3e69c84f8890e564147ca55d6c0f69694fbf",
+          "base_sha": "0bcf6d1b9d0ec262a1400eb9ce83981305e5d32d",
+          "branch": "dependabot/github_actions/main/baobab-platform/shared/dot-github/workflows/security-codeql.yml-2229fee5c2f12a93935c88877aee21e0a5d73e51",
+          "title": "chore(deps): bump baobab-platform/shared/.github/workflows/security-codeql.yml from b9f497f247f1c19be9b02a0d5eedd538daf9d84b to 2229fee5c2f12a93935c88877aee21e0a5d73e51",
+          "implementation_on_main": false
+        },
+        {
+          "number": 103,
+          "head_sha": "f4a1f49b4c32f5ce9d4ddb96efbcda04391a9420",
+          "base_sha": "0bcf6d1b9d0ec262a1400eb9ce83981305e5d32d",
+          "branch": "dependabot/github_actions/main/actions/setup-python-ec52d0af729a7c50ced4261d17a07916f43f5b8e",
+          "title": "chore(deps): bump actions/setup-python from 06da6279cdbca41027908073e81a4544dc79c06b to ec52d0af729a7c50ced4261d17a07916f43f5b8e",
+          "implementation_on_main": false
+        },
+        {
+          "number": 97,
+          "head_sha": "578db0af90f6e99c58b34d9d6c989d8e3b22b487",
+          "base_sha": "c3ed799cddde4a212022ccf079b52d7f99d26257",
+          "branch": "dependabot/maven/idempiere/extensions/org.nabhold.baobab.erp.context/maven-29c1def617",
+          "title": "chore(deps-dev): bump the maven group across 5 directories with 1 update",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-trade-docs",
+      "main_sha": "d622f541cbf545230ab000e3321f5870bc954fa9",
+      "open_prs": [
+        {
+          "number": 15,
+          "head_sha": "3e38ee1d81f75a5d805e275628bdbfef1824fa5d",
+          "base_sha": "73cd1c168be39305c2e238b1f0a5b72da7821539",
+          "branch": "dependabot/github_actions/actions-efb9f110dd",
+          "title": "build(deps): bump baobab-platform/shared/.github/workflows/rtd-cross-repository-conformance.yml from c83c4c7fae0637f198b1608b3e92940063177c31 to d037d7623c0ffd3f6cf887dc08ad2e5d32c3525b in the actions group across 1 directory",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-payments",
+      "main_sha": "cf7305379adbed7085c281cd4a1e24621ae41667",
+      "open_prs": [
+        {
+          "number": 42,
+          "head_sha": "cf1eb098ac1b4c8761bd3f3e91b25f5f399f15ec",
+          "base_sha": "4c4e11f0dead3a261fe474fd44a2fbbbe05bff08",
+          "branch": "dependabot/cargo/cargo-c1fd124d07",
+          "title": "build: Bump the cargo group across 1 directory with 3 updates",
+          "implementation_on_main": false
+        },
+        {
+          "number": 41,
+          "head_sha": "f290e5da279b27bb5e8b0a6d3dda01f6948c1a77",
+          "base_sha": "0eb75baa4aeabaa103a527ecaf63200c17324c69",
+          "branch": "dependabot/docker/distroless/cc-debian13-83b9b50",
+          "title": "build: Bump distroless/cc-debian13 from `e792ab3` to `83b9b50`",
+          "implementation_on_main": false
+        },
+        {
+          "number": 39,
+          "head_sha": "c7b9574edbbac3d5df4a7bae6b67ceed89543d3d",
+          "base_sha": "0eb75baa4aeabaa103a527ecaf63200c17324c69",
+          "branch": "dependabot/github_actions/actions-163250c86d",
+          "title": "ci: Bump the actions group with 2 updates",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-subscriptions",
+      "main_sha": "597bff4c86cdbf27b4bb85be359a0cf44eac75cd",
+      "open_prs": [
+        {
+          "number": 56,
+          "head_sha": "8245ff341425752ebb6c4cd478b76012e5b61498",
+          "base_sha": "c7f74f046ba424080505cf20f22e1c425902965d",
+          "branch": "feat/sub-02-follow-on-custody-telemetry-20261029",
+          "title": "feat(subscriptions): stacked SUB-02 validation, custody outcomes and operational telemetry",
+          "implementation_on_main": false
+        },
+        {
+          "number": 55,
+          "head_sha": "c7f74f046ba424080505cf20f22e1c425902965d",
+          "base_sha": "597bff4c86cdbf27b4bb85be359a0cf44eac75cd",
+          "branch": "feat/sub-02-secure-event-publication-20261029",
+          "title": "feat(subscriptions): SUB-02 signed delivery, IAM publisher gate and controlled replay",
+          "implementation_on_main": false
+        },
+        {
+          "number": 44,
+          "head_sha": "a2fb1c6d869fbc1b43e86279f6312d2cfa4df8a3",
+          "base_sha": "52c69906343d7b1afee08a88b8d3afe118af0428",
+          "branch": "dependabot/github_actions/actions-b2adebcabe",
+          "title": "ci: Bump the actions group across 1 directory with 2 updates",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-regulations",
+      "main_sha": "10516f9e4155bc771d0499227b5ccf4a20b28568",
+      "open_prs": [
+        {
+          "number": 24,
+          "head_sha": "b1e34b1da4b001c78dc605933aee7f030ce87251",
+          "base_sha": "89a113104410121deca43e9ce48ea865bacbfbe8",
+          "branch": "dependabot/github_actions/actions-cc7495bf0d",
+          "title": "build(deps): bump the actions group across 1 directory with 2 updates",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "baobab-dev",
+      "main_sha": "a161d52f32974327ac35cb1519918be08547815e",
+      "open_prs": [
+        {
+          "number": 51,
+          "head_sha": "10692efde3c8ad00c021fed004d55b39450999b2",
+          "base_sha": "a161d52f32974327ac35cb1519918be08547815e",
+          "branch": "dependabot/github_actions/github-actions-d02a6e8db8",
+          "title": "build(deps)(deps): bump the github-actions group across 1 directory with 9 updates",
+          "implementation_on_main": false
+        },
+        {
+          "number": 50,
+          "head_sha": "aa2dfff114312818970709847bf1d340d2b31c49",
+          "base_sha": "a161d52f32974327ac35cb1519918be08547815e",
+          "branch": "feat/dev14-engine-onboarding",
+          "title": "DEV-14: engine-specific developer doctor and Codespaces guidance",
+          "implementation_on_main": false
+        },
+        {
+          "number": 49,
+          "head_sha": "42b7346f291419d26d20a6af5dd815cf034c6645",
+          "base_sha": "a161d52f32974327ac35cb1519918be08547815e",
+          "branch": "dependabot/uv/python-security-5b18fe017b",
+          "title": "build(deps)(deps): bump certifi from 2026.7.22 to 2026.10.19 in the python-security group across 1 directory",
+          "implementation_on_main": false
+        },
+        {
+          "number": 48,
+          "head_sha": "83c09e6f32f9a37d537b137df2634b4b39d8ca40",
+          "base_sha": "a161d52f32974327ac35cb1519918be08547815e",
+          "branch": "feat/dev10-locked-onboarding",
+          "title": "fix: DEV-10 locked project onboarding and toolchain failure gates",
+          "implementation_on_main": false
+        },
+        {
+          "number": 46,
+          "head_sha": "60c8f4e8d4893c1a171c61ff7fd99aca898827ba",
+          "base_sha": "a161d52f32974327ac35cb1519918be08547815e",
+          "branch": "automation/weekly-lockfile-update",
+          "title": "chore(deps): automated weekly toolchain lockfile update",
+          "implementation_on_main": false
+        }
+      ],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    },
+    {
+      "repo": "engine-template",
+      "main_sha": "6af15dcb1097bd3a5006ee4d463e608ec13311fa",
+      "open_prs": [],
+      "runtime_requalification": "NOT_INFERRED_FROM_SOURCE"
+    }
+  ],
+  "tms_merged_prs": [
+    {
+      "number": 19,
+      "head_sha": "1cd168f3ea04d033f4aef71d4391ef938a692368",
+      "merge_sha": "9d641b9e47f42bc2d623af42059611a7905746e4",
+      "merged": true
+    },
+    {
+      "number": 20,
+      "head_sha": "80d312d9032254cf5b8614a187ae6e686db70d76",
+      "merge_sha": "6ef57ec106071b6d46b099d1669924e0b8b49a5c",
+      "merged": true
+    },
+    {
+      "number": 21,
+      "head_sha": "98e70ae28d38dcad7103694ebef8e9792b15f178",
+      "merge_sha": "c695ae767b15ba7af72ab35306fd051001a635ce",
+      "merged": true
+    },
+    {
+      "number": 22,
+      "head_sha": "03b9af61823870dfbf8d8a8078199f67a256719d",
+      "merge_sha": "5e92962a0011699a9e46ba256d5faeb79d53f99e",
+      "merged": true
+    },
+    {
+      "number": 23,
+      "head_sha": "b2616ddfbebf85ab4662917f29fdcfc1734d9c63",
+      "merge_sha": "ea0ea8d66c415217cf044efd8e45dab22253ada0",
+      "merged": true
+    },
+    {
+      "number": 24,
+      "head_sha": "6ebf0bfb46fdd36969f6e769a56b082d526dfeb4",
+      "merge_sha": "596561c70e198faa9dcb56892b89f7e506cfbb56",
+      "merged": true
+    },
+    {
+      "number": 25,
+      "head_sha": "568c549d41e4e2feb83a88f0f5c7695a5a5b958d",
+      "merge_sha": "05060862c45194237ddc1b2509925fafc1d4162b",
+      "merged": true
+    },
+    {
+      "number": 26,
+      "head_sha": "9a5c10bace6219db99d58c86eeab071c40d1639f",
+      "merge_sha": "aa0565a46b089d53ff6e9916df3ed0eec19dcf0d",
+      "merged": true
+    }
+  ],
+  "bff_http_original_artifact": {
+    "run_id": 40831958591,
+    "artifact_id": 12879880298,
+    "zip_sha256": "9577f9d1ea9fc0a957899bbee2d8d1d96044b937d84e664418791b7c16e3ca9a",
+    "head_sha": "712c140eefb923408cf6d7fe08b2329f80f51940",
+    "merge_sha": "ce81ca83574804b4f81c7cb0969d970310b6576d",
+    "scope": "Eight BFF HTTP component observations only; no INT-05 acceptance"
+  },
+  "protected_acceptance": false,
+  "production_authorized": false
+}
