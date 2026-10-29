@@ -1,0 +1,45 @@
+{
+  "schema": "dev07-bff-http-custody-projection.v1",
+  "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
+  "original_archive_sha256": "9577f9d1ea9fc0a957899bbee2d8d1d96044b937d84e664418791b7c16e3ca9a",
+  "original_suite_sha256": "96736c8bac5991db04ae964136b6422701b1b4873d362649c85588edb8881a3b",
+  "original_lifecycle_sha256": "dceafb576160fa71252d5c799c6a67482c52a5eea63d8423a12cbe1fc7de125f",
+  "original_artifact_url": "https://github.com/baobab-platform/infrastructure/actions/runs/40831958591/artifacts/12879880298",
+  "preserved_archive_library_file_id": "libfile_f5504d7948788191bc2d8547fe294b6e",
+  "workflow_head_sha": "712c140eefb923408cf6d7fe08b2329f80f51940",
+  "merge_sha": "ce81ca83574804b4f81c7cb0969d970310b6576d",
+  "run_id": "2662afd16258eff15c628b2584831f4b",
+  "harness_sha": "d2ee4e8a2182d7b04b53a5bb858217b049ee5ef0",
+  "source_pins": {
+    "baobab-cp": "695f08112898f65b17a4ec90b680720526b64dc4",
+    "baobab-iam": "f7c13704b3161e72075bd245ae439dc839624625",
+    "baobab-trade": "99f819459ddd1b026f1bcc915856a56ee2acfbbc",
+    "shared": "2fde03e2f5f3a8a6cbc1e2081b4859fdccc1bb53",
+    "zuribeans": "71296d8a08b46074e0fdd95c60576ffceec478a5"
+  },
+  "image_ids": {
+    "cp": "sha256:19de7961b9d874121cf9452b4bd99ca5bf2309c88ff1478b8e28c25efe23ab81",
+    "trade-bff-http": "sha256:1b39b886b00b4524df1862d16213f1ce8c621d0fb5373282857363a1870773d6",
+    "zuribeans-bff": "sha256:93db62c6831eb665e30503408156a4b1b224bf8a7980263c8e5116ff34f8f0f5"
+  },
+  "checks": {
+    "csrf-denial": true,
+    "current-cp-trade-http-context": true,
+    "custody-outage-and-recovery": true,
+    "issuer-consent-revocation": true,
+    "membership-suspension-denial": true,
+    "native-fixture-cleanup": true,
+    "native-next-iam-session": true,
+    "wrong-organisation-denial": true
+  },
+  "teardown_verified": true,
+  "issuer_cleanup_verified": true,
+  "binding_revocation_verified": true,
+  "runtime_identity_verified": true,
+  "bff_http_component_qualified": true,
+  "int05_qualified": false,
+  "provider_qualified": false,
+  "protected_acceptance": false,
+  "production_authorized": false,
+  "projection_is_original_receipt": false
+}
