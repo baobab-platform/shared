@@ -939,7 +939,7 @@ scopes:
       evidence (identity/v1 principal-resolution.openapi.yaml). Establishes
       identity only: no Organisation, membership, tenant, market, role,
       purchasing authority or commerce-customer mapping. Distinct from
-      identity:principal:resolve. Allocated to no workload.
+      identity:principal:resolve. Allocated only to the bounded N04 development-only IAM runtime reader; no staging/production allocation.
     audience: ["baobab-control-plane"]
     allowed_actors: ["workload"]
     grants_authority: false
