@@ -598,6 +598,28 @@ development_expected.merge!(JSON.parse(<<~'JSON'))
   }
 }
 JSON
+# Named, development-only IAM identity: closed and reviewable exact ceiling.
+# Companion IAM-N02/N04 branches must reconcile their distinct allowed
+# identities before any contract branch is merged.
+development_expected.merge!(JSON.parse(<<~'JSON'))
+{
+  "baobab-dev-iam-runtime-reader": {
+    "repository": "baobab-platform/baobab-iam",
+    "owner": "baobab-platform/baobab-iam",
+    "runtime": "IAM-N04 disposable developer CP runtime binding source reader",
+    "environment": "development",
+    "allowed_audiences": [
+      "baobab-control-plane"
+    ],
+    "allowed_scopes": [
+      "identity-runtime:read"
+    ],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-iam",
+    "status": "ACTIVE"
+  }
+}
+JSON
 development_expected.each do |name, expected|
   fail_contract("development identity #{name} exceeds its exact ADR-043 ceiling") unless workloads[name] == expected
 end
