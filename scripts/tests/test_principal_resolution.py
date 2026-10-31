@@ -134,6 +134,19 @@ class PrincipalResolution(unittest.TestCase):
                     if workload == "baobab-dev-trade-buyer-validator" and name == "identity:principal:resolve":
                         self.assertIn(name, entry["allowed_scopes"])
                         self.assertEqual(entry["environment"], "development")
+                        self.assertEqual(entry["status"], "ACTIVE")
+                    elif workload == "baobab-dev-zuribeans-cp-principal-validator" and name == "identity:principal:resolve":
+                        # N02: registry allocation is NOT operational
+                        # authority. The separately owned estate caller
+                        # cannot be granted CP scope before real Hydra/CP
+                        # registration and current synthetic development
+                        # tenant + principal admission.
+                        self.assertIn(name, entry["allowed_scopes"])
+                        self.assertEqual(entry["environment"], "development")
+                        self.assertEqual(entry["status"], "PROVISIONED")
+                        self.assertEqual(entry["subject_principal_audiences"], ["baobab-trade"])
+                        self.assertNotIn("identity:principal:register-buyer", entry["allowed_scopes"])
+                        self.assertNotIn("context:validate", entry["allowed_scopes"])
                     else:
                         self.assertNotIn(name, entry["allowed_scopes"], workload)
 
