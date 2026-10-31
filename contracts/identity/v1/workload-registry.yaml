@@ -840,7 +840,7 @@ workloads:
     runtime: DEV-08 source-candidate TMS workload operation subject
     environment: development
     allowed_audiences: [baobab-control-plane, baobab-tms]
-    allowed_scopes: [context:resolve, tms:booking:submit]
+    allowed_scopes: [context:resolve, legal-actor:assess, tms:booking:submit]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-tms
     status: PROVISIONED
