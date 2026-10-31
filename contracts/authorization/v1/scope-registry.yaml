@@ -1024,6 +1024,21 @@ scopes:
     allowed_actors: ["workload"]
     grants_authority: false
 
+  # IAM-N07 / DEV-08: inert TMS subject transport admission. It cannot
+  # authorize a booking without current CP context, legal mandate, exact
+  # native capability binding, idempotency and provider-side commitment.
+  # No production or protected client may use this development candidate.
+  - name: "tms:booking:submit"
+    description: >-
+      Development-only subject admission for the independently reviewed TMS
+      resource server. An ACTIVE registered workload and actual TMS-native
+      per-operation CP mandate/binding/revision and carrier/provider fence
+      remain separate. No vendor user, BFF browser or client claim grants
+      booking, dispatch, payment or cross-tenant authority.
+    audience: ["baobab-tms"]
+    allowed_actors: ["workload"]
+    grants_authority: false
+
   - name: "identity-runtime:read"
     description: "Read secret-free current native/workload runtime evidence at an explicitly authorised organisation and estate. CP additionally requires security.identity-runtime.view and current canonical caller authority. Distinct from federation-authority:read and identity-runtime:observe; grants no activation, issuance, membership or configuration authority. Allocated to no workload."
     audience: ["baobab-control-plane"]
