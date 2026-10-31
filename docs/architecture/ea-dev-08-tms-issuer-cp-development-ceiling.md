@@ -14,6 +14,16 @@ PROVISIONED development identities:
   baobab-control-plane; allowed_scopes context:validate;
   validates_audiences [baobab-tms]; development only.
 
+The TMS subject's CP-audience ceiling includes legal-actor:assess
+for the existing LA-05A private CP RUNTIME Context assessment with
+role SERVICE_PROVIDER_OF_RECORD and an exact owner-selected
+tms.booking.submit operation reference. This readback must verify an
+ACTIVE legal mandate and registered Principal of the SAME subject,
+but its provider_permissions_granted=false is deliberately
+non-executable. Any CP implementation or native consumer unable
+to make these independently current checks must deny. The resource
+validator remains separate and can validate only baobab-tms audience.
+
 Neither is Active. The scope is transport admission, NOT a carrier booking,
 legal actor mandate, assignment, native provider grant or access to any
 other tenant. Thamani's confidential human BFF is a separate identity
