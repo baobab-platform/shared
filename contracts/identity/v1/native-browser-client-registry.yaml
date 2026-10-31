@@ -1,0 +1,24 @@
+# IAM-N02 bounded development candidate. Distinct from the Next.js buyer
+# workload/client-credentials profile in workload-registry.yaml. This declaration
+# is not CP authorisation, an issued secret, a live Hydra registration or
+# staging/production approval. Native browser clients must not be inferred
+# from workload scope registries.
+schema: baobab.identity.native-browser-clients.v1
+clients:
+  baobab-dev-zuribeans-native-browser-bff:
+    repository: baobab-platform/zuribeans
+    owner: baobab-platform/zuribeans
+    runtime: IAM-N02 private first-party native browser qualification
+    environment: development
+    status: PROVISIONED
+    allowed_audiences: [baobab-trade]
+    allowed_scopes: [openid, "trade:buy"]
+    grant_types: [authorization_code]
+    response_types: [code]
+    redirect_path: /auth/callback
+    pkce_method: S256
+    token_endpoint_auth_method: client_secret_basic
+    consent_required: true
+    rotation_owner: baobab-platform/zuribeans
+    creates_principal: false
+    grants_business_authority: false
