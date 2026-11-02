@@ -1,6 +1,8 @@
 # Baobab Experience System — implementation and acceptance register
 
 Governing decision: Accepted ADR-SHARED-040. Audited 17 October 2026.
+
+**Current normative classification:** [ADR-SHARED-040 §7.1 — Cross-estate BXS conformance profile (BXS-CXP v1.0)](../adr/ADR-SHARED-040%20%E2%80%94%20Baobab%20Experience%20System%2C%20Frontend%20Engineering%20and%20Geospatial%20Presentation.md). The Mandatory / Conditional / Estate-owned contract governs subsequent first-party BXS migrations; the historical evidence tables below are not a current per-consumer certification. See [cross-estate conformance register](bxs-cross-estate-conformance-register.md) for a claim-safe baseline.
 **Current verified audit:** [BXS/BGX evidence register (17 October 2026)](bxs-bgx-evidence-register-2026-10-17.md), covering publication receipts, currently pinned consumer manifests, BGX-01–04, and Nabhold G12/G15/G16. The table below records the earlier source baseline; do not use it as a live release-readiness assertion.
 
 **Gate names below follow §8, the implementation sequence.** Architecture,
