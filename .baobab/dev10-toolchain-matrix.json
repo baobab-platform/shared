@@ -1,19 +1,21 @@
 {
   "schema": "dev10-toolchain-matrix.v1",
   "purpose": "READ_MODEL_NOT_AUTHORITY",
-  "observed_on": "2026-10-25",
+  "observed_on": "2026-11-02",
   "provider": {
     "repo": "baobab-dev",
-    "source_sha": "a161d52f32974327ac35cb1519918be08547815e",
+    "source_sha": "eb9fb92f043c782acff5d87c77301d9a9e8b80dd",
     "capabilities_sha256": "fa04f8ecc4d0a7eb351e7785e421d9d3b325999829c7c27ef93cecbf67e34b12",
-    "versions_lock_sha256": "daec94ea43a7a796c5e3697c58e8e7525c693372ac602ecdcc96a928ea157635",
+    "versions_lock_sha256": "3927b97b904cf8871b6d00d08d80ea63a2b514d2c7425d694bc481d51360d2ac",
     "source_configuration": {
       "python": "3.14.6",
-      "uv": "0.12.23",
+      "uv": "0.13.5",
       "node_major": "24",
       "pnpm": "11.24.0",
       "java_major": "17",
-      "postgres_client_major": "17"
+      "postgres_client_major": "17",
+      "playwright": "1.62.1",
+      "source": "Merged #48/#50 versions.lock, not currently published image; prospective LTS uplift is separate and unqualified"
     },
     "observed_published_image": {
       "image": "ghcr.io/baobab-platform/baobab-dev:1.4.4@sha256:9603f0e7402aa85771e904db1c20f2ecc02f705131b266cb4ec3d1c24ea58ae4",
@@ -25,61 +27,32 @@
       "run_url": "https://github.com/baobab-platform/baobab-dev/actions/runs/40181062042",
       "source_scope": "Initial historical PR48 head 274b6faf31fcfdddc31cbc2edcb7d302a1453cdf: measured versions and locked uv installation only. Final verification failed under an unmapped raw UID, then was masked by following unit tests; not onboarding/security qualification.",
       "onboarding_result": "FAILED_FINAL_VERIFICATION_MASKED_BY_FOLLOWING_TESTS"
+    },
+    "merge_observation": {
+      "status": "MERGED_SOURCE_ONLY",
+      "merged_main_sha": "eb9fb92f043c782acff5d87c77301d9a9e8b80dd",
+      "pr48": {
+        "number": 48,
+        "head": "415a7c20a4602f4f01103522ae42b1a39b08b96c",
+        "reviewed_head_ci": "40_SUCCESS_9_SKIPPED",
+        "merge_sha": "eb9fb92f043c782acff5d87c77301d9a9e8b80dd"
+      },
+      "pr50": {
+        "number": 50,
+        "head": "1aa22c2668eda2a49ce5581da5b2383069599b37",
+        "reviewed_head_ci": "38_SUCCESS_9_SKIPPED",
+        "merge_sha": "eb9fb92f043c782acff5d87c77301d9a9e8b80dd"
+      },
+      "notice": "Merged-source identity verified; PR-head CI is not newly published image, protected release or live user Codespace evidence. Merged-main push had an unrelated Docs Pages failed job and image builds in progress at observation."
     }
   },
   "repositories": [
     {
-      "repo": "baobab-dev",
-      "source_sha": "a161d52f32974327ac35cb1519918be08547815e",
-      "environment_profile": "full",
-      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
-      "source_status": "SOURCE_VALIDATED",
-      "project_pins": {
-        "python_requires": ">=3.14",
-        "python_file": "3.14"
-      },
-      "features": {
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-          "moby": false,
-          "dockerDashComposeVersion": "v2"
-        }
-      },
-      "native_services": [],
-      "gaps": [],
-      "fresh_codespace_observed": false,
-      "upgrade_branch_qualified": false,
-      "evidence_urls": [
-        "https://github.com/baobab-platform/baobab-dev/tree/a161d52f32974327ac35cb1519918be08547815e"
-      ]
-    },
-    {
-      "repo": "shared",
-      "source_sha": "2986b7c1c884f0556d8e0dac523f2bceb27646c1",
-      "environment_profile": "frontend",
-      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
-      "source_status": "SOURCE_VALIDATED",
-      "project_pins": {
-        "package_manager": "pnpm@11.24.0",
-        "node_engine": ">=24",
-        "node_exact_file": null
-      },
-      "features": {},
-      "native_services": [],
-      "gaps": [
-        "EXACT_NODE_FILE_MISSING_AT_AUDITED_SOURCE"
-      ],
-      "fresh_codespace_observed": false,
-      "upgrade_branch_qualified": false,
-      "evidence_urls": [
-        "https://github.com/baobab-platform/shared/tree/2986b7c1c884f0556d8e0dac523f2bceb27646c1"
-      ]
-    },
-    {
       "repo": "baobab-cp",
-      "source_sha": "50a130576f6b126066a56e97a09676b2015f1261",
+      "source_sha": "03e53eae95b6a277bd866a617653afb6634262bb",
       "environment_profile": "full",
       "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4@sha256:9603f0e7402aa85771e904db1c20f2ecc02f705131b266cb4ec3d1c24ea58ae4",
-      "source_status": "SOURCE_VALIDATED",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
       "project_pins": {
         "go": "1.27.0"
       },
@@ -92,38 +65,49 @@
         }
       },
       "native_services": [],
-      "gaps": [],
+      "gaps": [
+        "OWNER_UPGRADE_AND_RUNTIME_VALIDATION_UNQUALIFIED"
+      ],
       "fresh_codespace_observed": false,
       "upgrade_branch_qualified": false,
       "evidence_urls": [
-        "https://github.com/baobab-platform/baobab-cp/tree/50a130576f6b126066a56e97a09676b2015f1261"
+        "https://github.com/baobab-platform/baobab-cp/tree/03e53eae95b6a277bd866a617653afb6634262bb"
       ]
     },
     {
-      "repo": "baobab-pulse",
-      "source_sha": "1ec50d9b1fefaae888b600e8836834cb777ecccb",
+      "repo": "baobab-dev",
+      "source_sha": "eb9fb92f043c782acff5d87c77301d9a9e8b80dd",
       "environment_profile": "full",
       "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
-      "source_status": "SOURCE_VALIDATED",
+      "source_status": "MERGED_SOURCE_OBSERVED; RUNTIME_UPGRADE_UNQUALIFIED",
       "project_pins": {
         "python_requires": ">=3.14",
         "python_file": "3.14"
       },
-      "features": {},
+      "features": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+          "moby": false,
+          "dockerDashComposeVersion": "v2"
+        }
+      },
       "native_services": [],
-      "gaps": [],
+      "gaps": [
+        "MERGED_SOURCE_LOCK_NOT_YET_PUBLISHED_AS_REVIEWED_IMAGE",
+        "SOURCE_JAVA17_VS_JAVA21_TARGET",
+        "NODE24_PNPM11_PLAYWRIGHT1_62_EFFECTIVE_VS_LTS_TARGET"
+      ],
       "fresh_codespace_observed": false,
       "upgrade_branch_qualified": false,
       "evidence_urls": [
-        "https://github.com/baobab-platform/baobab-pulse/tree/1ec50d9b1fefaae888b600e8836834cb777ecccb"
+        "https://github.com/baobab-platform/baobab-dev/tree/eb9fb92f043c782acff5d87c77301d9a9e8b80dd"
       ]
     },
     {
       "repo": "baobab-erp",
-      "source_sha": "182f48c74c2e738b937345694011f87032517e11",
+      "source_sha": "75e564e68ddeb3bd25824f99c7f55a6841456344",
       "environment_profile": "full",
       "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
-      "source_status": "SOURCE_VALIDATED",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
       "project_pins": {
         "python_requires": ">=3.11"
       },
@@ -134,45 +118,21 @@
           "image": "postgres:17-alpine"
         }
       ],
-      "gaps": [],
-      "fresh_codespace_observed": false,
-      "upgrade_branch_qualified": false,
-      "evidence_urls": [
-        "https://github.com/baobab-platform/baobab-erp/tree/182f48c74c2e738b937345694011f87032517e11"
-      ]
-    },
-    {
-      "repo": "baobab-subscriptions",
-      "source_sha": "52c69906343d7b1afee08a88b8d3afe118af0428",
-      "environment_profile": "full",
-      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
-      "source_status": "SOURCE_VALIDATED",
-      "project_pins": {
-        "java": "21"
-      },
-      "features": {},
-      "native_services": [
-        {
-          "service": "postgres",
-          "image": "postgres:16-alpine"
-        }
-      ],
       "gaps": [
-        "JAVA_21_REQUIRED_IMAGE_JAVA_17",
-        "DEV_DATABASE_PG16_WHILE_ENGINE_TARGETS_PG17; PHYSICAL_MIGRATION_SEPARATE"
+        "OWNER_UPGRADE_AND_RUNTIME_VALIDATION_UNQUALIFIED"
       ],
       "fresh_codespace_observed": false,
       "upgrade_branch_qualified": false,
       "evidence_urls": [
-        "https://github.com/baobab-platform/baobab-subscriptions/tree/52c69906343d7b1afee08a88b8d3afe118af0428"
+        "https://github.com/baobab-platform/baobab-erp/tree/75e564e68ddeb3bd25824f99c7f55a6841456344"
       ]
     },
     {
       "repo": "baobab-payments",
-      "source_sha": "0eb75baa4aeabaa103a527ecaf63200c17324c69",
+      "source_sha": "cf7305379adbed7085c281cd4a1e24621ae41667",
       "environment_profile": "full",
       "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
-      "source_status": "SOURCE_VALIDATED",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
       "project_pins": {
         "rust_requires": "1.88"
       },
@@ -190,20 +150,89 @@
         }
       ],
       "gaps": [
-        "RUST_REQUIRED_NOT_IN_DECLARED_BASE_IMAGE_OR_DEVCONTAINER_FEATURES"
+        "RUST_FEATURE_PRESENT_BUT_NOT_EXACT_COMPILER_PIN_OR_NATIVE_TEST_PROOF",
+        "DEV_DATABASE_POSTGRES16; PG17_PHYSICAL_MIGRATION_SEPARATE"
       ],
       "fresh_codespace_observed": false,
       "upgrade_branch_qualified": false,
       "evidence_urls": [
-        "https://github.com/baobab-platform/baobab-payments/tree/0eb75baa4aeabaa103a527ecaf63200c17324c69"
+        "https://github.com/baobab-platform/baobab-payments/tree/cf7305379adbed7085c281cd4a1e24621ae41667"
+      ]
+    },
+    {
+      "repo": "baobab-pulse",
+      "source_sha": "d58143f72bcdfa02ec0c99fab74896e183a0912f",
+      "environment_profile": "full",
+      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
+      "project_pins": {
+        "python_requires": ">=3.14",
+        "python_file": "3.14"
+      },
+      "features": {},
+      "native_services": [],
+      "gaps": [
+        "OWNER_UPGRADE_AND_RUNTIME_VALIDATION_UNQUALIFIED"
+      ],
+      "fresh_codespace_observed": false,
+      "upgrade_branch_qualified": false,
+      "evidence_urls": [
+        "https://github.com/baobab-platform/baobab-pulse/tree/d58143f72bcdfa02ec0c99fab74896e183a0912f"
+      ]
+    },
+    {
+      "repo": "baobab-subscriptions",
+      "source_sha": "597bff4c86cdbf27b4bb85be359a0cf44eac75cd",
+      "environment_profile": "full",
+      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
+      "project_pins": {
+        "java": "21"
+      },
+      "features": {},
+      "native_services": [
+        {
+          "service": "postgres",
+          "image": "postgres:17-alpine"
+        }
+      ],
+      "gaps": [
+        "JAVA_21_REQUIRED_IMAGE_JAVA_17",
+        "DEV_PG17_COMPOSE_PRESENT; JAVA21_BUILD_AND_PG17_MIGRATION_EVIDENCE_UNQUALIFIED"
+      ],
+      "fresh_codespace_observed": false,
+      "upgrade_branch_qualified": false,
+      "evidence_urls": [
+        "https://github.com/baobab-platform/baobab-subscriptions/tree/597bff4c86cdbf27b4bb85be359a0cf44eac75cd"
+      ]
+    },
+    {
+      "repo": "baobab-tms",
+      "source_sha": "aa0565a46b089d53ff6e9916df3ed0eec19dcf0d",
+      "environment_profile": null,
+      "workspace_image": null,
+      "source_status": "DECLARATION_PENDING_UNMERGED_PR29",
+      "project_pins": {
+        "node_requires": ">=24 <25",
+        "package_manager": "npm (Node stdlib foundation)"
+      },
+      "features": {},
+      "native_services": [],
+      "gaps": [
+        "MAIN_MISSING_DEV10_ENVIRONMENT_CONTRACT; PR29_OPEN_NOT_QUALIFIED"
+      ],
+      "fresh_codespace_observed": false,
+      "upgrade_branch_qualified": false,
+      "evidence_urls": [
+        "https://github.com/baobab-platform/baobab-tms/tree/aa0565a46b089d53ff6e9916df3ed0eec19dcf0d"
       ]
     },
     {
       "repo": "baobab-trade",
-      "source_sha": "afea037ba8e32154ac920667609ac1016a9fb02a",
+      "source_sha": "435207d3729efb1be5162bee15034584348ecb8b",
       "environment_profile": "full",
       "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
-      "source_status": "SOURCE_VALIDATED",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
       "project_pins": {
         "package_manager": "npm@10.8.2",
         "node_engine": ">=24 <25",
@@ -212,90 +241,119 @@
       "features": {},
       "native_services": [],
       "gaps": [
-        "EXACT_NODE_FILE_MISSING_AT_AUDITED_SOURCE"
+        "NODE_24_MAJOR_CONSTRAINT; NODE_26_MEDUSA_OWNER_QUALIFICATION_REQUIRED"
       ],
       "fresh_codespace_observed": false,
       "upgrade_branch_qualified": false,
       "evidence_urls": [
-        "https://github.com/baobab-platform/baobab-trade/tree/afea037ba8e32154ac920667609ac1016a9fb02a"
-      ]
-    },
-    {
-      "repo": "thamani",
-      "source_sha": "8a18b0b1613b236f6107b3a6e2e76f9339184b46",
-      "environment_profile": "frontend",
-      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
-      "source_status": "SOURCE_VALIDATED",
-      "project_pins": {
-        "package_manager": "pnpm@11.24.0",
-        "node_engine": ">=24.0.0 <25",
-        "node_exact_file": null
-      },
-      "features": {},
-      "native_services": [],
-      "gaps": [
-        "EXACT_NODE_FILE_MISSING_AT_AUDITED_SOURCE"
-      ],
-      "fresh_codespace_observed": false,
-      "upgrade_branch_qualified": false,
-      "evidence_urls": [
-        "https://github.com/baobab-platform/thamani/tree/8a18b0b1613b236f6107b3a6e2e76f9339184b46"
-      ]
-    },
-    {
-      "repo": "zuribeans",
-      "source_sha": "8f2664c4a9200cdaaf2ccb3f2bb67aa32c48fc07",
-      "environment_profile": "frontend",
-      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
-      "source_status": "SOURCE_VALIDATED",
-      "project_pins": {
-        "package_manager": "pnpm@11.24.0",
-        "node_engine": ">=24.19.0 <25",
-        "node_exact_file": null
-      },
-      "features": {},
-      "native_services": [],
-      "gaps": [
-        "EXACT_NODE_FILE_MISSING_AT_AUDITED_SOURCE"
-      ],
-      "fresh_codespace_observed": false,
-      "upgrade_branch_qualified": false,
-      "evidence_urls": [
-        "https://github.com/baobab-platform/zuribeans/tree/8f2664c4a9200cdaaf2ccb3f2bb67aa32c48fc07"
-      ]
-    },
-    {
-      "repo": "baobab-tms",
-      "source_sha": "4aaa674fbc7074de2d98bc01e0ffddc716527efd",
-      "environment_profile": null,
-      "workspace_image": null,
-      "source_status": "DECLARATION_MISSING_OR_UNSUPPORTED",
-      "project_pins": {},
-      "features": {},
-      "native_services": [],
-      "gaps": [
-        "NO_ENVIRONMENT_DECLARATION_AT_SOURCE"
-      ],
-      "fresh_codespace_observed": false,
-      "upgrade_branch_qualified": false,
-      "evidence_urls": [
-        "https://github.com/baobab-platform/baobab-tms/tree/4aaa674fbc7074de2d98bc01e0ffddc716527efd"
+        "https://github.com/baobab-platform/baobab-trade/tree/435207d3729efb1be5162bee15034584348ecb8b"
       ]
     },
     {
       "repo": "infrastructure",
-      "source_sha": "eeea864f3764038223793fd5dc3ed88791751914",
+      "source_sha": "bcbcf2aaf7c9ee720f16952890de7c8a52c35371",
       "environment_profile": "infra",
       "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-infra",
-      "source_status": "SOURCE_VALIDATED",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
       "project_pins": {},
       "features": {},
       "native_services": [],
-      "gaps": [],
+      "gaps": [
+        "OWNER_UPGRADE_AND_RUNTIME_VALIDATION_UNQUALIFIED"
+      ],
       "fresh_codespace_observed": false,
       "upgrade_branch_qualified": false,
       "evidence_urls": [
-        "https://github.com/baobab-platform/infrastructure/tree/eeea864f3764038223793fd5dc3ed88791751914"
+        "https://github.com/baobab-platform/infrastructure/tree/bcbcf2aaf7c9ee720f16952890de7c8a52c35371"
+      ]
+    },
+    {
+      "repo": "nabhold",
+      "source_sha": "7db56b5b7826425699e9b5163788f35aaf42d857",
+      "environment_profile": "frontend",
+      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
+      "project_pins": {
+        "package_manager": "pnpm@11.24.0",
+        "node_engine": ">=24.19.0 <25",
+        "playwright": "1.64.1"
+      },
+      "features": {},
+      "native_services": [],
+      "gaps": [
+        "NODE24_PIN_AND_PNPM11_EFFECTIVE; NODE26_PNPM12_ADOPTER_TEST_UNQUALIFIED",
+        "DEVCONTAINER_WAITFOR_UPDATECONTENT; COMPLETE_CLEAN_CODESPACE_LIFECYCLE_UNOBSERVED"
+      ],
+      "fresh_codespace_observed": false,
+      "upgrade_branch_qualified": false,
+      "evidence_urls": [
+        "https://github.com/baobab-platform/nabhold/tree/7db56b5b7826425699e9b5163788f35aaf42d857"
+      ]
+    },
+    {
+      "repo": "shared",
+      "source_sha": "ef683c9f77d149c28f4ff3bcc59ca9aa2a514d7a",
+      "environment_profile": "frontend",
+      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
+      "project_pins": {
+        "package_manager": "pnpm@11.24.0",
+        "node_engine": ">=24",
+        "node_exact_file": ".node-version"
+      },
+      "features": {},
+      "native_services": [],
+      "gaps": [
+        "NODE_24_21_0_AND_PNPM_11_24_0_ARE_EFFECTIVE; NODE26_PNPM12_NOT_ADOPTED"
+      ],
+      "fresh_codespace_observed": false,
+      "upgrade_branch_qualified": false,
+      "evidence_urls": [
+        "https://github.com/baobab-platform/shared/tree/ef683c9f77d149c28f4ff3bcc59ca9aa2a514d7a"
+      ]
+    },
+    {
+      "repo": "thamani",
+      "source_sha": "52c309ad0cc23e47d02f6fc7589bb036a385cf85",
+      "environment_profile": "frontend",
+      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
+      "project_pins": {
+        "package_manager": "pnpm@11.24.0",
+        "node_engine": ">=24.0.0 <25",
+        "playwright": "1.62.1"
+      },
+      "features": {},
+      "native_services": [],
+      "gaps": [
+        "OWNER_UPGRADE_AND_RUNTIME_VALIDATION_UNQUALIFIED"
+      ],
+      "fresh_codespace_observed": false,
+      "upgrade_branch_qualified": false,
+      "evidence_urls": [
+        "https://github.com/baobab-platform/thamani/tree/52c309ad0cc23e47d02f6fc7589bb036a385cf85"
+      ]
+    },
+    {
+      "repo": "zuribeans",
+      "source_sha": "e4bc3b9582919f004bd86dfc70351fdd0027b1a8",
+      "environment_profile": "frontend",
+      "workspace_image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
+      "source_status": "CURRENT_SOURCE_SNAPSHOT_ONLY",
+      "project_pins": {
+        "package_manager": "pnpm@11.24.0",
+        "node_engine": ">=24.19.0 <25",
+        "playwright": "1.63.0"
+      },
+      "features": {},
+      "native_services": [],
+      "gaps": [
+        "OWNER_UPGRADE_AND_RUNTIME_VALIDATION_UNQUALIFIED"
+      ],
+      "fresh_codespace_observed": false,
+      "upgrade_branch_qualified": false,
+      "evidence_urls": [
+        "https://github.com/baobab-platform/zuribeans/tree/e4bc3b9582919f004bd86dfc70351fdd0027b1a8"
       ]
     }
   ],
@@ -303,6 +361,6 @@
   "fleet_upgrade_qualified": false,
   "postgres_physical_migration_qualified": false,
   "production_authorized": false,
-  "audit_scope": "Twelve explicitly listed source snapshots only; not an organisation-wide conformance or live Codespaces inventory."
+  "audit_scope": "Thirteen immutable, current main source snapshots (including Nabhold); GitHub source declarations read, not current-user Codespace, native runtime or new-image/consumer acceptance. TMS PR29 is not merged.",
+  "upgrade_policy": "PREFER_LATEST_STABLE_LTS; SEE .baobab/dev10-target-toolchains.json; target versions are NOT merged provider runtime or consumer pins"
 }
-
