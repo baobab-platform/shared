@@ -764,7 +764,7 @@ workloads:
     allowed_scopes: [identity-runtime:read]
     credential_type: client_credentials
     rotation_owner: baobab-platform/baobab-iam
-    status: ACTIVE
+    status: PROVISIONED
 
   # DEV-14/15 leased, headless onboarding clients. No product/protected activation.
   baobab-dev-pulse-onboarding:
