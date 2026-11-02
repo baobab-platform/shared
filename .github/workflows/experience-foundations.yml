@@ -50,6 +50,16 @@ jobs:
         run: |
           pnpm --filter @baobab-platform/experience-tokens test
           pnpm --filter @baobab-platform/experience-geo-core test
+      - name: Generate source-theme perceptual contrast receipt (BXS-VFA)
+        run: node packages/experience-tokens/scripts/report-visual-profile.mjs > packages/experience-tokens/visual-contrast-report.json
+      - name: Preserve inspectable source-theme contrast receipt
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: bxs-visual-contrast-source-evidence
+          retention-days: 14
+          if-no-files-found: warn
+          path: packages/experience-tokens/visual-contrast-report.json
       - name: Build neutral evidence dependency before UI typecheck
         run: pnpm --filter @baobab-platform/experience-geo-core build
       - name: Validate source-labelled charts and accessible table fallbacks
