@@ -241,6 +241,8 @@ jobs:
         run: |
           python scripts/validate_ea_xb_v11_proposal.py
           python scripts/tests/test_ea_xb_v11_proposal.py
+      - name: Validate DEV-11 closed trace evidence contract and source negatives
+        run: python scripts/tests/test_dev11_trace_contract.py
       - name: Validate EA-DEV register and decision reconciliation (DEV-00)
         run: |
           python scripts/ea_dev_register.py --check
