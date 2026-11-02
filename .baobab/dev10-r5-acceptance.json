@@ -1,0 +1,298 @@
+{
+  "schema": "dev10-r5-final-acceptance.v1",
+  "observation_date": "2026-11-02",
+  "classification": "DEVELOPMENT_ONLY_SOURCE_SNAPSHOT_NOT_RUNTIME_PROOF",
+  "governing_architecture": [
+    "EA v2.3",
+    "EA-DEV DEV-10",
+    "DEV10-R1/R2/R3/R4/R5",
+    "DEV-12 database migration boundary"
+  ],
+  "source_baseline": {
+    "repo": "baobab-dev",
+    "source_sha": "eb9fb92f043c782acff5d87c77301d9a9e8b80dd",
+    "shared_r1_pr": 426,
+    "shared_r2_pr": 427,
+    "source_only": true
+  },
+  "candidate_provider": {
+    "repo": "baobab-dev",
+    "pull_request": 57,
+    "observed_head_sha": "4463ccd46b2ebe408f035b3e83886a6fc3f9a3e1",
+    "state": "DRAFT_UNMERGED",
+    "published_candidate_digest": null
+  },
+  "preferred_technologies": {
+    "node": "26.13.0",
+    "pnpm": "12.16.1",
+    "python": "3.14.10",
+    "java": "21",
+    "postgresql": "17",
+    "playwright": "1.64.1",
+    "corepack": "0.36.0"
+  },
+  "observed_security": {
+    "strict_dev10_cve_gate": "FAILED",
+    "vendor_linux_libc_dev_295": "UNREMEDIATED_VENDOR_RISK_BOUNDED_DEVELOPMENT_ONLY",
+    "pulse_msgpack_1_2_2": "VULNERABLE_GHSA_J586_36CW_2GC2",
+    "temporary_foundation_exception_expires": "2026-11-12",
+    "temporary_dev_risk_expires": "2026-11-13T00:00:00Z",
+    "production_security_waiver": false
+  },
+  "owners": [
+    {
+      "repo": "baobab-cp",
+      "baseline_main_sha": "03e53eae95b6a277bd866a617653afb6634262bb",
+      "related_pull_requests": [
+        456,
+        457
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "baobab-dev",
+      "baseline_main_sha": "eb9fb92f043c782acff5d87c77301d9a9e8b80dd",
+      "related_pull_requests": [
+        57
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "baobab-erp",
+      "baseline_main_sha": "75e564e68ddeb3bd25824f99c7f55a6841456344",
+      "related_pull_requests": [
+        124
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "baobab-payments",
+      "baseline_main_sha": "cf7305379adbed7085c281cd4a1e24621ae41667",
+      "related_pull_requests": [
+        47
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "baobab-pulse",
+      "baseline_main_sha": "d58143f72bcdfa02ec0c99fab74896e183a0912f",
+      "related_pull_requests": [
+        66
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "baobab-subscriptions",
+      "baseline_main_sha": "597bff4c86cdbf27b4bb85be359a0cf44eac75cd",
+      "related_pull_requests": [],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "baobab-tms",
+      "baseline_main_sha": "aa0565a46b089d53ff6e9916df3ed0eec19dcf0d",
+      "related_pull_requests": [
+        29
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "baobab-trade",
+      "baseline_main_sha": "435207d3729efb1be5162bee15034584348ecb8b",
+      "related_pull_requests": [
+        187
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "infrastructure",
+      "baseline_main_sha": "bcbcf2aaf7c9ee720f16952890de7c8a52c35371",
+      "related_pull_requests": [],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "nabhold",
+      "baseline_main_sha": "7db56b5b7826425699e9b5163788f35aaf42d857",
+      "related_pull_requests": [
+        101,
+        102
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "shared",
+      "baseline_main_sha": "ef683c9f77d149c28f4ff3bcc59ca9aa2a514d7a",
+      "related_pull_requests": [
+        426,
+        427
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "thamani",
+      "baseline_main_sha": "52c309ad0cc23e47d02f6fc7589bb036a385cf85",
+      "related_pull_requests": [
+        48,
+        49
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    },
+    {
+      "repo": "zuribeans",
+      "baseline_main_sha": "e4bc3b9582919f004bd86dfc70351fdd0027b1a8",
+      "related_pull_requests": [
+        154,
+        155
+      ],
+      "native_upgrade_accepted": false,
+      "fresh_hosted_codespace_accepted": false,
+      "readiness": "HELD",
+      "evidence_category": "SOURCE_DECLARATION_OR_PR_ONLY"
+    }
+  ],
+  "controls": [
+    {
+      "id": "R1-MERGED-SOURCE",
+      "state": "SOURCE_VERIFIED",
+      "reason": "Shared #426 exact merged provider source and 13-owner baseline are recorded; not upgraded image.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R2-HOSTED-CODESPACE-CREATE",
+      "state": "NOT_OBSERVED",
+      "reason": "No independently witnessed new user Codespace created from final candidate digest.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R2-GHCR-USER-ENTITLEMENT",
+      "state": "NOT_OBSERVED",
+      "reason": "Actions GHCR read does not prove Codespaces user pre-container private-image access.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R2-BXS-NPM-USER-ENTITLEMENT",
+      "state": "NOT_OBSERVED",
+      "reason": "Shared #427 source harness is merged; real user BXS package fetch not run in hosted Codespace.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R2-REVOKE-NEGATIVE-AND-TEARDOWN",
+      "state": "NOT_OBSERVED",
+      "reason": "No independent entitlement denial, revocation and verified Codespace deletion receipts.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R3-ALL-OWNERS-NATIVE",
+      "state": "BLOCKED",
+      "reason": "R3 owner PRs are unmerged and not fully green; Subscriptions, TMS, infrastructure need explicit owner qualification.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R3-PLAYWRIGHT-ALL-ESTATES",
+      "state": "BLOCKED",
+      "reason": "Browser binary/version and performance/accessibility/visual tests not fully qualified with Node26/pnpm12.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R4-PREFERRED-STABLE-LOCK",
+      "state": "BLOCKED",
+      "reason": "Node26.13.0, pnpm12.16.1, Java21, Python3.14.10 and Playwright1.64.1 are candidate; source not merged into provider main.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R4-MULTIARCH-BUILD-READBACK",
+      "state": "BLOCKED",
+      "reason": "Full/frontend/e2e/infra images for AMD64 and ARM64 not demonstrated as completed and independently verified.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R4-SBOM-PROVENANCE-AND-SIGNATURE",
+      "state": "NOT_OBSERVED",
+      "reason": "No reviewed candidate digest with signed SBOM, provenance and verified signature readback.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R4-UNWAIVED-SECURITY",
+      "state": "FAILED",
+      "reason": "baobab-dev #57 has a failing strict Foundation container CVE gate; 295 linux-libc-dev vendor matches remain a risk, and Pulse msgpack 1.2.2 is vulnerable.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R4-LOCKED-PRIVATE-CONSUMER-INSTALL",
+      "state": "BLOCKED",
+      "reason": "Source CI package tests and candidate frozen installs are not a complete real private registry + entire 13-owner qualification.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R4-ROLLBACK-AND-PG17-SEPARATION",
+      "state": "NOT_OBSERVED",
+      "reason": "No observed full-cohort rollback of image+lock, credential revocation, and DEV-12 physical PG data migration/restore.",
+      "evidence_urls": []
+    },
+    {
+      "id": "R5-INDEPENDENT-REVIEW-AND-ACCEPTANCE",
+      "state": "BLOCKED",
+      "reason": "Security/architecture/consumer owners and user have not approved all outstanding PRs or verified final immutable evidence.",
+      "evidence_urls": []
+    }
+  ],
+  "decision": {
+    "engineering_acceptance": "HELD",
+    "actual_completion_date": null,
+    "independent_evidence_custodian_verified": false,
+    "all_gates_pass": false,
+    "dev10_source_accepted": true,
+    "dev10_runtime_accepted": false,
+    "staging_approved": false,
+    "production_approved": false,
+    "user_approved_merge": false,
+    "release_authorized": false,
+    "reason": "R1 is source-reconciled and R2 harness source merged. R2 hosted-user evidence, R3 all-owner qualification, R4 signed multiarch images/security, and independent R5 acceptance are outstanding."
+  },
+  "evidence_policy": {
+    "receipt_classification": "SOURCE_OBSERVATIONS_ONLY",
+    "git_checks_not_hosted_codespaces": true,
+    "ci_skipped_not_pass": true,
+    "fixture_provider_not_real_psp": true,
+    "raw_tokens_in_evidence": false,
+    "signed_provenance_attestation": null,
+    "independent_codespace_creation_receipt": null,
+    "independent_codespace_teardown_receipt": null,
+    "rehearsed_rollback_receipt": null
+  }
+}
