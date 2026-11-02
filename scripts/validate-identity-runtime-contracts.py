@@ -101,9 +101,21 @@ def validate_authority_policy():
     assert policy['requirements']['creates_authority'] is False
     assert policy['requirements']['reference_existence_is_approval'] is False
     registry = yaml.safe_load((IDENTITY / 'workload-registry.yaml').read_text())
-    # The registry's clients stay unchanged: definition is not activation.
-    for workload in registry['workloads'].values():
-        assert policy['transport']['scope'] not in workload.get('allowed_scopes', [])
+    # ADR-SHARED-043: the one explicit PROVISIONED development ceiling is
+    # not an ACTIVE grant, issued bearer, CP Principal, nor AdministrativeGrant.
+    # All other clients still must NOT acquire identity-runtime:read.
+    assigned = {
+        name: workload for name, workload in registry['workloads'].items()
+        if policy['transport']['scope'] in workload.get('allowed_scopes', [])
+    }
+    assert set(assigned) == {'baobab-dev-iam-runtime-reader'}
+    reader = assigned['baobab-dev-iam-runtime-reader']
+    assert reader['environment'] == 'development'
+    assert reader['status'] == 'PROVISIONED'
+    assert reader['allowed_audiences'] == ['baobab-control-plane']
+    assert reader['allowed_scopes'] == ['identity-runtime:read']
+    assert reader['credential_type'] == 'client_credentials'
+    assert reader['repository'] == 'baobab-platform/baobab-iam'
     profiles = yaml.safe_load((ROOT / 'contracts/administration/v1/profile-registry.yaml').read_text())
     for profile in profiles['profiles']:
         assert policy['permission'] not in profile.get('permissions', [])
