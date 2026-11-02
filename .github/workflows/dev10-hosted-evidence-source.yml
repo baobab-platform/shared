@@ -1,0 +1,34 @@
+name: DEV-10 R2 Codespace Readback Source (not hosted proof)
+on:
+  pull_request:
+    paths:
+      - "scripts/dev10/**"
+      - "docs/architecture/ea-dev-10-r2-r3-hosted-codespace-protocol.md"
+      - ".github/workflows/dev10-hosted-evidence-source.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/dev10/**"
+      - "docs/architecture/ea-dev-10-r2-r3-hosted-codespace-protocol.md"
+      - ".github/workflows/dev10-hosted-evidence-source.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-regressions:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: {node-version: "24"}
+      - name: Verify adversarial source-only checks
+        run: node --test scripts/dev10/codespace-readback.test.mjs
+      - name: Verify Actions cannot masquerade as hosted user
+        run: |
+          set -euo pipefail
+          if node scripts/dev10/codespace-readback.mjs zuribeans . /tmp/dev10-r2-negative; then
+            echo "::error::Non-Codespace source job claimed hosted execution"
+            exit 1
+          fi
+          test ! -e /tmp/dev10-r2-negative/receipt.json
