@@ -43,3 +43,26 @@ export const Tabs:Story={render:()=> <ExperienceTabs label="Synthetic evidence v
   {id:"route",label:"Route",content:<p>Textual route alternative; no live position.</p>},
   {id:"documents",label:"Documents",content:<p>Authorised metadata demonstration only.</p>},
 ]}/>}
+
+/**
+ * BXS-VFA stress fixture: deliberately long synthetic administrative language.
+ * No route, identifier, legal claim or personally identifiable information.
+ * This is not a replacement for an estate's actual branding or localisation.
+ */
+export const AdaptiveConditions:Story={render:()=> <section aria-label="Adaptive experience stress fixture"
+  style={{display:"grid",gap:18,maxWidth:"48rem",minWidth:0}}>
+  <h1 style={{fontFamily:"var(--bx-font-display,serif)",fontSize:"clamp(1.75rem, 5vw, 3rem)",
+    lineHeight:1.2,overflowWrap:"anywhere",margin:0}}>Longer regional procurement information and operational evidence</h1>
+  <p style={{lineHeight:1.55,margin:0}}>Prices, dates, confidence, permissions and multi-market descriptions
+    must remain understandable when the available width or text size changes. This is synthetic content.</p>
+  <div style={{display:"flex",gap:12,flexWrap:"wrap",minWidth:0,alignItems:"flex-start"}}>
+    <ActionButton>Review procurement quotation with additional supporting documents</ActionButton>
+    <ActionButton intent="danger">Discard local draft without issuing a commercial order</ActionButton>
+  </div>
+  <StatusLabel tone="warning">Documentation review required before proceeding</StatusLabel>
+  <FeedbackPanel state="restricted" title="Access remains restricted in this example"
+    description="The current authorised context does not include permission to review this synthetic record."/>
+  <Disclosure summary="Read additional source, accuracy and data freshness information">
+    This example is not live tracking, a customs approval or a financially committed operation.
+  </Disclosure>
+</section>}
