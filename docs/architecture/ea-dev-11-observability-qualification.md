@@ -73,3 +73,57 @@ Since the initial source audit, [Nabhold #99](https://github.com/baobab-platform
 Infrastructure #72's independent verifier *opens the source-owner artifact*, verifies its GitHub run SHA/current branch, required test job and steps, downloadable ZIP digest, non-empty passing Playwright stats, actual Lighthouse category scores/CLS/script bytes and identical fixed 800/250/64/250 KiB static budgets. The scrubbed output joins those numeric measurements with run-owned real IAM/CP and BFF/Trade authority-negative/teardown receipts; it excludes original screenshots, raw traces, credentials and payloads. A deliberately failing broker negative is not a successful consumer test. This **improves independently repeatable evidence custody**, but it is still not a completed L4-OPS-01 pass, nightly full-matrix execution, field CWV acceptance or stage/production approval.
 
 As of this source revision the latest final-head owner and Infrastructure CI runs have not all completed successfully. This amendment does not promote the official DEV-11 implementation register beyond partial in-progress.
+
+## DEV-11 native OpenTelemetry + RabbitMQ engineering increment — 2026-11-02
+
+### Native implementation now proposed (no qualified full runtime result yet)
+
+- [Infrastructure #72](https://github.com/baobab-platform/infrastructure/pull/72):
+  real **opt-in** OTLP Collector → private Jaeger 2.22 exporter, separate
+  official-SDK exporter smoke and independent live span query, cycle/missing
+  parent/link tests, exact source SHA custody and an expanded **seven-run**
+  evidence join. Debug-only default collector remains unchanged.
+- [Trade #188](https://github.com/baobab-platform/baobab-trade/pull/188):
+  native Medusa OpenTelemetry NodeSDK/server/producer/consumer spans plus a
+  separate Trade-owned **real** Python3.14 RabbitMQ publisher-confirm
+  runtime over original Medusa Postgres17 outbox rows; mandatory topic
+  routing, durable messages, leases, idempotency, retry and dead-letter.
+  Original W3C parent is a **recorded and flushed** SDK source span, not
+  a forged synthetic child ID.
+- [ERP #125](https://github.com/baobab-platform/baobab-erp/pull/125):
+  native **separate operating-system process** consuming the pre-provisioned
+  RabbitMQ quorum queue and verifying signed registered CloudEvent ingress
+  before PostgreSQL inbox admission, with manual ACK after durable commit,
+  rejected poison/DLX, changed-payload replay refusal, and official Python
+  OTel receiver/worker causal links. This receipt is **not a native iDempiere
+  order or financial consequence**.
+- Trade's separate connected candidate CI provisions real PostgreSQL17,
+  RabbitMQ4.3, independently running ERP consumer, and disposable Jaeger/
+  Collector. It deliberately crashes a test-only ERP process **after PG
+  commit and before broker ACK**, restarts the normal ERP consumer, and
+  demands broker ACK recovery plus exactly one stored inbox record. It
+  rejects correctly signed changed business data, forged signature and
+  mandatory-unroutable publishing. It independently queries actual spans
+  from `baobab-trade`, `baobab-trade-rabbit-publisher` and `baobab-erp`,
+  recording immutable Trade/ERP/Infrastructure companion SHAs without
+  publishing raw trace IDs or body data.
+
+### Refusal and scope
+
+These are **candidate source changes with newly scheduled but not yet
+confirmed passing current-head CI**. Do not cite them as independently
+observed runtime acceptance. The new Infrastructure evidence join refuses
+stale ERP/Infrastructure companion heads, absent exporter/broker results,
+false broker confirmations, missing real post-commit/pre-ACK recovery,
+skipped owner browser gates, expired ZIPs and unverified teardown.
+
+The connected broker test intentionally uses a synthetic native Medusa
+outbox event, not a live BFF/IAM/CP-authorised buyer commitment. A
+real iDempiere 13, a per-claim CP-authorised legal actor, operation-specific
+approval/mandate and documentary gates, native sales order read-back,
+idempotent adoption after uncertain engine outcomes, and second-company
+isolation **remain required**. Full BFF→IAM→CP→Trade→ERP exported lineage
+has not been observed in the same protected-authority business operation.
+A successful seven-run component/estate join therefore **still yields
+`l4_ops_01=BLOCKED`**, `production_authorized=false` and no protected
+acceptance. Owner-source changes are not completed DEV-11 / EA v2.3 gates.
