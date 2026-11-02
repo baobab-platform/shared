@@ -26,7 +26,7 @@ class N04RuntimeReaderCeiling(unittest.TestCase):
             "allowed_scopes": ["identity-runtime:read"],
             "credential_type": "client_credentials",
             "rotation_owner": "baobab-platform/baobab-iam",
-            "status": "ACTIVE",
+            "status": "PROVISIONED",
         })
         owners = {
             name for name, entry in workloads.items()
