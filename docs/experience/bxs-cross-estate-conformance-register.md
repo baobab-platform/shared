@@ -21,6 +21,12 @@
 
 These observations SHALL be replaced by current source and test receipts per consumer; no row is marked VERIFIED by this initial document.
 
+## Adaptive fidelity implementation profile (ADR-SHARED-040 §7.2)
+
+The BXS-VFA v1.0 refinement extends Mandatory controls BXS-M01/M02/M03/M06/M07 and applies to triggered Conditional capabilities. Record VFA-01..VFA-08 results **per consumer surface**, including approved theme and actual typography, sRGB fallback; 320px reflow and increased text; focus, forced-colours/reduced-motion; long labels; pointer/keyboard; performance traces; and manually reviewed visual/AT evidence. Shared Storybook and contrast reports are source-level reusable contracts, not evidence that Nabhold, ZuriBeans, Thamani, Equator or CP routes passed.
+
+Initial status for all consumer-specific VFA gates: **NOT ASSESSED** pending exact source-commit/browser/brand-owner records. Do not convert this starting status to VERIFIED on the basis of a package import or Shared CI alone.
+
 ## Required consumer record schema (one record per control and affected surface)
 
 | Field | Meaning |
