@@ -1,0 +1,54 @@
+# Qualification of the exact action used by the protected tag-only OCI publish.
+# Does not authenticate to GHCR, create a release, or push any image.
+name: Contracts OCI Buildx PR Qualification
+on:
+  pull_request:
+    paths:
+      - .github/workflows/publish-contracts-oci.yml
+      - .github/workflows/verify-contract-build-push-action.yml
+      - containers/baobab-contracts/Dockerfile
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  no-publish-build:
+    name: Immutable contract OCI build (${{ matrix.platform }}) — NO PUSH
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-26.04-arm' || 'ubuntu-26.04' }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+    steps:
+      - name: Exact source checkout without persistent credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Native Buildx setup
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+      - name: Build canonical bundle locally with signed-attestation-capable action
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: containers/baobab-contracts/Dockerfile
+          platforms: ${{ matrix.platform }}
+          build-args: |
+            VERSION=0.0.0-qualification
+            REVISION=${{ github.sha }}
+          push: false
+          outputs: type=oci,dest=${{ runner.temp }}/baobab-contracts-qualification.oci.tar
+          sbom: true
+          provenance: mode=max
+      - name: Verify local OCI data index exists without registry publication
+        env:
+          OCI_TAR: ${{ runner.temp }}/baobab-contracts-qualification.oci.tar
+        run: |
+          set -euo pipefail
+          test -s "$OCI_TAR"
+          tar -tf "$OCI_TAR" | grep -Eq '^(./)?oci-layout$'
+          tar -tf "$OCI_TAR" | grep -Eq '^(./)?index.json$'
+          mkdir -p "$RUNNER_TEMP/baobab-contracts-oci"
+          tar -xf "$OCI_TAR" -C "$RUNNER_TEMP/baobab-contracts-oci"
+          jq -e '.manifests | length > 0' "$RUNNER_TEMP/baobab-contracts-oci/index.json"
+          sha256sum "$OCI_TAR"
+          echo "Local OCI build only; neither registry credentials nor publish permissions were supplied."
