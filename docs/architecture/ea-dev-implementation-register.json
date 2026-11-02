@@ -2654,7 +2654,7 @@
           "detail": "#48/#50 merged source at one commit; no fresh verified hosted-user Codespaces/private package entitlement, new signed multiarch image or all-consumer upgrade and rollback evidence. The merged-main CI had an unrelated GitHub Pages failure and image jobs still in flight when observed."
         },
         {
-          "kind": "DEPENDENCY_MISSING",
+          "kind": "MISSING_EXTERNAL_INPUT",
           "detail": "Provider source remains Python 3.14.6, Node24/pnpm11, Java17 and Playwright1.62.1; preferred latest-supported versions await separate R4 full-image, lock, security, Medusa/Next.js, Rust, Java21, native PG17 and browser qualification. TMS PR29 unmerged."
         },
         {
