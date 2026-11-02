@@ -31,10 +31,18 @@ Correlations are not privileges. Trace ID ≠ business correlation ID ≠ canoni
 | S4 Redaction and correlation | CP #458 proposed; cross-engine not proven | Each owner: structured bounded logging, no secrets/PII leakage, tenant-free low-cardinality metrics |
 | S5 Per-PR affected-profile execution | Routing plan only | Infrastructure: dispatch actual owner workflows, record CI/run IDs and explicit BLOCKED instead of skipped-as-PASS |
 | S6 Nightly/release full matrix | Scheduled plan only | Independent disposable runtime and owner workflow execution with source pins, hashes, teardown, repeatable results |
-| S7 Browser and performance | Owner-dependent, not independently reconciled here | Nabhold, ZuriBeans, Thamani: Playwright, axe/keyboard, visual regression, Lighthouse/CWV budgets and private-preview evidence |
+| S7 Browser and performance | Source-audited per estate, but runtime evidence not independently reconciled: Nabhold #99 is OPEN; ZuriBeans and Thamani each have Playwright/visual/axe/Lighthouse CI definitions | Nabhold, ZuriBeans, Thamani: current-head browser execution, axe/keyboard, visual regression, Lighthouse/CWV budgets and private-preview receipts |
 | S8 Evidence custody and DEV-11 acceptance | Not demonstrated | Independent owner review of immutable receipts, source/config pins, privacy, negative cases and teardown; Shared register update only after actual observations |
 
 **Canonical acceptance:** `L4-OPS-01` requires a live multi-service operation, explicit request/async lineage, safe redacted logs, failure diagnosis, reproducible source/CI context, and independently verified cleanup. Neither source graph nor successful GitHub Actions alone passes this case.
+
+## Estate owner-source review (2026-11-02)
+
+- **Nabhold:** [PR #99](https://github.com/baobab-platform/nabhold/pull/99) proposes additional cross-browser Chromium/Firefox/WebKit profiles, WCAG 2.2 accessibility checks, layout/visual screenshot qualification and isolated Lighthouse budgets. The PR remains **OPEN / not main**. Existing main includes Playwright public-estate, Africa footprint and security-header tests; do not mistake proposed gates for merged execution.
+- **ZuriBeans:** current main contains Playwright functional, accessibility, responsive and landing-page visual tests, a performance-budget checker, and separate CI stages for Lighthouse, axe and visual regression. Current observed source is not independent L4-OPS-01 evidence.
+- **Thamani:** current main includes logistics browser tests, landing-page accessibility and visual tests, a Lighthouse suite and performance-budget checker; CI names the relevant owner tasks. The source presence does not attest a current real-provider booking, CI evidence custody or independent teardown.
+
+Each estate owns its tests and visual identity. DEV-11 Infrastructure should collect per-owner immutable run URLs, exact commit/config/browser-source pins and receipts rather than copy estate tests or invent cross-tenant authority. No budget thresholds are changed to achieve green CI.
 
 ## Next implementation sequence
 
