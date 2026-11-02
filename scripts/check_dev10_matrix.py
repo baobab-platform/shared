@@ -7,7 +7,7 @@ import re
 import subprocess
 import yaml
 ROOT = Path(__file__).resolve().parents[1]
-REPOS = {'baobab-dev', 'shared', 'baobab-cp', 'baobab-pulse', 'baobab-erp', 'baobab-subscriptions', 'baobab-payments', 'baobab-trade', 'thamani', 'zuribeans', 'baobab-tms', 'infrastructure'}
+REPOS = {'baobab-dev', 'shared', 'baobab-cp', 'baobab-pulse', 'baobab-erp', 'baobab-subscriptions', 'baobab-payments', 'baobab-trade', 'thamani', 'zuribeans', 'baobab-tms', 'infrastructure', 'nabhold'}
 
 def require(condition, message):
     if not condition:
@@ -20,6 +20,17 @@ def check(provider=None):
     require(matrix['purpose'] == 'READ_MODEL_NOT_AUTHORITY', 'invalid DEV-10 matrix')
     for key in ('clean_codespace_qualified', 'fleet_upgrade_qualified', 'postgres_physical_migration_qualified', 'production_authorized'):
         require(matrix[key] is False, 'invalid DEV-10 matrix')
+    targets = json.loads((ROOT / '.baobab/dev10-target-toolchains.json').read_text())
+    require(targets['schema'] == 'dev10-target-toolchains.v1', 'invalid DEV-10 target policy')
+    require(targets['state'] == 'PREFERRED_TARGET_NOT_ENGINEERING_QUALIFIED', 'targets must not claim adoption')
+    require(targets['provider_source_sha'] == matrix['provider']['source_sha'], 'target/provider baseline mismatch')
+    require(targets['current_effective_source']['pnpm'] == matrix['provider']['source_configuration']['pnpm'], 'effective pnpm drift')
+    require(targets['current_effective_source']['node'] == matrix['provider']['source_configuration']['node_major'], 'effective Node drift')
+    require(targets['targets']['node']['series'] == '26' and targets['targets']['node']['lts'] == 'ACTIVE_LTS', 'Node LTS target missing')
+    require(targets['targets']['pnpm']['series'] == '12', 'pnpm 12 target missing')
+    require(targets['targets']['postgresql']['major'] == 17, 'PG17 target missing')
+    require(targets['targets']['java']['major'] == 21, 'Java21 target missing')
+    require(matrix['provider']['merge_observation']['merged_main_sha'] == matrix['provider']['source_sha'], 'merged owner source mismatch')
     rows = matrix['repositories']
     require(len(rows) == len(REPOS) and {r['repo'] for r in rows} == REPOS, 'invalid DEV-10 matrix')
     for r in rows:

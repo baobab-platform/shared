@@ -1,0 +1,68 @@
+{
+  "schema": "dev10-target-toolchains.v1",
+  "observed_on": "2026-11-02",
+  "state": "PREFERRED_TARGET_NOT_ENGINEERING_QUALIFIED",
+  "policy": "Prefer newest supported stable LTS toolchains. Keep Python 3.14 and PostgreSQL 17 by explicit architecture decision, Java 21 for subscriptions, Node 26 LTS, pnpm 12; exceptions require owner evidence and recorded limitations, not silent fallback.",
+  "provider_source_sha": "eb9fb92f043c782acff5d87c77301d9a9e8b80dd",
+  "current_effective_source": {
+    "python": "3.14.6",
+    "node": "24",
+    "pnpm": "11.24.0",
+    "java": "17",
+    "postgres_client": "17",
+    "playwright": "1.62.1"
+  },
+  "targets": {
+    "python": {
+      "version": "3.14.10",
+      "series": "3.14",
+      "reference": "https://www.python.org/downloads/release/python-31410/",
+      "gate": "rebuild both image architectures; uv/Poetry frozen installs; Python owner tests"
+    },
+    "node": {
+      "version": "26.13.0",
+      "series": "26",
+      "lts": "ACTIVE_LTS",
+      "reference": "https://github.com/nodejs/node/releases/tag/v26.13.0",
+      "gate": "libatomic and engine constraints; all Next.js/Medusa owner builds and tests"
+    },
+    "pnpm": {
+      "version": "12.16.1",
+      "series": "12",
+      "reference": "https://www.npmjs.com/package/pnpm",
+      "gate": "regenerate/validate frozen lockfile, private GHCR packages, all web E2E"
+    },
+    "java": {
+      "major": 21,
+      "reference": "https://adoptium.net/temurin/releases/?version=21",
+      "gate": "Subscriptions Maven Java 21 build and compatibility; ERP Java owner compatibility"
+    },
+    "postgresql": {
+      "major": 17,
+      "latest_observed_minor": "17.11",
+      "reference": "https://www.postgresql.org/docs/release/",
+      "gate": "PostgreSQL 17 local fresh DB and migration separation under DEV-12"
+    },
+    "playwright": {
+      "version": "1.64.1",
+      "reference": "https://www.npmjs.com/package/playwright",
+      "gate": "browser binary vs @playwright/test equality; actual native E2E/visual/lighthouse"
+    },
+    "corepack": {
+      "version": "0.36.0",
+      "reference": "https://github.com/nodejs/corepack/releases/tag/v0.36.0",
+      "gate": "install as separate pinned package on Node 26 (not bundled); verify signature integrity and noninteractive frozen pnpm"
+    }
+  },
+  "required_qualification": [
+    "provider lock and exact source convergence",
+    "both AMD64 and ARM64 image scans and signed image evidence",
+    "clean native-user Codespace plus current-user private GHCR/npm reads",
+    "affected consumers including Medusa Java Rust and three digital estates",
+    "no browser binary skew across Playwright consumer versions",
+    "protected staging/production remain separate",
+    "rollback of tool pins image digest private packages and independently owned PG17 data"
+  ],
+  "exceptions": "Only bounded and evidenced owner-specific compatibility exceptions; no production blanket scan exemption or unsafe fallback",
+  "note": "This file is a reviewed uplift target registry, not an installed-version declaration or CI PASS receipt. R4 conducts candidate upgrades after R1 source reconciliation."
+}

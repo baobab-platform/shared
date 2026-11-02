@@ -1,5 +1,66 @@
 # DEV-10 tooling and contract qualification
 
+## 2026-11-02 — DEV10-R1 merged source integration (current observation)
+
+This dated addendum supersedes **only** the 25 October *source merge and
+matrix-source snapshot claims* below; historical failures and the original
+v1.4.4 published image digest remain an audit record, not current runtime
+qualification. [baobab-dev PR #48](https://github.com/baobab-platform/baobab-dev/pull/48)
+and [PR #50](https://github.com/baobab-platform/baobab-dev/pull/50)
+are both **merged** into one observed `main` commit
+[`eb9fb92f043c782acff5d87c77301d9a9e8b80dd`](https://github.com/baobab-platform/baobab-dev/commit/eb9fb92f043c782acff5d87c77301d9a9e8b80dd).
+Their final reviewed PR heads were
+`415a7c20a4602f4f01103522ae42b1a39b08b96c` (40 successful, 9 skipped)
+and `1aa22c2668eda2a49ce5581da5b2383069599b37`
+(38 successful, 9 skipped), respectively. The merged-main push's GitHub
+Pages job failed and image CI was still running when observed; do not
+retroactively claim green merged-main publish or a newly signed image.
+
+The canonical provider's **merged source** still pins Python 3.14.6,
+Node 24, pnpm 11.24.0, Java 17 and Playwright 1.62.1; PostgreSQL client
+major 17 remains correct. SHA-256 of merged source `config/versions.lock`
+is `3927b97b904cf8871b6d00d08d80ea63a2b514d2c7425d694bc481d51360d2ac`;
+the capability declaration SHA-256 remains
+`fa04f8ecc4d0a7eb351e7785e421d9d3b325999829c7c27ef93cecbf67e34b12`.
+The R1 checker now tests these actual merged bytes, not the previous main
+source SHA.
+
+The source census has **13** explicitly inspected repository `main` commits
+and now includes **Nabhold**, plus correction of two earlier stale claims:
+Subscriptions already declares `postgres:17-alpine` but **still needs Java21
+runtime support**; Payments already layers an unversioned Rust feature but
+still has PostgreSQL 16, without qualified exact Rust/Cargo native evidence.
+TMS's environment-contract implementation exists at **open, unmerged
+PR #29**; no merged TMS declaration is inferred.
+
+**Preferred next-upgrade target, not an installed version:**
+[`.baobab/dev10-target-toolchains.json`](../../.baobab/dev10-target-toolchains.json).
+As of 2 November: Python **3.14.10**, Node **26.13.0 Active LTS**,
+pnpm **12.16.1 stable** (`latest`, not `next-12`),
+Java **21**, PostgreSQL **17** (observed 17.11),
+Playwright **1.64.1**, Corepack **0.36.0**. Node 26 does **not** bundle
+Corepack; the upgrade must install and verify an independent pinned Corepack
+package. No silent Node 24/Java 17 fallback is approved. If native
+Medusa/other runtimes fail under Node 26 or Java21, retain the old effective
+owner pin only on a recorded, reproducible, separately reviewed exception.
+The candidate images and consumer lock migrations belong to **DEV10-R4**;
+R1 source reconciliation does not rewrite 13 independent owner repositories.
+
+The 295 linux-libc-dev vulnerability advisory matches remain a
+**bounded development-only risk decision**, not global CVE remediation,
+cryptographic VEX approval or a protected release. Refer to
+[owner security issue #54](https://github.com/baobab-platform/baobab-dev/issues/54);
+the temporary risk decision expires **13 November 2026 00:00 UTC** and
+the Foundation exception expires **12 November 2026**. Do not promote
+staging or production through this exception.
+
+None of the eight unchanged DEV-10 acceptance cases have qualified
+hosted user Codespaces, private user registry access, actual provider
+upgrade, native consumers, physical database migration or rollback.
+All remain BLOCKED until independently observed.
+
+---
+
 Observed 2026-10-25. This is a scoped engineering increment of the accepted
 EA-DEV plan, not completion of clean Codespaces or fleet upgrade acceptance.
 DEV-06 development engineering has since qualified through Shared #400 and
