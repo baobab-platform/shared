@@ -246,6 +246,21 @@ Verification SHALL be at the **actual consumer head SHA** with immutable package
 
 This profile is **outcome-oriented, enforceable and evolvable**: common standards govern trust and usability; product owners govern their distinctive brands and journeys; competent platform engines govern business truth and authority.
 
+### 7.2 Visual Fidelity and Adaptive Experience Profile — BXS-VFA v1.0 (2 November 2026)
+
+**Decision:** Visual consistency SHALL be assessed as **equivalent human experience, semantic meaning and correct interaction across capabilities**, not identical physical colours, exact pixel compositions or universal brand styling. This profile refines Mandatory BXS-M01/M02/M03/M06/M07 and triggered Conditional BXS-C01..C07 in §7.1; brand, typography, imagery and editorial composition remain Estate-owned under §7.1.3.
+
+The normative, reviewable specification is [BXS Visual Fidelity and Adaptive Experience Profile v1.0](../experience/visual-fidelity-adaptive-profile.md), control IDs **VFA-01..VFA-08**. Every first-party frontend SHALL satisfy the relevant outcome and maintain consumer-specific verification rather than claim conformance from Shared package publication.
+
+1. **Perceptual colour quality:** Use semantically assigned and accessible foreground/background/on-action/focus/state combinations, with an sRGB-safe baseline and optional wider-gamut enhancement only with fallback. Contrast checks, state labels and human review take precedence over subjective matching across OLED, LCD, brightness or calibration. Shared SHALL NOT change approved estate branding.
+2. **Typography:** Consumer-approved family, weight and fallback stacks SHALL retain readability across font unavailability, glyph/locale expansion and loading. Verify at least 200% text resizing; prevent lost content, broken focus or unjustified layout shifts. Typography selection remains Estate-owned.
+3. **Adaptive reflow:** Preserve content, navigation and business-critical provenance without nonessential horizontal scrolling at **320 CSS px equivalent width**, and test representative 320/390/768/1024/1440 viewports, with justified two-dimensional exceptions for content such as accessible grids/maps. This does **not** claim that 320 px physical screens at 400% browser zoom provide 320 CSS px.
+4. **Device and accessibility behaviour:** Reduced motion, forced-colours/high contrast, meaningful keyboard and touch focus, colour-scheme preferences, long labels, touch/pointer equivalence and screen-reader alternatives SHALL preserve functions. A successful Chromium emulation is not a substitute for manual assistive-technology and cross-browser reviews.
+5. **Media/performance:** Source-controlled CSS/token contrast, predictable fallback media, font stability, responsive assets and bounded optional rendering SHALL meet approved route-class performance targets. Measured field p75 Core Web Vitals and Lighthouse lab metrics SHALL remain distinct evidence classes.
+6. **Verification and change control:** Shared SHALL provide real-component adaptive stress tests and a neutral token contrast report; consumer CI SHALL evaluate real routes and approved themes. Screenshots are reviewed golden references, never self-approved by regeneration. Every deviation requires an accountable owner, documented impact, compensating controls, review date and (where approved) an expiry under §7.1.6.
+
+Implementation SHALL initially extend the **existing six-package family**, not create a seventh package, impose a blanket six-package install, force a Django-to-React migration, prescribe a common font, or activate map/data providers. New or materially changed frontends must satisfy the profile; legacy sites require explicit owned migration records. The profile MAY evolve through §7.1.6 governance as actual devices, frameworks and user evidence change.
+
 ## 8. Work sequence, ownership and adoption
 
 | Sequence | Work | Repository / owner | Dependency |

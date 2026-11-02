@@ -3,6 +3,8 @@
 Governing decision: Accepted ADR-SHARED-040. Audited 17 October 2026.
 
 **Current normative classification:** [ADR-SHARED-040 §7.1 — Cross-estate BXS conformance profile (BXS-CXP v1.0)](../adr/ADR-SHARED-040%20%E2%80%94%20Baobab%20Experience%20System%2C%20Frontend%20Engineering%20and%20Geospatial%20Presentation.md). The Mandatory / Conditional / Estate-owned contract governs subsequent first-party BXS migrations; the historical evidence tables below are not a current per-consumer certification. See [cross-estate conformance register](bxs-cross-estate-conformance-register.md) for a claim-safe baseline.
+**Adaptive visual-quality refinement:** [BXS Visual Fidelity and Adaptive Experience Profile v1.0](visual-fidelity-adaptive-profile.md) under ADR-SHARED-040 §7.2 defines VFA-01..VFA-08 for perceptual colour pairs, typography, 320px reflow, zoom/text expansion, reduced-motion, forced colours, cross-device interaction, font/media stability and release evidence. Source component checks do not certify estate-specific devices or brand sign-off.
+
 **Current verified audit:** [BXS/BGX evidence register (17 October 2026)](bxs-bgx-evidence-register-2026-10-17.md), covering publication receipts, currently pinned consumer manifests, BGX-01–04, and Nabhold G12/G15/G16. The table below records the earlier source baseline; do not use it as a live release-readiness assertion.
 
 **Gate names below follow §8, the implementation sequence.** Architecture,

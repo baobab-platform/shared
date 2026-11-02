@@ -15,3 +15,15 @@ Import the published base.css and one themes/<consumer>.css; set the correspondi
 data-bx-theme attribute at the document root. All consumers must independently
 approve brand, screenshot and contrast acceptance before replacing current tokens.
 Build time contrast assertions do not replace whole-page accessibility testing.
+
+BXS-VFA v1.0 adds a deterministic, machine-readable **source-level** colour-pair
+report covering canvas/surface text, focus and foreground/on-status roles:
+
+    node packages/experience-tokens/scripts/report-visual-profile.mjs
+
+The CI workflow attaches the JSON evidence receipt. This is NOT estate brand
+sign-off, browser screenshot review, accessibility certification, evidence of
+Display P3 appearance, or proof of real-device consistency. Semantic themes use
+sRGB six-digit hexadecimal tokens; optional wide-gamut imagery/rendering and
+approved palettes remain consumer-owned with an sRGB fallback.
+
