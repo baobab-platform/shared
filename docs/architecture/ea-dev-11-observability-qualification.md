@@ -53,3 +53,14 @@ Each estate owns its tests and visual identity. DEV-11 Infrastructure should col
 5. Only then reconcile the machine-readable EA-DEV DEV-11 register with observed results. Do not change protected staging/production flags.
 
 **Rollback:** revert unmerged source branches. Never delete independently held receipts or treat a rollback as approval.
+
+
+## L4-OPS-01 independent browser evidence custody increment — 2026-11-02
+
+Infrastructure [#72](https://github.com/baobab-platform/infrastructure/pull/72) now includes a **separate independent GitHub Actions join** (`.github/workflows/dev11-evidence-join.yml`), verifier (`tests/platform-integration/development/dev11_evidence_join.py`), security/negative regression tests and an operator runbook (`docs/runbooks/dev11-l4-ops-01-independent-evidence-join.md`). This is the first independently executable evidence-custody join, **not** a successful L4-OPS-01 run.
+
+The join requires five exact current-source GitHub Actions runs: two Infrastructure connected component proofs and one quality run each for Nabhold, ZuriBeans and Thamani. GitHub's current PR/main branch, workflow path, run SHA, run conclusion, actual named quality-test job and named test-step conclusions are checked **independently**. The corresponding run-owned artifact ZIP is downloaded privately; the SHA-256 is compared to GitHub's immutable Actions artifact digest. Incomplete or skipped owner tests, mismatched source SHAs, expired artifacts, unverified teardown and false protected-environment claims are denied. Raw screenshots, logs, request spans, cookies and credentials never enter the shared join receipt.
+
+Native HTTP receipts must also prove real IAM/CP denial cases, current CP/Trade/BFF source pins and independent disposable teardown. Joined HTTP/estate evidence may set `join_http_and_estates_verified=true`; the **L4-OPS-01 result stays BLOCKED** until a real exported OTel graph and actual async broker/outbox/consumer business-effect/replay traces are independently qualified. Owner CI, browser test failures, and a successful GitHub job alone cannot satisfy S8 or change the Shared DEV-11 register to ACCEPTED. The join is manual `workflow_dispatch` on this development-only candidate, not falsely described as a fully deployed nightly or per-PR dispatcher.
+
+At observation, Nabhold #99 CI run `41390782054` failed and uploaded an artifact notwithstanding unsuccessful Playwright and skipped Lighthouse/axe/visual steps. This must remain **BLOCKED** in the cross-estate join. Current-head connected Infrastructure native workflows were queued, and no unproven result has been accepted.
