@@ -2676,14 +2676,14 @@
         "DEV-01"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "NOT_ASSESSED",
-      "assessment": "NOT_AUDITED",
+      "progress": "SOURCE_IN_PROGRESS",
+      "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
       "source_baselines": [],
-      "source_note": "Not audited for this DEV-00 source review; actual trace/browser evidence required.",
-      "observed_on": "2026-10-24",
+      "source_note": "2 November source audit: Infrastructure #72 has a green initial source-routing CI at d3c3d80a6fcef02e9077759b94259347c010bb78, but its new asynchronous graph extension is under review. Shared #429 proposes canonical closed telemetry evidence; CP #458 adds privacy-safe route logging with initial Go CI failure found and a correction under recheck. Infrastructure #71 is DEV-12 database safety only. No real end-to-end W3C tracing, current IAM/CP authority-negative proof, outbox/consumer replay, independent evidence custody or estate Playwright/axe/Lighthouse qualification observed. No protected promotion.",
+      "observed_on": "2026-11-02",
       "target_date": "2026-12-13",
       "actual_completion_date": null,
-      "mandatory_ci": "NOT_ASSESSED",
+      "mandatory_ci": "BASELINE_ONLY",
       "environment": "NO_RUNTIME_OBSERVED",
       "evidence_class": "SOURCE",
       "runtime": {
@@ -2697,11 +2697,15 @@
       },
       "blockers": [
         {
-          "kind": "NOT_ASSESSED",
-          "detail": "Not audited for this DEV-00 source review; actual trace/browser evidence required."
+          "kind": "IMPLEMENTED_NOT_TESTED",
+          "detail": "Proposed Infrastructure #72 graph validator, Shared #429 schema and CP #458 request-log remediation have source tests, but final-head CI and owner conformance remain pending. Original #72 source-routing checks were green."
+        },
+        {
+          "kind": "MISSING_EXTERNAL_INPUT",
+          "detail": "Native BFF/IAM/CP/engine/outbox W3C propagation, current authority negatives, independent L4-OPS-01 receipts and cleanup, actual per-PR/nightly owner runs and estate browser/performance evidence are not observed."
         }
       ],
-      "next_action": "Owner reconciles the current source and mandatory cases, then implements the next scoped increment.",
+      "next_action": "Review final-head source CI for Infrastructure #72, Shared #429 and CP #458; implement current-authority native trace/outbox lineage and real connected negatives, then run per-estate browser/accessibility/performance owners and independently verify L4-OPS-01 receipts.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
