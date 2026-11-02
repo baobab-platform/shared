@@ -1,0 +1,44 @@
+name: DEV10 R5 Final Engineering Acceptance (fail-closed)
+on:
+  pull_request:
+    paths:
+      - ".baobab/dev10-r5-acceptance.json"
+      - "scripts/dev10_r5_acceptance.py"
+      - "scripts/tests/test_dev10_r5.py"
+      - "docs/architecture/ea-dev-10-r5-final-acceptance.md"
+      - ".github/workflows/dev10-r5-acceptance.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".baobab/dev10-r5-acceptance.json"
+      - "scripts/dev10_r5_acceptance.py"
+      - "scripts/tests/test_dev10_r5.py"
+      - "docs/architecture/ea-dev-10-r5-final-acceptance.md"
+      - ".github/workflows/dev10-r5-acceptance.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reviewed-source-truthfulness:
+    name: R5 receipt inventory and fail-closed negative cases (NOT runtime PASS)
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@06da6279cdbca41027908073e81a4544dc79c06b # v7
+        with:
+          python-version: "3.14"
+      - name: Validate immutable R1 inventory and source-only R5 status
+        run: python3 -B scripts/dev10_r5_acceptance.py
+      - name: Exercise forged success and omitted evidence negatives
+        run: python3 -B -m unittest discover -s scripts/tests -p test_dev10_r5.py -v
+      - name: Ensure R5 final acceptance remains denied until independent proof
+        run: |
+          set -euo pipefail
+          if python3 -B scripts/dev10_r5_acceptance.py --require-final; then
+            echo "::error::R5 accepted without independent image/Codespace/native/rollback evidence"
+            exit 1
+          fi
+          echo "R5 review packet source validated; final runtime gate remains HELD."
