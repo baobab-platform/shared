@@ -616,7 +616,7 @@ development_expected.merge!(JSON.parse(<<~'JSON'))
     ],
     "credential_type": "client_credentials",
     "rotation_owner": "baobab-platform/baobab-iam",
-    "status": "ACTIVE"
+    "status": "PROVISIONED"
   }
 }
 JSON
