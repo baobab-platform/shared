@@ -598,6 +598,37 @@ development_expected.merge!(JSON.parse(<<~'JSON'))
   }
 }
 JSON
+# IAM-N07 / DEV-08 transport-only TMS development ceilings. These two
+# registrable identities are PROVISIONED and must not be upgraded to ACTIVE
+# merely by an issuer or provider test. The closed inventory denies scope
+# expansion, extra TMS clients and protected-environment shadow clients.
+development_expected.merge!(JSON.parse(<<~'JSON'))
+{
+  "baobab-dev-tms-subject": {
+    "repository": "baobab-platform/baobab-tms",
+    "owner": "baobab-platform/baobab-tms",
+    "runtime": "DEV-08 source-candidate TMS workload operation subject",
+    "environment": "development",
+    "allowed_audiences": ["baobab-control-plane", "baobab-tms"],
+    "allowed_scopes": ["context:resolve", "legal-actor:assess", "tms:booking:submit"],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-tms",
+    "status": "PROVISIONED"
+  },
+  "baobab-dev-tms-validator": {
+    "repository": "baobab-platform/baobab-tms",
+    "owner": "baobab-platform/baobab-tms",
+    "runtime": "DEV-08 independent TMS subject context validator",
+    "environment": "development",
+    "allowed_audiences": ["baobab-control-plane"],
+    "allowed_scopes": ["context:validate"],
+    "validates_audiences": ["baobab-tms"],
+    "credential_type": "client_credentials",
+    "rotation_owner": "baobab-platform/baobab-tms",
+    "status": "PROVISIONED"
+  }
+}
+JSON
 development_expected.each do |name, expected|
   fail_contract("development identity #{name} exceeds its exact ADR-043 ceiling") unless workloads[name] == expected
 end
