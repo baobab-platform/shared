@@ -1,6 +1,5 @@
 """DEV-11 canonical OTel projection schema source tests; no runtime certification."""
 from __future__ import annotations
-import copy
 import json
 from pathlib import Path
 import unittest
