@@ -4,6 +4,44 @@
 **Authority:** Accepted EA v2.3 / EA-DEV DEV-11; Infrastructure ADR-Infra-0016; Shared event and authority contracts.  
 **Status:** SOURCE IN PROGRESS / CONNECTED QUALIFICATION BLOCKED. **Not a completion certificate.**
 
+## Current-source status correction — 2026-11-03
+
+The dated 2 November snapshots below are retained for provenance, but **are not
+current cross-repository merge/qualification statuses**. Independently read
+GitHub source/PR and final-head Actions status on 3 November:
+
+- [CP #458](https://github.com/baobab-platform/baobab-cp/pull/458)
+  (privacy-safe route-template request logging) is now **MERGED**. This
+  improves one native logging owner; it does not prove cross-engine redaction.
+- [Nabhold #99](https://github.com/baobab-platform/nabhold/pull/99)
+  (browser/a11y/visual/performance owner test gates) is now **MERGED**.
+  [Thamani #50](https://github.com/baobab-platform/thamani/pull/50)
+  (independent owner evidence retention) is **MERGED**. The source presence
+  and historic test definitions are not current immutable independent receipts.
+  [ZuriBeans #156](https://github.com/baobab-platform/zuribeans/pull/156)
+  (native BFF W3C qualification) remains **OPEN/DRAFT**.
+- [Infra #71](https://github.com/baobab-platform/infrastructure/pull/71)
+  has **MERGED**, but remains DEV-12 physical PostgreSQL volume protection;
+  do not count it as DEV-11.
+- [Infra #72](https://github.com/baobab-platform/infrastructure/pull/72)
+  remains **OPEN/DRAFT**. At current head `b41654eb75d3a66e04b5e3665f74cc808bfd3487`,
+  **actual OTLP exported trace smoke** and **connected confidential
+  BFF/IAM/CP/Trade** jobs were green, while the **connected Keycloak/CP W3C**
+  job was **red**. This is real component progress, but NOT a proven
+  end-to-end cross-runtime OTel graph, durable native broker→ERP consumer
+  effect or qualified L4-OPS-01.
+- [ERP #125](https://github.com/baobab-platform/baobab-erp/pull/125)
+  (native RabbitMQ admission/OTel ERP evidence) remains **OPEN**. Do not
+  substitute its source for a verified current-head eight-owner evidence join.
+
+**Disposition:** Shared #429's structural schema and negatives remain useful
+source-only controls, but final-head success of Shared CI must not be promoted
+to DEV-11 acceptance. Preserve `SOURCE_IN_PROGRESS`,
+`PARTIAL_SOURCE_RUNTIME_UNPROVEN`, protected flags false and the PR merge
+hold until independently qualified L4-OPS-01 owner/issuer/runtime/broker/
+browser evidence is approved. This addendum updates historical status claims;
+it neither changes the schema nor asserts formerly missing connected results.
+
 ## Source reconciliation
 
 - [Infrastructure #72](https://github.com/baobab-platform/infrastructure/pull/72) initially provided a closed linear five-hop diagnostic verifier, source-only CI routing and a daily *plan*; it is a draft, not a deployed trace pipeline. The companion graph extension validates branching and explicit cross-trace asynchronous links, while retaining a false `runtime_qualified` output.
