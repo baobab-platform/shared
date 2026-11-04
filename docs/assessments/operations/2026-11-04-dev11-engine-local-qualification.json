@@ -1,0 +1,129 @@
+{
+  "schema": "baobab.dev11.engine-local-qualification-assessment.v1",
+  "observed_on": "2026-11-04",
+  "classification": "DATED_INDEPENDENT_EVIDENCE_REVIEW_NOT_GOVERNING_AUTHORITY",
+  "governing_baseline": [
+    "EA v2.3",
+    "EA-DEV DEV-07/09/11/12/14",
+    "ADR-SHARED-042/043",
+    "ADR-Infra-0016/0017/0020/0023"
+  ],
+  "reviewed_heads": {
+    "infrastructure": "65931ab9892b829b0e0b1ca23c53199ba1216e8b",
+    "baobab-trade": "55659409a7e4787c0d70a69d4c1301f13d7fc219",
+    "baobab-erp": "a118cc16e930f1bb6e693eb9b28657d1395e0b88",
+    "baobab-cp": "6fee9fe9537409df428a2e3dd7b8f78ff8d1d456",
+    "baobab-iam": "fae32b20187b2201e6070c382f563e170773e692"
+  },
+  "source_validation": {
+    "local_python": "3.12",
+    "infrastructure_development_tests": 212,
+    "independent_verifier_tests_included_in_development": 29,
+    "int02_tests": 94,
+    "trade_focused_tests": 13,
+    "erp_unit_tests": 397,
+    "local_result": "PASS",
+    "current_ci": {
+      "infrastructure": {
+        "required_workflows": 15,
+        "result": "PASS"
+      },
+      "baobab-trade": {
+        "ci_run": 41854341600,
+        "result": "PASS",
+        "temporary_format_helper": "SKIPPED_NOT_COUNTED_AS_PASS"
+      },
+      "baobab-erp": {
+        "required_workflows": 7,
+        "result": "PASS"
+      }
+    }
+  },
+  "independently_downloaded_originals": [
+    {
+      "owner": "infrastructure",
+      "profile": "REAL_IAM_CP_W3C_AND_ISOLATION",
+      "run_id": 41852352906,
+      "artifact_id": 13336636653,
+      "sha256": "59b1782ff73c09be6fb30518ec6ea7c16625996bae7ad7ead70a339a898f748a",
+      "original_zip_digest_and_receipt_verified": true,
+      "exact_harness_readback_verified": true,
+      "all_five_l4_cases": "PASS",
+      "all_seven_dev11_authority_w3c_checks": true,
+      "teardown_verified": true
+    },
+    {
+      "owner": "baobab-trade",
+      "profile": "REAL_BROKER_AND_DURABLE_ERP_INBOX_SYNTHETIC_ORIGIN",
+      "run_id": 41854342793,
+      "artifact_id": 13337126723,
+      "sha256": "0f8fe5fc9619863f8bcc4aeb585cab98f83fbf87c422bd897d6c89a2e3c88638",
+      "original_zip_digest_and_receipts_verified": true,
+      "native_origin_refusal": "NATIVE_ORDER_ABSENT",
+      "real_confirm_and_both_crash_windows": true,
+      "immutable_replay_dlx_and_unroutable_negatives": true,
+      "exported_spans": 7,
+      "parent_edges": 6,
+      "imported_erp_sha": "88c2cdcac6a3a2f2eaf0165e1bb5e284dbde6a0e",
+      "imported_infrastructure_sha": "a4cc31b1806fce3d80814b82af4a1652aa11964d",
+      "current_companion_tuple_qualified": false,
+      "stale_current_tuple_independently_refused": true
+    },
+    {
+      "owner": "baobab-erp",
+      "profile": "REAL_HYDRA_CP_RABBIT_PROTECTED_IDEMPIERE_ENGINE_LOCAL_SYNTHETIC_ORIGIN",
+      "run_id": 41856464924,
+      "job_id": 126666335112,
+      "artifact_id": 13337154424,
+      "sha256": "09eddbe312fe13662653b6224f065c385d1226617e04474a9b04198ba5d06262",
+      "original_zip_digest_and_five_receipts_verified": true,
+      "current_issuer_and_cp_runtime_context_observed": true,
+      "native_order_effect_qualified": true,
+      "native_cp_jvm_authority_lineage_qualified": true,
+      "immutable_maker_checker_mandate_history_verified": true,
+      "broker_redelivery_one_native_order": true,
+      "committed_result_lost_then_native_order_adopted": true,
+      "live_mandate_revocation_denied_next_order": true,
+      "cleanup": {
+        "status": "COMPLETE",
+        "remaining": {
+          "container": 0,
+          "network": 0,
+          "volume": 0
+        },
+        "temporary_directory_removed": true
+      }
+    }
+  ],
+  "resolved_incremental_boundaries": [
+    "Reuse Infrastructure #69 accepted-source reconciliation without merging #69 into main.",
+    "Restore own Organisation reads and retain isolation negatives by matching fixture grants to CP runtime environment.",
+    "Require exact executed source and original estate git readbacks; permit merged owners only through current-main identity and verified merge ancestry.",
+    "Require the original native-origin refusal receipt and successful owner step for the synthetic broker profile.",
+    "Fix psycopg literal-percent selector failure without accepting a synthetic native order.",
+    "Preserve exact native numeric IDs and foreign-company/invalid-ID refusals.",
+    "Request the already registered context:resolve scope needed to redeem the worker's runtime context.",
+    "Preserve exact native business readback, refuse overlong references using live dictionary and physical widths, and create valid-length synthetic fixture IDs.",
+    "Retain private closed native diagnostics and cross-UID readable fixture requests without changing native authority."
+  ],
+  "remaining_requirements": [
+    "Reviewed resolution of reciprocal whole-repository source-pin compatibility.",
+    "Genuine ENFORCED Medusa buyer/seller/spend commitment, with its same-transaction outbox event.",
+    "Long real Medusa IDs require a separately reviewed native-reference mapping or native extension; synthetic 20-character IDs are not that solution.",
+    "Same-event exported lineage connecting authenticated BFF/IAM/CP, governed Trade commitment, broker and native ERP effect.",
+    "Actual independent current eight-owner join; its dispatch-only job was skipped in PR CI.",
+    "Full N02/N07 browser/native booking qualification remains separate."
+  ],
+  "acceptance": {
+    "engine_local_native_erp_qualified": true,
+    "governed_medusa_buyer_commitment_qualified": false,
+    "same_event_cross_engine_exported_trace_qualified": false,
+    "native_financial_ledger_posting_qualified": false,
+    "independent_eight_owner_join_executed": false,
+    "l4_ops_01": "BLOCKED",
+    "protected_acceptance": false,
+    "staging_authorized": false,
+    "production_authorized": false
+  },
+  "custody_limit": "GitHub job metadata and source-bound original ZIP digests were independently reviewed. This dated record is not the dispatch-only eight-owner custody join, protected release approval or a substitute for expired/unavailable originals."
+}
