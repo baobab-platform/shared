@@ -125,5 +125,11 @@
     "staging_authorized": false,
     "production_authorized": false
   },
-  "custody_limit": "GitHub job metadata and source-bound original ZIP digests were independently reviewed. This dated record is not the dispatch-only eight-owner custody join, protected release approval or a substitute for expired/unavailable originals."
+  "custody_limit": "GitHub job metadata and source-bound original ZIP digests were independently reviewed. This dated record is not the dispatch-only eight-owner custody join, protected release approval or a substitute for expired/unavailable originals.",
+  "related_existing_findings": [
+    "BA-AUD-080",
+    "BA-AUD-087",
+    "BA-AUD-092",
+    "Infrastructure #72 F05"
+  ]
 }

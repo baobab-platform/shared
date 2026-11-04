@@ -38,6 +38,8 @@ ERP preserves exact PostgreSQL numeric native IDs and foreign-company negatives,
 
 Long real Medusa IDs still need a reviewed native-reference mapping or native extension. Synthetic short IDs do not implement that production integration. Native sales-order creation also does not qualify financial-ledger posting.
 
+This checkpoint supplies bounded progress for existing [BA-AUD-080, BA-AUD-087 and BA-AUD-092](../findings-register.md), and Infrastructure #72 F05. Their original broader closure requirements remain unchanged; no second acceptance register or new authority is created.
+
 ## Remaining acceptance gates
 
 **Engine-local native ERP qualification is demonstrated. DEV-11/L4-OPS-01 remains BLOCKED.**
