@@ -58,6 +58,11 @@ on:
         type: string
         required: false
         default: "github-actions"
+      policy-level:
+        description: "baseline preserves legacy structure; strict applies BA-SEC-DEP-001 after verified consumer migration."
+        type: string
+        required: false
+        default: "baseline"
 
 permissions:
   contents: read
@@ -86,88 +91,235 @@ jobs:
         # after the job; there's no persistent system Python to damage.
         run: python3 -m pip install --break-system-packages --quiet --disable-pip-version-check pyyaml
 
-      - name: Validate dependabot.yml
+      - name: Validate dependabot.yml (BA-SEC-DEP-001)
         working-directory: ${{ inputs.path }}
         shell: python3 {0}
         env:
           REQUIRED_ECOSYSTEMS: ${{ inputs.required-ecosystems }}
+          POLICY_LEVEL: ${{ inputs.policy-level }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
+          """Dependency maintenance conformance. The embedded script is the
+          reusable workflow's implementation; tests exercise this exact step.
+          Baseline is backwards-compatible; strict is an opt-in migration gate.
+          """
+          import glob
           import os
+          from pathlib import Path
           import sys
 
           import yaml
 
-          CONFIG_PATH = ".github/dependabot.yml"
-          required_ecosystems = [
-              e.strip() for e in os.environ["REQUIRED_ECOSYSTEMS"].split(",") if e.strip()
-          ]
+          CONFIG = Path(".github/dependabot.yml")
+          ROOT = Path.cwd().resolve()
+          required = {
+              item.strip() for item in os.getenv("REQUIRED_ECOSYSTEMS", "").split(",")
+              if item.strip()
+          }
+          level = os.getenv("POLICY_LEVEL", "baseline")
+          default_branch = os.getenv("DEFAULT_BRANCH", "").strip()
+          issues = []
 
-          violations = []
+          def fail(message):
+              issues.append(message)
 
-          if not os.path.isfile(CONFIG_PATH):
-              print(f"::error file={CONFIG_PATH}::File does not exist.")
-              sys.exit(1)
+          def list_of_names(value):
+              return isinstance(value, list) and bool(value) and all(
+                  isinstance(x, str) and bool(x.strip()) for x in value
+              )
 
-          with open(CONFIG_PATH) as f:
+          def directories(entry, index):
+              has_dir = "directory" in entry
+              has_dirs = "directories" in entry
+              if has_dir == has_dirs:
+                  fail(f"updates[{index}]: specify exactly one of directory or directories")
+                  return []
+              paths = [entry["directory"]] if has_dir else entry["directories"]
+              if not list_of_names(paths):
+                  fail(f"updates[{index}]: directory/ies must be non-empty strings")
+                  return []
+              validated = []
+              for item in paths:
+                  if not item.startswith("/") or ".." in Path(item).parts or "\\" in item:
+                      fail(f"updates[{index}]: unsafe or non-root-relative directory {item!r}")
+                      continue
+                  validated.append(item)
+              return validated
+
+          def manifest_exists(ecosystem, directory):
+              relative = directory.lstrip("/")
+              # directories supports glob paths. A match must have a real manifest.
+              matches = glob.glob(str(ROOT / relative), recursive=True) if any(
+                  char in relative for char in "*?["
+              ) else [str(ROOT / relative)]
+              for match in matches:
+                  root = Path(match)
+                  if not root.is_dir() or not root.resolve().is_relative_to(ROOT):
+                      continue
+                  if ecosystem == "github-actions":
+                      if directory == "/" and (
+                          any((ROOT / ".github/workflows").glob("*.yml"))
+                          or any((ROOT / ".github/workflows").glob("*.yaml"))
+                          or (ROOT / "action.yml").exists()
+                          or (ROOT / "action.yaml").exists()
+                      ):
+                          return True
+                      continue
+                  files = {
+                      "npm": ("package.json", "pnpm-lock.yaml"),
+                      "gomod": ("go.mod",),
+                      "uv": ("uv.lock", "pyproject.toml"),
+                      "pip": ("requirements.txt", "requirements.lock", "pyproject.toml", "poetry.lock"),
+                      "maven": ("pom.xml",),
+                      "gradle": ("build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts"),
+                      "cargo": ("Cargo.toml",),
+                      "terraform": ("main.tf", "versions.tf", ".terraform.lock.hcl"),
+                      "docker": ("Dockerfile",),
+                      "docker-compose": ("compose.yaml", "compose.yml", "docker-compose.yml", "docker-compose.yaml"),
+                  }.get(ecosystem)
+                  if files is None:  # other supported ecosystems are not guessed
+                      return True
+                  if ecosystem == "terraform":
+                      if any(root.glob("*.tf")) or (root / ".terraform.lock.hcl").exists():
+                          return True
+                  elif ecosystem == "docker":
+                      for file in root.glob("*Dockerfile*"):
+                          if file.is_file() and any(
+                              line.lstrip().upper().startswith("FROM ")
+                              and line.split()[1].lower() != "scratch"
+                              for line in file.read_text(errors="replace").splitlines()
+                              if len(line.split()) >= 2
+                          ):
+                              return True
+                  elif any((root / file).is_file() for file in files):
+                      return True
+              return False
+
+          if level not in ("baseline", "strict"):
+              fail(f"unknown policy-level {level!r}; expected baseline or strict")
+          if not CONFIG.is_file():
+              fail("missing .github/dependabot.yml")
+              doc = None
+          else:
               try:
-                  data = yaml.safe_load(f)
-              except yaml.YAMLError as e:
-                  print(f"::error file={CONFIG_PATH}::Not valid YAML: {e}")
-                  sys.exit(1)
+                  doc = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
+              except (yaml.YAMLError, UnicodeError) as exc:
+                  fail(f"invalid YAML/encoding: {exc}")
+                  doc = None
 
-          if not isinstance(data, dict):
-              print(f"::error file={CONFIG_PATH}::Top-level content is not a mapping.")
-              sys.exit(1)
-
-          if data.get("version") != 2:
-              violations.append(f"top-level 'version' must be exactly 2, got: {data.get('version')!r}")
-
-          updates = data.get("updates")
-          if not isinstance(updates, list) or len(updates) == 0:
-              violations.append("'updates' must be a non-empty list")
+          if not isinstance(doc, dict):
+              fail("top-level content must be a mapping")
+              doc = {}
+          if doc.get("version") != 2:
+              fail("top-level version must be exactly 2")
+          updates = doc.get("updates")
+          if not isinstance(updates, list) or not updates:
+              fail("updates must be a non-empty list")
               updates = []
 
-          seen_ecosystems = set()
-          for i, entry in enumerate(updates):
-              label = f"updates[{i}]"
+          seen = set()
+          claimed = set()
+          for index, entry in enumerate(updates):
               if not isinstance(entry, dict):
-                  violations.append(f"{label} is not a mapping")
+                  fail(f"updates[{index}] must be an object")
                   continue
-
               ecosystem = entry.get("package-ecosystem")
-              if ecosystem:
-                  seen_ecosystems.add(ecosystem)
-              else:
-                  violations.append(f"{label} is missing 'package-ecosystem'")
-
-              if not entry.get("directory"):
-                  violations.append(f"{label} ({ecosystem}) is missing 'directory'")
-
+              if not isinstance(ecosystem, str) or not ecosystem.strip():
+                  fail(f"updates[{index}]: missing package-ecosystem")
+                  continue
+              seen.add(ecosystem)
+              paths = directories(entry, index)
+              for path in paths:
+                  key = (ecosystem, path)
+                  if key in claimed:
+                      fail(f"updates[{index}]: duplicate ecosystem/directory {key!r}")
+                  claimed.add(key)
+                  if level == "strict" and not manifest_exists(ecosystem, path):
+                      fail(f"updates[{index}]: {ecosystem} has no supported real manifest at {path}")
               schedule = entry.get("schedule")
               if not isinstance(schedule, dict) or not schedule.get("interval"):
-                  violations.append(f"{label} ({ecosystem}) is missing 'schedule.interval'")
+                  fail(f"updates[{index}]: missing schedule.interval")
+              elif level == "strict" and schedule["interval"] not in (
+                  "daily", "weekly", "monthly", "quarterly", "semiannually", "yearly"
+              ):
+                  fail(f"updates[{index}]: unsupported schedule.interval")
+              cap = entry.get("open-pull-requests-limit")
+              if type(cap) is not int or cap < 0:
+                  fail(f"updates[{index}]: open-pull-requests-limit must be a nonnegative integer")
+              if not list_of_names(entry.get("labels")):
+                  fail(f"updates[{index}]: labels must be non-empty strings")
+              commit = entry.get("commit-message")
+              if not isinstance(commit, dict) or not isinstance(
+                  commit.get("prefix"), str
+              ) or not commit["prefix"].strip():
+                  fail(f"updates[{index}]: missing commit-message.prefix")
+              if level != "strict":
+                  continue
 
-              if entry.get("open-pull-requests-limit") is None:
-                  violations.append(f"{label} ({ecosystem}) is missing 'open-pull-requests-limit'")
+              if entry.get("target-branch") == default_branch and default_branch:
+                  fail(f"updates[{index}]: redundant target-branch disables security-update config")
+              groups = entry.get("groups", {})
+              if not isinstance(groups, dict):
+                  fail(f"updates[{index}]: groups must be a mapping")
+                  groups = {}
+              for name, rule in groups.items():
+                  if not isinstance(rule, dict):
+                      fail(f"updates[{index}]: invalid group {name!r}")
+                      continue
+                  applies = rule.get("applies-to")
+                  if applies not in ("version-updates", "security-updates"):
+                      fail(f"updates[{index}]: group {name!r} must explicitly set applies-to")
+                  if not list_of_names(rule.get("patterns")):
+                      fail(f"updates[{index}]: group {name!r} needs patterns")
+                  if applies == "security-updates" and rule.get("patterns") == ["*"]:
+                      fail(f"updates[{index}]: broad security group {name!r} requires separate review")
+                  types = rule.get("update-types")
+                  if types is not None and (
+                      not list_of_names(types)
+                      or not set(types).issubset({"major", "minor", "patch"})
+                  ):
+                      fail(f"updates[{index}]: group {name!r} has invalid update-types")
+              ignores = entry.get("ignore", [])
+              if not isinstance(ignores, list):
+                  fail(f"updates[{index}]: ignore must be a list")
+                  ignores = []
+              for ignore in ignores:
+                  if not isinstance(ignore, dict) or not ignore.get("dependency-name"):
+                      fail(f"updates[{index}]: invalid ignore entry")
+                  elif not ignore.get("update-types"):
+                      fail(f"updates[{index}]: unconditional ignore of {ignore['dependency-name']!r} hides security fixes")
+                  elif not set(ignore["update-types"]).issubset({
+                      "version-update:semver-major",
+                      "version-update:semver-minor",
+                      "version-update:semver-patch",
+                  }):
+                      fail(f"updates[{index}]: ignore must be limited to routine semver update types")
+              registry_names = entry.get("registries", [])
+              if registry_names not in ("*", None):
+                  if not isinstance(registry_names, list):
+                      fail(f"updates[{index}]: invalid registries")
+                  elif any(name not in doc.get("registries", {}) for name in registry_names):
+                      fail(f"updates[{index}]: references undefined registry")
+          for ecosystem in sorted(required - seen):
+              fail(f"missing required ecosystem {ecosystem!r}")
 
-              labels = entry.get("labels")
-              if not isinstance(labels, list) or len(labels) == 0:
-                  violations.append(f"{label} ({ecosystem}) is missing a non-empty 'labels' list")
+          if level == "strict":
+              # These are source-proven root manifests. Nested/unsupported
+              # manifests require a separately reviewed repository inventory.
+              root_requirements = {
+                  "npm": (ROOT / "package.json").is_file(),
+                  "gomod": (ROOT / "go.mod").is_file(),
+                  "uv": (ROOT / "uv.lock").is_file(),
+                  "cargo": (ROOT / "Cargo.toml").is_file(),
+                  "maven": (ROOT / "pom.xml").is_file(),
+              }
+              for ecosystem, exists in root_requirements.items():
+                  if exists and ecosystem not in seen:
+                      fail(f"root manifest exists but {ecosystem!r} ecosystem is not configured")
 
-              commit_message = entry.get("commit-message")
-              if not isinstance(commit_message, dict) or not commit_message.get("prefix"):
-                  violations.append(f"{label} ({ecosystem}) is missing 'commit-message.prefix'")
-
-          for required in required_ecosystems:
-              if required not in seen_ecosystems:
-                  violations.append(
-                      f"no 'updates' entry found for required package-ecosystem: {required!r}"
-                  )
-
-          if violations:
-              print(f"Found {len(violations)} dependabot.yml policy violation(s):")
-              for v in violations:
-                  print(f"::error file={CONFIG_PATH}::{v}")
+          if issues:
+              print(f"{len(issues)} BA-SEC-DEP-001 {level} failure(s):")
+              for issue in issues:
+                  print(f"::error file={CONFIG}::{issue}")
               sys.exit(1)
-
-          print(f"{CONFIG_PATH} conforms to org policy.")
+          print(f"{CONFIG} passes BA-SEC-DEP-001 ({level}); ecosystems={','.join(sorted(seen))}")
