@@ -3,3 +3,7 @@
 /contracts/ @baobab-platform/platform-engineering @baobab-platform/security
 /templates/ @baobab-platform/platform-engineering
 /SECURITY.md @baobab-platform/security
+/docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md @baobab-platform/platform-engineering @baobab-platform/security
+/scripts/action_advisory_watch.py @baobab-platform/platform-engineering @baobab-platform/security
+/scripts/tests/test_dependabot_policy.py @baobab-platform/platform-engineering @baobab-platform/security
+/scripts/tests/test_action_advisory_watch.py @baobab-platform/platform-engineering @baobab-platform/security
