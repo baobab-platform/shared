@@ -120,7 +120,7 @@ A routine group stuck behind unrelated CI failures SHALL be split if it delays a
 
 Security assesses exploitability, asset exposure, CVSS/CVE/GHSA, vendor guidance, CISA KEV/known exploitation, EPSS when available, privilege, reachable runtime path, multi-tenant effects, mitigation availability and downstream impact. Labels alone do not replace context-aware severity.
 
-**Proposed service targets** (measured from the earliest actionable detection, not from PR creation):
+**Approved vulnerability-response targets** (measured from the earliest actionable detection, not from PR creation; operational staffing and escalation readiness remain a separately verified adoption obligation):
 
 | Risk | Initial triage | Verified fix or independently validated containment |
 | --- | --- | --- |
