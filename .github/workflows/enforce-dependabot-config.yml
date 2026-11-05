@@ -244,8 +244,8 @@ jobs:
               ):
                   fail(f"updates[{index}]: unsupported schedule.interval")
               cap = entry.get("open-pull-requests-limit")
-              if type(cap) is not int or cap < 0:
-                  fail(f"updates[{index}]: open-pull-requests-limit must be a nonnegative integer")
+              if type(cap) is not int or cap < 0 or (level == "strict" and cap == 0):
+                  fail(f"updates[{index}]: open-pull-requests-limit must be a positive integer in strict mode")
               if not list_of_names(entry.get("labels")):
                   fail(f"updates[{index}]: labels must be non-empty strings")
               commit = entry.get("commit-message")
@@ -274,6 +274,11 @@ jobs:
                   if applies == "security-updates" and rule.get("patterns") == ["*"]:
                       fail(f"updates[{index}]: broad security group {name!r} requires separate review")
                   types = rule.get("update-types")
+                  if applies == "version-updates" and rule.get("patterns") == ["*"]:
+                      if not types or "major" in types and (
+                          "minor" in types or "patch" in types
+                      ):
+                          fail(f"updates[{index}]: broad routine group {name!r} must separate major upgrades")
                   if types is not None and (
                       not list_of_names(types)
                       or not set(types).issubset({"major", "minor", "patch"})
@@ -284,7 +289,9 @@ jobs:
                   fail(f"updates[{index}]: ignore must be a list")
                   ignores = []
               for ignore in ignores:
-                  if not isinstance(ignore, dict) or not ignore.get("dependency-name"):
+                  if not isinstance(ignore, dict) or not isinstance(
+                      ignore.get("dependency-name"), str
+                  ) or not ignore["dependency-name"].strip():
                       fail(f"updates[{index}]: invalid ignore entry")
                   elif not ignore.get("update-types"):
                       fail(f"updates[{index}]: unconditional ignore of {ignore['dependency-name']!r} hides security fixes")
@@ -296,9 +303,14 @@ jobs:
                       fail(f"updates[{index}]: ignore must be limited to routine semver update types")
               registry_names = entry.get("registries", [])
               if registry_names not in ("*", None):
-                  if not isinstance(registry_names, list):
+                  known_registries = doc.get("registries")
+                  if not isinstance(registry_names, list) or not all(
+                      isinstance(name, str) for name in registry_names
+                  ):
                       fail(f"updates[{index}]: invalid registries")
-                  elif any(name not in doc.get("registries", {}) for name in registry_names):
+                  elif not isinstance(known_registries, dict) or any(
+                      name not in known_registries for name in registry_names
+                  ):
                       fail(f"updates[{index}]: references undefined registry")
           for ecosystem in sorted(required - seen):
               fail(f"missing required ecosystem {ecosystem!r}")
