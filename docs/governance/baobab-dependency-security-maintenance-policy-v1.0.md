@@ -3,7 +3,7 @@
 **Policy ID:** BA-SEC-DEP-001  
 **Version:** 1.0  
 **Date:** 5 November 2026  
-**Status:** PROPOSED — submitted through [Shared PR #429](https://github.com/baobab-platform/shared/pull/429); effective only after accepted review and merge  
+**Status:** **APPROVED — policy decision dated 5 November 2026**. Implementation is being committed on [Shared PR #429](https://github.com/baobab-platform/shared/pull/429); repository enforcement and publication remain subject to final-head CI, review, merge and consumer adoption.  
 **Custodian:** Baobab Platform Engineering (`@baobab-platform/platform-engineering`)  
 **Security approval authority:** Baobab Security (`@baobab-platform/security`), subject to applicable CODEOWNERS and accepted governance  
 **Scope:** All first-party `baobab-platform` repositories, including engines, digital estates, Shared, Infrastructure, tooling and templates  
@@ -17,7 +17,7 @@ Baobab is a multi-repository, polyglot enterprise platform. A defect in a direct
 
 This policy establishes a common method to: identify and inventory dependencies; maintain compatible versions; triage and patch known vulnerabilities; test security and business consequences; protect CI/CD and private registries; apply independently approved exceptions; publish evidence and metrics; and prove affected consumers have received a fix.
 
-**MUST/SHALL** means mandatory on accepted adoption, **SHOULD** means expected unless a documented justification is approved, and **MAY** is optional. During this proposal's review the language expresses intended policy, not a claim that all 20 repositories already comply.
+**MUST/SHALL** means mandatory on accepted adoption, **SHOULD** means expected unless a documented justification is approved, and **MAY** is optional. The policy is approved as a governance directive, but its requirements are not evidence of completed deployment: repository-specific enforcement becomes operational only after tested adoption; no claim of 20-repository conformance is made.
 
 ## 2. Precedence, sources and coverage
 
@@ -269,11 +269,11 @@ Use safe fixtures. Tests SHALL NOT expose live keys, attack payloads, private cu
 
 Changes require Platform Engineering and Security review under protected branch rules; consequential ecosystem requirements additionally involve affected owners. Review quarterly and after major compromise, release-toolchain migration, changed GitHub feature entitlement or material new advisory. Major revisions change required controls/authority; editorial revisions correct clarification without silently expanding acceptance.
 
-**v1.0 acceptance** requires owner assignment, reviewed documentation, an implementation issue/plan for configuration and scanner gaps, and specific criteria for cross-repository evidence. This policy's merge does not itself complete the P1–P4 rollout or authorise any protected environment.
+**v1.0 approval decision:** The policy owner has expressly approved this directive on 5 November 2026. Implementation still requires owner assignment, reviewed source changes, tested enforcement and separately evidenced adoption. Its merge does not itself complete the P1–P4 rollout or authorise any protected environment.
 
 | Version | Date | Description | Decision state |
 | --- | --- | --- | --- |
-| **1.0** | **2026-11-05** | Risk-led maintenance standard: supported ecosystems, timely security patches, Shared controls, SHA/action provenance, exception expiry, sensitive regression tests and 20-repository rollout. | **PROPOSED — awaiting review and merge** |
+| **1.0** | **2026-11-05** | Risk-led maintenance standard: supported ecosystems, timely security patches, Shared controls, SHA/action provenance, exception expiry, sensitive regression tests and 20-repository rollout. | **APPROVED (policy); engineering adoption/PR merge pending** |
 
 ---
 
