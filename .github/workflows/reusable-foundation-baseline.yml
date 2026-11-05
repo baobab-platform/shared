@@ -38,6 +38,13 @@ jobs:
           end
 
           trusted = %w[actions github docker anchore astral-sh aquasecurity codecov sigstore softprops hashicorp dtolnay pnpm changesets baobab-platform]
+          # One reviewed, SHA-locked exception for TMS HYB-01's actual PHP
+          # 8.2/Composer/extensions + Fleetbase MySQL migration qualification.
+          # Deliberately do NOT trust the entire shivammathur publisher: any
+          # action name or SHA change must be separately reviewed.
+          trusted_exact_actions = {
+            "shivammathur/setup-php" => "eb7c497e18156a6bbabfef1d3a82760b9eda3962",
+          }
           workflows = Dir[".github/workflows/*.{yml,yaml}"]
           errors << "at least one GitHub Actions workflow is required" if workflows.empty?
 
@@ -50,7 +57,7 @@ jobs:
                   unless reference.start_with?("./")
                     target, version = reference.split("@", 2)
                     owner = target.split("/").first
-                    errors << "#{path}: action owner #{owner.inspect} is not trusted" unless trusted.include?(owner)
+                    errors << "#{path}: action owner #{owner.inspect} is not trusted" unless trusted.include?(owner) || trusted_exact_actions[target] == version
                     errors << "#{path}: #{reference} is not pinned to a full commit SHA" unless version&.match?(/\A[0-9a-f]{40}\z/)
                   end
                 end
