@@ -187,7 +187,19 @@ class DependabotMaintenancePolicyTests(unittest.TestCase):
 
     def test_boolean_pr_limit_fails(self):
         self.config["updates"][1]["open-pull-requests-limit"] = True
-        self.assert_invalid("nonnegative integer")
+        self.assert_invalid("positive integer")
+
+    def test_zero_pr_limit_disables_maintenance_and_fails_strict(self):
+        self.config["updates"][1]["open-pull-requests-limit"] = 0
+        self.assert_invalid("positive integer")
+
+    def test_unbounded_routine_catchall_fails(self):
+        del self.config["updates"][1]["groups"]["routine"]["update-types"]
+        self.assert_invalid("must separate major upgrades")
+
+    def test_mixed_major_and_patch_group_fails(self):
+        self.config["updates"][1]["groups"]["routine"]["update-types"] = ["major", "patch"]
+        self.assert_invalid("must separate major upgrades")
 
     def test_invalid_schedule_fails(self):
         self.config["updates"][1]["schedule"]["interval"] = "never"
