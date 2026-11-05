@@ -68,6 +68,24 @@ class TraceSchemaTests(unittest.TestCase):
         ):
             self.assert_rejected(change)
 
+    def test_all_zero_w3c_and_nil_uuids_cannot_be_structural_proof(self):
+        nil_uuid = "00000000-0000-0000-0000-000000000000"
+        for change in (
+            lambda x:x.update(correlation_id=nil_uuid),
+            lambda x:x["spans"][1].update(correlation_id=nil_uuid),
+            lambda x:x["spans"][4].update(event_id=nil_uuid),
+            lambda x:x["spans"][0].update(
+                traceparent="00-" + "0"*32 + "-" + "1"*16 + "-01"),
+            lambda x:x["spans"][0].update(
+                traceparent="00-" + "1"*32 + "-" + "0"*16 + "-01"),
+            lambda x:x["spans"][1]["parent"].update(trace_id="0"*32),
+            lambda x:x["spans"][1]["parent"].update(span_id="0"*16),
+            lambda x:x["spans"][5].update(
+                links=[{"trace_id":"0"*32, "span_id":"1"*16}]),
+        ):
+            with self.subTest(change=change):
+                self.assert_rejected(change)
+
     def test_message_boundary_and_event_identity_closed(self):
         for change in (
             lambda x:x["spans"][4].update(event_id=None),
