@@ -7,3 +7,4 @@
 /scripts/action_advisory_watch.py @baobab-platform/platform-engineering @baobab-platform/security
 /scripts/tests/test_dependabot_policy.py @baobab-platform/platform-engineering @baobab-platform/security
 /scripts/tests/test_action_advisory_watch.py @baobab-platform/platform-engineering @baobab-platform/security
+/docs/governance/baobab-dependency-security-rollout-v1.0.md @baobab-platform/platform-engineering @baobab-platform/security
