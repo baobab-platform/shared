@@ -101,6 +101,8 @@ on:
       - "docs/adr/**"
       - "docs/architecture/**"
       - "docs/governance/engineering-philosophy-review.md"
+      - "docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md"
+      - "templates/dependabot.yml"
       - "README.md"
       - "scripts/validate-governance-contracts.rb"
       - "scripts/validate-cross-engine-contracts.rb"
@@ -154,6 +156,8 @@ on:
       - "docs/adr/**"
       - "docs/architecture/**"
       - "docs/governance/engineering-philosophy-review.md"
+      - "docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md"
+      - "templates/dependabot.yml"
       - "README.md"
       - "scripts/validate-governance-contracts.rb"
       - "scripts/validate-cross-engine-contracts.rb"
@@ -229,6 +233,8 @@ jobs:
           python-version: "3.13"
       - name: Install JSON Schema runtime
         run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
+      - name: Test BA-SEC-DEP-001 strict Dependabot conformance and negative fixtures
+        run: python scripts/tests/test_dependabot_policy.py
       - name: Validate engineering philosophy governance (ADR-SHARED-041)
         run: python scripts/tests/test_engineering_philosophy_governance.py
       - name: Validate Accepted EA v2.3 plan, 20-repo audit and historical precedence
@@ -370,5 +376,8 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/enforce-dependabot-config.yml
+    with:
+      required-ecosystems: "github-actions,npm"
+      policy-level: "strict"
 
 
