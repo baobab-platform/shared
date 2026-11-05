@@ -18,7 +18,7 @@ SHA = "a" * 40
 DIGEST = "sha256:" + "b" * 64
 SELLER = "11111111-1111-4111-8111-111111111111"
 BUYER = "22222222-2222-4222-8222-222222222222"
-RESERVATION = "33333333-3333-4333-8333-333333333333"
+RESERVATION = "b2bres_333333333333"
 EVENT = "44444444-4444-4444-8444-444444444444"
 
 
@@ -124,6 +124,13 @@ class Dev07ReadbackGate(unittest.TestCase):
             self.assertEqual("INVALID", gate.disposition(altered)[0])
         altered = vector()
         altered["observations"]["buyer"]["receipt_id"] = SELLER
+        self.assertEqual("INVALID", gate.disposition(altered)[0])
+
+    def test_seller_receipt_is_native_opaque_and_reservation_uses_trade_v2_id(self):
+        altered = vector()
+        altered["observations"]["seller"]["receipt_id"] = "seller_native_receipt_001"
+        self.assertEqual(("TEST_VECTOR_ONLY", []), gate.disposition(altered))
+        altered["observations"]["spend"]["reservation_id"] = "33333333-3333-4333-8333-333333333333"
         self.assertEqual("INVALID", gate.disposition(altered)[0])
 
     def test_outbox_cannot_be_forged_or_multiplied(self):

@@ -193,7 +193,9 @@
               "properties": {
                 "receipt_id": {
                   "type": "string",
-                  "format": "uuid"
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "description": "ADR-SHARED-039 seller authority receipt reference; opaque, not necessarily UUID."
                 },
                 "order_id": {
                   "type": "string",
@@ -265,7 +267,8 @@
               "properties": {
                 "reservation_id": {
                   "type": "string",
-                  "format": "uuid"
+                  "pattern": "^b2bres_[0-9A-Za-z]{6,64}$",
+                  "description": "Existing trade/v2 buyer-spend-budget reservationId, not a UUID."
                 },
                 "order_id": {
                   "type": "string",
