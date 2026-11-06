@@ -74,7 +74,13 @@ capabilities:
   - capability_key: finance.statement.read
     owner: baobab-erp
     source: ../../finance/v1/capabilities.yaml
+  - capability_key: identity.authentication.assurance
+    owner: baobab-iam
+    source: ../../identity/v1/capabilities.yaml
   - capability_key: identity.authentication.perform
+    owner: baobab-iam
+    source: ../../identity/v1/capabilities.yaml
+  - capability_key: identity.federation.enterprise
     owner: baobab-iam
     source: ../../identity/v1/capabilities.yaml
   - capability_key: identity.workload-token.issue

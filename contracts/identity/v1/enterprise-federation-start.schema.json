@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/enterprise-federation-start.schema.json",
+  "title": "Enterprise federation: reviewed trust-bound browser challenge",
+  "description": "Start only a reviewed enterprise trust route. No provider selection from caller-supplied domains, no external Principal, membership or entitlement. Result is a challenge, not authenticated business authority.",
+  "$defs": {
+    "EnterpriseFederationStartRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "trust_reference",
+        "browser_session_reference"
+      ],
+      "properties": {
+        "schema": {
+          "const": "baobab.identity.enterprise-federation-start.v1"
+        },
+        "trust_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "browser_session_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        }
+      }
+    },
+    "EnterpriseFederationChallenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "event_reference",
+        "authorization_url",
+        "expires_at"
+      ],
+      "properties": {
+        "schema": {
+          "const": "baobab.identity.enterprise-federation-challenge.v1"
+        },
+        "event_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "authorization_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "maxLength": 4096
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
