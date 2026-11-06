@@ -27,3 +27,21 @@ Existing `provider-runtime-profile.schema.json`, `runtime-capability.schema.json
 5. Leave CP provider registrations/bindings/approvals, engine PEP acceptance and staging/production deployment for later explicitly authorised work.
 
 Run `python scripts/capability_catalogue.py validate-catalogue` and `python -m unittest scripts.tests.test_iam_native_target_contracts`. Neither converts TARGET_NOT_QUALIFIED into a support receipt.
+
+## Provider-first development evidence (distinct from CP)
+
+`native-development-qualification.schema.json` defines the exact-source,
+provider-artifact and facet-specific **IAM-owned development qualification
+receipt**. Its `DEVELOPMENT_QUALIFIED` representation requires independently
+reviewed original test/artifact digests, same-run positive and negative
+observations, authentic runtime origin and teardown. The *schema alone* cannot
+verify witness authority or original runtime semantics; the reviewer must
+compare it with the authenticated GitHub-run provenance and actual provider
+readback. The synthetic `native-development-unqualified.json` example is
+explicitly `UNQUALIFIED` and never constitutes an operational receipt.
+
+Crucially this receipt has **no CP provider ID or engine instance ID** and
+cannot grant a Client, Tenant, Organisation, Market or business operation.
+Following IAM development completion, CP may independently register the
+reviewed provider facet against its own instance/release and current grant
+policy. Protected staging and production remain independent.

@@ -80,6 +80,44 @@ class NativeTargetContracts(unittest.TestCase):
                     dict(verified, status="PENDING")):
             self.assertTrue(self.validate(management, "IAMManagementOutcome", bad))
 
+    def test_dev_qualification_is_not_cp_registration_or_a_self_attested_pass(self):
+        from referencing import Registry, Resource
+        proof_schema = json.loads((IAM / "native-development-qualification.schema.json").read_text())
+        runtime = json.loads((IAM / "runtime-capability.schema.json").read_text())
+        reference = Registry().with_resource(runtime["$id"], Resource.from_contents(runtime))
+        validator = Draft202012Validator(proof_schema, registry=reference)
+        example = json.loads((IAM / "examples/native-development-unqualified.json").read_text())
+        self.assertFalse(list(validator.iter_errors(example)))
+        qualified_without_witness = dict(example, qualification_state="DEVELOPMENT_QUALIFIED")
+        self.assertTrue(list(validator.iter_errors(qualified_without_witness)))
+        fake_witness = {
+            "original_archive_digest": "sha256:" + "a" * 64,
+            "github_run_id": 42170000000,
+            "original_cases_digest": "sha256:" + "b" * 64,
+            "independent_reviewer_reference": "ref_independentreview",
+            "all_required_positive_observed": True,
+            "all_required_negatives_observed": True,
+            "teardown_verified": True,
+            "runtime_origins_independently_attested": True,
+        }
+        candidate = dict(example, qualification_state="DEVELOPMENT_QUALIFIED",
+                         independent_development_evidence=fake_witness)
+        # Schema shape is not producer authenticity. This fixture MUST NOT be
+        # published as qualified or used to activate a provider.
+        self.assertFalse(list(validator.iter_errors(candidate)))
+        for field, value in (("all_required_negatives_observed", False),
+                             ("teardown_verified", False),
+                             ("runtime_origins_independently_attested", False),
+                             ("independent_reviewer_reference", "")):
+            bad = copy.deepcopy(candidate)
+            bad["independent_development_evidence"][field] = value
+            self.assertTrue(list(validator.iter_errors(bad)))
+        for key in ("provider_id", "engine_instance_id", "tenant_id",
+                    "active_binding", "production_authorized", "consumer_grant"):
+            self.assertTrue(list(validator.iter_errors(dict(example, **{key: True}))))
+        with_original_evidence = dict(example, independent_development_evidence=fake_witness)
+        self.assertTrue(list(validator.iter_errors(with_original_evidence)))
+
     def test_server_owned_assurance_and_denials(self):
         valid = {"schema": "baobab.identity.assurance-evaluation-request.v1",
                  "authentication_event_reference": "ref_authenticatedevent",

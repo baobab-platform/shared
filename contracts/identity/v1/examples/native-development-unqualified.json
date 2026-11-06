@@ -1,0 +1,11 @@
+{
+  "schema": "baobab.identity.native-development-qualification.v1",
+  "environment": "development",
+  "provider_key": "baobab-iam.kratos",
+  "implementation_key": "kratos",
+  "iam_source_sha": "0000000000000000000000000000000000000000",
+  "provider_artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "facet": "PASSKEY",
+  "qualification_state": "UNQUALIFIED",
+  "protected_authorized": false
+}
