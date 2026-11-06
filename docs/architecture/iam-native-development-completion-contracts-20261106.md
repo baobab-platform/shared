@@ -14,7 +14,7 @@ The existing `identity.authentication.perform` (Kratos/Hydra code/S256 native pa
 
 ## Management and provider facets
 
-`native-provider-targets.yaml` is a **target inventory**, not a runtime support report. It lists the exact Kratos, Hydra and Keycloak facet allocations and separately inventories eleven **IAM management/security/status operations**. Those management operations require reviewed management contracts, owner controls, original evidence and deterministic denial; they are **not** automatically grantable capabilities merely because their names are declared here.
+`native-provider-targets.yaml` is a **target inventory**, not a runtime support report. It lists the exact Kratos, Hydra and Keycloak facet allocations and separately inventories eleven **IAM management/security/status operations**. Those management operations use the closed `iam-management-operation.schema.json` request/outcome envelopes with original `PROVIDER_VERIFIED` evidence, owner controls and deterministic denial; they are **not** automatically grantable capabilities merely because their names are declared here. `native-provider-targets.schema.json` validates the architecture-only inventory against existing runtime facet vocabulary.
 
 Existing `provider-runtime-profile.schema.json`, `runtime-capability.schema.json`, `federation-trust.schema.json`, `federated-assurance.schema.json` and `authentication-assurance.schema.json` remain authoritative. Do not introduce a parallel CP registry, invent provider IDs or grant Business/Tenant/LegalEntity claims.
 

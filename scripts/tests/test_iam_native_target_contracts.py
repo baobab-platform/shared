@@ -40,6 +40,46 @@ class NativeTargetContracts(unittest.TestCase):
         self.assertNotIn("ENTERPRISE_SSO", facets["baobab-iam.kratos"])
         self.assertNotIn("WORKLOAD_TOKEN_ISSUANCE", facets["baobab-iam.kratos"])
 
+    def test_native_target_and_management_contract_schemas(self):
+        from referencing import Registry, Resource
+        target_schema = json.loads((IAM / "native-provider-targets.schema.json").read_text())
+        management = json.loads((IAM / "iam-management-operation.schema.json").read_text())
+        runtime = json.loads((IAM / "runtime-capability.schema.json").read_text())
+        reg = Registry().with_resources([
+            (management["$id"], Resource.from_contents(management)),
+            (runtime["$id"], Resource.from_contents(runtime)),
+        ])
+        validator = Draft202012Validator(target_schema, registry=reg)
+        self.assertEqual(list(validator.iter_errors(self.anchors)), [])
+        for key, value in (("status", "DEVELOPMENT_QUALIFIED"), ("cp_binding", "ACTIVE"),
+                           ("production_permitted", True), ("security_secret", "bad")):
+            invalid = copy.deepcopy(self.anchors)
+            invalid[key] = value
+            self.assertTrue(list(validator.iter_errors(invalid)))
+        request = {"schema": "baobab.identity.management-request.v1",
+                   "operation": "identity.security.revoke",
+                   "target_reference": "ref_targetsubject",
+                   "change_request_reference": "ref_reviewrequested",
+                   "expected_revision": 1,
+                   "idempotency_key": "10000000-0000-4000-8000-000000000003"}
+        self.assertFalse(self.validate(management, "IAMManagementRequest", request))
+        for key in ("tenant_id", "approval_limit", "review_approved", "client_secret",
+                    "provider_native_admin_token"):
+            self.assertTrue(self.validate(management, "IAMManagementRequest",
+                                          dict(request, **{key: "forbidden"})))
+        verified = {"schema": "baobab.identity.management-outcome.v1",
+                    "operation": "identity.security.revoke",
+                    "status": "PROVIDER_VERIFIED",
+                    "event_reference": "ref_eventcredential",
+                    "provider_evidence_reference": "ref_originalevidence",
+                    "observed_at": "2026-11-06T07:00:00Z"}
+        self.assertFalse(self.validate(management, "IAMManagementOutcome", verified))
+        for bad in ({k: v for k, v in verified.items()
+                     if k != "provider_evidence_reference"},
+                    dict(verified, active_binding=True),
+                    dict(verified, status="PENDING")):
+            self.assertTrue(self.validate(management, "IAMManagementOutcome", bad))
+
     def test_server_owned_assurance_and_denials(self):
         valid = {"schema": "baobab.identity.assurance-evaluation-request.v1",
                  "authentication_event_reference": "ref_authenticatedevent",
