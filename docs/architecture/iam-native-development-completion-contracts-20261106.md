@@ -18,6 +18,14 @@ The existing `identity.authentication.perform` (Kratos/Hydra code/S256 native pa
 
 Existing `provider-runtime-profile.schema.json`, `runtime-capability.schema.json`, `federation-trust.schema.json`, `federated-assurance.schema.json` and `authentication-assurance.schema.json` remain authoritative. Do not introduce a parallel CP registry, invent provider IDs or grant Business/Tenant/LegalEntity claims.
 
+**Provider/facet integrity:** the v1 target and developer receipt schemas now
+enforce exactly one Kratos, Hydra and Keycloak target and bind each provider
+key to its native implementation and the exact declared facet set. A
+misattributed PASSKEY/SAML/OIDC facet or exchanged implementation is refused
+*before* external evidence authentication. Qualification remains non-authorising
+even when all declared facets are implemented. Assurance denial/step-up
+responses cannot carry a successful assurance receipt or success reason.
+
 ## Development qualification exit
 
 1. Each Kratos/Hydra/Keycloak target facet has a real provider positive, corresponding failure/replay/revocation negatives, exact source SHA and provider image/build digest, private original receipt and teardown. A3 requires a real origin/user-verification proof; A4 requires independent privileged/security witness. AAL2 or method labels alone never qualify them.

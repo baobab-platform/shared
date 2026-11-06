@@ -129,6 +129,90 @@
           ]
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "provider_key": {
+            "const": "baobab-iam.kratos"
+          }
+        },
+        "required": [
+          "provider_key"
+        ]
+      },
+      "then": {
+        "properties": {
+          "implementation_key": {
+            "const": "kratos"
+          },
+          "facet": {
+            "enum": [
+              "HUMAN_AUTHENTICATION",
+              "CREDENTIAL_MANAGEMENT",
+              "SESSION_MANAGEMENT",
+              "ACCOUNT_VERIFICATION",
+              "ACCOUNT_RECOVERY",
+              "MFA",
+              "PASSKEY",
+              "IDENTITY_LIFECYCLE_PROVISIONING"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provider_key": {
+            "const": "baobab-iam.hydra"
+          }
+        },
+        "required": [
+          "provider_key"
+        ]
+      },
+      "then": {
+        "properties": {
+          "implementation_key": {
+            "const": "hydra"
+          },
+          "facet": {
+            "enum": [
+              "OAUTH_AUTHORIZATION_SERVER",
+              "OIDC_PROVIDER",
+              "WORKLOAD_TOKEN_ISSUANCE"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provider_key": {
+            "const": "baobab-iam.keycloak"
+          }
+        },
+        "required": [
+          "provider_key"
+        ]
+      },
+      "then": {
+        "properties": {
+          "implementation_key": {
+            "const": "keycloak"
+          },
+          "facet": {
+            "enum": [
+              "ENTERPRISE_SSO",
+              "SAML_FEDERATION",
+              "OIDC_FEDERATION",
+              "IDENTITY_BROKERING"
+            ]
+          }
+        }
+      }
     }
   ]
 }

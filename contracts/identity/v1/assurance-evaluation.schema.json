@@ -139,6 +139,44 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "enum": [
+                  "DENIED",
+                  "STEP_UP_REQUIRED"
+                ]
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reason": {
+                "not": {
+                  "const": "ASSURANCE_MET_NOT_AUTHORIZATION"
+                }
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "fresh_until"
+                  ]
+                },
+                {
+                  "required": [
+                    "evidence_reference"
+                  ]
+                }
+              ]
+            }
+          }
         }
       ]
     }

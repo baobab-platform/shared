@@ -26,8 +26,8 @@ class NativeTargetContracts(unittest.TestCase):
     def test_catalogue_and_target_allocation_are_distinct(self):
         catalogue = yaml.safe_load((BASE / "capability" / "v1" / "catalogue.yaml").read_text())
         keys = {item["capability_key"] for item in catalogue["capabilities"]}
-        self.assertTrue({"identity.authentication.perform", "identity.workload-token.issue",
-                         "identity.authentication.assurance", "identity.federation.enterprise"} <= keys)
+        self.assertLessEqual({"identity.authentication.perform", "identity.workload-token.issue",
+                             "identity.authentication.assurance", "identity.federation.enterprise"}, keys)
         targets = self.anchors
         self.assertEqual(targets["status"], "TARGET_NOT_QUALIFIED")
         self.assertEqual(targets["token_issuance"], "SUBSUMED_IN_EXISTING_AUTHENTICATION_AND_WORKLOAD_CAPABILITIES")
@@ -51,6 +51,25 @@ class NativeTargetContracts(unittest.TestCase):
         ])
         validator = Draft202012Validator(target_schema, registry=reg)
         self.assertEqual(list(validator.iter_errors(self.anchors)), [])
+        # The provider key, native implementation and *complete* supported
+        # facet set are one authoritative mapping, not three unrelated enums.
+        # The three providers must be present exactly once, in any order.
+        valid_reordered = copy.deepcopy(self.anchors)
+        valid_reordered["providers"].reverse()
+        for provider in valid_reordered["providers"]:
+            provider["target_facets"].reverse()
+        self.assertFalse(list(validator.iter_errors(valid_reordered)))
+        for mutate in (
+            lambda x: x["providers"][0].update(implementation_key="hydra"),
+            lambda x: x["providers"][0]["target_facets"].append("SAML_FEDERATION"),
+            lambda x: x["providers"][0]["target_facets"].remove("PASSKEY"),
+            lambda x: x["providers"][1].update(provider_key="baobab-iam.kratos"),
+            lambda x: x["providers"][2].update(implementation_key="kratos"),
+        ):
+            invalid = copy.deepcopy(self.anchors)
+            mutate(invalid)
+            self.assertTrue(list(validator.iter_errors(invalid)),
+                            "cross-provider facet/implementation substitution accepted")
         for key, value in (("status", "DEVELOPMENT_QUALIFIED"), ("cp_binding", "ACTIVE"),
                            ("production_permitted", True), ("security_secret", "bad")):
             invalid = copy.deepcopy(self.anchors)
@@ -88,6 +107,14 @@ class NativeTargetContracts(unittest.TestCase):
         validator = Draft202012Validator(proof_schema, registry=reference)
         example = json.loads((IAM / "examples/native-development-unqualified.json").read_text())
         self.assertFalse(list(validator.iter_errors(example)))
+        # A syntactically valid but provider-inconsistent evidence packet
+        # must be rejected even if it claims independently observed success.
+        for key, value in (("implementation_key", "keycloak"),
+                           ("facet", "SAML_FEDERATION"),
+                           ("provider_key", "baobab-iam.hydra")):
+            bad = dict(example, **{key: value})
+            self.assertTrue(list(validator.iter_errors(bad)),
+                            "provider identity and facet were not bound")
         qualified_without_witness = dict(example, qualification_state="DEVELOPMENT_QUALIFIED")
         self.assertTrue(list(validator.iter_errors(qualified_without_witness)))
         fake_witness = {
@@ -139,7 +166,27 @@ class NativeTargetContracts(unittest.TestCase):
         self.assertFalse(self.validate(self.assurance, "AssuranceEvaluationResult", allowed))
         for bad in (dict(allowed, outcome="GRANTED"),
                     dict(allowed, business_role="owner"),
-                    {k: v for k, v in allowed.items() if k != "evidence_reference"}):
+                    {k: v for k, v in allowed.items() if k != "evidence_reference"},
+                    dict(allowed, outcome="DENIED"),
+                    dict(allowed, outcome="STEP_UP_REQUIRED"),
+                    dict(allowed, outcome="DENIED", reason="CURRENT_RISK_UNKNOWN"),
+                    dict(allowed, outcome="STEP_UP_REQUIRED",
+                         reason="FRESH_STEP_UP_REQUIRED")):
+            self.assertTrue(self.validate(self.assurance, "AssuranceEvaluationResult", bad))
+
+    def test_assurance_denial_does_not_present_success_evidence(self):
+        denied = {"schema": "baobab.identity.assurance-evaluation-result.v1",
+                  "outcome": "DENIED", "required_level": "A3",
+                  "evaluated_at": "2026-11-06T07:00:00Z",
+                  "reason": "CURRENT_RISK_UNKNOWN"}
+        self.assertFalse(self.validate(self.assurance, "AssuranceEvaluationResult", denied))
+        step_up = dict(denied, outcome="STEP_UP_REQUIRED",
+                       reason="FRESH_STEP_UP_REQUIRED")
+        self.assertFalse(self.validate(self.assurance, "AssuranceEvaluationResult", step_up))
+        for bad in (dict(denied, evidence_reference="ref_fakeevidence"),
+                    dict(denied, fresh_until="2026-11-06T07:05:00Z"),
+                    dict(denied, reason="ASSURANCE_MET_NOT_AUTHORIZATION"),
+                    dict(step_up, evidence_reference="ref_fakeevidence")):
             self.assertTrue(self.validate(self.assurance, "AssuranceEvaluationResult", bad))
 
     def test_federation_does_not_select_issuer_or_grant_membership(self):

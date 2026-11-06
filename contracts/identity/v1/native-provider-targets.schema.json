@@ -64,8 +64,153 @@
               "$ref": "runtime-capability.schema.json#/$defs/runtimeCapability"
             }
           }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "provider_key": {
+                  "const": "baobab-iam.kratos"
+                }
+              },
+              "required": [
+                "provider_key"
+              ]
+            },
+            "then": {
+              "properties": {
+                "implementation_key": {
+                  "const": "kratos"
+                },
+                "target_facets": {
+                  "minItems": 8,
+                  "maxItems": 8,
+                  "items": {
+                    "enum": [
+                      "HUMAN_AUTHENTICATION",
+                      "CREDENTIAL_MANAGEMENT",
+                      "SESSION_MANAGEMENT",
+                      "ACCOUNT_VERIFICATION",
+                      "ACCOUNT_RECOVERY",
+                      "MFA",
+                      "PASSKEY",
+                      "IDENTITY_LIFECYCLE_PROVISIONING"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "provider_key": {
+                  "const": "baobab-iam.hydra"
+                }
+              },
+              "required": [
+                "provider_key"
+              ]
+            },
+            "then": {
+              "properties": {
+                "implementation_key": {
+                  "const": "hydra"
+                },
+                "target_facets": {
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "items": {
+                    "enum": [
+                      "OAUTH_AUTHORIZATION_SERVER",
+                      "OIDC_PROVIDER",
+                      "WORKLOAD_TOKEN_ISSUANCE"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "provider_key": {
+                  "const": "baobab-iam.keycloak"
+                }
+              },
+              "required": [
+                "provider_key"
+              ]
+            },
+            "then": {
+              "properties": {
+                "implementation_key": {
+                  "const": "keycloak"
+                },
+                "target_facets": {
+                  "minItems": 4,
+                  "maxItems": 4,
+                  "items": {
+                    "enum": [
+                      "ENTERPRISE_SSO",
+                      "SAML_FEDERATION",
+                      "OIDC_FEDERATION",
+                      "IDENTITY_BROKERING"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "provider_key": {
+                "const": "baobab-iam.kratos"
+              }
+            },
+            "required": [
+              "provider_key"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "provider_key": {
+                "const": "baobab-iam.hydra"
+              }
+            },
+            "required": [
+              "provider_key"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "provider_key": {
+                "const": "baobab-iam.keycloak"
+              }
+            },
+            "required": [
+              "provider_key"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
         }
-      }
+      ]
     },
     "management_operations": {
       "type": "array",
