@@ -230,3 +230,52 @@ classifier_cases.each do |name, (visibility, extra, expected)|
 end
 
 puts "SAST provider resolution fixtures passed"
+
+
+# HYB-01: exercise the actual Foundation baseline Ruby step with a disposable
+# workflow, not only a static assertion about the allowlist's text. The one
+# reviewed setup-php commit is allowed; the publisher, other SHAs, and tags
+# remain untrusted. This does not grant TMS or any consumer qualification.
+baseline_workflow = YAML.safe_load_file(".github/workflows/reusable-foundation-baseline.yml", aliases: true)
+baseline_step = baseline_workflow.fetch("jobs").fetch("baseline").fetch("steps").find do |step|
+  step["name"] == "Validate repository baseline"
+end
+abort "Foundation baseline validation step not found" unless baseline_step
+
+def check_pinned_action_baseline(script, action_reference)
+  Dir.mktmpdir do |dir|
+    FileUtils.mkdir_p(File.join(dir, ".github/workflows"))
+    File.write(File.join(dir, "README.md"), "Test repository\n")
+    File.write(File.join(dir, "SECURITY.md"), "Test security contact\n")
+    File.write(File.join(dir, ".gitignore"), "*.tmp\n")
+    File.write(File.join(dir, ".github/CODEOWNERS"), "* @baobab-platform/platform-engineering\n")
+    File.write(File.join(dir, ".github/workflows/fixture.yml"), YAML.dump({
+      "name" => "Pinned action fixture",
+      "on" => { "push" => {} },
+      "permissions" => { "contents" => "read" },
+      "jobs" => {
+        "test" => {
+          "runs-on" => "ubuntu-26.04",
+          "steps" => [{ "uses" => action_reference }]
+        }
+      }
+    }))
+    _, status = Open3.capture2e({ "VISIBILITY" => "private" }, "ruby", "-e", script, chdir: dir)
+    status.success?
+  end
+end
+
+setup_php_sha = "eb7c497e18156a6bbabfef1d3a82760b9eda3962"
+action_cases = {
+  "exact reviewed setup-php action" => ["shivammathur/setup-php@#{setup_php_sha}", true],
+  "changed setup-php digest" => ["shivammathur/setup-php@#{'a' * 40}", false],
+  "setup-php tag is not an immutable pin" => ["shivammathur/setup-php@2.40.0", false],
+  "other action from same publisher" => ["shivammathur/unreviewed-action@#{setup_php_sha}", false],
+  "unapproved publisher" => ["unknownvendor/setup-php@#{setup_php_sha}", false],
+  "existing trusted actions remain allowed" => ["actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1", true]
+}
+action_cases.each do |name, (reference, expected)|
+  result = check_pinned_action_baseline(baseline_step.fetch("run"), reference)
+  abort "HYB-01 baseline #{name}: expected #{expected}, got #{result}" unless result == expected
+end
+puts "Foundation exact-action pin and publisher denial fixtures passed"
