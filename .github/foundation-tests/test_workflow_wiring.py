@@ -170,13 +170,40 @@ assert history["with"]["persist-credentials"] is False
 assert "contract_lock.py check --repository-root . --shared-repo .shared-history --mode auto" in environment_text
 assert "contract_lock.py drift --repository-root . --shared-repo .shared-history >> \"$GITHUB_STEP_SUMMARY\"" in environment_text
 
-# Approved GitHub-hosted runner label for every workflow in this repository.
+# Only approved GitHub-hosted runner labels are permitted. An OCI
+# multi-platform *no-push* PR build needs arm64/amd64 runners, and the exact
+# fixed GitHub expression is reviewed here rather than blanket-permitting
+# arbitrary dynamic runner expressions. PyYAML loads the complete YAML scalar;
+# a regex against the first whitespace token silently mis-parses ${{...}}.
 RUNNER_LABEL = "ubuntu-26.04"
+OCI_PLATFORM_RUNNER = (
+    "${{ matrix.platform == 'linux/arm64' && "
+    "'ubuntu-26.04-arm' || 'ubuntu-26.04' }}"
+)
+
+def approved_runner(path_name: str, job_name: str, runner: object) -> bool:
+    if runner == RUNNER_LABEL:
+        return True
+    return (
+        path_name == "verify-contract-build-push-action.yml"
+        and job_name == "no-publish-build"
+        and runner == OCI_PLATFORM_RUNNER
+    )
+
+assert approved_runner("verify-contract-build-push-action.yml", "no-publish-build", OCI_PLATFORM_RUNNER)
+assert not approved_runner("unreviewed.yml", "build", OCI_PLATFORM_RUNNER)
+assert not approved_runner("verify-contract-build-push-action.yml", "other", OCI_PLATFORM_RUNNER)
+assert not approved_runner("verify-contract-build-push-action.yml", "no-publish-build", "${{ vars.RUNNER }}")
+assert not approved_runner("verify-contract-build-push-action.yml", "no-publish-build", "self-hosted")
 
 for path in WORKFLOWS.glob("*.y*ml"):
-    text = path.read_text()
-    for label in re.findall(r"^\s*runs-on:\s*(\S+)", text, re.MULTILINE):
-        assert label == RUNNER_LABEL, f"{path} uses runner {label}; expected {RUNNER_LABEL}"
+    document, text = load(path.name)
+    for name, job in document.get("jobs", {}).items():
+        if isinstance(job, dict) and "runs-on" in job:
+            label = job["runs-on"]
+            assert approved_runner(path.name, name, label), (
+                f"{path} job {name} uses unapproved runner {label!r}"
+            )
     assert "contains(fromJSON(inputs.exceptions)" not in text, f"unsafe exception lookup in {path}"
     for reference in re.findall(r"^\s*uses:\s*([^\s#]+)", text, re.MULTILINE):
         if reference.startswith("./"):
