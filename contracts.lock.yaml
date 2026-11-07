@@ -202,3 +202,4 @@ contracts:
     version: v1
     schemas:
       - enterprise-profiles.schema.json
+      - dev07-transaction-readback.schema.json

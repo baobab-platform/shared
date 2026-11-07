@@ -1,0 +1,915 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/development/v1/dev07-transaction-readback.schema.json",
+  "title": "DEV-07 independent native commitment and asynchronous consequence readback",
+  "description": "Development-only observer projection. Schema validity does not establish genuine IAM/CP authority, native database truth, independent evidence custody, INT-05, provider qualification or protected acceptance. No commercial capability or API is registered.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evidence_class",
+    "scenario",
+    "source_revisions",
+    "observer",
+    "positive_status",
+    "observations",
+    "downstream",
+    "negatives",
+    "claims"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "baobab.dev07.transaction-readback.v1"
+    },
+    "evidence_class": {
+      "enum": [
+        "SCHEMA_TEST_VECTOR",
+        "REAL_COMPONENT_SYNTHETIC_DATA"
+      ]
+    },
+    "scenario": {
+      "const": "DEV-07/INT-05"
+    },
+    "source_revisions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trade",
+        "cp",
+        "iam",
+        "infrastructure",
+        "erp"
+      ],
+      "properties": {
+        "trade": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "cp": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "iam": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "infrastructure": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "erp": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        }
+      }
+    },
+    "observer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "artifact_url",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "SCHEMA_TEST_VECTOR",
+            "INDEPENDENT_READBACK"
+          ]
+        },
+        "artifact_url": {
+          "type": "string",
+          "pattern": "^https://github.com/baobab-platform/[a-z0-9-]+/actions/runs/[0-9]+$"
+        },
+        "artifact_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "positive_status": {
+      "enum": [
+        "BLOCKED",
+        "OBSERVED"
+      ]
+    },
+    "observations": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "readback_source",
+            "order",
+            "seller",
+            "buyer",
+            "spend",
+            "outbox"
+          ],
+          "properties": {
+            "readback_source": {
+              "const": "POSTGRESQL_INDEPENDENT_READER"
+            },
+            "order": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "tenant_id",
+                "buyer_organisation_id",
+                "seller_legal_entity_id",
+                "operation_reference",
+                "txid",
+                "draft",
+                "status",
+                "count",
+                "amount_minor",
+                "currency"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "tenant_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "buyer_organisation_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "seller_legal_entity_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "operation_reference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "pattern": "^[\\x21-\\x7e]+$"
+                },
+                "txid": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,19}$"
+                },
+                "draft": {
+                  "const": false
+                },
+                "status": {
+                  "const": "PLACED"
+                },
+                "count": {
+                  "const": 1
+                },
+                "amount_minor": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                }
+              }
+            },
+            "seller": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "receipt_id",
+                "order_id",
+                "operation_reference",
+                "txid",
+                "count"
+              ],
+              "properties": {
+                "receipt_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "description": "ADR-SHARED-039 seller authority receipt reference; opaque, not necessarily UUID."
+                },
+                "order_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "operation_reference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "pattern": "^[\\x21-\\x7e]+$"
+                },
+                "txid": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,19}$"
+                },
+                "count": {
+                  "const": 1
+                }
+              }
+            },
+            "buyer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "receipt_id",
+                "order_id",
+                "operation_reference",
+                "txid",
+                "count"
+              ],
+              "properties": {
+                "receipt_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "order_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "operation_reference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "pattern": "^[\\x21-\\x7e]+$"
+                },
+                "txid": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,19}$"
+                },
+                "count": {
+                  "const": 1
+                }
+              }
+            },
+            "spend": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "reservation_id",
+                "order_id",
+                "txid",
+                "status",
+                "count",
+                "amount_minor",
+                "currency"
+              ],
+              "properties": {
+                "reservation_id": {
+                  "type": "string",
+                  "pattern": "^b2bres_[0-9A-Za-z]{6,64}$",
+                  "description": "Existing trade/v2 buyer-spend-budget reservationId, not a UUID."
+                },
+                "order_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "txid": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,19}$"
+                },
+                "status": {
+                  "const": "COMMITTED"
+                },
+                "count": {
+                  "const": 1
+                },
+                "amount_minor": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                }
+              }
+            },
+            "outbox": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "event_id",
+                "order_id",
+                "txid",
+                "event_type",
+                "payload_sha256",
+                "idempotency_key",
+                "count",
+                "immutable_readback"
+              ],
+              "properties": {
+                "event_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "order_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "txid": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,19}$"
+                },
+                "event_type": {
+                  "const": "com.baobab-platform.trade.order.placed.v1"
+                },
+                "payload_sha256": {
+                  "type": "string",
+                  "pattern": "^sha256:[0-9a-f]{64}$"
+                },
+                "idempotency_key": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "pattern": "^[\\x21-\\x7e]+$"
+                },
+                "count": {
+                  "const": 1
+                },
+                "immutable_readback": {
+                  "const": true
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "downstream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "event_id",
+        "payload_sha256",
+        "publisher_confirmed",
+        "broker_delivered",
+        "erp_inbox_durable",
+        "erp_native_effect_count",
+        "exported_trace_observed"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "BLOCKED",
+            "OBSERVED"
+          ]
+        },
+        "event_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "payload_sha256": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publisher_confirmed": {
+          "type": "boolean"
+        },
+        "broker_delivered": {
+          "type": "boolean"
+        },
+        "erp_inbox_durable": {
+          "type": "boolean"
+        },
+        "erp_native_effect_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exported_trace_observed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "negatives": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wrong_tenant_company": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "invalid_audience": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "revoked_mandate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "stale_buyer_authority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "changed_event_payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "duplicate_delivery": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "expired_lease": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "simultaneous_reservation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "publisher_outage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "post_commit_pre_ack_crash": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "ambiguous_erp_outcome": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "prohibited_effect_count",
+            "eligible_effect_count",
+            "retry_count",
+            "retry_limit"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "PASS",
+                "FAIL",
+                "BLOCKED"
+              ]
+            },
+            "prohibited_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eligible_effect_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "retry_limit": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "required": [
+        "wrong_tenant_company",
+        "invalid_audience",
+        "revoked_mandate",
+        "stale_buyer_authority",
+        "changed_event_payload",
+        "duplicate_delivery",
+        "expired_lease",
+        "simultaneous_reservation",
+        "publisher_outage",
+        "post_commit_pre_ack_crash",
+        "ambiguous_erp_outcome"
+      ]
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "int05_qualified",
+        "provider_qualified",
+        "protected_acceptance",
+        "production_authorized"
+      ],
+      "properties": {
+        "int05_qualified": {
+          "const": false
+        },
+        "provider_qualified": {
+          "const": false
+        },
+        "protected_acceptance": {
+          "const": false
+        },
+        "production_authorized": {
+          "const": false
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "positive_status": {
+            "const": "OBSERVED"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "observations": {
+            "type": "object"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "observations": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "evidence_class": {
+            "const": "SCHEMA_TEST_VECTOR"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "observer": {
+            "properties": {
+              "kind": {
+                "const": "SCHEMA_TEST_VECTOR"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "evidence_class": {
+            "const": "REAL_COMPONENT_SYNTHETIC_DATA"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "observer": {
+            "properties": {
+              "kind": {
+                "const": "INDEPENDENT_READBACK"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

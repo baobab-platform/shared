@@ -143,6 +143,7 @@ on:
       - "scripts/ea_dev_register.py"
       - "scripts/validate_ea_xb_acceptance.py"
       - "scripts/validate_ea_xb_v11_proposal.py"
+      - "scripts/dev07_transaction_gate.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   pull_request:
@@ -194,6 +195,7 @@ on:
       - "scripts/ea_dev_register.py"
       - "scripts/validate_ea_xb_acceptance.py"
       - "scripts/validate_ea_xb_v11_proposal.py"
+      - "scripts/dev07_transaction_gate.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
   workflow_dispatch:
@@ -241,6 +243,8 @@ jobs:
         run: |
           python scripts/validate_ea_xb_v11_proposal.py
           python scripts/tests/test_ea_xb_v11_proposal.py
+      - name: Validate DEV-07 atomic-commit and cross-engine observer invariants (no acceptance promotion)
+        run: python scripts/tests/test_dev07_transaction_gate.py
       - name: Validate EA-DEV register and decision reconciliation (DEV-00)
         run: |
           python scripts/ea_dev_register.py --check
