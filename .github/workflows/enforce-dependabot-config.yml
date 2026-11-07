@@ -301,11 +301,16 @@ jobs:
                       "version-update:semver-patch",
                   }):
                       fail(f"updates[{index}]: ignore must be limited to routine semver update types")
-              registry_names = entry.get("registries", [])
+              # Omitting registries is valid for public ecosystems. Only
+              # explicitly declared registry names require top-level entries;
+              # defaulting absence to [] erroneously rejects all public deps.
+              registry_names = entry.get("registries")
               if registry_names not in ("*", None):
                   known_registries = doc.get("registries")
-                  if not isinstance(registry_names, list) or not all(
-                      isinstance(name, str) for name in registry_names
+                  if (
+                      not isinstance(registry_names, list)
+                      or not registry_names
+                      or not all(isinstance(name, str) and name.strip() for name in registry_names)
                   ):
                       fail(f"updates[{index}]: invalid registries")
                   elif not isinstance(known_registries, dict) or any(
