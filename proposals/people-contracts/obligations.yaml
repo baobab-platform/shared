@@ -1,0 +1,78 @@
+# Deliberately outside contracts/: proposal, NOT a canonical machine-consumable contract.
+proposal: baobab-people-contract-obligations
+version: "0.1"
+status: PROPOSED_NON_CANONICAL
+requested_on: "2026-11-07"
+source:
+  repository: baobab-platform/baobab-erp
+  decision: ADR-ERP-023
+  domain_owner: baobab-erp
+  canonical_contract_owner: baobab-platform/shared
+runtime_target:
+  idempiere: "13"
+  java_target: "21"
+  postgresql: "17"
+  java21_runtime_qualification: PENDING
+namespace_review:
+  proposed_domains: [workforce, payroll]
+  reservation_granted: false
+  catalogue_registration_granted: false
+proposed_capability_discussion_labels:
+  - workforce.employment.manage
+  - workforce.attendance.approve
+  - workforce.leave.approve
+  - payroll.run.manage
+  - payroll.payslip.read
+  - payroll.statutory-output.prepare
+  - payroll.journal-handoff.prepare
+  - payroll.reconciliation.read
+minimum_contract_dimensions:
+  - tenant_id
+  - legal_employer_legal_entity_id
+  - authoritative_cp_context_and_mandate
+  - independently_attested_iam_actor_and_purpose
+  - effective_dated_employment_version
+  - work_location_and_statutory_jurisdiction
+  - period_and_currency
+  - rule_pack_digest_and_evidence_revision
+  - status_and_incomplete_information_reasons
+  - calculator_provider_version_and_qualification
+  - approval_principal_and_maker_checker_separation
+  - idempotency_and_replay_identity
+  - correction_and_reversal_lineage
+  - cross_engine_reference_and_document_custody
+  - privacy_classification_and_retention_policy
+obligations:
+  - id: PEOPLE-01
+    owner: shared
+    requirement: Agree capability domains and provider-neutral semantic granularity; publish schema, catalogue and event-owner registration only after accepted review.
+  - id: PEOPLE-02
+    owner: baobab-cp
+    requirement: Require current tenant/legal-employer binding, employer market scope, legal mandate, time-bounded grants and independent maker/checker authority.
+  - id: PEOPLE-03
+    owner: baobab-iam
+    requirement: Authenticate principals and enforce step-up without equating employee status with access rights.
+  - id: PEOPLE-04
+    owner: baobab-erp
+    requirement: Keep employment history immutable/versioned; separate inputs, provider calculation, approval, native journal and reconciliation.
+  - id: PEOPLE-05
+    owner: payroll-provider
+    requirement: Supply independently qualified ZA first, UG second, per-jurisdiction effective-dated statutory calculations and signed golden vectors.
+  - id: PEOPLE-06
+    owner: baobab-erp
+    requirement: Apply native posting veto; hand off only aggregate employer/cost-centre liabilities and expenses; retain correction lineage.
+  - id: PEOPLE-07
+    owner: baobab-payments
+    requirement: Govern bank release independently from HR approval, payroll finalisation and ERP posting.
+  - id: PEOPLE-08
+    owner: documents-and-evidence-providers
+    requirement: Restrict employee contracts, payslips and statutory records; retain encrypted custody, lawful-purpose access and retention provenance.
+  - id: PEOPLE-09
+    owner: regulations-and-payroll-reviewers
+    requirement: Keep legal source and effective/publication time provenance; human-approved signed rule promotion, never AI-auto-activate.
+activation:
+  capability_support: NOT_DECLARED
+  cp_binding: FORBIDDEN_PENDING_CONTRACT
+  statutory_status: NOT_CERTIFIED
+  production_payrun: FORBIDDEN
+  money_movement: FORBIDDEN
