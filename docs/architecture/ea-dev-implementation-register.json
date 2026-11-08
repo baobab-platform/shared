@@ -1,11 +1,11 @@
 {
   "schema": "ea-dev-implementation-register.v1",
-  "observed_on": "2026-11-02",
+  "observed_on": "2026-11-08",
   "purpose": "READ_MODEL_NOT_AUTHORITY",
   "programme": "docs/architecture/ea-v2.3-development-enablement-implementation-plan-2026-10-23.md",
   "canonical_matrix": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
   "reconciliation": "docs/architecture/ea-dev-00-gate-reconciliation.md",
-  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 now has all fourteen unchanged NAB-03 development cases PASS through the real CP-governed CMS/BFF path, independently hash-verified native audit/CP joins and teardown. The historical 12 PASS/2 BLOCKED and subsequent failed candidates remain unchanged. Protected and production approval are separate. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates. DEV-14/15 update: merged Infrastructure #64 and owner fixes now provide independently hash-verified connected receipts: Pulse 20 PASS and Payments 18 PASS / 5 BLOCKED, with complete issuer/host cleanup. Both packages remain PARTIAL; image/Codespaces, legal/mandate and native event-replay gaps are explicit. Original evidence timestamps are UTC (the same observations are 27 October SAST); historical package observations and receipts are unchanged. Engine-template #11 aligns the executable owner protocol. The updated baobab-dev #50 source remains held for image security qualification. No staging/production/provider certification is accepted. 29 October W0 source-only refresh: see ea-dev-w0-source-observation-2026-10-29.json for fourteen exact main heads, open candidates and TMS #19–26 merges. Source observation never refreshes historical runtime dates. Infrastructure #67 original artifact 12879880298 was independently downloaded and verified against its ZIP digest and both report/hash pairs; only its eight BFF HTTP component observations are qualified. Shared #417 and Infrastructure #67 are merged. No complete INT-05 or EA-XB operation is inferred.",
+  "observation_scope": "Selected merged CP/IAM/Infrastructure sources and scoped development receipts. DEV-05 now has all fourteen unchanged NAB-03 development cases PASS through the real CP-governed CMS/BFF path, independently hash-verified native audit/CP joins and teardown. The historical 12 PASS/2 BLOCKED and subsequent failed candidates remain unchanged. Protected and production approval are separate. DEV-06 now has independently hash-verified 26 October run 40280112921: all 18 unchanged engineering cases and 21 component checks PASS, original source/merge/tree provenance and independent teardown verified, Infrastructure #60 merged. Historical partial/failed receipts remain unchanged. Certified-provider canonical INT-07, legal, protected and production acceptance are not inferred. DEV-09 runtime receipts remain observed on 25 October at their original pins; its 26 October CP #440 observation is source/owner-PG17 evidence only. Other package dates and results are unchanged. DEV-10 source tooling retains its 25 October twelve-source matrix and unresolved provider/Codespaces/rollout gates; this Shared source merge does not qualify the provider image or refresh historical runtime dates. DEV-14/15 update: merged Infrastructure #64 and owner fixes now provide independently hash-verified connected receipts: Pulse 20 PASS and Payments 18 PASS / 5 BLOCKED, with complete issuer/host cleanup. Both packages remain PARTIAL; image/Codespaces, legal/mandate and native event-replay gaps are explicit. Original evidence timestamps are UTC (the same observations are 27 October SAST); historical package observations and receipts are unchanged. Engine-template #11 aligns the executable owner protocol. The updated baobab-dev #50 source remains held for image security qualification. No staging/production/provider certification is accepted. 29 October W0 source-only refresh: see ea-dev-w0-source-observation-2026-10-29.json for fourteen exact main heads, open candidates and TMS #19–26 merges. Source observation never refreshes historical runtime dates. Infrastructure #67 original artifact 12879880298 was independently downloaded and verified against its ZIP digest and both report/hash pairs; only its eight BFF HTTP component observations are qualified. Shared #417 and Infrastructure #67 are merged. No complete INT-05 or EA-XB operation is inferred. 8 November source/evidence reconciliation: ERP #125 merged after full final-head CI and independently verified earlier same-event native JVM receipts; this is DEV-11 component-level progress, not genuine buyer-origin L4-OPS-01 acceptance. Trade #189, Infrastructure #72 and DEV-14 baobab-dev #62 remain open; protected/runtime credentials and image/consumer qualification remain separately held. Historical package observation dates are retained unless a newer scoped observation was verified.",
   "freshness_days": 7,
   "baselines": [
     {
@@ -717,6 +717,20 @@
       "ci_status": "SUCCESS",
       "ci_urls": [
         "https://github.com/baobab-platform/baobab-dev/actions/runs/41429395911"
+      ]
+    },
+    {
+      "key": "dev11-erp-same-event",
+      "repo": "baobab-erp",
+      "sha": "f8558b616e81f37ef0246a0e7fc58bc81b2a1e3a",
+      "pr": 125,
+      "scope": "8 Nov merged ERP same-event native/JVM source; final reviewed head nine CI workflows green. Independent earlier 115e9a0d JVM original run 41946627517 confirms real Trade persisted event, CP/JVM readback, replay/unknown-result adoption and 10-span component lineage; NOT a genuine buyer checkout, eight-owner L4-OPS-01 or financial posting.",
+      "reviewed_head_sha": "fa7c0c05b53118726759bc851adec9fe800cebc6",
+      "ci_status": "SUCCESS",
+      "ci_urls": [
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/42025162846",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/42025164179",
+        "https://github.com/baobab-platform/baobab-erp/actions/runs/42025163439"
       ]
     }
   ],
@@ -1742,7 +1756,7 @@
         "dev07-bff-http",
         "w0-shared-reconciliation"
       ],
-      "source_note": "Trade #172 merged at afea037ba8e32154ac920667609ac1016a9fb02a after review of 0b99f4aed188361bfaafd198ed5ae577585a3322 and 27 successful checks / 8 applicable skips. Fresh native result: 16 PASS/9 joined BLOCKED, no failures; original artifact/receipt hashes, tested source and native active-fixture cleanup independently verified. Evidence covers actual Medusa/PostgreSQL services and route-handler execution; joined IAM/CP/BFF authority and Infrastructure host teardown remain unqualified. 27 October source-conformance audit: Trade #176 merged; Trade #177 and Infrastructure #66 are corrective candidates. Issuer-only native run 40490001220 failed at buyer context after real issuer/CP joins; failed sanitized evidence is retained separately. New buyer-ID, spending-source, documentary-lease and diagnostic corrections require final-head CI and a fresh native run; no historical case status is promoted. See docs/assessments/trade/2026-10-27-dev07-workstream-conformance-audit.md. Subsequent corrected run 40492142720 at Infrastructure 9ef5b5a376840041a8ea4fef868c133b9287785e / Trade bda46ba2815f6938d8c6502f0d847e09c87c2fc6 independently proves all eight IAM/CP/native-handler cases PASS and issuer/CP binding/host cleanup. Original report SHA-256 1fdedbd45a8080f0bc9c58b38d593f7522dc4396735850bc792f6133ea6eed73 is retained separately. This is a supplemental component observation; the historical 25-case inventory, dates, INT-05/BFF/provider/protected/production status remain unchanged. Final publication: Trade #177 merged at b8164f6c3a5bd940f968194d9b74c66e05a94350 after all 34 reported checks completed; Infrastructure #66 merged at 0538e5040a9080a7dd9bd937bc24f2d892d6af22 after all 43 reported checks completed. Both final heads have no unresolved review threads. Shared #406 published the audit/evidence at c1d66ee2bb63c8d0d6a9aa8757dfe8157cb0679f. These corrective source gates are closed; all remaining joined obligations stay partial. 29 October: Shared #417 merge bef9981a8f0e646e7ffb3eb0f4fa7b15d3985b65 records Infrastructure #67 merge ce81ca83574804b4f81c7cb0969d970310b6576d, tested head 712c140eefb923408cf6d7fe08b2329f80f51940. Original artifact 12879880298 ZIP SHA256 9577f9d1ea9fc0a957899bbee2d8d1d96044b937d84e664418791b7c16e3ca9a and both report/hash pairs independently verified. Eight real Next/Redis/IAM/CP/Trade HTTP checks and independent binding/issuer/host cleanup pass. Preserved report explicitly leaves int05_qualified false. Current Trade #183 is an unmerged RFQ/quotation candidate at fae67638c0a6225efe97ed01d15216e77b5a0785; not implementation on main. New main sources since the original component run require affected-path requalification. Original ZIP bytes are retained as libfile_f5504d7948788191bc2d8547fe294b6e; source custody-projection.json is explicitly redacted and is not an original receipt. No credential-related config hashes or scanner exceptions are added.",
+      "source_note": "Trade #172 merged at afea037ba8e32154ac920667609ac1016a9fb02a after review of 0b99f4aed188361bfaafd198ed5ae577585a3322 and 27 successful checks / 8 applicable skips. Fresh native result: 16 PASS/9 joined BLOCKED, no failures; original artifact/receipt hashes, tested source and native active-fixture cleanup independently verified. Evidence covers actual Medusa/PostgreSQL services and route-handler execution; joined IAM/CP/BFF authority and Infrastructure host teardown remain unqualified. 27 October source-conformance audit: Trade #176 merged; Trade #177 and Infrastructure #66 are corrective candidates. Issuer-only native run 40490001220 failed at buyer context after real issuer/CP joins; failed sanitized evidence is retained separately. New buyer-ID, spending-source, documentary-lease and diagnostic corrections require final-head CI and a fresh native run; no historical case status is promoted. See docs/assessments/trade/2026-10-27-dev07-workstream-conformance-audit.md. Subsequent corrected run 40492142720 at Infrastructure 9ef5b5a376840041a8ea4fef868c133b9287785e / Trade bda46ba2815f6938d8c6502f0d847e09c87c2fc6 independently proves all eight IAM/CP/native-handler cases PASS and issuer/CP binding/host cleanup. Original report SHA-256 1fdedbd45a8080f0bc9c58b38d593f7522dc4396735850bc792f6133ea6eed73 is retained separately. This is a supplemental component observation; the historical 25-case inventory, dates, INT-05/BFF/provider/protected/production status remain unchanged. Final publication: Trade #177 merged at b8164f6c3a5bd940f968194d9b74c66e05a94350 after all 34 reported checks completed; Infrastructure #66 merged at 0538e5040a9080a7dd9bd937bc24f2d892d6af22 after all 43 reported checks completed. Both final heads have no unresolved review threads. Shared #406 published the audit/evidence at c1d66ee2bb63c8d0d6a9aa8757dfe8157cb0679f. These corrective source gates are closed; all remaining joined obligations stay partial. 29 October: Shared #417 merge bef9981a8f0e646e7ffb3eb0f4fa7b15d3985b65 records Infrastructure #67 merge ce81ca83574804b4f81c7cb0969d970310b6576d, tested head 712c140eefb923408cf6d7fe08b2329f80f51940. Original artifact 12879880298 ZIP SHA256 9577f9d1ea9fc0a957899bbee2d8d1d96044b937d84e664418791b7c16e3ca9a and both report/hash pairs independently verified. Eight real Next/Redis/IAM/CP/Trade HTTP checks and independent binding/issuer/host cleanup pass. Preserved report explicitly leaves int05_qualified false. Current Trade #183 is an unmerged RFQ/quotation candidate at fae67638c0a6225efe97ed01d15216e77b5a0785; not implementation on main. New main sources since the original component run require affected-path requalification. Original ZIP bytes are retained as libfile_f5504d7948788191bc2d8547fe294b6e; source custody-projection.json is explicitly redacted and is not an original receipt. No credential-related config hashes or scanner exceptions are added. 8 Nov SOURCE UPDATE ONLY: Trade #189 is open at 79dc564a; guarded native buyer same-XID code and origin witness exist, but its true non-draft ENFORCED buyer positive, RFQ/quotation connected authority, original event-to-ERP join and independent eight-owner evidence are NOT accepted. Historic 25-case component receipt and 29 October observation remain unchanged.",
       "observed_on": "2026-10-29",
       "target_date": "2026-11-29",
       "actual_completion_date": null,
@@ -2585,7 +2599,7 @@
         "dev10-provider-pr48",
         "dev14-provider-pr50"
       ],
-      "source_note": "2 November DEV10-R1: baobab-dev #48 and stacked #50 are both merged at eb9fb92f043c782acff5d87c77301d9a9e8b80dd; reviewed PR head checks passed (40+9 skip and 38+9 skip). Merged-source SHA256 of versions.lock is 3927b97b904cf8871b6d00d08d80ea63a2b514d2c7425d694bc481d51360d2ac; source capabilities match Shared. Shared current-source census expanded to 13 including Nabhold, corrected Subscriptions PG17 and Payments Rust-feature observations; TMS declaration still pending in unmerged #29. The provider lock remains Python 3.14.6, Node24/pnpm11, Java17 and Playwright1.62.1. Preferred Node26 LTS, Python3.14.10, pnpm12, Java21, PG17 and Playwright1.64.1 are unqualified targets, not effective source pins. Provider merged-main push docs/pages failed and multiarch image checks were in progress when observed. R1 source reconciliation pending Shared PR final-head CI. No hosted user Codespaces, private entitlement, published new image, or true native upgrade/rollback claimed.",
+      "source_note": "2 November DEV10-R1: baobab-dev #48 and stacked #50 are both merged at eb9fb92f043c782acff5d87c77301d9a9e8b80dd; reviewed PR head checks passed (40+9 skip and 38+9 skip). Merged-source SHA256 of versions.lock is 3927b97b904cf8871b6d00d08d80ea63a2b514d2c7425d694bc481d51360d2ac; source capabilities match Shared. Shared current-source census expanded to 13 including Nabhold, corrected Subscriptions PG17 and Payments Rust-feature observations; TMS declaration still pending in unmerged #29. The provider lock remains Python 3.14.6, Node24/pnpm11, Java17 and Playwright1.62.1. Preferred Node26 LTS, Python3.14.10, pnpm12, Java21, PG17 and Playwright1.64.1 are unqualified targets, not effective source pins. Provider merged-main push docs/pages failed and multiarch image checks were in progress when observed. R1 source reconciliation pending Shared PR final-head CI. No hosted user Codespaces, private entitlement, published new image, or true native upgrade/rollback claimed. 8 Nov SOURCE UPDATE ONLY: #62 is still open and Foundation policy disallows its context; newer doctor and security-source CI do not establish a signed multiarch candidate, a private-package hosted Codespace or a full 13-consumer native rollback. Retain historical 2 November runtime observation.",
       "observed_on": "2026-11-02",
       "target_date": "2026-12-13",
       "actual_completion_date": null,
@@ -2676,36 +2690,87 @@
         "DEV-01"
       ],
       "dependency_scope": "Package delivery dependencies; unrelated source work may proceed.",
-      "progress": "SOURCE_IN_PROGRESS",
+      "progress": "REAL_COMPONENT_SYNTHETIC_DATA",
       "assessment": "PARTIAL_SOURCE_RUNTIME_UNPROVEN",
-      "source_baselines": [],
-      "source_note": "2 November source audit: Infrastructure #72 has a green initial source-routing CI at d3c3d80a6fcef02e9077759b94259347c010bb78, but its new asynchronous graph extension is under review. Shared #429 proposes canonical closed telemetry evidence; CP #458 adds privacy-safe route logging with initial Go CI failure found and a correction under recheck. Infrastructure #71 is DEV-12 database safety only. No real end-to-end W3C tracing, current IAM/CP authority-negative proof, outbox/consumer replay, independent evidence custody or estate Playwright/axe/Lighthouse qualification observed. No protected promotion.",
-      "observed_on": "2026-11-02",
+      "source_baselines": [
+        "dev11-erp-same-event"
+      ],
+      "source_note": "8 November source review: ERP #125 merged to main at f8558b616e81f37ef0246a0e7fc58bc81b2a1e3a; final reviewed head fa7c0c05 passed all nine workflows including actual real-IAM/CP/RabbitMQ/iDempiere DEV-11 integration. Original independently hash-verified same-event run 41946627517 was executed at historical ERP source 115e9a0d: persisted Trade original event, native iDempiere effect, immutable CP/JVM attribution, lost-result adoption/replay and full cleanup. Exported connected component telemetry has 10 spans/9 edges. The original receipt deliberately marks synthetic buyer origin NATIVE_ORDER_ABSENT. Infrastructure #72 remains open at 47f0c253 with actual DEV-11 connected BFF job failed (42168676260); Trade #189 remains open at 79dc564a. No eight-owner authenticated source-compatible completed transaction, genuine buyer spend/commitment, finance posting or L4-OPS-01 acceptance. All protected axes remain false; do not rewrite earlier receipts.",
+      "observed_on": "2026-11-08",
       "target_date": "2026-12-13",
       "actual_completion_date": null,
-      "mandatory_ci": "BASELINE_ONLY",
-      "environment": "NO_RUNTIME_OBSERVED",
-      "evidence_class": "SOURCE",
+      "mandatory_ci": "SUCCESS",
+      "environment": "ISOLATED_DEVELOPMENT",
+      "evidence_class": "REAL_COMPONENT_SYNTHETIC_DATA",
       "runtime": {
-        "status": "NOT_OBSERVED",
+        "status": "BLOCKED",
         "canonical_scenarios": [
           "L4-OPS-01"
         ],
-        "evidence_urls": [],
-        "cleanup": "NOT_OBSERVED",
-        "cases": []
+        "evidence_urls": [
+          "https://github.com/baobab-platform/baobab-erp/actions/runs/41946627517",
+          "https://github.com/baobab-platform/baobab-erp/actions/runs/42025162846"
+        ],
+        "cleanup": "COMPLETE",
+        "cases": [
+          {
+            "case": "original-trade-event-native-jvm-and-cp-attribution",
+            "result": "PASS",
+            "reason": "INDEPENDENT_PERSISTED_SAME_EVENT_READBACK_AT_HISTORICAL_EXECUTED_HEAD",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/41946627517"
+            ]
+          },
+          {
+            "case": "lost-commit-result-native-adoption-replay",
+            "result": "PASS",
+            "reason": "NATIVE_JVM_UNKNOWN_RESULT_RECOVERY_AND_NO_DUPLICATE_EFFECTS",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/41946627517"
+            ]
+          },
+          {
+            "case": "exported-trade-publisher-erp-component-graph",
+            "result": "PASS",
+            "reason": "INDEPENDENT_10_SPAN_9_EDGE_COMPONENT_TRACE_ONLY",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/41946627517"
+            ]
+          },
+          {
+            "case": "genuine-governed-medusa-buyer-origin",
+            "result": "BLOCKED",
+            "reason": "ORIGINAL_RECEIPT_NATIVE_ORDER_ABSENT_AND_BUYER_COMMITMENT_FALSE",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/41946627517",
+              "https://github.com/baobab-platform/baobab-erp/actions/runs/42025162846"
+            ]
+          },
+          {
+            "case": "independent-eight-owner-custody-join",
+            "result": "BLOCKED",
+            "reason": "INFRASTRUCTURE_72_CONNECTED_BFF_FAIL_AND_EIGHT_OWNER_JOIN_UNEXECUTED",
+            "evidence_urls": [
+              "https://github.com/baobab-platform/infrastructure/actions/runs/42168676260"
+            ]
+          }
+        ]
       },
       "blockers": [
         {
           "kind": "IMPLEMENTED_NOT_TESTED",
-          "detail": "Proposed Infrastructure #72 graph validator, Shared #429 schema and CP #458 request-log remediation have source tests, but final-head CI and owner conformance remain pending. Original #72 source-routing checks were green."
+          "detail": "Trade #189 genuine native non-draft buyer order, ENFORCED seller/buyer/spend authority and original same-XID outbox are source candidates; no independent connected positive at current Trade #189, CP #465, IAM and ZuriBeans heads."
+        },
+        {
+          "kind": "RUNTIME_FAILED",
+          "detail": "Infrastructure #72 final-head DEV-11 connected confidential BFF/IAM/CP/Trade candidate job failed (run 42168676260); independent eight-owner original graph and custody join remain unexecuted. Do not import an older passing component receipt as current composite."
         },
         {
           "kind": "MISSING_EXTERNAL_INPUT",
-          "detail": "Native BFF/IAM/CP/engine/outbox W3C propagation, current authority negatives, independent L4-OPS-01 receipts and cleanup, actual per-PR/nightly owner runs and estate browser/performance evidence are not observed."
+          "detail": "Disposable IAM issuer credentials, current CP signer/binding/budget/mandate, provisioned native Medusa cart and confidential BFF buyer session require exact run-private runtime setup; protected approval is not inferred."
         }
       ],
-      "next_action": "Review final-head source CI for Infrastructure #72, Shared #429 and CP #458; implement current-authority native trace/outbox lineage and real connected negatives, then run per-estate browser/accessibility/performance owners and independently verify L4-OPS-01 receipts.",
+      "next_action": "Execute Trade #189 genuine governed buyer/cart/price/order with one native seller/buyer/spend/outbox XID; join the original event to merged ERP #125 and Infrastructure #72 using actual IAM/CP/BFF authority and immutable exported eight-owner readback. Preserve negative, replay, cleanup, browser and performance gates. Do not merge #72 or accept L4-OPS-01 until final-source independently checked runtime passes.",
       "protected_staging_accepted": false,
       "external_certification_accepted": false,
       "production_accepted": false,
@@ -2817,7 +2882,7 @@
         "dev1415-infrastructure",
         "dev14-template"
       ],
-      "source_note": "Merged reusable descriptor, genuine Hydra issuance and current CP-governed native execution at exact source/image pins in Infrastructure #64. Pulse receipt 5cbf683d5bd444ee35dbe4fbaaedcf6faea161b0ba04879fc9fbddd56f0e650e; Payments receipt 51a824c6151cfb8bff62a54bba61ae8e603897d9016a4d5ce95ca9c9de31ef3a. Pulse 20 PASS (all nine ENG-ONB plus eleven domain cases), Payments 18 PASS / 5 BLOCKED (two common and three domain). Ten Pulse native audits independently join CP; all seven selected capability deltas are observed. Both profiles verify four authority withdrawals, disabled principal, real CP/issuer recovery and issuer/host cleanup; Pulse also recovers PG17/Qdrant. Profile prefixes distinguish original case IDs, not new canonical scenarios. Evidence timestamps are 26 October UTC / 27 October SAST. Neither package is accepted. 29 October final-head workflow refresh: baobab-dev #48 7d6d8d2119292f49ff0eb82eea54040406745121 and #50 533f5452661aff611b5dd34664bb84fdb47ddf3f both failed final-image amd64/arm64 scans on urllib3 2.7.0 (CVE-2026-97687/97689; scanner lists 2.8.0 fixed). New #48 candidate 83c09e6f32f9a37d537b137df2634b4b39d8ca40 and #50 aa2dfff114312818970709847bf1d340d2b31c49 constrain system/Poetry urllib3; fresh final-head image qualification is pending. Neither PR is merged. No exception expiry was extended by this correction; existing exceptions are not unsuppressed clearance.",
+      "source_note": "Merged reusable descriptor, genuine Hydra issuance and current CP-governed native execution at exact source/image pins in Infrastructure #64. Pulse receipt 5cbf683d5bd444ee35dbe4fbaaedcf6faea161b0ba04879fc9fbddd56f0e650e; Payments receipt 51a824c6151cfb8bff62a54bba61ae8e603897d9016a4d5ce95ca9c9de31ef3a. Pulse 20 PASS (all nine ENG-ONB plus eleven domain cases), Payments 18 PASS / 5 BLOCKED (two common and three domain). Ten Pulse native audits independently join CP; all seven selected capability deltas are observed. Both profiles verify four authority withdrawals, disabled principal, real CP/issuer recovery and issuer/host cleanup; Pulse also recovers PG17/Qdrant. Profile prefixes distinguish original case IDs, not new canonical scenarios. Evidence timestamps are 26 October UTC / 27 October SAST. Neither package is accepted. 29 October final-head workflow refresh: baobab-dev #48 7d6d8d2119292f49ff0eb82eea54040406745121 and #50 533f5452661aff611b5dd34664bb84fdb47ddf3f both failed final-image amd64/arm64 scans on urllib3 2.7.0 (CVE-2026-97687/97689; scanner lists 2.8.0 fixed). New #48 candidate 83c09e6f32f9a37d537b137df2634b4b39d8ca40 and #50 aa2dfff114312818970709847bf1d340d2b31c49 constrain system/Poetry urllib3; fresh final-head image qualification is pending. Neither PR is merged. No exception expiry was extended by this correction; existing exceptions are not unsuppressed clearance. 8 Nov SOURCE UPDATE ONLY: PR #48/#50 have since merged at eb9fb92f043c782acff5d87c77301d9a9e8b80dd; PR #62 remains open with revised doctor origin/worktree hardening, x/net 0.62.0 source graph and opportunistic cache handling. Its DEV-14 workflow passed, but Foundation CVE gate refuses #62 under the existing scoped risk policy, and multiarch image/hosted Codespaces consumer acceptance remain unqualified. Historic 26 October ENG-ONB receipts are not updated by this source check.",
       "observed_on": "2026-10-29",
       "target_date": null,
       "actual_completion_date": null,
