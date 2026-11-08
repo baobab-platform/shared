@@ -106,7 +106,7 @@ jobs:
               ;;
           esac
 
-      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6 (main, 2026-09-09)
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.0.0+6 (main, 2026-09-09)
         if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_python == 'true' }}
         with:
           python-version: "3.13"
