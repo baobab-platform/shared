@@ -3,7 +3,6 @@
 
 All observations here are invented test vectors, not runtime receipts.
 """
-import copy
 import importlib.util
 import unittest
 from pathlib import Path
@@ -30,6 +29,7 @@ def vector():
         "operation_reference": "trade/trade.order.commit/cart_dev07_test/1/1",
         "txid": "8735", "draft": False, "status": "PLACED", "count": 1,
         "amount_minor": 32400, "currency": "USD",
+        "native_line_count": 1, "native_lines_same_transaction": True,
     }
     negatives = {}
     for key in gate.NEGATIVE_IDS:
@@ -55,21 +55,28 @@ def vector():
             "seller": {
                 "receipt_id": SELLER, "order_id": order["id"],
                 "operation_reference": order["operation_reference"], "txid": order["txid"], "count": 1,
+                "decision_txid": order["txid"], "decision_outcome": "ALLOWED",
+                "enforcement_mode": "ENFORCED", "commerce_model": "B2B",
+                "classification_status": "ACTIVE", "receipt_consumed": True,
             },
             "buyer": {
                 "receipt_id": BUYER, "order_id": order["id"],
                 "operation_reference": order["operation_reference"], "txid": order["txid"], "count": 1,
+                "receipt_insert_txid": order["txid"], "seller_receipt_id": SELLER,
+                "spend_reservation_id": RESERVATION, "receipt_consumed": True,
             },
             "spend": {
                 "reservation_id": RESERVATION, "order_id": order["id"],
                 "txid": order["txid"], "status": "COMMITTED", "count": 1,
                 "amount_minor": order["amount_minor"], "currency": order["currency"],
+                "buyer_organisation_id": order["buyer_organisation_id"],
             },
             "outbox": {
                 "event_id": EVENT, "order_id": order["id"], "txid": order["txid"],
                 "event_type": "com.baobab-platform.trade.order.placed.v1",
                 "payload_sha256": DIGEST, "idempotency_key": "order_dev07_1",
                 "count": 1, "immutable_readback": True,
+                "tenant_id": order["tenant_id"], "seller_legal_entity_id": order["seller_legal_entity_id"],
             },
         },
         "downstream": {
@@ -145,6 +152,61 @@ class Dev07ReadbackGate(unittest.TestCase):
         altered = vector()
         altered["downstream"]["event_id"] = SELLER
         self.assertEqual("INVALID", gate.disposition(altered)[0])
+
+    def test_current_enforced_seller_and_native_line_fences_are_mandatory(self):
+        for field, value in (
+            ("enforcement_mode", "SHADOW"), ("decision_outcome", "DENIED"),
+            ("commerce_model", "B2C"), ("classification_status", "PROVISIONED"),
+            ("receipt_consumed", False), ("decision_txid", "8766")
+        ):
+            with self.subTest(field=field):
+                altered = vector()
+                altered["observations"]["seller"][field] = value
+                self.assertEqual("INVALID", gate.disposition(altered)[0])
+        for field, value in (("native_line_count", 0), ("native_lines_same_transaction", False)):
+            altered = vector()
+            altered["observations"]["order"][field] = value
+            self.assertEqual("INVALID", gate.disposition(altered)[0])
+
+    def test_buyer_receipt_must_be_consumed_and_join_current_seller_and_spend(self):
+        for field, value in (
+            ("receipt_insert_txid", "8766"), ("seller_receipt_id", "foreign_seller"),
+            ("spend_reservation_id", "b2bres_foreign_99999"),
+            ("receipt_consumed", False),
+        ):
+            with self.subTest(field=field):
+                altered = vector()
+                altered["observations"]["buyer"][field] = value
+                self.assertEqual("INVALID", gate.disposition(altered)[0])
+
+    def test_order_spend_outbox_must_reconcile_buyer_and_legal_scope(self):
+        for part, field, value in (
+            ("spend", "buyer_organisation_id", "foreign_buyer"),
+            ("outbox", "tenant_id", "foreign_tenant"),
+            ("outbox", "seller_legal_entity_id", "foreign_seller"),
+        ):
+            with self.subTest(part=part, field=field):
+                altered = vector()
+                altered["observations"][part][field] = value
+                self.assertEqual("INVALID", gate.disposition(altered)[0])
+
+    def test_blocked_denials_cannot_hide_prohibited_effects_or_retry_overruns(self):
+        for name in gate.NEGATIVE_IDS:
+            for field, value in (
+                ("prohibited_effect_count", 1),
+                ("retry_count", 4),
+                ("eligible_effect_count", 2),
+            ):
+                with self.subTest(case=name, field=field):
+                    altered = vector()
+                    altered["negatives"][name]["status"] = "BLOCKED"
+                    altered["negatives"][name][field] = value
+                    self.assertEqual("INVALID", gate.disposition(altered)[0])
+            if name in gate.DENIAL_CASES:
+                altered = vector()
+                altered["negatives"][name]["status"] = "BLOCKED"
+                altered["negatives"][name]["eligible_effect_count"] = 1
+                self.assertEqual("INVALID", gate.disposition(altered)[0])
 
     def test_spend_equals_full_order_obligation(self):
         for field, value in (("amount_minor", 1), ("currency", "ZAR"), ("count", 2)):
