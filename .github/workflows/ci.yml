@@ -146,6 +146,7 @@ on:
       - "scripts/ea_dev_register.py"
       - "scripts/validate_ea_xb_acceptance.py"
       - "scripts/validate_ea_xb_v11_proposal.py"
+      - "scripts/dev07_transaction_gate.py"
       - "scripts/action_advisory_watch.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
@@ -201,6 +202,7 @@ on:
       - "scripts/ea_dev_register.py"
       - "scripts/validate_ea_xb_acceptance.py"
       - "scripts/validate_ea_xb_v11_proposal.py"
+      - "scripts/dev07_transaction_gate.py"
       - "scripts/action_advisory_watch.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
@@ -255,6 +257,8 @@ jobs:
           python scripts/tests/test_ea_xb_v11_proposal.py
       - name: Validate DEV-11 closed trace evidence contract and source negatives
         run: python scripts/tests/test_dev11_trace_contract.py
+      - name: Validate DEV-07 atomic native commitment and same-event observer invariants (source only)
+        run: python scripts/tests/test_dev07_transaction_gate.py
       - name: Validate EA-DEV register and decision reconciliation (DEV-00)
         run: |
           python scripts/ea_dev_register.py --check
