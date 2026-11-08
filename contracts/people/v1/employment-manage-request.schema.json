@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/employment-manage-request.schema.json",
+  "title": "Propose immutable employment version",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation",
+    "employment_ref",
+    "effective_on",
+    "proposed_status",
+    "source_evidence_ref",
+    "idempotency_key"
+  ],
+  "properties": {
+    "operation": {
+      "enum": [
+        "PROPOSE_VERSION",
+        "CORRECT_VERSION"
+      ]
+    },
+    "employment_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "effective_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "proposed_status": {
+      "enum": [
+        "PROPOSED",
+        "ACTIVE",
+        "SUSPENDED",
+        "ENDED"
+      ]
+    },
+    "source_evidence_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$"
+    },
+    "expected_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "correction_of_version": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "CORRECT_VERSION"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "expected_version",
+          "correction_of_version"
+        ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "expected_version"
+              ]
+            },
+            {
+              "required": [
+                "correction_of_version"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/payroll-evidence-attest-request.schema.json",
+  "title": "Verify selected provider payroll evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_ref",
+    "run_version",
+    "evidence_ref",
+    "idempotency_key"
+  ],
+  "properties": {
+    "run_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "run_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "evidence_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$"
+    }
+  },
+  "description": "Verification intent only: not an approval, journal posting, filing or money movement."
+}

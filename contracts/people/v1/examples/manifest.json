@@ -1,0 +1,38 @@
+[
+  {
+    "file": "provider-selection.json",
+    "schema": "provider-selection.schema.json"
+  },
+  {
+    "file": "employment-read-request.json",
+    "schema": "employment-read-request.schema.json"
+  },
+  {
+    "file": "employment-read-response.json",
+    "schema": "employment-read-response.schema.json"
+  },
+  {
+    "file": "employment-manage-request.json",
+    "schema": "employment-manage-request.schema.json"
+  },
+  {
+    "file": "employment-manage-response.json",
+    "schema": "employment-manage-response.schema.json"
+  },
+  {
+    "file": "payroll-run-read-request.json",
+    "schema": "payroll-run-read-request.schema.json"
+  },
+  {
+    "file": "payroll-run-read-response.json",
+    "schema": "payroll-run-read-response.schema.json"
+  },
+  {
+    "file": "payroll-evidence-attest-request.json",
+    "schema": "payroll-evidence-attest-request.schema.json"
+  },
+  {
+    "file": "payroll-evidence-attest-response.json",
+    "schema": "payroll-evidence-attest-response.schema.json"
+  }
+]

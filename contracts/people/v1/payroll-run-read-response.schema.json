@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/payroll-run-read-response.schema.json",
+  "title": "Read payroll run status",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_ref",
+    "version",
+    "period_from",
+    "period_until",
+    "currency",
+    "data_state",
+    "run_state",
+    "source_selection"
+  ],
+  "properties": {
+    "run_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "period_from": {
+      "type": "string",
+      "format": "date"
+    },
+    "period_until": {
+      "type": "string",
+      "format": "date"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "data_state": {
+      "$ref": "domain.schema.json#/$defs/dataState"
+    },
+    "run_state": {
+      "enum": [
+        "DRAFT",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "FINALISED",
+        "CORRECTED",
+        "UNKNOWN"
+      ]
+    },
+    "source_selection": {
+      "$ref": "domain.schema.json#/$defs/selection"
+    },
+    "signed_result_receipt_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "rule_pack_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "data_state"
+        ],
+        "properties": {
+          "data_state": {
+            "enum": [
+              "PARTIAL",
+              "WITHHELD",
+              "UNAVAILABLE"
+            ]
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "signed_result_receipt_ref"
+              ]
+            },
+            {
+              "required": [
+                "rule_pack_sha256"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "run_state",
+          "data_state"
+        ],
+        "properties": {
+          "run_state": {
+            "const": "FINALISED"
+          },
+          "data_state": {
+            "const": "COMPLETE"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "signed_result_receipt_ref",
+          "rule_pack_sha256"
+        ]
+      }
+    }
+  ]
+}
