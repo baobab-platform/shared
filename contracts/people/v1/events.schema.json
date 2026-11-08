@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/events.schema.json",
+  "title": "Non-activated workforce/payroll canonical event payloads",
+  "$defs": {
+    "employmentProposalRecorded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenant_id",
+        "legal_employer_id",
+        "employment_ref",
+        "version",
+        "binding_revision"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "domain.schema.json#/$defs/tenant"
+        },
+        "legal_employer_id": {
+          "$ref": "domain.schema.json#/$defs/legalEmployer"
+        },
+        "employment_ref": {
+          "$ref": "domain.schema.json#/$defs/opaqueRef"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "binding_revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "payrollEvidenceVerified": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenant_id",
+        "legal_employer_id",
+        "run_ref",
+        "version",
+        "binding_revision",
+        "receipt_ref"
+      ],
+      "properties": {
+        "tenant_id": {
+          "$ref": "domain.schema.json#/$defs/tenant"
+        },
+        "legal_employer_id": {
+          "$ref": "domain.schema.json#/$defs/legalEmployer"
+        },
+        "run_ref": {
+          "$ref": "domain.schema.json#/$defs/opaqueRef"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "binding_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "receipt_ref": {
+          "$ref": "domain.schema.json#/$defs/opaqueRef"
+        }
+      }
+    }
+  }
+}

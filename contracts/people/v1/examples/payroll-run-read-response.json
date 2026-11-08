@@ -1,0 +1,25 @@
+{
+  "run_ref": "payrun_synthetic01",
+  "version": 2,
+  "period_from": "2026-10-01",
+  "period_until": "2026-10-31",
+  "currency": "ZAR",
+  "data_state": "COMPLETE",
+  "run_state": "FINALISED",
+  "signed_result_receipt_ref": "receipt_synthetic01",
+  "rule_pack_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "source_selection": {
+    "tenant_id": "tn_synthetic01",
+    "legal_employer_id": "SYNTHETIC-EMPLOYER",
+    "capability_key": "payroll.run.read",
+    "binding_id": "bind_synthetic01",
+    "provider_id": "provider_synthetic01",
+    "binding_revision": 3,
+    "jurisdiction": "ZA",
+    "source_of_record": "EXTERNAL",
+    "effective_from": "2026-11-01T00:00:00Z",
+    "verified_at": "2026-11-08T00:00:00Z",
+    "expires_at": "2026-11-09T00:00:00Z",
+    "qualification_receipt_ref": "qual_synthetic01"
+  }
+}

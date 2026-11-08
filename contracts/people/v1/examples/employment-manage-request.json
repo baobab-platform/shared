@@ -1,0 +1,10 @@
+{
+  "operation": "CORRECT_VERSION",
+  "employment_ref": "employment_synthetic01",
+  "effective_on": "2026-11-01",
+  "proposed_status": "ENDED",
+  "source_evidence_ref": "evidence_synthetic01",
+  "idempotency_key": "00000000000000000000000000000001",
+  "expected_version": 2,
+  "correction_of_version": 1
+}

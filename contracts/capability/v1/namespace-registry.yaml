@@ -80,3 +80,7 @@ domains:
     description: "Cross-cutting audit and evidence capabilities."
   - key: integration
     description: "Cross-engine integration capabilities not owned by a single business domain."
+  - key: payroll
+    description: "Provider-neutral payroll status and evidence-verification capability domain (ADR-SHARED-045); not finance, statutory filing or payment release."
+  - key: workforce
+    description: "Provider-neutral employment version and workforce lifecycle (ADR-SHARED-045); tenant-selected HRIS or native People."

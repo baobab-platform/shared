@@ -110,6 +110,12 @@ capabilities:
   - capability_key: payment.refund.create
     owner: baobab-payments
     source: ../../payments/v1/capabilities.yaml
+  - capability_key: payroll.evidence.attest
+    owner: baobab-erp
+    source: ../../people/v1/capabilities.yaml
+  - capability_key: payroll.run.read
+    owner: baobab-erp
+    source: ../../people/v1/capabilities.yaml
   - capability_key: regulations.decision.evaluate
     owner: baobab-regulations
     source: ../../regulations/v1/capabilities.yaml
@@ -119,3 +125,9 @@ capabilities:
   - capability_key: regulations.requirement.resolve
     owner: baobab-regulations
     source: ../../regulations/v1/capabilities.yaml
+  - capability_key: workforce.employment.manage
+    owner: baobab-erp
+    source: ../../people/v1/capabilities.yaml
+  - capability_key: workforce.employment.read
+    owner: baobab-erp
+    source: ../../people/v1/capabilities.yaml

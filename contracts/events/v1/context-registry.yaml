@@ -250,6 +250,15 @@ contexts:
       Trade's order-side payment facts are commerce.order-payment.*
       (ADR-SHARED-018 SS8.2).
 
+  - key: payroll
+    status: ACTIVE
+    stewards: [baobab-erp]
+    authority: [ADR-SHARED-045]
+    capability_domains: [payroll]
+    description: >
+      Payroll evidence events. V1 producer remains UNASSIGNED/PROPOSED,
+      even when a tenant chooses an existing external payroll provider.
+
   - key: procurement
     status: ACTIVE
     stewards: []
@@ -324,6 +333,15 @@ contexts:
       trade shipment where the shipment is a trade-execution aggregate
       (ADR-SHARED-018 SS8.3), and the operational enforcement of compliance
       decisions.
+
+  - key: workforce
+    status: ACTIVE
+    stewards: [baobab-erp]
+    authority: [ADR-SHARED-045]
+    capability_domains: [workforce]
+    description: >
+      Workforce version-proposal events. V1 producer remains PROPOSED,
+      never an employment grant, payroll finalisation or automatic HR activation.
 
   - key: workload
     status: ACTIVE

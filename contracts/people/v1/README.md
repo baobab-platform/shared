@@ -1,0 +1,13 @@
+# Baobab People v1 — provider-neutral Shared contract
+
+**Design accepted (ADR-SHARED-045), 8 November 2026.** Four narrowly separated capabilities are DRAFT/EXPERIMENTAL and **NOT provider-qualified, supported or activated**. Event types are PROPOSED without producers.
+
+BYOP is a permanent choice. Tenants may retain third-party or in-house workforce, attendance, leave, HRIS, payroll, filing and document providers indefinitely. They may mix providers by function and jurisdiction. No native People subscription, employee-data migration, iDempiere journal or Baobab Payments activation is compulsory merely to use another Baobab capability.
+
+CP alone selects and attests a currently qualified provider for the exact tenant, legal employer, capability, jurisdiction and effective window. IAM actor/mandate and purpose are established separately and rechecked on consequential operations. The readback `source_selection` is **never accepted from an untrusted request**. Provider native IDs belong in private mappings, not Shared canonical references. A signed receipt, qualification or apparently ACTIVE schema field is not itself current runtime authority.
+
+Canonical capabilities: `workforce.employment.read` (minimal version, no employee PII), `workforce.employment.manage` (proposal/correction only, no self-approval or IAM account), `payroll.run.read` (version/status and opaque provenance only), and `payroll.evidence.attest` (request verification, not approval, filing, posting or bank release). Attendance, leave, payslip, statutory output, payroll run manage, journal handoff and reconciliation management remain independently **unregistered** pending separate accepted contracts.
+
+Per employer/run/version there can be **only one authoritative payroll result**; shadow/parallel calculation is read-only. Provider cutover must be effective-dated and preserve export, historical source, version and correction lineage, audit, lawful retention, independence of GL and Payments, and recovery from replay and provider outages. Wrong tenant/employer/jurisdiction, stale/revoked binding, forged principal, absent qualification, double-authoritative result, untrusted file, or unapproved cross-border processing must fail closed without disclosing personal data. Status UNKNOWN/UNAVAILABLE cannot be promoted to success.
+
+Events are defined under `asyncapi.yaml` and the Shared event registry with PROPOSED lifecycle and **no producer**. No broker, runtime adapter, payroll statutory certification, protected processing, legal employer activation or actual employee data is created. EA-09, ZA/UG jurisdiction vectors, source/outbox/inbox proof, current CP/IAM resolution and BYOP-01…12 connected scenarios are separate required evidence.
