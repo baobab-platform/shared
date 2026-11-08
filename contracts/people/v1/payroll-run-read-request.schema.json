@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/payroll-run-read-request.schema.json",
+  "title": "Read payroll run status intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_ref"
+  ],
+  "properties": {
+    "run_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    }
+  },
+  "description": "No asserted employer, tenant, statutory approval or payment authority."
+}

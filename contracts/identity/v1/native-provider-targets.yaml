@@ -1,0 +1,46 @@
+# IAM native target surfaces, not live provider-support declarations or CP activation.
+# The mandatory development proof shall be produced independently by IAM-owned
+# real provider runs at exact source/runtime digests; these targets create no
+# registered CP support, active binding, workload grant or protected permission.
+schema: baobab-iam-native-targets
+version: "1.0"
+authority: ADR-IAM-0033
+status: TARGET_NOT_QUALIFIED
+providers:
+  - provider_key: baobab-iam.kratos
+    implementation_key: kratos
+    target_facets:
+      - HUMAN_AUTHENTICATION
+      - CREDENTIAL_MANAGEMENT
+      - SESSION_MANAGEMENT
+      - ACCOUNT_VERIFICATION
+      - ACCOUNT_RECOVERY
+      - MFA
+      - PASSKEY
+      - IDENTITY_LIFECYCLE_PROVISIONING
+  - provider_key: baobab-iam.hydra
+    implementation_key: hydra
+    target_facets:
+      - OAUTH_AUTHORIZATION_SERVER
+      - OIDC_PROVIDER
+      - WORKLOAD_TOKEN_ISSUANCE
+  - provider_key: baobab-iam.keycloak
+    implementation_key: keycloak
+    target_facets:
+      - ENTERPRISE_SSO
+      - SAML_FEDERATION
+      - OIDC_FEDERATION
+      - IDENTITY_BROKERING
+management_operations:
+  - identity.human.provision
+  - identity.human.disable
+  - identity.human.anonymise
+  - identity.recovery.perform
+  - identity.session.revoke
+  - identity.security.revoke
+  - identity.workload.provision
+  - identity.workload.disable
+  - identity.workload.rotate
+  - identity.provider.ready
+  - identity.provider-adapter.normalize
+token_issuance: SUBSUMED_IN_EXISTING_AUTHENTICATION_AND_WORKLOAD_CAPABILITIES

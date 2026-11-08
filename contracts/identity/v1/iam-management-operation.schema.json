@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/iam-management-operation.schema.json",
+  "title": "IAM-owned management operation and immutable evidence envelope",
+  "description": "Non-catalogued administration/security operations. IAM authenticates the actual initiator, enforces privileged policy and observes the provider; request references never prove CP permission, legal entity roles, independent reviewer approval or business execution.",
+  "$defs": {
+    "managementOperation": {
+      "type": "string",
+      "enum": [
+        "identity.human.provision",
+        "identity.human.disable",
+        "identity.human.anonymise",
+        "identity.recovery.perform",
+        "identity.session.revoke",
+        "identity.security.revoke",
+        "identity.workload.provision",
+        "identity.workload.disable",
+        "identity.workload.rotate",
+        "identity.provider.ready",
+        "identity.provider-adapter.normalize"
+      ]
+    },
+    "IAMManagementRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "operation",
+        "target_reference",
+        "change_request_reference",
+        "expected_revision",
+        "idempotency_key"
+      ],
+      "properties": {
+        "schema": {
+          "const": "baobab.identity.management-request.v1"
+        },
+        "operation": {
+          "$ref": "#/$defs/managementOperation"
+        },
+        "target_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "change_request_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "idempotency_key": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "IAMManagementOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "operation",
+        "status",
+        "event_reference",
+        "observed_at"
+      ],
+      "properties": {
+        "schema": {
+          "const": "baobab.identity.management-outcome.v1"
+        },
+        "operation": {
+          "$ref": "#/$defs/managementOperation"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DENIED",
+            "PENDING",
+            "UNKNOWN",
+            "PROVIDER_VERIFIED"
+          ]
+        },
+        "event_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "provider_evidence_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "PROVIDER_VERIFIED"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "required": [
+              "provider_evidence_reference"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "provider_evidence_reference"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

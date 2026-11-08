@@ -1,0 +1,51 @@
+# BA-SEC-DEP-001 — SHA-pinned GitHub Actions advisory surveillance.
+# Dependabot Alerts do not provide complete coverage for SHA pins. This watches
+# reviewed public package advisories as triage only, not SHA vulnerability proof.
+# No publishing, releases, privileged credentials, auto-merge or production claims.
+name: Action advisory watch (SHA-pinned)
+on:
+  schedule:
+    - cron: "15 3 * * *" # UTC, 05:15 Africa/Johannesburg
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  advisory-watch:
+    name: Reviewed Action advisory package matches
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout current source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Reconcile reviewed Actions advisories
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/action_advisory_watch.py --output action-advisory-review.json
+      - name: Summarize bounded advisory triage
+        if: always()
+        shell: python3 {0}
+        run: |
+          import json
+          from pathlib import Path
+          import os
+          path = Path("action-advisory-review.json")
+          report = json.loads(path.read_text()) if path.is_file() else {"status": "UNKNOWN_SOURCE_UNAVAILABLE"}
+          lines = [
+              "## BA-SEC-DEP-001 Actions advisory watch", "",
+              f"**Result:** {report['status']}", "",
+              f"**Observed action references:** {report.get('action_references', 'UNKNOWN')}", "",
+              f"**Matching advisory instances:** {len(report.get('matches', []))}", "",
+              "Advisories are package-name matches; pinned-SHA exposure requires upstream verification.",
+              "No matches does not imply that pinned Actions are secure."
+          ]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as fh:
+              fh.write("\n".join(lines) + "\n")
+      - name: Preserve advisory triage evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ba-sec-dep-001-action-advisory-triage
+          path: action-advisory-review.json
+          retention-days: 90
+          if-no-files-found: warn

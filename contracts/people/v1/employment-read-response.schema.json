@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/employment-read-response.schema.json",
+  "title": "Read employment version result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "employment_ref",
+    "version",
+    "effective_on",
+    "data_state",
+    "source_selection"
+  ],
+  "properties": {
+    "employment_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "effective_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "data_state": {
+      "$ref": "domain.schema.json#/$defs/dataState"
+    },
+    "source_selection": {
+      "$ref": "domain.schema.json#/$defs/selection"
+    },
+    "employment_status": {
+      "enum": [
+        "PROPOSED",
+        "ACTIVE",
+        "SUSPENDED",
+        "ENDED",
+        "CORRECTED"
+      ]
+    },
+    "provenance_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "data_state"
+        ],
+        "properties": {
+          "data_state": {
+            "const": "COMPLETE"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "employment_status",
+          "provenance_ref"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "employment_status"
+          ]
+        }
+      }
+    }
+  ]
+}

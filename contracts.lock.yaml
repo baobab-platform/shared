@@ -198,6 +198,23 @@ contracts:
       - statement-read-response.schema.json
       - capabilities.yaml
 
+  - domain: people
+    version: v1
+    schemas:
+      - domain.schema.json
+      - provider-selection.schema.json
+      - employment-read-request.schema.json
+      - employment-read-response.schema.json
+      - employment-manage-request.schema.json
+      - employment-manage-response.schema.json
+      - payroll-run-read-request.schema.json
+      - payroll-run-read-response.schema.json
+      - payroll-evidence-attest-request.schema.json
+      - payroll-evidence-attest-response.schema.json
+      - events.schema.json
+      - asyncapi.yaml
+      - capabilities.yaml
+
   - domain: development
     version: v1
     schemas:

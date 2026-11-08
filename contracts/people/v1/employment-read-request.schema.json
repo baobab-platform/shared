@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/employment-read-request.schema.json",
+  "title": "Read employment version intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "employment_ref"
+  ],
+  "properties": {
+    "employment_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    }
+  },
+  "description": "Caller may not assert tenant, legal employer, IAM actor, provider or selection."
+}

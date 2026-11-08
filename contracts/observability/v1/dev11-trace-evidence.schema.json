@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/observability/v1/dev11-trace-evidence.schema.json",
+  "title": "DEV-11 closed asynchronous trace projection (source-only; not acceptance authority)",
+  "description": "Strict minimised reference projection for structural assurance. No raw OTel spans, headers, URLs, cookies, names, principals or message payloads. Semantic graph, event link causality and independent runtime/provenance/teardown are verified separately. No boolean in this schema permits protected acceptance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "source_sha",
+    "profile",
+    "scenario",
+    "correlation_id",
+    "spans",
+    "runtime_observed",
+    "teardown_verified",
+    "evidence_class"
+  ],
+  "properties": {
+    "schema": {
+      "const": "infrastructure.dev11.graph.v1"
+    },
+    "source_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "profile": {
+      "enum": [
+        "DEV-01-04",
+        "DEV-05",
+        "DEV-06",
+        "DEV-07",
+        "DEV-08",
+        "DEV-09",
+        "DEV-14-15",
+        "L4-INT02-03",
+        "LOCAL-STACK",
+        "ESTATE-BROWSER"
+      ]
+    },
+    "scenario": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]{2,79}$"
+    },
+    "correlation_id": {
+      "type": "string",
+      "pattern": "^(?!0{8}-0{4}-0{4}-0{4}-0{12}$)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "spans": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 64,
+      "items": {
+        "$ref": "#/$defs/span"
+      }
+    },
+    "runtime_observed": {
+      "type": "boolean",
+      "description": "Untrusted recorder assertion, NOT independent verification."
+    },
+    "teardown_verified": {
+      "type": "boolean",
+      "description": "Untrusted recorder assertion, NOT independent verification."
+    },
+    "evidence_class": {
+      "enum": [
+        "SOURCE",
+        "REAL_COMPONENT_SYNTHETIC_DATA"
+      ]
+    }
+  },
+  "$defs": {
+    "spanRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trace_id",
+        "span_id"
+      ],
+      "properties": {
+        "trace_id": {
+          "type": "string",
+          "pattern": "^(?!0{32}$)[0-9a-f]{32}$"
+        },
+        "span_id": {
+          "type": "string",
+          "pattern": "^(?!0{16}$)[0-9a-f]{16}$"
+        }
+      }
+    },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service_role",
+        "traceparent",
+        "parent",
+        "links",
+        "correlation_id",
+        "boundary",
+        "event_id",
+        "result",
+        "cause"
+      ],
+      "properties": {
+        "service_role": {
+          "enum": [
+            "bff",
+            "issuer",
+            "cp",
+            "engine",
+            "outbox",
+            "consumer"
+          ]
+        },
+        "traceparent": {
+          "type": "string",
+          "pattern": "^00-(?!0{32}-)[0-9a-f]{32}-(?!0{16}-)[0-9a-f]{16}-[0-9a-f]{2}$"
+        },
+        "parent": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/spanRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/spanRef"
+          },
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "correlation_id": {
+          "type": "string",
+          "pattern": "^(?!0{8}-0{4}-0{4}-0{4}-0{12}$)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        },
+        "boundary": {
+          "enum": [
+            "HTTP",
+            "EVENT_PUBLISH",
+            "EVENT_CONSUME"
+          ]
+        },
+        "event_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(?!0{8}-0{4}-0{4}-0{4}-0{12}$)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "BLOCKED",
+            "NOT_RUN"
+          ]
+        },
+        "cause": {
+          "enum": [
+            "NONE",
+            "NOT_EXECUTED",
+            "NATIVE_NOT_IMPLEMENTED",
+            "AUTHORITY_UNQUALIFIED",
+            "PROVIDER_UNAVAILABLE",
+            "SOURCE_PIN_MISMATCH",
+            "MISSING_EVIDENCE",
+            "TIMEOUT",
+            "INCORRECT_RESULT",
+            "REDACTION_FAILED",
+            "TEARDOWN_UNVERIFIED",
+            "BROWSER_OWNER_REQUIRED"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "PASS"
+              }
+            },
+            "required": [
+              "result"
+            ]
+          },
+          "then": {
+            "properties": {
+              "cause": {
+                "const": "NONE"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "cause": {
+                "not": {
+                  "const": "NONE"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "boundary": {
+                "const": "HTTP"
+              }
+            },
+            "required": [
+              "boundary"
+            ]
+          },
+          "then": {
+            "properties": {
+              "event_id": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "event_id": {
+                "type": "string",
+                "pattern": "^(?!0{8}-0{4}-0{4}-0{4}-0{12}$)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "boundary": {
+                "const": "EVENT_PUBLISH"
+              }
+            },
+            "required": [
+              "boundary"
+            ]
+          },
+          "then": {
+            "properties": {
+              "service_role": {
+                "const": "outbox"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "boundary": {
+                "const": "EVENT_CONSUME"
+              }
+            },
+            "required": [
+              "boundary"
+            ]
+          },
+          "then": {
+            "properties": {
+              "service_role": {
+                "const": "consumer"
+              },
+              "links": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

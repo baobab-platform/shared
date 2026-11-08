@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/payroll-evidence-attest-response.schema.json",
+  "title": "Qualified verifier verdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_ref",
+    "run_version",
+    "verification_status",
+    "source_selection",
+    "observed_at"
+  ],
+  "properties": {
+    "run_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "run_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "verification_status": {
+      "enum": [
+        "PENDING",
+        "VERIFIED",
+        "REFUSED",
+        "UNKNOWN"
+      ]
+    },
+    "source_selection": {
+      "$ref": "domain.schema.json#/$defs/selection"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "verified_receipt_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "verification_status"
+        ],
+        "properties": {
+          "verification_status": {
+            "const": "VERIFIED"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "verified_receipt_ref"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "verified_receipt_ref"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,22 +1,19 @@
-# Copy into <repo>/.github/dependabot.yml
-# Resolve every TODO, then delete this comment block.
+# BA-SEC-DEP-001: Baobab Dependency & Security Maintenance Policy v1.0
 #
-# BAOBAB-PLATFORM's org-standard Dependabot config for GitHub Actions dependency
-# tracking. Every actions/checkout, baobab-platform/shared reference, etc. gets an
-# automatic bump PR once the tag/branch it's pinned against moves.
+# Copy this starter into the consuming repository's .github/dependabot.yml.
+# Review the package manager(s), manifests, paths, labels and timezone first.
+# Do not copy optional ecosystems that have no manifests in the repository.
+# The default branch is authoritative for security updates: do not add
+# target-branch just to spell out "main".
 #
-# This does NOT replace the action-pinning policy (see README.md's
-# "Immutable Dependencies") — Dependabot proposes the SHA bump with the
-# version comment updated to match; a human still reviews and merges each
-# PR. The two mechanisms are complementary: pinning stops an action from
-# changing under you silently; Dependabot is how you deliberately choose
-# to move the pin forward.
+# Security updates are advisory-driven, NOT limited to the weekly schedule.
+# Routine groups explicitly apply to version-updates only; major updates
+# are reviewed separately. Keep SHA-pinned Actions and review provenance.
+# The CI conformance gate can be adopted in strict mode once the repository
+# passes the targeted migration and safe exception review.
 #
-# Compliance with this shape is checked automatically by
-# baobab-platform/shared/.github/workflows/enforce-dependabot-config.yml — see
-# templates/caller-enforce-dependabot-config.yml to adopt that check in
-# this repo's own CI.
-
+# Policy: docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md
+# Reusable validation: .github/workflows/enforce-dependabot-config.yml
 version: 2
 
 updates:
@@ -26,27 +23,61 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-      timezone: "Africa/Johannesburg" # TODO: adjust to this repo/team's timezone
+      timezone: "Africa/Johannesburg"
     open-pull-requests-limit: 5
     groups:
-      actions-minor-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
-    labels:
-      - "dependencies"
-      - "github-actions"
+      actions-routine-minor-patch:
+        applies-to: "version-updates"
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "github-actions"]
     commit-message:
       prefix: "chore"
       prefix-development: "chore"
       include: "scope"
-    target-branch: "main" # TODO: adjust if this repo's default branch differs
 
-  # TODO: add further package-ecosystem entries here (e.g. "pip", "npm",
-  # "docker") if this repo has other dependency manifests worth tracking.
-  # Keep every entry's shape consistent with the one above — schedule,
-  # open-pull-requests-limit, labels, and commit-message are all required
-  # on every entry, not just this first one. enforce-dependabot-config.yml
-  # checks that.
+# OPTIONAL EXAMPLES — add only ecosystems with supported real manifests.
+# Copy entries INSIDE updates: and adjust directory, labels and schedule.
+#
+# npm (includes pnpm workspaces whose package.json and lockfile are at /):
+#  - package-ecosystem: "npm"
+#    directory: "/"
+#    schedule:
+#      interval: "weekly"
+#      day: "monday"
+#      time: "06:15"
+#      timezone: "Africa/Johannesburg"
+#    open-pull-requests-limit: 5
+#    groups:
+#      npm-routine:
+#        applies-to: "version-updates"
+#        patterns: ["*"]
+#        update-types: ["minor", "patch"]
+#    labels: ["dependencies", "javascript"]
+#    commit-message: { prefix: "chore", include: "scope" }
+#
+# Go:
+#  - package-ecosystem: "gomod"
+#    directory: "/"
+#    schedule: { interval: "weekly" }
+#    open-pull-requests-limit: 5
+#    labels: ["dependencies", "go"]
+#    commit-message: { prefix: "chore", include: "scope" }
+#
+# Python uv (use pip only if that is the actual project manager):
+#  - package-ecosystem: "uv"
+#    directory: "/"
+#    schedule: { interval: "weekly" }
+#    open-pull-requests-limit: 5
+#    labels: ["dependencies", "python"]
+#    commit-message: { prefix: "chore", include: "scope" }
+#
+# Maven, Cargo, Terraform, Docker or docker-compose:
+# add only real directories/manifests and the same schedule/limit/label/
+# commit-message fields. Docker FROM scratch contains no upstream base image;
+# do not add meaningless image entries. Toolchains controlled by baobab-dev's
+# versions.yaml and versions.lock retain their independent version authority.
+#
+# Dependencies with known advisories must be triaged outside the routine PR
+# schedule. Unconditional "ignore" rules need explicit, expiring security
+# review; prefer narrow version-update-only constraints where appropriate.

@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/native-development-qualification.schema.json",
+  "title": "IAM provider-facet developer qualification receipt, distinct from CP support",
+  "description": "This is an immutable, externally witnessed non-production development qualification proposal for an IAM implementation facet, not CP ProviderCapabilitySupport, CP instance, grant, binding, EA-09 protected certification or production admission. A compliant JSON document alone is not authentic evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "environment",
+    "provider_key",
+    "implementation_key",
+    "iam_source_sha",
+    "provider_artifact_digest",
+    "facet",
+    "qualification_state",
+    "protected_authorized"
+  ],
+  "properties": {
+    "schema": {
+      "const": "baobab.identity.native-development-qualification.v1"
+    },
+    "environment": {
+      "const": "development"
+    },
+    "provider_key": {
+      "type": "string",
+      "enum": [
+        "baobab-iam.kratos",
+        "baobab-iam.hydra",
+        "baobab-iam.keycloak"
+      ]
+    },
+    "implementation_key": {
+      "type": "string",
+      "enum": [
+        "kratos",
+        "hydra",
+        "keycloak"
+      ]
+    },
+    "iam_source_sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "provider_artifact_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "facet": {
+      "$ref": "runtime-capability.schema.json#/$defs/runtimeCapability"
+    },
+    "qualification_state": {
+      "type": "string",
+      "enum": [
+        "UNQUALIFIED",
+        "DEVELOPMENT_QUALIFIED"
+      ]
+    },
+    "protected_authorized": {
+      "const": false
+    },
+    "independent_development_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "original_archive_digest",
+        "github_run_id",
+        "original_cases_digest",
+        "independent_reviewer_reference",
+        "all_required_positive_observed",
+        "all_required_negatives_observed",
+        "teardown_verified",
+        "runtime_origins_independently_attested"
+      ],
+      "properties": {
+        "original_archive_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "github_run_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "original_cases_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "independent_reviewer_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "all_required_positive_observed": {
+          "const": true
+        },
+        "all_required_negatives_observed": {
+          "const": true
+        },
+        "teardown_verified": {
+          "const": true
+        },
+        "runtime_origins_independently_attested": {
+          "const": true
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "qualification_state": {
+            "const": "DEVELOPMENT_QUALIFIED"
+          }
+        },
+        "required": [
+          "qualification_state"
+        ]
+      },
+      "then": {
+        "required": [
+          "independent_development_evidence"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "independent_development_evidence"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provider_key": {
+            "const": "baobab-iam.kratos"
+          }
+        },
+        "required": [
+          "provider_key"
+        ]
+      },
+      "then": {
+        "properties": {
+          "implementation_key": {
+            "const": "kratos"
+          },
+          "facet": {
+            "enum": [
+              "HUMAN_AUTHENTICATION",
+              "CREDENTIAL_MANAGEMENT",
+              "SESSION_MANAGEMENT",
+              "ACCOUNT_VERIFICATION",
+              "ACCOUNT_RECOVERY",
+              "MFA",
+              "PASSKEY",
+              "IDENTITY_LIFECYCLE_PROVISIONING"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provider_key": {
+            "const": "baobab-iam.hydra"
+          }
+        },
+        "required": [
+          "provider_key"
+        ]
+      },
+      "then": {
+        "properties": {
+          "implementation_key": {
+            "const": "hydra"
+          },
+          "facet": {
+            "enum": [
+              "OAUTH_AUTHORIZATION_SERVER",
+              "OIDC_PROVIDER",
+              "WORKLOAD_TOKEN_ISSUANCE"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provider_key": {
+            "const": "baobab-iam.keycloak"
+          }
+        },
+        "required": [
+          "provider_key"
+        ]
+      },
+      "then": {
+        "properties": {
+          "implementation_key": {
+            "const": "keycloak"
+          },
+          "facet": {
+            "enum": [
+              "ENTERPRISE_SSO",
+              "SAML_FEDERATION",
+              "OIDC_FEDERATION",
+              "IDENTITY_BROKERING"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

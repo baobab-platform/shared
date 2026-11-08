@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/assurance-evaluation.schema.json",
+  "title": "Baobab IAM server-owned current authentication assurance evaluation",
+  "description": "Immutable issuer evidence and reviewed operation policy only. No Tenant, Organisation, Principal grant or business authorization. A4 requires separate privileged policy and witness, never an upstream IdP ACR alone.",
+  "$defs": {
+    "level": {
+      "type": "string",
+      "enum": [
+        "A1",
+        "A2",
+        "A3",
+        "A4"
+      ]
+    },
+    "AssuranceEvaluationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "authentication_event_reference",
+        "session_reference",
+        "operation_class"
+      ],
+      "properties": {
+        "schema": {
+          "const": "baobab.identity.assurance-evaluation-request.v1"
+        },
+        "authentication_event_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "session_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "operation_class": {
+          "type": "string",
+          "enum": [
+            "LOGIN",
+            "BUYER_COMMIT",
+            "HIGH_VALUE_APPROVAL",
+            "CREDENTIAL_CHANGE",
+            "RECOVERY_REBIND",
+            "PRIVILEGED_GRANT",
+            "BREAK_GLASS"
+          ]
+        }
+      }
+    },
+    "AssuranceEvaluationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "outcome",
+        "evaluated_at",
+        "required_level",
+        "reason"
+      ],
+      "properties": {
+        "schema": {
+          "const": "baobab.identity.assurance-evaluation-result.v1"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "DENIED",
+            "STEP_UP_REQUIRED",
+            "ASSURANCE_MET_NOT_AUTHORIZATION"
+          ]
+        },
+        "required_level": {
+          "$ref": "#/$defs/level"
+        },
+        "observed_level": {
+          "$ref": "#/$defs/level"
+        },
+        "authentication_methods": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+          }
+        },
+        "authenticated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fresh_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "evidence_reference": {
+          "type": "string",
+          "pattern": "^ref_[a-z0-9_-]{8,128}$"
+        },
+        "evaluated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "CURRENT_SESSION_MISSING",
+            "ASSURANCE_UNAVAILABLE",
+            "CURRENT_RISK_UNKNOWN",
+            "RECOVERY_HOLD",
+            "FRESH_STEP_UP_REQUIRED",
+            "PRIVILEGED_WITNESS_MISSING",
+            "ASSURANCE_MET_NOT_AUTHORIZATION"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "ASSURANCE_MET_NOT_AUTHORIZATION"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "required": [
+              "observed_level",
+              "authenticated_at",
+              "fresh_until",
+              "evidence_reference"
+            ],
+            "properties": {
+              "reason": {
+                "const": "ASSURANCE_MET_NOT_AUTHORIZATION"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "enum": [
+                  "DENIED",
+                  "STEP_UP_REQUIRED"
+                ]
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reason": {
+                "not": {
+                  "const": "ASSURANCE_MET_NOT_AUTHORIZATION"
+                }
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "fresh_until"
+                  ]
+                },
+                {
+                  "required": [
+                    "evidence_reference"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/people/v1/employment-manage-response.schema.json",
+  "title": "Employment proposal receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "employment_ref",
+    "proposal_ref",
+    "proposed_version",
+    "state",
+    "source_selection"
+  ],
+  "properties": {
+    "employment_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "proposal_ref": {
+      "$ref": "domain.schema.json#/$defs/opaqueRef"
+    },
+    "proposed_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "state": {
+      "const": "AWAITING_INDEPENDENT_APPROVAL"
+    },
+    "source_selection": {
+      "$ref": "domain.schema.json#/$defs/selection"
+    }
+  }
+}

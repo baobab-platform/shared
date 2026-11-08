@@ -1,121 +1,58 @@
-# ==============================================================================
-# GitHub Dependabot Configuration File (.github/dependabot.yml)
-# ==============================================================================
-# PURPOSE:
-#   Automates dependency management across the repository. This configuration is
-#   specifically tailored to monitor, evaluate, and update GitHub Actions dependencies,
-#   including public/private actions and custom reusable workflows (e.g., `baobab-platform/shared`).
+# BA-SEC-DEP-001 — Baobab Dependency & Security Maintenance Policy v1.0
+# Policy: docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md
 #
-# RATIONALE:
-#   Automated tracking prevents software decay, security vulnerabilities, and workflow failures.
-#   By enforcing Conventional Commits and grouping minor/patch updates, this file minimizes
-#   PR churn and maintains clean commit logs compatible with semantic release tooling.
-#
-# LOGIC & STRUCTURE:
-#   1. Specification version 2 complies with modern Dependabot schema standards.
-#   2. The 'github-actions' ecosystem monitors workflow manifests inside `.github/workflows`.
-#   3. Scheduled checks run weekly on Monday mornings to align with standard review cycles.
-#   4. Rule-based grouping consolidates non-breaking bumps into a single combined pull request.
-#   5. Conventional Commit prefixes enforce uniform git history conventions.
-# ==============================================================================
-
-# Version directive specifying the Dependabot configuration schema version.
-# Version 2 is required for features like grouped updates, custom commit formatting, and timezone schedules.
+# Version updates run weekly; security updates are advisory-driven and do
+# not wait for the schedule. Only routine version updates are grouped.
+# Security updates target the repository default branch: omit target-branch.
+# Review action SHA/release provenance and downstream consumers before merge.
+# In the existing Shared CI, the action-pinning and dependency-audit gates
+# independently verify more than Dependabot itself can establish.
 version: 2
 
 updates:
-  # ----------------------------------------------------------------------------
-  # Ecosystem Config: GitHub Actions & Reusable Workflows
-  # ----------------------------------------------------------------------------
-  # PURPOSE:
-  #   Tracks actions (e.g., `actions/checkout`) and external reusable workflows
-  #   (e.g., `baobab-platform/shared/.github/workflows/greetings.yml`) declared in repository workflows.
-  # RATIONALE:
-  #   Reusable workflows and third-party actions require continuous updates to ingest bug fixes,
-  #   security enhancements, and updates to underlying runner environments (e.g., Node.js runtimes).
   - package-ecosystem: "github-actions"
-
-    # Root directory location where Dependabot searches for manifest files.
-    # Specifying "/" targets the default `.github/workflows/` directory structure.
     directory: "/"
-
-    # --------------------------------------------------------------------------
-    # Update Scheduling Policy
-    # --------------------------------------------------------------------------
-    # PURPOSE:
-    #   Establishes the frequency, day, time, and timezone for dependency check executions.
-    # LOGIC:
-    #   Running updates weekly on Mondays at 06:00 SAST ensures PRs are prepared for review
-    #   at the start of the workweek without triggering pipeline noise during active weekend development.
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00"
       timezone: "Africa/Johannesburg"
-
-    # --------------------------------------------------------------------------
-    # Concurrent Pull Request Boundary
-    # --------------------------------------------------------------------------
-    # PURPOSE:
-    #   Sets an upper threshold on the number of open PRs Dependabot can maintain concurrently.
-    # RATIONALE:
-    #   Prevents repository flood and reviewer fatigue during periods with multiple updates.
-    # LOGIC:
-    #   If 5 Dependabot PRs remain open, new update triggers are queued until open PRs are merged or closed.
     open-pull-requests-limit: 5
-
-    # --------------------------------------------------------------------------
-    # Dependency Update Grouping Strategy
-    # --------------------------------------------------------------------------
-    # PURPOSE:
-    #   Bundles multiple individual dependency upgrades into a single combined pull request.
-    # RATIONALE:
-    #   Opening separate PRs for every action patch consumes excessive CI credits and creates PR clutter.
-    #   Grouping safe minor/patch upgrades allows a single CI test run and one-click approval.
-    # LOGIC:
-    #   - 'actions-minor-patch': Unique group rule identifier.
-    #   - 'patterns: ["*"]': Evaluates all actions, including `baobab-platform/shared` reusable workflows.
-    #   - 'update-types': Includes 'minor' and 'patch' releases. Major version bumps are excluded
-    #     so breaking API changes can be isolated and reviewed independently.
     groups:
-      actions-minor-patch:
-        patterns:
-          - "*"
-        update-types:
-          - "minor"
-          - "patch"
-
-    # --------------------------------------------------------------------------
-    # Automation & Triage Labels
-    # --------------------------------------------------------------------------
-    # PURPOSE:
-    #   Attaches metadata labels to generated pull requests.
-    # RATIONALE:
-    #   Enables automated filtering, labeling rules, CODEOWNERS routing, and CI auto-merge scripts.
-    labels:
-      - "dependencies"
-
-    # --------------------------------------------------------------------------
-    # Commit Message Conventions (Conventional Commits)
-    # --------------------------------------------------------------------------
-    # PURPOSE:
-    #   Formats commit titles and body text generated by Dependabot.
-    # RATIONALE:
-    #   Aligns automated commits with standard semantic versioning and changelog generators (`chore(deps): ...`).
-    # LOGIC:
-    #   - 'prefix': Sets the prefix for standard dependency commits to 'chore'.
-    #   - 'prefix-development': Sets the prefix for development dependencies to 'chore'.
-    #   - 'include: "scope"': Formats titles as `chore(deps): bump actions/checkout from v3 to v4`.
+      actions-routine-minor-patch:
+        applies-to: "version-updates"
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "github-actions"]
     commit-message:
       prefix: "chore"
       prefix-development: "chore"
       include: "scope"
 
-    # --------------------------------------------------------------------------
-    # Target Integration Branch
-    # --------------------------------------------------------------------------
-    # PURPOSE:
-    #   Defines the destination base branch for created pull requests.
-    # LOGIC:
-    #   Explicitly targets 'main' to ensure updates are evaluated against primary production code.
-    target-branch: "main"
+  # The root package.json and pnpm-lock.yaml govern packages/*.
+  # GitHub added Dependabot support for pnpm 11 on 20 October 2026.
+  # A single npm ecosystem entry at / covers the pnpm workspace root.
+  # Private registry access, if needed, must use GitHub Dependabot secrets
+  # rather than source-controlled npm authentication tokens.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:15"
+      timezone: "Africa/Johannesburg"
+    open-pull-requests-limit: 5
+    groups:
+      npm-routine-minor-patch:
+        applies-to: "version-updates"
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "javascript"]
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+
+# No Docker bump entry: the Shared contracts distribution image is FROM scratch
+# and has no upstream base dependency to track. The digest-pinned devcontainer
+# image is governed by its own central toolchain/consumer upgrade process.
