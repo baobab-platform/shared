@@ -136,6 +136,7 @@ class Dev07ReadbackGate(unittest.TestCase):
     def test_seller_receipt_is_native_opaque_and_reservation_uses_trade_v2_id(self):
         altered = vector()
         altered["observations"]["seller"]["receipt_id"] = "seller_native_receipt_001"
+        altered["observations"]["buyer"]["seller_receipt_id"] = "seller_native_receipt_001"
         self.assertEqual(("TEST_VECTOR_ONLY", []), gate.disposition(altered))
         altered["observations"]["spend"]["reservation_id"] = "33333333-3333-4333-8333-333333333333"
         self.assertEqual("INVALID", gate.disposition(altered)[0])
