@@ -4,6 +4,43 @@
 **Authority:** Accepted EA v2.3 / EA-DEV DEV-11; Infrastructure ADR-Infra-0016; Shared event and authority contracts.  
 **Status:** SOURCE IN PROGRESS / CONNECTED QUALIFICATION BLOCKED. **Not a completion certificate.**
 
+## 8 November 2026 — verified ERP merge and source-contract publication boundary
+
+The November 3 source checkpoints below are historical. The following newer
+facts were rechecked against GitHub on 8 November:
+
+- ERP [#125](https://github.com/baobab-platform/baobab-erp/pull/125)
+  **MERGED** at `f8558b616e81f37ef0246a0e7fc58bc81b2a1e3a`.
+  Its reviewed head `fa7c0c05b53118726759bc851adec9fe800cebc6` passed
+  all nine PR workflows, including real Hydra/CP/RabbitMQ/iDempiere JVM
+  connected integration. The independently examined *earlier executed* head
+  `115e9a0d22ed6516a649bc6d36bdfc0b658880c2`, native
+  [run 41946627517](https://github.com/baobab-platform/baobab-erp/actions/runs/41946627517)
+  and artifact demonstrate original persisted event, CP/JVM readback, native
+  lost-result recovery, cleanup and a 10-span/9-edge exported **component**
+  graph. Do not relabel the historical original as the later merged head.
+- Trade [#189](https://github.com/baobab-platform/baobab-trade/pull/189)
+  remains **OPEN** at `79dc564a5d94d41eb4cd88d5476cc391b2a24b9e`.
+  Its synthetic-origin handoff must continue to refuse
+  `NATIVE_ORDER_ABSENT`; the genuine bound cart/current IAM/CP approval,
+  ENFORCED seller/buyer/spend and non-draft Medusa checkout have not obtained
+  a witnessed original-event acceptance.
+- Infrastructure [#72](https://github.com/baobab-platform/infrastructure/pull/72)
+  remains **OPEN**, at `47f0c253112a466eb9612f81c6ba5d84a2184207`.
+  Its current [connected confidential BFF qualification workflow](https://github.com/baobab-platform/infrastructure/actions/runs/42168676260)
+  failed, while component/observer workflows passed. The independent
+  eight-owner W3C+custody join has not been accepted.
+
+**Merge boundary — Shared source package only.** This PR may be merged after
+successful final-head Shared CI, substantive source/security review and
+the approved dependency-maintenance policy gates; no owner-native activation,
+runtime provider certification or consequential buyer operation changes are
+shipped by this source-only change. The live connected L4-OPS-01 qualification
+remains an independent mandatory work-package blocker. The EA-DEV register
+records only the historical source/partial real-component evidence; all protected
+staging/production flags remain false. Do not close DEV-11 or mark L4-OPS-01
+PASS merely because this contract and dependency policy merge.
+
 ## Current-source status correction — 2026-11-03
 
 The dated 2 November snapshots below are retained for provenance, but **are not
