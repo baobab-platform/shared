@@ -128,7 +128,9 @@
                 "status",
                 "count",
                 "amount_minor",
-                "currency"
+                "currency",
+                "native_line_count",
+                "native_lines_same_transaction"
               ],
               "properties": {
                 "id": {
@@ -177,6 +179,15 @@
                 "currency": {
                   "type": "string",
                   "pattern": "^[A-Z]{3}$"
+                },
+                "native_line_count": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Count of native Medusa order-item/line-item pairs in the original PostgreSQL order XID."
+                },
+                "native_lines_same_transaction": {
+                  "const": true,
+                  "description": "Independent SQL readback confirms every item and line xmin matches original outbox native_insert_xid."
                 }
               }
             },
@@ -188,7 +199,13 @@
                 "order_id",
                 "operation_reference",
                 "txid",
-                "count"
+                "count",
+                "decision_txid",
+                "decision_outcome",
+                "enforcement_mode",
+                "commerce_model",
+                "classification_status",
+                "receipt_consumed"
               ],
               "properties": {
                 "receipt_id": {
@@ -214,6 +231,26 @@
                 },
                 "count": {
                   "const": 1
+                },
+                "decision_txid": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,19}$",
+                  "description": "Original enforced Trade decision xmin, not a later approval."
+                },
+                "decision_outcome": {
+                  "const": "ALLOWED"
+                },
+                "enforcement_mode": {
+                  "const": "ENFORCED"
+                },
+                "commerce_model": {
+                  "const": "B2B"
+                },
+                "classification_status": {
+                  "const": "ACTIVE"
+                },
+                "receipt_consumed": {
+                  "const": true
                 }
               }
             },
@@ -225,7 +262,11 @@
                 "order_id",
                 "operation_reference",
                 "txid",
-                "count"
+                "count",
+                "receipt_insert_txid",
+                "seller_receipt_id",
+                "spend_reservation_id",
+                "receipt_consumed"
               ],
               "properties": {
                 "receipt_id": {
@@ -249,6 +290,23 @@
                 },
                 "count": {
                   "const": 1
+                },
+                "receipt_insert_txid": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]{0,19}$",
+                  "description": "Trade buyer authority receipt xmin, distinct from consumption xmin."
+                },
+                "seller_receipt_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "spend_reservation_id": {
+                  "type": "string",
+                  "pattern": "^b2bres_[0-9A-Za-z]{6,64}$"
+                },
+                "receipt_consumed": {
+                  "const": true
                 }
               }
             },
@@ -262,7 +320,8 @@
                 "status",
                 "count",
                 "amount_minor",
-                "currency"
+                "currency",
+                "buyer_organisation_id"
               ],
               "properties": {
                 "reservation_id": {
@@ -292,6 +351,11 @@
                 "currency": {
                   "type": "string",
                   "pattern": "^[A-Z]{3}$"
+                },
+                "buyer_organisation_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
                 }
               }
             },
@@ -306,7 +370,9 @@
                 "payload_sha256",
                 "idempotency_key",
                 "count",
-                "immutable_readback"
+                "immutable_readback",
+                "tenant_id",
+                "seller_legal_entity_id"
               ],
               "properties": {
                 "event_id": {
@@ -340,6 +406,16 @@
                 },
                 "immutable_readback": {
                   "const": true
+                },
+                "tenant_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "seller_legal_entity_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
                 }
               }
             }
