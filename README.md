@@ -21,6 +21,12 @@
 
 ---
 
+## Dependency and security maintenance — BA-SEC-DEP-001
+
+**[Approved Baobab Dependency & Security Maintenance Policy v1.0](docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md)** governs routine dependency upgrades, security-patch response targets, immutable Action provenance, expiring exceptions, and source-to-consumer verification for first-party repositories.
+The [rollout register](docs/governance/baobab-dependency-security-rollout-v1.0.md) distinguishes Shared source implementation from independent CI, consumer adoption, actual alert triage and protected release evidence. Shared's [Dependabot template](templates/dependabot.yml), [reusable conformance gate](.github/workflows/enforce-dependabot-config.yml) and [Foundation security controls](.github/workflows/reusable-foundation-security.yml) implement complementary safeguards.
+
+**Adoption is not automatic:** Shared policy approval and PR commits do not certify every repository, waive domain-specific acceptance or grant staging/production authority.
 ## Platform-wide engineering philosophy — all first-party repositories
 
 **[Accepted ADR-SHARED-041](docs/adr/ADR-SHARED-041%20%E2%80%94%20Baobab%20Platform%20Engineering%20Philosophy%20and%20African%20Enterprise%20Product%20Excellence.md) applies to every current and future first-party `baobab-*` repository, Shared, Infrastructure and Group Digital Estates.**
