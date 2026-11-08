@@ -24,3 +24,9 @@ de6e71d5ecf1c12757d0984199e97bc82159a7c3:docs/architecture/evidence/dev07-audit-
 # Human-readable EA-DEV read-model baseline key dev07-trade-corrections,
 # not an API key, credential or private configuration value.
 a75398de8f393671b6a621c95f11257bcfa690f8:docs/architecture/ea-dev-implementation-register.json:generic-api-key:637
+
+# 8 Nov 2026, PR #429: historical policy Markdown prose only: the
+# 'SAST, secrets, CI trust' table cell lists security controls and contains
+# no assigned API key, credential, token, value or sensitive system secret.
+# Exact single commit/path/rule/line finding; keep full Git-history scanning.
+3801745b23eee1be2f25c83be3c6042420582cdc:docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md:generic-api-key:164
