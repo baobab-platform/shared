@@ -55,6 +55,23 @@ def check_report(report: object) -> list[str]:
         for name in ("seller", "buyer"):
             if obs[name]["operation_reference"] != order["operation_reference"]:
                 errors.append(f"{name}: operation reference mismatch")
+        # An ALLOWED seller receipt is not automatically an ENFORCED native
+        # B2B commitment. The schema requires ENFORCED/ALLOWED/B2B/ACTIVE
+        # consumed facts, and the native decision row's own xmin must match.
+        if obs["seller"]["decision_txid"] != tx:
+            errors.append("seller decision was not written in the native order transaction")
+        if obs["buyer"]["receipt_insert_txid"] != tx:
+            errors.append("buyer authority receipt was not written in the native order transaction")
+        if obs["buyer"]["seller_receipt_id"] != obs["seller"]["receipt_id"]:
+            errors.append("buyer consumption does not reference the seller receipt")
+        if obs["buyer"]["spend_reservation_id"] != obs["spend"]["reservation_id"]:
+            errors.append("buyer consumption does not reference the committed spend reservation")
+        if obs["spend"]["buyer_organisation_id"] != order["buyer_organisation_id"]:
+            errors.append("committed spend belongs to a different buyer organisation")
+        if obs["outbox"]["tenant_id"] != order["tenant_id"]:
+            errors.append("original Trade outbox tenant differs from the native order")
+        if obs["outbox"]["seller_legal_entity_id"] != order["seller_legal_entity_id"]:
+            errors.append("original Trade outbox seller differs from the native order")
         if obs["seller"]["receipt_id"] == obs["buyer"]["receipt_id"]:
             errors.append("seller/buyer receipts must be distinct facts")
         if obs["spend"]["amount_minor"] != order["amount_minor"]:
@@ -84,17 +101,22 @@ def check_report(report: object) -> list[str]:
             errors.append("BLOCKED downstream cannot masquerade as observed success")
     for name in NEGATIVE_IDS:
         case = report["negatives"][name]
-        if case["status"] != "PASS":
-            if case["status"] == "FAIL":
-                errors.append(f"{name}: explicitly failed")
-            continue
+        # BLOCKED is not a waiver for an already observed prohibited effect
+        # or an unbounded retry. Do not let an unqualified scenario conceal
+        # a current negative business consequence.
+        if case["status"] == "FAIL":
+            errors.append(f"{name}: explicitly failed")
         if case["prohibited_effect_count"] != 0:
             errors.append(f"{name}: prohibited business effect observed")
         if case["retry_count"] > case["retry_limit"]:
             errors.append(f"{name}: retries exceeded budget")
         expected = 1 if name in RECOVERY_CASES else 0
-        if case["eligible_effect_count"] != expected:
+        if case["status"] == "PASS" and case["eligible_effect_count"] != expected:
             errors.append(f"{name}: expected {expected} eligible business effects")
+        if case["status"] == "BLOCKED":
+            ceiling = 1 if name in RECOVERY_CASES else 0
+            if case["eligible_effect_count"] > ceiling:
+                errors.append(f"{name}: incomplete case already exceeds permitted eligible effect ceiling")
     return errors
 
 
