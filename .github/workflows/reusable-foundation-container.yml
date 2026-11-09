@@ -137,7 +137,14 @@ jobs:
         run: |
           set -euo pipefail
           asset="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
-          curl -fsSL -o "$asset" "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/${asset}"
+          # GitHub Releases intermittently returns 5xx/504 on asset downloads.
+          # Retry transport failures only; never fall back to another binary,
+          # release, digest, cached scanner, or a waived security result.
+          # Both checksum verification and the subsequent Trivy HIGH/CRITICAL
+          # exit-code gate remain unconditional and fail closed.
+          curl -fsSL --retry 4 --retry-all-errors --retry-delay 3 --retry-max-time 240 \
+            --connect-timeout 15 --max-time 65 \
+            -o "$asset" "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/${asset}"
           echo "${TRIVY_SHA256}  ${asset}" | sha256sum -c -
           tar -xzf "$asset" trivy
           sudo install -m 0755 trivy /usr/local/bin/trivy
