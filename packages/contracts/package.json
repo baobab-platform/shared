@@ -18,17 +18,17 @@
     "lint": "buf lint"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^2.15.0",
-    "@grpc/grpc-js": "1.14.5",
-    "google-protobuf": "4.0.2",
-    "graphql": "17.0.2",
-    "ts-proto": "2.12.1",
-    "uuid": "^14.0.2"
+    "@bufbuild/protobuf": "^2.17.0",
+    "@grpc/grpc-js": "1.14.7",
+    "google-protobuf": "4.0.3",
+    "graphql": "17.1.0",
+    "ts-proto": "2.18.4",
+    "uuid": "^14.0.3"
   },
   "devDependencies": {
-    "@bufbuild/buf": "1.72.0",
-    "@graphql-codegen/core": "6.2.0",
-    "@graphql-codegen/typescript": "6.1.0",
+    "@bufbuild/buf": "1.75.0",
+    "@graphql-codegen/core": "6.2.2",
+    "@graphql-codegen/typescript": "6.1.2",
     "tsup": "8.5.1",
     "typescript": "7.0.2"
   }

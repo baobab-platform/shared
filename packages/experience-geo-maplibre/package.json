@@ -44,9 +44,9 @@
     "@baobab-platform/experience-ui": "workspace:^"
   },
   "devDependencies": {
-    "react": "19.3.0",
+    "react": "19.3.1",
     "@types/react": "19.3.0",
-    "maplibre-gl": "6.14.0",
+    "maplibre-gl": "6.16.0",
     "typescript": "7.0.2"
   },
   "scripts": {
