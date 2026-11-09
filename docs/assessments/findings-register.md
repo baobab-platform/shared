@@ -245,3 +245,11 @@ fixed with regressions and actual final-head re-execution. The final legacy
 INT-02 passed without rerun, but this establishes no repair of the historical
 MFA cause; BA-AUD-001 remains OPEN. Source-green and native synthetic acceptance
 remain distinct from provider support and protected release authority.
+
+## 4 November 2026 — DEV-11 native engine-local qualification checkpoint
+
+The [dated DEV-11 checkpoint](operations/2026-11-04-dev11-engine-local-qualification.md) and its machine-readable companion record independently downloaded, digest-verified originals at Infrastructure `65931ab9`, Trade `55659409` and ERP `a118cc16`. All required current owner CI passes. Real ERP engine-local qualification observes current Hydra/CP authority, native sales order/CP-JVM attribution, redelivery, committed-result loss followed by adoption, live revocation denial and complete cleanup.
+
+This is bounded progress under **BA-AUD-080 / BA-AUD-087 / BA-AUD-092**. Their OPEN/TRIAGE states and original broader requirements are unchanged. A synthetic ERP input and separately qualified broker trace do not close the genuine governed Trade-to-native-financial lifecycle or same-event cross-engine evidence. Native reference-width validation prevents truncation in the disposable bridge; longer real Medusa identifiers still need a reviewed native-reference mapping or extension under the same integration work.
+
+The reviewed runtime heads remain fixed. Reciprocal-source compatibility and the actual current eight-owner join remain unqualified; DEV-11/L4-OPS-01 stays BLOCKED. No provider support, protected deployment or staging/production authority is inferred, and no Accepted EA-DEV package is automatically closed.
