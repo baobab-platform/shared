@@ -327,12 +327,12 @@
     {
       "number": 33,
       "id": "ADR-SHARED-033",
-      "topic": "Corporate finance capability proposal",
+      "topic": "Corporate finance F1/F2/F3 census and gated tranches",
       "source": "contracts/finance/v1/README.md",
-      "related_check": null,
-      "decision_status": "PROPOSED",
+      "related_check": "scripts/tests/test_finance_f1_canonical.py",
+      "decision_status": "ACCEPTED",
       "runtime_qualification": "NOT_ASSESSED",
-      "owner_validation_required": "Proposed only: steward and ERP owner decision required"
+      "owner_validation_required": "F1 DRAFT; ERP native F1, IAM/CP current finance authority and F2/F3 individual admission outstanding"
     },
     {
       "number": 34,

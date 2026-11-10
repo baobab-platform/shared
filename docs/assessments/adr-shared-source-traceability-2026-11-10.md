@@ -6,13 +6,13 @@
 
 All numbered Shared decisions 001–045 have been located and read for scope, decision status, amendment chain, intended source contracts and owning runtimes. This is an **artifacts and boundary audit**, not an end-to-end assertion that every ADR's invariants execute. The accompanying machine-readable register names one primary source artifact and one **related** source check per decision where available. The check's existence **does not** establish full conformance of every clause, nor does it imply that a consuming repository is pinned to the audited revision. Current source contracts were checked against the main tree; historical decision approvals have not been changed.
 
-Baseline classification: **44 accepted decisions, 1 proposal (ADR-SHARED-033)**. The first six decisions are filed as `ADR-SHARED-001`…`ADR-SHARED-006` but retain historic `ADR-0001`…`ADR-0006` aliases. The index now displays both names without rewriting accepted decision history. The source register is evidence inventory, not compliance certification.
+Baseline classification: **45 accepted decisions (ADR-SHARED-033 was accepted 2026-11-10; operational qualification remains gated)**. The first six decisions are filed as `ADR-SHARED-001`…`ADR-SHARED-006` but retain historic `ADR-0001`…`ADR-0006` aliases. The index now displays both names without rewriting accepted decision history. The source register is evidence inventory, not compliance certification.
 
 ## Identified corrective implementation work
 
 - **ADR-001/003:** missing strict first-party identity-registry schema and semantic negative fixtures; isolated implementation in [shared #446](https://github.com/baobab-platform/shared/pull/446). It guards Shared declarations but not CP's legal-actor runtime.
 - **ADR-006/010:** stale Organisation ownership, event count and broker claims in supplier docs; correction in [shared #447](https://github.com/baobab-platform/shared/pull/447). Supplier KYB and ERP projection still need hosting-estate/runtime evidence.
-- **ADR-033/044:** the ADR index omitted both documents despite their presence. This PR indexes them, preserving 033 **Proposed**, and adds an inventory-completeness regression test to the existing EA-governance CI suite.
+- **ADR-033/044:** the ADR index omitted both documents despite their presence. This PR indexes them, recording 033 **Accepted** by explicit 10 November decision, and adds an inventory-completeness regression test to the existing EA-governance CI suite.
 
 ## Decision-by-decision source inventory
 
@@ -50,7 +50,7 @@ Baseline classification: **44 accepted decisions, 1 proposal (ADR-SHARED-033)**.
 | `ADR-SHARED-030` | Pulse PARTIAL provider promotion boundary | ACCEPTED | `contracts/intelligence/v1/pulse-registration.json` | `scripts/tests/test_intelligence_capability_census.py` | Pulse: independently verified PARTIAL support |
 | `ADR-SHARED-031` | Pulse IMPLEMENTED readiness boundary | ACCEPTED | `contracts/intelligence/v1/pulse-registration.json` | `scripts/tests/test_intelligence_capability_census.py` | Pulse / IAM / CP: authenticated operational readiness |
 | `ADR-SHARED-032` | EA-09 provider capability certification | ACCEPTED | `contracts/capability/v1/certification.schema.json` | `scripts/tests/test_ea09_provider_certification.py` | CP: durable certification, expiry and revoke |
-| `ADR-SHARED-033` | Corporate finance capability proposal | PROPOSED | `contracts/finance/v1/README.md` | — (proposal) | Proposed only: steward and ERP owner decision required |
+| `ADR-SHARED-033` | Corporate finance F1/F2/F3 census and gated tranches | ACCEPTED | `contracts/finance/v1/README.md` | `scripts/tests/test_finance_f1_canonical.py` | F1 DRAFT only; ERP native F1 read/journal/statement proof and F2/F3 promotion remain separately gated |
 | `ADR-SHARED-034` | ERP posting authority and native boundary | ACCEPTED | `contracts/erp/v2/posting-authority.schema.json` | `scripts/validate-erp-posting-authority-contract.py` | ERP: live CP actor/mandate check at native commit |
 | `ADR-SHARED-035` | Payments money-movement authority | ACCEPTED | `contracts/payments/v2/money-movement-authority.schema.json` | `scripts/validate-payments-money-movement-authority-contract.py` | Payments: real mandate, no replayed money movement |
 | `ADR-SHARED-036` | Cross-repository L4 integration and deployment | ACCEPTED | `docs/architecture/ea-v2.2-integration-acceptance-matrix.md` | `scripts/tests/test_ea_v23_governance.py` | Infrastructure: real broker, trace and protected staging evidence |
@@ -70,7 +70,7 @@ Baseline classification: **44 accepted decisions, 1 proposal (ADR-SHARED-033)**.
 2. **Consumer check:** pin the exact accepted Shared revision in the owning repository, verify semantic compatibility and ensure no private implementation bypasses CP/IAM authority.
 3. **Runtime check:** use a persisted transaction or material native effect where relevant, with independent database/readback, broker delivery, retry, duplicate prevention, stale/revoked authority and telemetry evidence. Do not substitute a synthetic provider result for a real financial or logistics consequence.
 4. **Protected gate:** keep provider/legal certification, cloud approval, staging and production explicit and independent. Neither this audit nor a passing Shared CI authorises deployment.
-5. **Proposal handling:** ADR-SHARED-033 stays Proposed until its designated Shared/ERP owners accept its scope; candidate finance contracts are not approval.
+5. **Proposal handling:** ADR-SHARED-033 was Accepted 2026-11-10 as a census. F1 remains DRAFT/EXPERIMENTAL; F2/F3 remain uncatalogued. Source review never certifies the native provider or approves Finance policy.
 6. **Revision:** this inventory is a dated source snapshot. Before merge or certification, refresh the PR/head SHA, verify test and review outcomes, then update affected row statuses with independently witnessed evidence.
 
 **No runtime qualification is claimed in this register for any ADR.**

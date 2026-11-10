@@ -103,17 +103,17 @@ class AcceptedV23Governance(unittest.TestCase):
                     self.assertTrue((ROOT / row["related_check"]).is_file())
                 self.assertIn(row["id"], documents)
                 self.assertTrue(row["owner_validation_required"])
-                self.assertEqual("PROPOSED" if row["number"] == 33 else "ACCEPTED", row["decision_status"])
+                self.assertEqual("ACCEPTED", row["decision_status"])
 
     def test_proposed_finance_and_accepted_product_read_are_indexed_honestly(self):
         index = (ROOT / "docs/adr/README.md").read_text()
-        for number, state in ((33, "Proposed"), (44, "Accepted")):
+        for number, state in ((33, "Accepted"), (44, "Accepted")):
             key = f"ADR-SHARED-{number:03}"
             row = next((line for line in index.splitlines() if line.startswith(f"| [{key} ")), None)
             self.assertIsNotNone(row, f"Missing {key}")
             self.assertIn(state, row)
         finance = next((ROOT / "docs/adr").glob("ADR-SHARED-033*.md")).read_text()
-        self.assertIn("**Status:** Proposed", finance)
+        self.assertIn("**Status:** **Accepted", finance)
         read = next((ROOT / "docs/adr").glob("ADR-SHARED-044*.md")).read_text()
         self.assertIn("| Status | Accepted |", read)
 
