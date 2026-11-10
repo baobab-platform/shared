@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/wms/v1/custody-read-response.schema.json",
+  "title": "custody read response",
+  "description": "WMS operational custody observations only, never ERP available-to-promise, reservation, valuation, accounting, or trade ownership. A partial result cannot masquerade as complete.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "warehouse_ref",
+    "as_of",
+    "completeness",
+    "observations"
+  ],
+  "properties": {
+    "warehouse_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completeness": {
+      "enum": [
+        "complete",
+        "partial",
+        "stale",
+        "withheld"
+      ]
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observations": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "owner_ref",
+          "sku_ref",
+          "quantity",
+          "uom",
+          "custody_status"
+        ],
+        "properties": {
+          "owner_ref": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "sku_ref": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "lot_ref": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "bin_ref": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "quantity": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$"
+          },
+          "uom": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "custody_status": {
+            "enum": [
+              "RECEIVED",
+              "IN_STORAGE",
+              "PICKED",
+              "DISPATCHED",
+              "QUARANTINED",
+              "DISCREPANCY"
+            ]
+          }
+        }
+      }
+    },
+    "next_cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "evidence_refs": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      }
+    }
+  }
+}
