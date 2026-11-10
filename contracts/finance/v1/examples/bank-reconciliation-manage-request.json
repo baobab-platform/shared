@@ -10,11 +10,11 @@
   "idempotency_key": "synthetic-bank-reconciliation-manage-command-0001",
   "source_document": {
     "type": "BANK_STATEMENT",
-    "id": "erp_statement_synthetic01",
+    "id": "erp_statementsynth01",
     "authority": "baobab-erp"
   },
-  "evidence_ref": "doc_statement_synthetic01",
-  "bank_account_ref": "erp_bankaccount_synthetic01",
+  "evidence_ref": "doc_statementsynth01",
+  "bank_account_ref": "erp_bankaccountsynth01",
   "statement_balance": {
     "amount": "1100.00",
     "currency": "ZAR"

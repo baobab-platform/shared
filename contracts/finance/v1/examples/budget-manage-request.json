@@ -8,7 +8,7 @@
   },
   "operation": "CREATE_DRAFT",
   "idempotency_key": "synthetic-budget-manage-command-0001",
-  "cost_centre_ref": "erp_costcentre_synthetic01",
+  "cost_centre_ref": "erp_costcentresynth01",
   "allocated_amount": {
     "amount": "50000.00",
     "currency": "ZAR"

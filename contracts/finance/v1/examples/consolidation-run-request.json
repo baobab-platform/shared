@@ -8,9 +8,9 @@
   },
   "operation": "REQUEST_RUN",
   "idempotency_key": "synthetic-consolidation-run-command-0001",
-  "group_model_ref": "erp_groupmodel_synthetic01",
+  "group_model_ref": "erp_groupmodelsynth01",
   "model_version": 2,
-  "ownership_snapshot_ref": "erp_ownership_synthetic01",
-  "elimination_policy_ref": "erp_elimination_synthetic01",
-  "fx_rate_set_ref": "erp_fxrates_synthetic01"
+  "ownership_snapshot_ref": "erp_ownerholdsynth01",
+  "elimination_policy_ref": "erp_eliminationsynth01",
+  "fx_rate_set_ref": "erp_fxratessynth01"
 }

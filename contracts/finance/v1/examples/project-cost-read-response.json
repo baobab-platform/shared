@@ -22,10 +22,10 @@
       }
     }
   ],
-  "project_ref": "erp_project_synthetic01",
+  "project_ref": "erp_projectsynth01",
   "rows": [
     {
-      "cost_ref": "erp_costline_synthetic01",
+      "cost_ref": "erp_costlinesynth01",
       "amount": {
         "amount": "75.00",
         "currency": "ZAR"
@@ -33,5 +33,5 @@
       "classification": "POLICY_PENDING"
     }
   ],
-  "snapshot_id": "erp_snapshot_synthetic01"
+  "snapshot_id": "erp_snapshotsynth01"
 }

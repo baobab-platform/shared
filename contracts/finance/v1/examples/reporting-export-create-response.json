@@ -23,7 +23,7 @@
     }
   ],
   "operation": "CREATE_EXPORT",
-  "resource_ref": "erp_reportingexportcreate_synthetic01",
+  "resource_ref": "erp_reportingexportcreatesynth01",
   "status": "ACCEPTED",
   "version": 1
 }

@@ -23,12 +23,12 @@
     }
   ],
   "operation": "IMPORT_STATEMENT",
-  "resource_ref": "erp_bankreconciliationmanage_synthetic01",
+  "resource_ref": "erp_bankreconciliationmanagesynth01",
   "status": "ACCEPTED",
   "version": 1,
   "source_document": {
     "type": "BANK_STATEMENT",
-    "id": "erp_statement_synthetic01",
+    "id": "erp_statementsynth01",
     "authority": "baobab-erp"
   }
 }

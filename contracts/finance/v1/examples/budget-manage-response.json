@@ -23,7 +23,7 @@
     }
   ],
   "operation": "CREATE_DRAFT",
-  "resource_ref": "erp_budgetmanage_synthetic01",
+  "resource_ref": "erp_budgetmanagesynth01",
   "status": "ACCEPTED",
   "version": 1
 }

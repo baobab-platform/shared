@@ -10,6 +10,6 @@
   "idempotency_key": "synthetic-reporting-export-create-command-0001",
   "report_kind": "TRIAL_BALANCE",
   "export_format": "JSON",
-  "report_policy_ref": "erp_reportpolicy_synthetic01",
-  "source_snapshot_ref": "erp_snapshot_synthetic01"
+  "report_policy_ref": "erp_reportpolicysynth01",
+  "source_snapshot_ref": "erp_snapshotsynth01"
 }

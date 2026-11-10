@@ -23,12 +23,12 @@
     }
   ],
   "operation": "FILE_CLAIM",
-  "resource_ref": "erp_expensemanage_synthetic01",
+  "resource_ref": "erp_expensemanagesynth01",
   "status": "ACCEPTED",
   "version": 1,
   "source_document": {
     "type": "EXPENSE_RECEIPT",
     "id": "doc_receipt_synthetic01",
-    "authority": "baobab-documents"
+    "authority": "documents"
   }
 }

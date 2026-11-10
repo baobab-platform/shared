@@ -65,15 +65,16 @@
           ]
         },
         "id": {
-          "$ref": "#/$defs/resourceRef"
+          "$ref": "#/$defs/externalRef"
         },
         "authority": {
           "enum": [
             "baobab-trade",
             "baobab-subscriptions",
+            "procurement",
             "baobab-erp",
-            "baobab-payments",
-            "baobab-documents"
+            "settlement",
+            "documents"
           ]
         }
       },
@@ -130,7 +131,7 @@
           "then": {
             "properties": {
               "authority": {
-                "const": "baobab-erp"
+                "const": "procurement"
               }
             }
           }
@@ -168,7 +169,7 @@
           "then": {
             "properties": {
               "authority": {
-                "const": "baobab-payments"
+                "const": "settlement"
               }
             }
           }
@@ -187,7 +188,7 @@
           "then": {
             "properties": {
               "authority": {
-                "const": "baobab-documents"
+                "const": "documents"
               }
             }
           }
@@ -231,7 +232,7 @@
           }
         }
       ],
-      "$comment": "Source type/authority is descriptive only; provider MUST verify trusted producer, issuer legal actor and exact document version."
+      "$comment": "Authority identifies the canonical source domain/steward, NOT a provider selection or legal permission. ERP checks current CP/IAM issuer identity and signed source event/custody."
     },
     "commandStatus": {
       "enum": [
@@ -274,6 +275,12 @@
           "$ref": "#/$defs/resourceRef"
         }
       }
+    },
+    "externalRef": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._:-]{5,127}$",
+      "maxLength": 128,
+      "$comment": "Opaque producer/custody reference (may be from another canonical engine); never a raw native SQL ID or caller authority."
     }
   }
 }

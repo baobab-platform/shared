@@ -53,10 +53,10 @@
       "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
     },
     "evidence_ref": {
-      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+      "$ref": "f2-f3-domain.schema.json#/$defs/externalRef"
     },
     "artifact_ref": {
-      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+      "$ref": "f2-f3-domain.schema.json#/$defs/externalRef"
     },
     "snapshot_id": {
       "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"

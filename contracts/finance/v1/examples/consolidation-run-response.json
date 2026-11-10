@@ -23,7 +23,7 @@
     }
   ],
   "operation": "REQUEST_RUN",
-  "resource_ref": "erp_consolidationrun_synthetic01",
+  "resource_ref": "erp_consolidationrunsynth01",
   "status": "ACCEPTED",
   "version": 1
 }

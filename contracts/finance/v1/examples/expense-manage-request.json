@@ -11,12 +11,12 @@
   "source_document": {
     "type": "EXPENSE_RECEIPT",
     "id": "doc_receipt_synthetic01",
-    "authority": "baobab-documents"
+    "authority": "documents"
   },
   "claim_amount": {
     "amount": "155.00",
     "currency": "ZAR"
   },
   "evidence_ref": "doc_receipt_synthetic01",
-  "cost_centre_ref": "erp_costcentre_synthetic01"
+  "cost_centre_ref": "erp_costcentresynth01"
 }

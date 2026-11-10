@@ -23,12 +23,12 @@
     }
   ],
   "operation": "REGISTER_BILL",
-  "resource_ref": "erp_payablemanage_synthetic01",
+  "resource_ref": "erp_payablemanagesynth01",
   "status": "ACCEPTED",
   "version": 1,
   "source_document": {
     "type": "PROCUREMENT_BILL",
-    "id": "erp_bill_synthetic01",
-    "authority": "baobab-erp"
+    "id": "proc_bill_synthetic01",
+    "authority": "procurement"
   }
 }

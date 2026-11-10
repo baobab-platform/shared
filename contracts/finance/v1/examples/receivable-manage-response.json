@@ -23,7 +23,7 @@
     }
   ],
   "operation": "REGISTER_INVOICE",
-  "resource_ref": "erp_receivablemanage_synthetic01",
+  "resource_ref": "erp_receivablemanagesynth01",
   "status": "ACCEPTED",
   "version": 1,
   "source_document": {

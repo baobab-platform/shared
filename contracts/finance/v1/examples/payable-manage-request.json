@@ -10,13 +10,13 @@
   "idempotency_key": "synthetic-payable-manage-command-0001",
   "source_document": {
     "type": "PROCUREMENT_BILL",
-    "id": "erp_bill_synthetic01",
-    "authority": "baobab-erp"
+    "id": "proc_bill_synthetic01",
+    "authority": "procurement"
   },
   "gross_amount": {
     "amount": "1250.00",
     "currency": "ZAR"
   },
   "due_date": "2026-02-10",
-  "counterparty_ref": "erp_supplier_synthetic01"
+  "counterparty_ref": "erp_suppliersynth01"
 }

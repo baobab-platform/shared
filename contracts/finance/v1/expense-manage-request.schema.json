@@ -39,7 +39,7 @@
       "$ref": "f2-f3-domain.schema.json#/$defs/nonnegativeMoney"
     },
     "evidence_ref": {
-      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+      "$ref": "f2-f3-domain.schema.json#/$defs/externalRef"
     },
     "cost_centre_ref": {
       "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"

@@ -24,7 +24,7 @@
   ],
   "balances": [
     {
-      "bank_account_ref": "erp_bankaccount_synthetic01",
+      "bank_account_ref": "erp_bankaccountsynth01",
       "balance": {
         "amount": "1100.00",
         "currency": "ZAR"
