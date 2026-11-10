@@ -1,7 +1,7 @@
 # ADR-SHARED-033 — Corporate Finance Capability Namespace and First Canonical Finance Tranches
 
-**Status:** Proposed — requires Shared steward and `baobab-erp` owner review  
-**Date:** 2026-10-08  
+**Status:** **Accepted — Normative Corporate Finance Capability Census (10 November 2026)**; operational/provider qualification remains independently gated  
+**Date:** 2026-10-08; **Acceptance:** 2026-11-10, Baobab Platform Owner  
 **Repository:** `baobab-platform/shared`  
 **Decision ID:** ADR-SHARED-033  
 **Work item:** `SH-NAB-FIN-01` (Nabhold go-live masterplan NAB-GOLIVE-MP-001, gate G03)  
@@ -15,9 +15,9 @@
 
 ## 1. Decision
 
-This ADR proposes, and does not yet register, the canonical capability keys for corporate finance. It adds **no catalogue entry, no schema, no provider declaration and no domain**. Each key below becomes canonical only through its own later contract change (section 11).
+This accepted decision establishes the finance-domain **capability census, authority boundaries and staged promotion process**. Acceptance is not an API implementation or provider grant. F1's three keys subsequently received DRAFT/EXPERIMENTAL canonical definitions and wire schemas in Shared #321 (16 October 2026); F2/F3 remain an approved planning inventory, **not canonical registered capabilities** until individually admitted through section 11. No provider, CP binding, operational certification, posting mandate or deployment is conferred by acceptance.
 
-Corporate finance uses the **existing `finance` domain**. It does not create a `ledger`, `accounting` or `treasury` domain. At acceptance, the `finance` description in `namespace-registry.yaml` is widened from "invoicing, receivables and settlement" to also name ledger, payables, banking, statements, budgets and reporting. The `capabilityDomain` enum is unchanged.
+Corporate finance uses the **existing `finance` domain**. It does not create a `ledger`, `accounting` or `treasury` domain. The `finance` description in `namespace-registry.yaml` has been widened from "invoicing, receivables and settlement" to also name ledger, payables, banking, statements, budgets and reporting. The `capabilityDomain` enum is unchanged.
 
 Keys are proposed in three tranches, ordered by what Nabhold needs first:
 
@@ -145,12 +145,12 @@ For each key, in its own Shared PR (`SH-NAB-FIN-02` onward, one tranche at a tim
 
 ## 14. Final decision
 
-Adopt the `finance` domain for corporate finance, accept the three-tranche key set in section 1 as the **proposed** inventory, and defer every schema, catalogue entry and provider claim to its own contract change.
+**Accepted 10 November 2026:** retain the existing `finance` domain and approve the 12-key three-tranche **census** in section 1, the authority separation in sections 4–6, and the independent promotion gates in section 11. F1 is already registered at DRAFT/EXPERIMENTAL in Shared; F2/F3 are future design and implementation work, not catalogue or provider entries. Existing `finance.order-consequence.process` and the `internal-trade` domain remain authoritative. No acceptance action silently grants IAM scopes, selects a CP provider, opens a route, qualifies accounting accuracy or authorises money movement.
 
 
 ## 15. Engineering checkpoint — 16 October 2026
 
-This ADR remains **Proposed**; no steward or Finance decision is inferred.
+At this **16 October historical checkpoint**, the ADR was **Proposed**; the later acceptance ruling in §16 supersedes only that status, not the unexecuted provider evidence.
 Shared #319 preserves the reviewed design checkpoint. The separately reviewed
 Shared #321 contract change implements the section 11 **DRAFT/EXPERIMENTAL**
 vocabulary and wire tranche under ADR-SHARED-017, with examples/negative tests.
@@ -158,3 +158,24 @@ Its [implementation register](../architecture/finance-f1-implementation-register
 tracks the distinction between source registration, semantic acceptance and
 provider/native qualification. Event production and operational acceptance remain
 explicit follow-ups; this checkpoint does not change an ADR's acceptance status.
+
+
+## 16. Acceptance and present-day reconciliation — 10 November 2026
+
+**Decision:** Accepted by explicit Platform Owner direction on 10 November 2026. Shared remains contract steward; `baobab-erp` remains semantic owner; Finance/accountant approval is still independently required for actual accounting policy, chart/baseline, reports, intercompany treatment and consolidation. This ruling accepts the **architecture**, not an execution permission or a claim that the unexecuted provider plan passed.
+
+**Current source inventory:** Shared #321 merged F1 `finance.ledger.read`, `finance.journal.manage`, `finance.statement.read` with `DRAFT/EXPERIMENTAL` status, seven schemas, request/response examples and negative source conformance. The namespace description is already broadened. `finance.order-consequence.process` is a separate existing ERP capability. F2's six and F3's three names remain **census-only**, with no catalogue registration or provider claim. The 8 October census in §7 and the 16 October checkpoint in §15 are historical observations; do not interpret them as current repository state. `workforce` and `payroll` were separately admitted under accepted ADR-SHARED-045 and remain distinct from `finance`.
+
+**Authority interpretation (resolving section 9 at architecture level, preserving domain vetoes):**
+
+1. `internal-trade` owns the **business transaction** for intercompany/branch movement, mirrored orders and source-document identities. ERP/`finance` owns posting, balance reconciliation, ledger attribution, monetary FX treatment and financial-statement consolidation **of those transactions**. A future separately versioned finance operation may expose reconciliation, but MUST NOT duplicate or silently register `finance.intercompany.reconcile` before Shared/ERP approval of exact semantics and `internal-trade` owner review.
+2. CP owns tenant/legal-actor, binding, entitlement, current payer/issuer authority **resolution and routing**. Subscriptions remains authoritative for billed subscription facts and emits a future **approved** canonical invoice event or read model; ERP ingests idempotently under CP and native posting veto. CP SHALL NOT become an invoice payload relay or originate a commercial price. The F2 receivable contract MUST accept a typed `source_document` independent of Trade `commerce_order_id`; existing Trade invoice-outcome meaning is not mutated by default.
+3. Native versus reporting-layer statements, accountant-approved consolidation rules and vendor-neutral provider assignment remain **open design selections**, not provisional authorisations. Country-effective VAT/tax profiles remain owned by their actual tax authority; no default ZA/UG status is inferred from domicile or Market.
+
+**Mandatory execution sequence and evidence boundary:**
+
+- **F1 native first:** approve IAM resource-server scopes, CP operation grant and legal-actor/book selection, finance baseline/period policy; implement native iDempiere GL ledger, governed journal transitions and reports without bypassing the existing synchronous native veto. Prove every `F1-P01…F1-P11` case from `docs/architecture/finance-f1-provider-acceptance.yaml` on real iDempiere/PostgreSQL, including reversal/COMMIT loss/replay/SoD/closed-period negatives, independent accounting tie-out and finance sign-off.
+- **F2 next:** independently version six contracts in coherent increments, starting with source-typed receivables and Subscriptions→ERP handoff, payables and banks; preserve Payment/Settlement/Tax independent authority. Complete adapter and reconciliation tests before provider promotion.
+- **F3 after policy approval:** reporting snapshots require immutable provenance and restrictions; project cost requires an approved capitalisation policy; group consolidation requires an accountant-approved ownership, eliminations and FX model. Never claim native support from a schema.
+
+**Acceptance is not activation.** Under ADR-SHARED-017, a catalogue key can be DRAFT without a provider, a provider can be implemented without certification, and certification can exist without a live CP binding or permitted production use. Protected staging/production approvals remain distinct under ADR-SHARED-036/043. See `docs/architecture/finance-f1-provider-acceptance.yaml` (status `REQUIRED_NOT_EXECUTED`) and `docs/architecture/finance-adr033-implementation-plan-2026-11-10.md` for deliverables and exit proofs.

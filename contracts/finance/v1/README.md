@@ -1,7 +1,7 @@
 # Finance F1 — corporate ledger, journal and statement wire contracts
 
 **Lifecycle: DRAFT / EXPERIMENTAL. Semantic owner: baobab-erp.**
-Shared publishes vocabulary and wire validation. ADR-SHARED-033 remains Proposed;
+Shared publishes vocabulary and wire validation. ADR-SHARED-033 was Accepted 2026-11-10 as a finance capability census;
 merging these draft files does not accept that ADR, certify ERP support, allocate
 an IAM scope, activate a CP binding, pass L4 or authorise production.
 
