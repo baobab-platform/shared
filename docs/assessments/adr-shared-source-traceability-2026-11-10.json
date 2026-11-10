@@ -6,7 +6,7 @@
   "decisions": [
     {
       "number": 1,
-      "id": "ADR-0001",
+      "id": "ADR-SHARED-001",
       "topic": "Digital Estate architecture",
       "source": "contracts/tenancy/tenancy.yaml",
       "related_check": "scripts/validate-governance-contracts.rb",
@@ -16,7 +16,7 @@
     },
     {
       "number": 2,
-      "id": "ADR-0002",
+      "id": "ADR-SHARED-002",
       "topic": "Control Plane polyrepo boundaries",
       "source": "README.md",
       "related_check": ".github/workflows/foundation-repository-gates.yml",
@@ -26,7 +26,7 @@
     },
     {
       "number": 3,
-      "id": "ADR-0003",
+      "id": "ADR-SHARED-003",
       "topic": "Tenant / Legal Entity / Estate separation",
       "source": "contracts/tenancy/tenancy.yaml",
       "related_check": "scripts/validate-governance-contracts.rb",
@@ -36,7 +36,7 @@
     },
     {
       "number": 4,
-      "id": "ADR-0004",
+      "id": "ADR-SHARED-004",
       "topic": "Cross-engine event/error/idempotency metadata",
       "source": "contracts/events/v1/envelope.schema.json",
       "related_check": "scripts/validate-cross-engine-contracts.rb",
@@ -46,7 +46,7 @@
     },
     {
       "number": 5,
-      "id": "ADR-0005",
+      "id": "ADR-SHARED-005",
       "topic": "ERP system of record",
       "source": "contracts/erp/v1/system-of-record.yaml",
       "related_check": "scripts/validate-erp-contracts.rb",
@@ -56,7 +56,7 @@
     },
     {
       "number": 6,
-      "id": "ADR-0006",
+      "id": "ADR-SHARED-006",
       "topic": "Supplier-onboarding contract",
       "source": "contracts/supplier-onboarding/v1/asyncapi.yaml",
       "related_check": "scripts/validate-event-registry.py",
