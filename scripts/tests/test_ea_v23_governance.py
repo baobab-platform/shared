@@ -92,6 +92,8 @@ class AcceptedV23Governance(unittest.TestCase):
         indexed = re.findall(r"^\|\s*\[(ADR-(?:SHARED-)?\d{3,4})\b", index, re.MULTILINE)
         self.assertEqual(len(indexed), len(set(indexed)), "Duplicate ADR register entries")
         self.assertEqual(expected, set(indexed), "Every ADR must have exactly one index entry")
+        for n in range(1, 7):
+            self.assertIn(f"historical ADR-{n:04}", index, "Retain accepted legacy ADR references")
         self.assertEqual("2026-11-10", manifest["audit_date"])
         self.assertTrue(all(row["runtime_qualification"] == "NOT_ASSESSED" for row in manifest["decisions"]))
         for row in manifest["decisions"]:
