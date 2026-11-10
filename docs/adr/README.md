@@ -8,12 +8,12 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 
 | Document | Status |
 |---|---|
-| [ADR-0001: Baobab-Platform Digital Estate & Contract Architecture](ADR-0001-baobab-platform-digital-estate-architecture.md) | Accepted — tenancy portions superseded by ADR-0003 on 2026-09-01 |
-| [ADR-0002: Control-plane polyrepo boundaries](ADR-0002-control-plane-polyrepo-boundaries.md) | Accepted |
-| [ADR-0003: Separate Tenant, Legal Entity, and Digital Estate Identity](ADR-0003-tenant-legal-entity-and-digital-estate-separation.md) | Accepted |
-| [ADR-0004: Canonical Cross-Engine Event, Error, and Idempotency Metadata](ADR-0004-canonical-cross-engine-metadata.md) | Accepted |
-| [ADR-0005: ERP System of Record and Boundary Contracts](ADR-0005-erp-system-of-record-and-boundary-contracts.md) | Accepted |
-| [ADR-0006: Supplier-Onboarding Domain Contracts](ADR-0006-supplier-onboarding-domain-contracts.md) | Accepted |
+| [ADR-SHARED-001 (historical ADR-0001): Baobab-Platform Digital Estate & Contract Architecture](ADR-0001-baobab-platform-digital-estate-architecture.md) | Accepted — tenancy portions superseded by ADR-0003 on 2026-09-01 |
+| [ADR-SHARED-002 (historical ADR-0002): Control-plane polyrepo boundaries](ADR-0002-control-plane-polyrepo-boundaries.md) | Accepted |
+| [ADR-SHARED-003 (historical ADR-0003): Separate Tenant, Legal Entity, and Digital Estate Identity](ADR-0003-tenant-legal-entity-and-digital-estate-separation.md) | Accepted |
+| [ADR-SHARED-004 (historical ADR-0004): Canonical Cross-Engine Event, Error, and Idempotency Metadata](ADR-0004-canonical-cross-engine-metadata.md) | Accepted |
+| [ADR-SHARED-005 (historical ADR-0005): ERP System of Record and Boundary Contracts](ADR-0005-erp-system-of-record-and-boundary-contracts.md) | Accepted |
+| [ADR-SHARED-006 (historical ADR-0006): Supplier-Onboarding Domain Contracts](ADR-0006-supplier-onboarding-domain-contracts.md) | Accepted |
 | [ADR-SHARED-007 — Canonical Capability Contracts, Composition Registry and Cross-Engine Provider Model](ADR-SHARED-007%20%E2%80%94%20Canonical%20Capability%20Contracts%2C%20Composition%20Registry%20and%20Cross-Engine%20Provider%20Model.md) | Accepted — Normative Platform Contract, amended in part and refined |
 | [ADR-SHARED-008 — Gate ZB-01 Capability Domain Registration and Canonical Event-Type Convention Confirmation](ADR-SHARED-008%20%E2%80%94%20Gate%20ZB-01%20Capability%20Domain%20Registration%20and%20Canonical%20Event-Type%20Convention%20Confirmation.md) | Accepted — Normative Contract Amendment |
 | [ADR-SHARED-009 — Programme Gate P1 Shared Contract Foundation Completion](ADR-SHARED-009%20%E2%80%94%20Programme%20Gate%20P1%20Shared%20Contract%20Foundation%20Completion.md) | Accepted — Normative Contract Addition (reason codes for provisioning blockers amended by ADR-SHARED-015 §8) |
