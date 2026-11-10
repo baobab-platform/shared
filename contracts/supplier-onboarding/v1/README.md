@@ -10,7 +10,7 @@ stable shape instead of reinventing it.
 
 ## Contract surfaces
 
-- `asyncapi.yaml` carries the four events this domain currently defines:
+- `asyncapi.yaml` carries the six events this domain currently defines:
   application submitted, application decided, qualification updated, and
   capability verified.
 - JSON Schemas define the payloads and shared domain types
@@ -21,19 +21,19 @@ stable shape instead of reinventing it.
   conflict policy for this domain's own concepts — it does not amend
   `contracts/erp/v1/system-of-record.yaml`.
 
-All events use `contracts/events/v1/envelope.schema.json`. No message
-broker exists yet anywhere in this ecosystem to actually carry them —
-same position `contracts/erp/v1` is already in — so this contract exists
-for producers and future consumers to build against ahead of one existing,
-not because one does.
+All events use `contracts/events/v1/envelope.schema.json`. Infrastructure, Trade and ERP now have RabbitMQ/outbox work, but the existence
+of a broker is not evidence of activated supplier-onboarding event routes.
+A hosting estate must independently qualify producer custody, authorised
+consumers, durable delivery, replay and negative paths.
 
 ## What this contract deliberately does not do
 
 - **Does not mint a canonical Organisation ID.** `canonical_organisation_id`
   is reserved and nullable on every payload. `contracts/erp/v1/system-of-record.yaml`
-  keeps the platform "Organisation" concept's `canonical_owner` explicitly
-  `unassigned` (CI-enforced there) until a real contract is approved; this
-  domain must never imply that decision has been made.
+  assigns the platform "Organisation" concept's `canonical_owner` to
+  `control-plane` (ADR-BCP-018). This v1 package retains a nullable
+  `canonical_organisation_id` for compatibility. If populated it must be
+  CP-attested; the hosting estate must not mint or infer it.
 - **Does not redefine or replace the ERP-owned "Supplier" concept.**
   `contracts/erp/v1/system-of-record.yaml` already declares `Supplier`:
   `canonical_owner: erp`, "Business Partner vendor role". A `Supplier

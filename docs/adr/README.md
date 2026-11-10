@@ -8,12 +8,12 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 
 | Document | Status |
 |---|---|
-| [ADR-0001: Baobab-Platform Digital Estate & Contract Architecture](ADR-0001-baobab-platform-digital-estate-architecture.md) | Accepted — tenancy portions superseded by ADR-0003 on 2026-09-01 |
-| [ADR-0002: Control-plane polyrepo boundaries](ADR-0002-control-plane-polyrepo-boundaries.md) | Accepted |
-| [ADR-0003: Separate Tenant, Legal Entity, and Digital Estate Identity](ADR-0003-tenant-legal-entity-and-digital-estate-separation.md) | Accepted |
-| [ADR-0004: Canonical Cross-Engine Event, Error, and Idempotency Metadata](ADR-0004-canonical-cross-engine-metadata.md) | Accepted |
-| [ADR-0005: ERP System of Record and Boundary Contracts](ADR-0005-erp-system-of-record-and-boundary-contracts.md) | Accepted |
-| [ADR-0006: Supplier-Onboarding Domain Contracts](ADR-0006-supplier-onboarding-domain-contracts.md) | Accepted |
+| [ADR-SHARED-001 (historical ADR-0001): Baobab-Platform Digital Estate & Contract Architecture](ADR-0001-baobab-platform-digital-estate-architecture.md) | Accepted — tenancy portions superseded by ADR-0003 on 2026-09-01 |
+| [ADR-SHARED-002 (historical ADR-0002): Control-plane polyrepo boundaries](ADR-0002-control-plane-polyrepo-boundaries.md) | Accepted |
+| [ADR-SHARED-003 (historical ADR-0003): Separate Tenant, Legal Entity, and Digital Estate Identity](ADR-0003-tenant-legal-entity-and-digital-estate-separation.md) | Accepted |
+| [ADR-SHARED-004 (historical ADR-0004): Canonical Cross-Engine Event, Error, and Idempotency Metadata](ADR-0004-canonical-cross-engine-metadata.md) | Accepted |
+| [ADR-SHARED-005 (historical ADR-0005): ERP System of Record and Boundary Contracts](ADR-0005-erp-system-of-record-and-boundary-contracts.md) | Accepted |
+| [ADR-SHARED-006 (historical ADR-0006): Supplier-Onboarding Domain Contracts](ADR-0006-supplier-onboarding-domain-contracts.md) | Accepted |
 | [ADR-SHARED-007 — Canonical Capability Contracts, Composition Registry and Cross-Engine Provider Model](ADR-SHARED-007%20%E2%80%94%20Canonical%20Capability%20Contracts%2C%20Composition%20Registry%20and%20Cross-Engine%20Provider%20Model.md) | Accepted — Normative Platform Contract, amended in part and refined |
 | [ADR-SHARED-008 — Gate ZB-01 Capability Domain Registration and Canonical Event-Type Convention Confirmation](ADR-SHARED-008%20%E2%80%94%20Gate%20ZB-01%20Capability%20Domain%20Registration%20and%20Canonical%20Event-Type%20Convention%20Confirmation.md) | Accepted — Normative Contract Amendment |
 | [ADR-SHARED-009 — Programme Gate P1 Shared Contract Foundation Completion](ADR-SHARED-009%20%E2%80%94%20Programme%20Gate%20P1%20Shared%20Contract%20Foundation%20Completion.md) | Accepted — Normative Contract Addition (reason codes for provisioning blockers amended by ADR-SHARED-015 §8) |
@@ -49,6 +49,7 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 | [ADR-SHARED-030 — Pulse P-CAP-06 Evidence-Backed PARTIAL Provider Support](ADR-SHARED-030%20%E2%80%94%20Pulse%20P-CAP-06%20Evidence-Backed%20PARTIAL%20Provider%20Support.md) | Accepted — Normative Provider-Promotion Governance |
 | [ADR-SHARED-031 — Pulse P-CAP-07 Provider Readiness, Resource-Server Authority and IMPLEMENTED Promotion](ADR-SHARED-031%20%E2%80%94%20Pulse%20P-CAP-07%20Provider%20Readiness%2C%20Resource-Server%20Authority%20and%20IMPLEMENTED%20Promotion.md) | Accepted — Normative Provider-Readiness Governance |
 | [ADR-SHARED-032 — EA-09 Provider Capability Certification and Pulse Activation Admission](ADR-SHARED-032%20%E2%80%94%20EA-09%20Provider%20Capability%20Certification%20and%20Pulse%20Activation%20Admission.md) | Accepted — Normative Certification and Activation Governance |
+| [ADR-SHARED-033 — Corporate Finance Capability Namespace and First Canonical Finance Tranches](ADR-SHARED-033%20%E2%80%94%20Corporate%20Finance%20Capability%20Namespace%20and%20First%20Canonical%20Finance%20Tranches.md) | **Accepted 2026-11-10 — finance census, F1 DRAFT wire contracts; native F1/F2/F3 runtime remains separately gated** |
 | [ADR-SHARED-034 — ERP Posting Authority Resolution and Native Placement Boundary](ADR-SHARED-034%20%E2%80%94%20ERP%20Posting%20Authority%20Resolution%20and%20Native%20Placement%20Boundary.md) | Accepted — Normative Shared Contract Architecture |
 | [ADR-SHARED-035 — Payments Money-Movement Authority](ADR-SHARED-035%20%E2%80%94%20Payments%20Money-Movement%20Authority.md) | Accepted — Normative Shared Contract Architecture |
 | [ADR-SHARED-036 — Cross-Repository Integration Testing, Tenant-Neutral Consumption and Production Deployment](ADR-SHARED-036%20%E2%80%94%20Cross-Repository%20Integration%20Testing%2C%20Tenant-Neutral%20Consumption%20and%20Production%20Deployment.md) | Accepted — Normative Cross-Repository Platform Architecture (2026-10-15); implementation gated |
@@ -59,6 +60,7 @@ An ADR marked *amended* or *refined* stays authoritative except where the docume
 | [ADR-SHARED-041 — Baobab Platform Engineering Philosophy and African Enterprise Product Excellence](ADR-SHARED-041%20%E2%80%94%20Baobab%20Platform%20Engineering%20Philosophy%20and%20African%20Enterprise%20Product%20Excellence.md) | **Accepted 2026-10-20 — Normative organisation-wide engineering/product governance; all first-party baobab-* repositories and digital estates** |
 | [ADR-SHARED-042 — Canonical Commercial Actor Authority and Buyer Execution Context](ADR-SHARED-042%20%E2%80%94%20Canonical%20Commercial%20Actor%20Authority%20and%20Buyer%20Execution%20Context.md) | **Accepted 2026-10-21 — Normative cross-engine commercial actor identity, buyer authority, context and execution governance; implementation gated** |
 | [ADR-SHARED-043 — Development Provisioning and Environment Approval Boundaries](ADR-SHARED-043-Development-Provisioning-and-Environment-Approval-Boundaries.md) | **Accepted 2026-10-23 — Standing isolated development authorisation across engines/estates; independent human approvals at protected staging/production** |
+| [ADR-SHARED-044 — Current ProductSubscription Workload Read and Commercial Pre-Dispatch Boundary](ADR-SHARED-044%20%E2%80%94%20Current%20ProductSubscription%20Workload%20Read%20and%20Commercial%20Pre-Dispatch%20Boundary.md) | **Accepted 2026-10-25 — workload read and deny-only commercial pre-dispatch; no positive money authority** |
 
 | [ADR-SHARED-045 — Provider-Neutral Baobab People Contract and Tenant Provider Choice](ADR-SHARED-045%20%E2%80%94%20Provider-Neutral%20Baobab%20People%20Contract%20and%20Tenant%20Provider%20Choice.md) | **Accepted 2026-11-08 — canonical People BYOP semantics; no provider activation** |
 

@@ -65,14 +65,14 @@ jobs:
           [[ "$IMAGE" =~ ^ghcr\.io/baobab-platform/[a-z0-9-]+$ ]]
           docker build --platform linux/amd64 -f "$DOCKERFILE" --build-arg VERSION="${GITHUB_REF_NAME#v}" --build-arg REVISION="$GITHUB_SHA" -t "$IMAGE:$GITHUB_REF_NAME" .
       - name: Scan image before publication
-        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ inputs.image }}:${{ github.ref_name }}
           severity: HIGH,CRITICAL
           exit-code: '1'
           ignore-unfixed: false
       - name: Generate SPDX SBOM
-        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: ${{ inputs.image }}:${{ github.ref_name }}
           format: spdx-json

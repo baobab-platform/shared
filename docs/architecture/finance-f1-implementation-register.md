@@ -13,7 +13,7 @@ The earlier global sequencing pause does not block this independent lane.
 
 | Step | Implementation/evidence | Remaining exit |
 |---|---|---|
-| SH-NAB-FIN-01 census | ADR-SHARED-033 remains Proposed | Steward and ERP semantic decision; no status promotion inferred |
+| SH-NAB-FIN-01 census | ADR-SHARED-033 Accepted by Platform Owner on 2026-11-10; historical design checkpoint was Proposed | Architecture accepted; finance policy, native ERP provider and provider qualification remain independently gated |
 | Design checkpoint | Shared #319 merged after corrected journal/view schemas and mandatory CI (`49fc2ded`, merge `27eb77a`) | Historical proposal; never the runtime schema ID |
 | SH-NAB-FIN-02 DRAFT wire tranche | Shared #321: three DRAFT/EXPERIMENTAL keys; common types; six request/response schemas; examples; negative tests; lock/CI/index | Final-head mandatory CI/review before source merge |
 | ERP F1 provider | No provider declaration or runtime implementation in this increment | Accepted resource-server scope policy, actual routes/persistence/native tests and current CP/native veto |
@@ -54,3 +54,7 @@ missing. Detailed `$comment` fields explain boundary and historical semantics.
 Nabhold G03/G06 remains PARTIAL/BLOCKED for operational use. R0/R1/R2/R3 is not
 released by this contract change. Source DRAFT vocabulary, accepted architecture,
 provider support, L4 qualification and production are separate facts.
+
+## 10 November 2026 status addendum
+
+ADR-SHARED-033 is **Accepted** as architecture. The 16 October implementation observations above are historical and shall not be mistaken for a later F1 provider qualification. F1 keys remain DRAFT/EXPERIMENTAL, F2/F3 are census-only, and F1-P01…P11 retain REQUIRED_NOT_EXECUTED until independently verified native execution evidence exists. See `finance-adr033-implementation-plan-2026-11-10.md`.

@@ -418,16 +418,54 @@ def validate_regulations(root: Path, shared_root: Path, profile: dict) -> list[s
     return findings
 
 
-def validate_trade_docs(root: Path, profile: dict) -> list[str]:
+def validate_trade_docs_candidate_declaration(root: Path, shared_root: Path) -> list[str]:
+    """ADR-SHARED-017/026: architecture-only intent is not provider support.
+
+    A candidate-only declaration is permitted; claimed provider implementation,
+    even PARTIAL, still requires a separately approved RTD-10 maturity transition.
+    Validate the whole file using Shared's actual provider contract, not an
+    invented local approximation of its schema.
+    """
+    path = root / ".baobab/capability-provider.yaml"
+    if not path.exists():
+        return []
+    try:
+        declaration = load_yaml(path)
+    except (OSError, yaml.YAMLError) as exc:
+        return [f"Trade Docs capability declaration cannot be parsed: {exc}"]
+    if not isinstance(declaration, dict):
+        return ["Trade Docs capability declaration must be a mapping"]
+
+    findings: list[str] = []
+    if declaration.get("providers"):
+        findings.append(
+            "Trade Docs architecture-only scaffold must not claim a real capability provider before capability/runtime implementation"
+        )
+    plans = declaration.get("planned_capabilities")
+    if not isinstance(plans, list) or not plans:
+        findings.append(
+            "Trade Docs architecture-only provider declaration must contain only nonempty planned_capabilities"
+        )
+
+    from capability_catalogue import Contracts, validate_declaration
+
+    contracts = Contracts(shared_root / "contracts")
+    findings.extend(
+        "Trade Docs candidate declaration: " + error
+        for error in validate_declaration(
+            contracts, declaration, repository_root=root, engine_id="baobab-trade-docs"
+        )
+    )
+    return findings
+
+
+def validate_trade_docs(root: Path, shared_root: Path, profile: dict) -> list[str]:
     findings: list[str] = []
     if (root / "src").exists():
         findings.append(
             "Trade Docs declares ARCHITECTURE_ONLY but src/ exists; change maturity only with a new governed implementation increment"
         )
-    if (root / ".baobab/capability-provider.yaml").exists():
-        findings.append(
-            "Trade Docs architecture-only scaffold must not claim a real capability provider before capability/runtime implementation"
-        )
+    findings.extend(validate_trade_docs_candidate_declaration(root, shared_root))
     for forbidden in (
         "contracts/trade-document",
         "contracts/regulatory-document-exchange",
@@ -739,7 +777,7 @@ def check(
     if role == "REGULATIONS_AUTHORITY":
         findings += validate_regulations(repository_root, shared_root, profile)
     elif role == "TRADE_DOCUMENT_AUTHORITY":
-        findings += validate_trade_docs(repository_root, profile)
+        findings += validate_trade_docs(repository_root, shared_root, profile)
     elif role == "INTELLIGENCE_CONSUMER":
         findings += validate_pulse(repository_root, shared_root, profile)
     return findings

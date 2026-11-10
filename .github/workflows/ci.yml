@@ -104,6 +104,7 @@ on:
       - "docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md"
       - "templates/dependabot.yml"
       - "README.md"
+      - "scripts/validate-legal-entity-registry.py"
       - "scripts/validate-governance-contracts.rb"
       - "scripts/validate-cross-engine-contracts.rb"
       - "scripts/validate-erp-contracts.rb"
@@ -146,6 +147,7 @@ on:
       - "scripts/ea_dev_register.py"
       - "scripts/validate_ea_xb_acceptance.py"
       - "scripts/validate_ea_xb_v11_proposal.py"
+      - "scripts/dev07_transaction_gate.py"
       - "scripts/action_advisory_watch.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
@@ -161,6 +163,7 @@ on:
       - "docs/governance/baobab-dependency-security-maintenance-policy-v1.0.md"
       - "templates/dependabot.yml"
       - "README.md"
+      - "scripts/validate-legal-entity-registry.py"
       - "scripts/validate-governance-contracts.rb"
       - "scripts/validate-cross-engine-contracts.rb"
       - "scripts/validate-erp-contracts.rb"
@@ -201,6 +204,7 @@ on:
       - "scripts/ea_dev_register.py"
       - "scripts/validate_ea_xb_acceptance.py"
       - "scripts/validate_ea_xb_v11_proposal.py"
+      - "scripts/dev07_transaction_gate.py"
       - "scripts/action_advisory_watch.py"
       - "scripts/tests/**"
       - ".github/foundation-tests/requirements.txt"
@@ -237,10 +241,16 @@ jobs:
           python-version: "3.13"
       - name: Install JSON Schema runtime
         run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
+      - name: Validate ADR-SHARED-001/003 first-party legal-entity registry
+        run: |
+          python scripts/validate-legal-entity-registry.py
+          python scripts/tests/test_legal_entity_registry.py
       - name: Test BA-SEC-DEP-001 strict Dependabot conformance and negative fixtures
         run: python scripts/tests/test_dependabot_policy.py
       - name: Test SHA-pinned GitHub Actions advisory watch (offline fixtures)
         run: python scripts/tests/test_action_advisory_watch.py
+      - name: Validate ADR-SHARED-006/010 supplier authority and six event types
+        run: python scripts/tests/test_supplier_authority_drift.py
       - name: Validate engineering philosophy governance (ADR-SHARED-041)
         run: python scripts/tests/test_engineering_philosophy_governance.py
       - name: Validate Accepted EA v2.3 plan, 20-repo audit and historical precedence
@@ -255,6 +265,8 @@ jobs:
           python scripts/tests/test_ea_xb_v11_proposal.py
       - name: Validate DEV-11 closed trace evidence contract and source negatives
         run: python scripts/tests/test_dev11_trace_contract.py
+      - name: Validate DEV-07 atomic native commitment and same-event observer invariants (source only)
+        run: python scripts/tests/test_dev07_transaction_gate.py
       - name: Validate EA-DEV register and decision reconciliation (DEV-00)
         run: |
           python scripts/ea_dev_register.py --check

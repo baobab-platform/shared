@@ -6,22 +6,22 @@ schema:
     its attributes and corrections are explicit. This file is scoped to the
     supplier-onboarding domain only. It does not amend, and must never be
     read as amending, contracts/erp/v1/system-of-record.yaml — in
-    particular that file's "Organisation" concept remains canonical_owner
-    unassigned (CI-enforced there) and its "Supplier" concept remains
-    canonical_owner erp. Both are referenced below, never redefined.
+    particular that file's "Organisation" concept is canonical_owner
+    control-plane (ADR-BCP-018), while "Supplier" remains canonical_owner
+    erp. Both are referenced below, never redefined.
 
 concepts:
   - concept: Supplier Application
     canonical_owner: hosting-estate
     producer: [digital-estates]
     consumers: [erp, reporting]
-    external_identifier: estate-minted application ID (see domain.schema.json#/$defs/estateResourceId); canonical_organisation_id is reserved and null until contracts/erp/v1/system-of-record.yaml's Organisation concept is assigned an owner
+    external_identifier: estate-minted application ID (see domain.schema.json#/$defs/estateResourceId); nullable canonical_organisation_id refers to a CP-attested mapping when present; the hosting estate may not mint it
     idempiere_representation: none until ERP provisioning exists; on approval an application becomes an input to a future Business Partner vendor-role record (see contracts/erp/v1/system-of-record.yaml's Supplier concept), never the same record
     medusa_representation: none
     synchronisation_direction: estate_to_authorised_consumers
     consistency: estate authoritative pre-approval; superseded by ERP's Supplier record once provisioning exists
     mechanism: estate-owned database and this contract's versioned events
-    conflict_resolution: equality with the platform Organisation concept or the ERP Supplier concept is forbidden until an explicit mapping is approved; ambiguous mappings are quarantined, matching contracts/erp/v1/system-of-record.yaml's Organisation entry
+    conflict_resolution: an estate application is neither a canonical Organisation nor an ERP Supplier; only CP-governed Organisation mappings can join them, and ambiguous mappings are quarantined
 
   - concept: Supplier Capability
     canonical_owner: hosting-estate

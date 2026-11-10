@@ -279,3 +279,82 @@ assert any(
 )
 
 print("RTD-10 conformance profile self-tests passed")
+
+
+# ADR-SHARED-017/026: a candidate-only file must not be read as a provider.
+# Exercise the actual Shared catalogue/schema validator and RTD-10 denial gate.
+import tempfile
+
+with tempfile.TemporaryDirectory() as directory:
+    root = Path(directory)
+    (root / ".baobab").mkdir()
+    candidate_file = root / ".baobab/capability-provider.yaml"
+    candidate = {
+        "schema": {"name": "baobab-capability-provider-declaration", "version": "1.0"},
+        "engine": {"engine_id": "baobab-trade-docs"},
+        "planned_capabilities": [{
+            "proposed_key": "documents.trade-document.manage",
+            "proposal_status": "CANDIDATE",
+            "provenance": {"authority": {
+                "repository": "baobab-platform/baobab-trade-docs",
+                "decision": "ADR-TDOC-0002",
+            }},
+        }],
+    }
+    assert not rtd.validate_trade_docs_candidate_declaration(root, ROOT)
+    candidate_file.write_text(yaml.safe_dump(candidate, sort_keys=False))
+    assert not rtd.validate_trade_docs_candidate_declaration(root, ROOT), (
+        "CANDIDATE intent is not provider support"
+    )
+
+    with_provider = copy.deepcopy(candidate)
+    with_provider["providers"] = [{
+        "provider_key": "baobab-trade-docs.fake",
+        "provider_type": "BAOBAB_ENGINE",
+        "simulated": False,
+        "production_permitted": False,
+        "support": [{
+            "capability_key": "documents.trade-document.manage",
+            "contract_versions": [1],
+            "implementation_status": "PARTIAL",
+        }],
+    }]
+    candidate_file.write_text(yaml.safe_dump(with_provider, sort_keys=False))
+    assert any(
+        "must not claim a real capability provider" in failure
+        for failure in rtd.validate_trade_docs_candidate_declaration(root, ROOT)
+    ), "Architecture-only must deny even PARTIAL provider support"
+
+    empty = copy.deepcopy(candidate)
+    empty["planned_capabilities"] = []
+    candidate_file.write_text(yaml.safe_dump(empty, sort_keys=False))
+    assert any(
+        "nonempty planned_capabilities" in failure
+        for failure in rtd.validate_trade_docs_candidate_declaration(root, ROOT)
+    )
+
+    wrong_engine = copy.deepcopy(candidate)
+    wrong_engine["engine"]["engine_id"] = "baobab-regulations"
+    candidate_file.write_text(yaml.safe_dump(wrong_engine, sort_keys=False))
+    assert any(
+        "engine.engine_id" in failure
+        for failure in rtd.validate_trade_docs_candidate_declaration(root, ROOT)
+    )
+
+    forged = copy.deepcopy(candidate)
+    forged["status"] = "ACTIVE"
+    candidate_file.write_text(yaml.safe_dump(forged, sort_keys=False))
+    assert rtd.validate_trade_docs_candidate_declaration(root, ROOT), (
+        "Candidates cannot publish runtime authority fields"
+    )
+
+    uncensused = copy.deepcopy(candidate)
+    uncensused["planned_capabilities"][0] = {
+        "capability_key": "documents.trade-document.manage",
+        "proposal_status": "CONTRACTED",
+    }
+    candidate_file.write_text(yaml.safe_dump(uncensused, sort_keys=False))
+    assert any(
+        "not a canonical Shared capability" in failure
+        for failure in rtd.validate_trade_docs_candidate_declaration(root, ROOT)
+    ), "CONTRACTED must not invent an unregistered capability"
