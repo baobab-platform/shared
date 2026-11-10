@@ -102,5 +102,77 @@
   {
     "file": "authority-denied-problem.json",
     "schema": "../../errors/v1/problem-details.schema.json"
+  },
+  {
+    "file": "payable-manage-request.json",
+    "schema": "payable-manage-request.schema.json"
+  },
+  {
+    "file": "payable-manage-response.json",
+    "schema": "payable-manage-response.schema.json"
+  },
+  {
+    "file": "receivable-manage-request.json",
+    "schema": "receivable-manage-request.schema.json"
+  },
+  {
+    "file": "receivable-manage-response.json",
+    "schema": "receivable-manage-response.schema.json"
+  },
+  {
+    "file": "bank-reconciliation-manage-request.json",
+    "schema": "bank-reconciliation-manage-request.schema.json"
+  },
+  {
+    "file": "bank-reconciliation-manage-response.json",
+    "schema": "bank-reconciliation-manage-response.schema.json"
+  },
+  {
+    "file": "cash-position-read-request.json",
+    "schema": "cash-position-read-request.schema.json"
+  },
+  {
+    "file": "cash-position-read-response.json",
+    "schema": "cash-position-read-response.schema.json"
+  },
+  {
+    "file": "expense-manage-request.json",
+    "schema": "expense-manage-request.schema.json"
+  },
+  {
+    "file": "expense-manage-response.json",
+    "schema": "expense-manage-response.schema.json"
+  },
+  {
+    "file": "budget-manage-request.json",
+    "schema": "budget-manage-request.schema.json"
+  },
+  {
+    "file": "budget-manage-response.json",
+    "schema": "budget-manage-response.schema.json"
+  },
+  {
+    "file": "reporting-export-create-request.json",
+    "schema": "reporting-export-create-request.schema.json"
+  },
+  {
+    "file": "reporting-export-create-response.json",
+    "schema": "reporting-export-create-response.schema.json"
+  },
+  {
+    "file": "project-cost-read-request.json",
+    "schema": "project-cost-read-request.schema.json"
+  },
+  {
+    "file": "project-cost-read-response.json",
+    "schema": "project-cost-read-response.schema.json"
+  },
+  {
+    "file": "consolidation-run-request.json",
+    "schema": "consolidation-run-request.schema.json"
+  },
+  {
+    "file": "consolidation-run-response.json",
+    "schema": "consolidation-run-response.schema.json"
   }
 ]

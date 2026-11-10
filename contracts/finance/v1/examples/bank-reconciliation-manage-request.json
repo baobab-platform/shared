@@ -1,0 +1,22 @@
+{
+  "scope": {
+    "book_ref": "erp_booksynth",
+    "period_start": "2026-01-01",
+    "period_end": "2026-01-31",
+    "as_of": "2026-02-01T00:00:00Z",
+    "currency": "ZAR"
+  },
+  "operation": "IMPORT_STATEMENT",
+  "idempotency_key": "synthetic-bank-reconciliation-manage-command-0001",
+  "source_document": {
+    "type": "BANK_STATEMENT",
+    "id": "erp_statementsynth01",
+    "authority": "baobab-erp"
+  },
+  "evidence_ref": "doc_statementsynth01",
+  "bank_account_ref": "erp_bankaccountsynth01",
+  "statement_balance": {
+    "amount": "1100.00",
+    "currency": "ZAR"
+  }
+}

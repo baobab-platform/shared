@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/consolidation-run-response.schema.json",
+  "title": "Finance F3 Run governed group consolidation response",
+  "description": "DRAFT/EXPERIMENTAL: Finance-approved ownership, elimination and FX model, separate from internal-trade; never self-authorizes group access. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "completeness",
+    "observed_at",
+    "data_version",
+    "finance_baselines",
+    "operation",
+    "resource_ref",
+    "status",
+    "version"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "completeness": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/completeness"
+    },
+    "observed_at": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/timestamp"
+    },
+    "data_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/dataVersion"
+    },
+    "finance_baselines": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/financeBaselines"
+    },
+    "operation": {
+      "enum": [
+        "REQUEST_RUN"
+      ]
+    },
+    "resource_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "status": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/commandStatus"
+    },
+    "version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "source_document": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+    },
+    "evidence_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "artifact_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "snapshot_id": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    }
+  }
+}

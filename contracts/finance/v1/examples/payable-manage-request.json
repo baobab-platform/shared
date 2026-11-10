@@ -1,0 +1,22 @@
+{
+  "scope": {
+    "book_ref": "erp_booksynth",
+    "period_start": "2026-01-01",
+    "period_end": "2026-01-31",
+    "as_of": "2026-02-01T00:00:00Z",
+    "currency": "ZAR"
+  },
+  "operation": "REGISTER_BILL",
+  "idempotency_key": "synthetic-payable-manage-command-0001",
+  "source_document": {
+    "type": "PROCUREMENT_BILL",
+    "id": "proc_bill_synthetic01",
+    "authority": "procurement"
+  },
+  "gross_amount": {
+    "amount": "1250.00",
+    "currency": "ZAR"
+  },
+  "due_date": "2026-02-10",
+  "counterparty_ref": "erp_suppliersynth01"
+}

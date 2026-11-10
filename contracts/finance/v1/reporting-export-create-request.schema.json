@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/reporting-export-create-request.schema.json",
+  "title": "Finance F3 Create immutable reporting export request",
+  "description": "DRAFT/EXPERIMENTAL: As-of reporting artifact with lineage and reconciled book provenance; no direct ERP view scraping. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "operation",
+    "idempotency_key"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "operation": {
+      "enum": [
+        "CREATE_EXPORT"
+      ]
+    },
+    "idempotency_key": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/idempotencyKey"
+    },
+    "resource_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "expected_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "report_kind": {
+      "enum": [
+        "TRIAL_BALANCE",
+        "INCOME_STATEMENT",
+        "BALANCE_SHEET",
+        "CASH_FLOW",
+        "LEDGER_DETAIL"
+      ]
+    },
+    "export_format": {
+      "enum": [
+        "JSON",
+        "CSV"
+      ]
+    },
+    "report_policy_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "source_snapshot_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "CREATE_EXPORT"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "report_kind",
+          "export_format",
+          "report_policy_ref",
+          "source_snapshot_ref"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "resource_ref"
+              ]
+            },
+            {
+              "required": [
+                "expected_version"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "resource_ref",
+          "expected_version"
+        ]
+      }
+    }
+  ]
+}

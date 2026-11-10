@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/expense-manage-response.schema.json",
+  "title": "Finance F2 Manage employee expense claims response",
+  "description": "DRAFT/EXPERIMENTAL: Claims, receipts, approvals and accounting liabilities; excludes payroll personal data and payment execution. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "completeness",
+    "observed_at",
+    "data_version",
+    "finance_baselines",
+    "operation",
+    "resource_ref",
+    "status",
+    "version"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "completeness": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/completeness"
+    },
+    "observed_at": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/timestamp"
+    },
+    "data_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/dataVersion"
+    },
+    "finance_baselines": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/financeBaselines"
+    },
+    "operation": {
+      "enum": [
+        "FILE_CLAIM",
+        "SUBMIT",
+        "APPROVE",
+        "REJECT",
+        "RECORD_LIABILITY"
+      ]
+    },
+    "resource_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "status": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/commandStatus"
+    },
+    "version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "source_document": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+    },
+    "evidence_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/externalRef"
+    },
+    "artifact_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/externalRef"
+    },
+    "snapshot_id": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/expense-manage-request.schema.json",
+  "title": "Finance F2 Manage employee expense claims request",
+  "description": "DRAFT/EXPERIMENTAL: Claims, receipts, approvals and accounting liabilities; excludes payroll personal data and payment execution. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "operation",
+    "idempotency_key"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "operation": {
+      "enum": [
+        "FILE_CLAIM",
+        "SUBMIT",
+        "APPROVE",
+        "REJECT",
+        "RECORD_LIABILITY"
+      ]
+    },
+    "idempotency_key": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/idempotencyKey"
+    },
+    "resource_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "expected_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "source_document": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+    },
+    "claim_amount": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/nonnegativeMoney"
+    },
+    "evidence_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/externalRef"
+    },
+    "cost_centre_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "FILE_CLAIM"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "source_document",
+          "claim_amount",
+          "evidence_ref",
+          "cost_centre_ref"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "resource_ref"
+              ]
+            },
+            {
+              "required": [
+                "expected_version"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "resource_ref",
+          "expected_version"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "source_document"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source_document": {
+            "allOf": [
+              {
+                "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+              },
+              {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "EXPENSE_RECEIPT"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

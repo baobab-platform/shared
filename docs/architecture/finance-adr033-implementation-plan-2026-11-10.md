@@ -30,3 +30,8 @@
 ## Audit and change control
 
 This register is an engineering plan, **not** evidence of execution. Any implementation PR shall update individual cases with immutable commit, test run, artifact checksum, environment/provenance, real versus synthetic inputs, and pass/fail/blocked. Accepted ADR status is normative architecture, never an automatic release or spending authority.
+
+
+### F2/F3 source-admission checkpoint (10 November 2026)
+
+F2/F3 canonical request/response/error schemas are added at DRAFT/EXPERIMENTAL with independent examples and negative contract tests. Historical tables showing NOT REGISTERED are superseded *only for source declarations* once this PR merges. The standing native implementation, accounting approval, Subscriptions handoff, group FX/ownership and release-evidence gates are unchanged. ERP #154 and CP #467 require re-pins to this accepted merge revision before the newly catalogued keys appear there.

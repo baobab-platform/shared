@@ -198,6 +198,26 @@ contracts:
       - statement-read-response.schema.json
       - capabilities.yaml
 
+      - f2-f3-domain.schema.json
+      - payable-manage-request.schema.json
+      - payable-manage-response.schema.json
+      - receivable-manage-request.schema.json
+      - receivable-manage-response.schema.json
+      - bank-reconciliation-manage-request.schema.json
+      - bank-reconciliation-manage-response.schema.json
+      - cash-position-read-request.schema.json
+      - cash-position-read-response.schema.json
+      - expense-manage-request.schema.json
+      - expense-manage-response.schema.json
+      - budget-manage-request.schema.json
+      - budget-manage-response.schema.json
+      - reporting-export-create-request.schema.json
+      - reporting-export-create-response.schema.json
+      - project-cost-read-request.schema.json
+      - project-cost-read-response.schema.json
+      - consolidation-run-request.schema.json
+      - consolidation-run-response.schema.json
+
   - domain: wms
     version: v1
     schemas:

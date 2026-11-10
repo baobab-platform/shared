@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/budget-manage-response.schema.json",
+  "title": "Finance F2 Manage governed budgets response",
+  "description": "DRAFT/EXPERIMENTAL: Drafts, maker/checker approvals and bounded commitments; a request does not mint a spend grant. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "completeness",
+    "observed_at",
+    "data_version",
+    "finance_baselines",
+    "operation",
+    "resource_ref",
+    "status",
+    "version"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "completeness": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/completeness"
+    },
+    "observed_at": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/timestamp"
+    },
+    "data_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/dataVersion"
+    },
+    "finance_baselines": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/financeBaselines"
+    },
+    "operation": {
+      "enum": [
+        "CREATE_DRAFT",
+        "SUBMIT",
+        "APPROVE",
+        "REVISE",
+        "RESERVE_COMMITMENT",
+        "RELEASE_COMMITMENT"
+      ]
+    },
+    "resource_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "status": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/commandStatus"
+    },
+    "version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "source_document": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+    },
+    "evidence_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "artifact_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "snapshot_id": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    }
+  }
+}

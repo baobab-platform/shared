@@ -1,0 +1,16 @@
+{
+  "scope": {
+    "book_ref": "erp_booksynth",
+    "period_start": "2026-01-01",
+    "period_end": "2026-01-31",
+    "as_of": "2026-02-01T00:00:00Z",
+    "currency": "ZAR"
+  },
+  "operation": "REQUEST_RUN",
+  "idempotency_key": "synthetic-consolidation-run-command-0001",
+  "group_model_ref": "erp_groupmodelsynth01",
+  "model_version": 2,
+  "ownership_snapshot_ref": "erp_ownerholdsynth01",
+  "elimination_policy_ref": "erp_eliminationsynth01",
+  "fx_rate_set_ref": "erp_fxratessynth01"
+}

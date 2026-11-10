@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/cash-position-read-request.schema.json",
+  "title": "Finance F2 Read reconciled cash position request",
+  "description": "DRAFT/EXPERIMENTAL: Explicit-as-of cash and bank balance with reconciliation freshness; not payment intent totals. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "bank_account_ref"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "bank_account_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "include_unreconciled": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

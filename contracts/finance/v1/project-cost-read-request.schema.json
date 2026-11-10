@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/project-cost-read-request.schema.json",
+  "title": "Finance F3 Read project costs request",
+  "description": "DRAFT/EXPERIMENTAL: Costs by project and accounting period with explicit expensed/capitalised/policy-pending flags; no implicit capitalization. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "project_ref",
+    "cost_basis"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "project_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "cost_basis": {
+      "enum": [
+        "ACTUAL",
+        "COMMITTED",
+        "BUDGETED"
+      ]
+    },
+    "page_size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 500
+    },
+    "cursor": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/readCursor"
+    },
+    "snapshot_id": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    }
+  },
+  "allOf": [
+    {
+      "dependentRequired": {
+        "cursor": [
+          "snapshot_id"
+        ],
+        "snapshot_id": [
+          "cursor"
+        ]
+      }
+    }
+  ]
+}

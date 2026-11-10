@@ -179,3 +179,43 @@ explicit follow-ups; this checkpoint does not change an ADR's acceptance status.
 - **F3 after policy approval:** reporting snapshots require immutable provenance and restrictions; project cost requires an approved capitalisation policy; group consolidation requires an accountant-approved ownership, eliminations and FX model. Never claim native support from a schema.
 
 **Acceptance is not activation.** Under ADR-SHARED-017, a catalogue key can be DRAFT without a provider, a provider can be implemented without certification, and certification can exist without a live CP binding or permitted production use. Protected staging/production approvals remain distinct under ADR-SHARED-036/043. See `docs/architecture/finance-f1-provider-acceptance.yaml` (status `REQUIRED_NOT_EXECUTED`) and `docs/architecture/finance-adr033-implementation-plan-2026-11-10.md` for deliverables and exit proofs.
+
+
+## 17. F2/F3 source-admission directive — 10 November 2026
+
+**Platform Owner direction:** Author all nine previously accepted F2/F3 keys as canonical
+DRAFT/EXPERIMENTAL Shared contracts, on the same contract-authority footing as F1,
+without waiting for F1 native qualification. This direction expressly authorises
+combined **source-only** admission across the two tranches; each of the nine keys
+still has separately versioned request/response/error contracts, positive examples
+and meaningful negative fixtures. It modifies the earlier planned one-key-per-PR
+*source workflow* without waiving any runtime provider, market, Finance or
+production approval. The historical sections 1, 7, 13–16 continue to describe
+the status as-of their checkpoint dates.
+
+The source-admission change comprises:
+- F2: `finance.payable.manage`, `finance.receivable.manage`,
+  `finance.bank-reconciliation.manage`, `finance.cash-position.read`,
+  `finance.expense.manage`, `finance.budget.manage`.
+- F3: `finance.reporting-export.create`, `finance.project-cost.read`,
+  `finance.consolidation.run`.
+
+The canonical definition, catalogue and lock must agree exactly. DRAFT is
+**not** ACTIVE: Shared does not publish ERP EngineRegistration support; CP must
+not grant, bind or resolve these capabilities, and ERP must not list them as
+IMPLEMENTED without real evidence. At PR authoring time, source conformance
+is proposed, not independently qualified or merged.
+
+The typed source-document rule retains Subscriptions-originated receivables
+without requiring Trade order identifiers. It does not create a new producer
+event, approve an invoice handoff or assert payment/settlement facts. The
+consolidation request references proposed ownership, eliminations and FX
+inputs but confers no accountant approval; approved policies and legal-entity
+reachability must be obtained from independent Finance/CP authority.
+
+**Unaffected gates:** Individual native implementation, F1-P01–P11 and future
+F2/F3 native test plans, cross-tenant denials, maker/checker, approved
+FinanceBaseline, exact PostgreSQL/JVM readback, EA-09 certification, approved
+engine releases, governed CP provider activation and separately approved
+environment deployment. No provider support or commercial entitlement is
+created by this amendment.

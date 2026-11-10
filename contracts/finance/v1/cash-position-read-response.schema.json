@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/cash-position-read-response.schema.json",
+  "title": "Finance F2 Read reconciled cash position response",
+  "description": "DRAFT/EXPERIMENTAL: Explicit-as-of cash and bank balance with reconciliation freshness; not payment intent totals. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "completeness",
+    "observed_at",
+    "data_version",
+    "finance_baselines",
+    "balances"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "completeness": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/completeness"
+    },
+    "observed_at": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/timestamp"
+    },
+    "data_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/dataVersion"
+    },
+    "finance_baselines": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/financeBaselines"
+    },
+    "balances": {
+      "type": "array",
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bank_account_ref",
+          "balance",
+          "reconciliation_state"
+        ],
+        "properties": {
+          "bank_account_ref": {
+            "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+          },
+          "balance": {
+            "$ref": "f2-f3-domain.schema.json#/$defs/money"
+          },
+          "reconciliation_state": {
+            "enum": [
+              "RECONCILED",
+              "PROVISIONAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "source_observed_at": {
+            "$ref": "f2-f3-domain.schema.json#/$defs/timestamp"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "completeness"
+        ],
+        "properties": {
+          "completeness": {
+            "const": "withheld"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "balances": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

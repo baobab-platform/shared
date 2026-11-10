@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/receivable-manage-request.schema.json",
+  "title": "Finance F2 Manage governed receivables request",
+  "description": "DRAFT/EXPERIMENTAL: Typed Trade/Subscriptions receivables, allocations, credits and write-offs without recomputing invoice price or requiring Trade orders. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "operation",
+    "idempotency_key"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "operation": {
+      "enum": [
+        "REGISTER_INVOICE",
+        "ALLOCATE_RECEIPT",
+        "RECORD_CREDIT",
+        "WRITE_OFF"
+      ]
+    },
+    "idempotency_key": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/idempotencyKey"
+    },
+    "resource_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "expected_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "source_document": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+    },
+    "gross_amount": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/nonnegativeMoney"
+    },
+    "due_date": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/date"
+    },
+    "counterparty_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "REGISTER_INVOICE"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "source_document",
+          "gross_amount",
+          "due_date",
+          "counterparty_ref"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "resource_ref"
+              ]
+            },
+            {
+              "required": [
+                "expected_version"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "resource_ref",
+          "expected_version"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "source_document"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source_document": {
+            "allOf": [
+              {
+                "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+              },
+              {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "TRADE_INVOICE",
+                      "SUBSCRIPTIONS_INVOICE",
+                      "PAYMENT_SETTLEMENT",
+                      "ERP_CREDIT_NOTE"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "REGISTER_INVOICE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source_document": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "TRADE_INVOICE",
+                  "SUBSCRIPTIONS_INVOICE"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
