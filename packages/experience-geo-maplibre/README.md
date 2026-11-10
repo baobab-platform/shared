@@ -1,6 +1,6 @@
 # Optional evidence map — BGX-02 source increment
 
-React 19 / MapLibre GL JS 6.14 presentation only. No tile vendor is selected.
+React 19 / MapLibre GL JS 6.16 presentation only. No tile vendor is selected.
 The caller supplies an already-authorised/redacted projection, exact HTTPS
 origin allowlist, reviewed licence reference, attribution and MapLibre style.
 No engine SDK, geolocation, routing, ETA, telemetry journal or domain grants.

@@ -10,7 +10,7 @@ const projection:MapProjection={visibility:"authorised",projectionReference:"syn
   observation:{kind:"carrier-reported",position:[32.5,0.3],source:"Synthetic carrier",observedAt:"2026-10-17T10:00:00Z"},
 }]}
 const policy={allowedOrigins:[],attribution:"Local synthetic blank map — no provider tiles",licenceReference:"Internal fixture; provider selection pending"}
-const worker={url:"/maplibre-6.14.0/maplibre-gl-worker.mjs",version:"6.14.0"}
+const worker={url:"/maplibre-6.16.0/maplibre-gl-worker.mjs",version:"6.16.0"}
 const style={version:8 as const,sources:{},layers:[{id:"background",type:"background" as const,paint:{"background-color":"#fffdf8"}}]}
 function Demo(){
   const [restricted,setRestricted]=useState(false)
