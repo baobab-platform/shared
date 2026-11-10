@@ -3,16 +3,19 @@
 from __future__ import annotations
 
 import copy
+import importlib.util
 import json
-import sys
 import unittest
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts"))
-from validate_legal_entity_registry import validate  # noqa: E402
+SPEC = importlib.util.spec_from_file_location("legal_entity_registry_validator", ROOT / "scripts/validate-legal-entity-registry.py")
+assert SPEC is not None and SPEC.loader is not None
+MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
+validate = MODULE.validate
 
 REGISTRY = yaml.safe_load((ROOT / "contracts/legal-entity/registry.yaml").read_text())
 TENANCY = yaml.safe_load((ROOT / "contracts/tenancy/tenancy.yaml").read_text())
