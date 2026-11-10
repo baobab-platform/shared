@@ -98,3 +98,21 @@ not:
   any estate's `canonical_organisation_id` can be populated, and must still
   design ERP Business Partner provisioning before a supplier application
   can become an operational vendor record.
+
+
+## 4. Implementation reconciliation (10 November 2026; historical clarification)
+
+The September 2026 discovery statements in Context and section 2.3 were accurate
+for their source baseline, not the current repository census. ADR-BCP-018/026/027
+subsequently assigned canonical Organisation authority to Control Plane.
+The nullable v1 reference remains a compatibility seam, never permission for
+an estate to mint or guess a canonical Organisation.
+
+RabbitMQ/outbox integration now exists elsewhere in the platform, but this does
+not qualify a supplier producer, consumer, replay path or ERP projection.
+ADR-SHARED-010 adds two KYB messages to the original four.
+
+ADR-SHARED-007 sections 56-58 preserve domain ownership of supplier decisions.
+A permitted Shared lifecycle transition does not establish KYB verification,
+current legal-actor mandate or reviewer permission. The hosting estate
+must enforce these independently. No runtime acceptance is implied.
