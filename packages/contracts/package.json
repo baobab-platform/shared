@@ -29,7 +29,7 @@
     "@bufbuild/buf": "1.75.0",
     "@graphql-codegen/core": "6.2.2",
     "@graphql-codegen/typescript": "6.1.2",
-    "tsup": "8.5.1",
+    "tsup": "9.0.0",
     "typescript": "7.0.2"
   }
 }
