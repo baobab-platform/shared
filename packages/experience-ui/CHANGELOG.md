@@ -1,5 +1,11 @@
 # @baobab-platform/experience-ui
 
+## 0.3.2
+
+### Patch Changes
+
+- ef683c9: Improve long-text reflow, forced-colours presentation and semantic danger-button colour in shared presentation CSS, with reproducible cross-theme adaptive browser acceptance. No estate colour or domain authority is changed.
+
 ## 0.3.1
 
 ### Patch Changes
