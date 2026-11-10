@@ -1,0 +1,458 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-11-10",
+  "baseline_sha": "2a2ac16a26e0c217875002f25d7f00e181cf8c5b",
+  "warning": "Source inventory, not operational qualification or evidence of approved runtime. See docs/assessments/adr-shared-source-traceability-2026-11-10.md",
+  "decisions": [
+    {
+      "number": 1,
+      "id": "ADR-0001",
+      "topic": "Digital Estate architecture",
+      "source": "contracts/tenancy/tenancy.yaml",
+      "related_check": "scripts/validate-governance-contracts.rb",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP / digital estates: current boundaries and consumer adoption"
+    },
+    {
+      "number": 2,
+      "id": "ADR-0002",
+      "topic": "Control Plane polyrepo boundaries",
+      "source": "README.md",
+      "related_check": ".github/workflows/foundation-repository-gates.yml",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP / Infrastructure: no owner bypass"
+    },
+    {
+      "number": 3,
+      "id": "ADR-0003",
+      "topic": "Tenant / Legal Entity / Estate separation",
+      "source": "contracts/tenancy/tenancy.yaml",
+      "related_check": "scripts/validate-governance-contracts.rb",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP / IAM / engines: isolation and governed mappings"
+    },
+    {
+      "number": 4,
+      "id": "ADR-0004",
+      "topic": "Cross-engine event/error/idempotency metadata",
+      "source": "contracts/events/v1/envelope.schema.json",
+      "related_check": "scripts/validate-cross-engine-contracts.rb",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Trade / ERP / Infra: native replay and causal traces"
+    },
+    {
+      "number": 5,
+      "id": "ADR-0005",
+      "topic": "ERP system of record",
+      "source": "contracts/erp/v1/system-of-record.yaml",
+      "related_check": "scripts/validate-erp-contracts.rb",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "ERP: native iDempiere execution and provenance"
+    },
+    {
+      "number": 6,
+      "id": "ADR-0006",
+      "topic": "Supplier-onboarding contract",
+      "source": "contracts/supplier-onboarding/v1/asyncapi.yaml",
+      "related_check": "scripts/validate-event-registry.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Estates / ERP: live KYB and supplier projection"
+    },
+    {
+      "number": 7,
+      "id": "ADR-SHARED-007",
+      "topic": "Capability model and provider neutrality",
+      "source": "contracts/capability/v1/catalogue.yaml",
+      "related_check": "scripts/validate-capability-contracts.rb",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP / engines: provider eligibility and consumer conformance"
+    },
+    {
+      "number": 8,
+      "id": "ADR-SHARED-008",
+      "topic": "Capability namespaces and canonical events",
+      "source": "contracts/capability/v1/namespace-registry.yaml",
+      "related_check": "scripts/validate-capability-contracts.rb",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Trade / CP: versioned adoption and no legacy event publication"
+    },
+    {
+      "number": 9,
+      "id": "ADR-SHARED-009",
+      "topic": "Product, provisioning, readiness and drift schemas",
+      "source": "contracts/product/v1/subscription.schema.json",
+      "related_check": "scripts/validate-capability-contracts.rb",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP: durable lifecycle and reconciliation"
+    },
+    {
+      "number": 10,
+      "id": "ADR-SHARED-010",
+      "topic": "Supplier KYB decisions and evidence",
+      "source": "contracts/supplier-onboarding/v1/supplier-kyb-decision-recorded.schema.json",
+      "related_check": "scripts/validate-event-registry.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Estate: decision-time KYB enforcement and evidence custody"
+    },
+    {
+      "number": 11,
+      "id": "ADR-SHARED-011",
+      "topic": "Commercial subscription, billing and payments",
+      "source": "contracts/product/v1/subscription.schema.json",
+      "related_check": "scripts/validate-commercial-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP / Subscriptions / Payments: native classification and billing"
+    },
+    {
+      "number": 12,
+      "id": "ADR-SHARED-012",
+      "topic": "Topology identifiers and external systems",
+      "source": "contracts/control-plane/v1/external-systems.yaml",
+      "related_check": "scripts/validate-control-plane-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP: registered system pairs and opaque topology IDs"
+    },
+    {
+      "number": 13,
+      "id": "ADR-SHARED-013",
+      "topic": "External Reference and Mapping administration",
+      "source": "contracts/control-plane/v1/canonical-mapping.schema.json",
+      "related_check": "scripts/validate-control-plane-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP: approve/validate, If-Match, SoD and ambiguity refusal"
+    },
+    {
+      "number": 14,
+      "id": "ADR-SHARED-014",
+      "topic": "Trusted context mapping resolution",
+      "source": "contracts/control-plane/v1/examples/mapping-resolution.json",
+      "related_check": "scripts/validate-control-plane-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP: context redemption and tenant isolation"
+    },
+    {
+      "number": 15,
+      "id": "ADR-SHARED-015",
+      "topic": "Provisioning desired-state convergence",
+      "source": "contracts/control-plane/v1/provisioning-desired-state.schema.json",
+      "related_check": "scripts/validate-control-plane-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP: plan approval, freshness, execution and drift"
+    },
+    {
+      "number": 16,
+      "id": "ADR-SHARED-016",
+      "topic": "Provider migration and engine tasks",
+      "source": "contracts/control-plane/v1/engine-migration-task.schema.json",
+      "related_check": "scripts/validate-control-plane-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP / engines: migration task lease fencing and safe rollback"
+    },
+    {
+      "number": 17,
+      "id": "ADR-SHARED-017",
+      "topic": "Catalogue, provider declaration and registration",
+      "source": "contracts/capability/v1/catalogue.yaml",
+      "related_check": "scripts/capability_catalogue.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "All engines / CP: adoption and EA-09 certification"
+    },
+    {
+      "number": 18,
+      "id": "ADR-SHARED-018",
+      "topic": "Event context and producer registry",
+      "source": "contracts/events/v1/event-registry.yaml",
+      "related_check": "scripts/validate-event-registry.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Trade / ERP / estates: producer activation and legacy quarantine"
+    },
+    {
+      "number": 19,
+      "id": "ADR-SHARED-019",
+      "topic": "Regulations, Docs and Pulse authority boundaries",
+      "source": "contracts/cross-engine-reference/v1/domain.schema.json",
+      "related_check": "scripts/validate-cross-engine-reference-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Regulations / Trade Docs / Pulse: independent authority"
+    },
+    {
+      "number": 20,
+      "id": "ADR-SHARED-020",
+      "topic": "TradeDocument v2 contract",
+      "source": "contracts/trade-document/v2/domain.schema.json",
+      "related_check": "scripts/validate-trade-document-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Trade Docs: immutable versions and real documentary custody"
+    },
+    {
+      "number": 21,
+      "id": "ADR-SHARED-021",
+      "topic": "Cross-engine references and historical pinning",
+      "source": "contracts/cross-engine-reference/v1/domain.schema.json",
+      "related_check": "scripts/validate-cross-engine-reference-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Consumers: owner authentication and replayable snapshots"
+    },
+    {
+      "number": 22,
+      "id": "ADR-SHARED-022",
+      "topic": "Regulations ↔ Trade Docs documentary exchange",
+      "source": "contracts/regulatory-document-exchange/v1/domain.schema.json",
+      "related_check": "scripts/validate-regulatory-document-exchange-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Regulations / Docs: witnessed bidirectional choreography"
+    },
+    {
+      "number": 23,
+      "id": "ADR-SHARED-023",
+      "topic": "Documents event producer activation contract",
+      "source": "contracts/regulatory-document-evidence/v1/asyncapi.yaml",
+      "related_check": "scripts/validate-documents-event-activation.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Trade Docs: actual producer, durable events and replay"
+    },
+    {
+      "number": 24,
+      "id": "ADR-SHARED-024",
+      "topic": "Regulations namespace and events",
+      "source": "contracts/regulatory-document-assessment/v1/asyncapi.yaml",
+      "related_check": "scripts/validate-regulations-event-activation.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Regulations: event issuer and legal-time source evidence"
+    },
+    {
+      "number": 25,
+      "id": "ADR-SHARED-025",
+      "topic": "Intelligence namespace / Pulse boundary",
+      "source": "contracts/capability/v1/namespace-registry.yaml",
+      "related_check": "scripts/validate-intelligence-namespace-boundary.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Pulse: non-authorising intelligence consumers"
+    },
+    {
+      "number": 26,
+      "id": "ADR-SHARED-026",
+      "topic": "RTD cross-repository conformance",
+      "source": "contracts/rtd-conformance/v1/profile.schema.json",
+      "related_check": "scripts/rtd_conformance.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Regulations / Docs / Pulse: independent pinned contract runs"
+    },
+    {
+      "number": 27,
+      "id": "ADR-SHARED-027",
+      "topic": "Regulations capability census",
+      "source": "contracts/regulations/v1/capabilities.yaml",
+      "related_check": "scripts/tests/test_regulations_capability_census.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Regulations: runtime capability readiness vs catalogue"
+    },
+    {
+      "number": 28,
+      "id": "ADR-SHARED-028",
+      "topic": "Regulatory decision evaluate contract",
+      "source": "contracts/regulatory-decision/v1/domain.schema.json",
+      "related_check": "scripts/validate-regulatory-decision-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Regulations: rule/time/evidence and no false permission"
+    },
+    {
+      "number": 29,
+      "id": "ADR-SHARED-029",
+      "topic": "Pulse intelligence capability census",
+      "source": "contracts/intelligence/v1/capabilities.yaml",
+      "related_check": "scripts/tests/test_intelligence_capability_census.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Pulse: provider support and authority checks"
+    },
+    {
+      "number": 30,
+      "id": "ADR-SHARED-030",
+      "topic": "Pulse PARTIAL provider promotion boundary",
+      "source": "contracts/intelligence/v1/pulse-registration.json",
+      "related_check": "scripts/tests/test_intelligence_capability_census.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Pulse: independently verified PARTIAL support"
+    },
+    {
+      "number": 31,
+      "id": "ADR-SHARED-031",
+      "topic": "Pulse IMPLEMENTED readiness boundary",
+      "source": "contracts/intelligence/v1/pulse-registration.json",
+      "related_check": "scripts/tests/test_intelligence_capability_census.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Pulse / IAM / CP: authenticated operational readiness"
+    },
+    {
+      "number": 32,
+      "id": "ADR-SHARED-032",
+      "topic": "EA-09 provider capability certification",
+      "source": "contracts/capability/v1/certification.schema.json",
+      "related_check": "scripts/tests/test_ea09_provider_certification.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP: durable certification, expiry and revoke"
+    },
+    {
+      "number": 33,
+      "id": "ADR-SHARED-033",
+      "topic": "Corporate finance capability proposal",
+      "source": "contracts/finance/v1/README.md",
+      "related_check": null,
+      "decision_status": "PROPOSED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Proposed only: steward and ERP owner decision required"
+    },
+    {
+      "number": 34,
+      "id": "ADR-SHARED-034",
+      "topic": "ERP posting authority and native boundary",
+      "source": "contracts/erp/v2/posting-authority.schema.json",
+      "related_check": "scripts/validate-erp-posting-authority-contract.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "ERP: live CP actor/mandate check at native commit"
+    },
+    {
+      "number": 35,
+      "id": "ADR-SHARED-035",
+      "topic": "Payments money-movement authority",
+      "source": "contracts/payments/v2/money-movement-authority.schema.json",
+      "related_check": "scripts/validate-payments-money-movement-authority-contract.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Payments: real mandate, no replayed money movement"
+    },
+    {
+      "number": 36,
+      "id": "ADR-SHARED-036",
+      "topic": "Cross-repository L4 integration and deployment",
+      "source": "docs/architecture/ea-v2.2-integration-acceptance-matrix.md",
+      "related_check": "scripts/tests/test_ea_v23_governance.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Infrastructure: real broker, trace and protected staging evidence"
+    },
+    {
+      "number": 37,
+      "id": "ADR-SHARED-037",
+      "topic": "ERP purchase-side recording classes",
+      "source": "contracts/erp/v2/posting-operations.yaml",
+      "related_check": "scripts/validate-erp-posting-authority-contract.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "ERP: recorded outcomes under appropriate mandates"
+    },
+    {
+      "number": 38,
+      "id": "ADR-SHARED-038",
+      "topic": "ERP payable provenance and negative controls",
+      "source": "contracts/erp/v2/payment-execution-evidence.schema.json",
+      "related_check": "scripts/validate-erp-posting-authority-contract.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "ERP: native deny-by-name and financial evidence"
+    },
+    {
+      "number": 39,
+      "id": "ADR-SHARED-039",
+      "topic": "Trade order and seller authority",
+      "source": "contracts/trade/v2/order-authority.schema.json",
+      "related_check": "scripts/validate-trade-order-authority-contract.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Trade / CP: real seller actor and native order commit"
+    },
+    {
+      "number": 40,
+      "id": "ADR-SHARED-040",
+      "topic": "Baobab Experience System",
+      "source": "docs/experience/bxs-cross-estate-conformance-register.md",
+      "related_check": ".github/workflows/verify-experience-registry.yml",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Digital estates: actual imports, Playwright, Lighthouse and accessibility"
+    },
+    {
+      "number": 41,
+      "id": "ADR-SHARED-041",
+      "topic": "Engineering philosophy and excellence",
+      "source": "docs/governance/engineering-philosophy-review.md",
+      "related_check": "scripts/tests/test_engineering_philosophy_governance.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "All repositories: demonstrable code, security, UX and provenance"
+    },
+    {
+      "number": 42,
+      "id": "ADR-SHARED-042",
+      "topic": "Commercial actor and buyer context",
+      "source": "contracts/trade/v2/buyer-execution-context.schema.json",
+      "related_check": "scripts/tests/test_buyer_execution_context.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Trade / IAM / CP: real BFF checkout and native commitments"
+    },
+    {
+      "number": 43,
+      "id": "ADR-SHARED-043",
+      "topic": "Development provisioning boundaries",
+      "source": "docs/adr/ADR-SHARED-043-Development-Provisioning-and-Environment-Approval-Boundaries.md",
+      "related_check": "scripts/tests/test_development_profiles.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "Infra / engines: isolation and protected approval separation"
+    },
+    {
+      "number": 44,
+      "id": "ADR-SHARED-044",
+      "topic": "Current ProductSubscription workload authority",
+      "source": "contracts/product/v1/current-authority.schema.json",
+      "related_check": "scripts/validate-commercial-contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "CP / Subscriptions: live current read and pre-dispatch denial"
+    },
+    {
+      "number": 45,
+      "id": "ADR-SHARED-045",
+      "topic": "Provider-neutral People and tenant choice",
+      "source": "contracts/people/v1/domain.schema.json",
+      "related_check": "scripts/tests/test_people_contracts.py",
+      "decision_status": "ACCEPTED",
+      "runtime_qualification": "NOT_ASSESSED",
+      "owner_validation_required": "People / ERP / CP: BYO provider, payroll and employer tenancy"
+    }
+  ]
+}
