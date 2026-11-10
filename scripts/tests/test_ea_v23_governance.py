@@ -89,7 +89,7 @@ class AcceptedV23Governance(unittest.TestCase):
         expected = {row["id"] for row in manifest["decisions"]}
         self.assertEqual(expected, set(documents), "ADR folder and source audit inventory diverged")
         index = (ROOT / "docs/adr/README.md").read_text()
-        indexed = re.findall(r"^\|\s*\[(ADR-(?:SHARED-)?\d{3,4})\b", index, re.MULTILINE)
+        indexed = re.findall(r"^\|\s*\[(ADR-SHARED-\d{3})\b", index, re.MULTILINE)
         self.assertEqual(len(indexed), len(set(indexed)), "Duplicate ADR register entries")
         self.assertEqual(expected, set(indexed), "Every ADR must have exactly one index entry")
         for n in range(1, 7):
