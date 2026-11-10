@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/legal-entity/registry.schema.json",
+  "title": "First-party legal-entity governance registry",
+  "description": "ADR-SHARED-001/003 and ADR-BCP-026/027: first-party declarations only; never runtime organisation, tenant, legal-actor or entitlement authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "entities",
+    "cross_cutting_products"
+  ],
+  "properties": {
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "const": "baobab-platform-legal-entity-registry"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*\\.[0-9]+$"
+        }
+      }
+    },
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entity"
+      }
+    },
+    "cross_cutting_products": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/crossCuttingProduct"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product",
+        "confirmed"
+      ],
+      "properties": {
+        "product": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$",
+          "minLength": 3,
+          "maxLength": 63
+        },
+        "confirmed": {
+          "type": "boolean",
+          "description": "Declaration approval only; must not be used as runtime entitlement."
+        }
+      }
+    },
+    "estate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "status"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^baobab-platform/[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "active"
+          ]
+        }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "legal_name",
+        "role",
+        "identity_class",
+        "incorporation_claim",
+        "baobab_tenant",
+        "digital_estate",
+        "baobab_products"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$",
+          "minLength": 3,
+          "maxLength": 63
+        },
+        "legal_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "holding_company",
+            "subsidiary"
+          ]
+        },
+        "identity_class": {
+          "enum": [
+            "LEGAL_PERSON",
+            "OPERATING_BUSINESS"
+          ]
+        },
+        "incorporation_claim": {
+          "enum": [
+            "REGISTERED_EVIDENCED",
+            "NOT_INCORPORATED"
+          ]
+        },
+        "legacy_aliases": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+          }
+        },
+        "jurisdiction": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Z]{2}$"
+        },
+        "registration_identifier": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "registration_effective_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "legal_evidence_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "business_model": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "baobab_tenant": {
+          "type": "boolean",
+          "description": "Intent only; CP must mint and authorise the actual tenant."
+        },
+        "digital_estate": {
+          "$ref": "#/$defs/estate"
+        },
+        "baobab_products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/product"
+          }
+        },
+        "markets": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "crossCuttingProduct": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product",
+        "consumed_by",
+        "confirmed"
+      ],
+      "properties": {
+        "product": {
+          "$ref": "#/$defs/product/properties/product"
+        },
+        "short_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consumed_by": {
+          "const": "all_baobab_tenants"
+        },
+        "confirmed": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
