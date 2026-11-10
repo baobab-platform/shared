@@ -6,6 +6,6 @@ const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(ts|tsx)"],
   addons: ["@storybook/addon-a11y", "@storybook/addon-docs"],
   framework: "@storybook/react-vite",
-  staticDirs:[{from:fileURLToPath(new URL("../node_modules/maplibre-gl/dist/",import.meta.url)),to:"/maplibre-6.14.0"}],
+  staticDirs:[{from:fileURLToPath(new URL("../node_modules/maplibre-gl/dist/",import.meta.url)),to:"/maplibre-6.16.0"}],
 }
 export default config
