@@ -21,7 +21,7 @@ from referencing.jsonschema import DRAFT202012
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = ROOT / "contracts"
 PACKAGE = CONTRACTS / "finance/v1"
-CAPABILITIES = {"finance.ledger.read", "finance.journal.manage", "finance.statement.read"}
+CAPABILITIES = {"finance.ledger.read", "finance.journal.manage", "finance.statement.read", "finance.payable.manage", "finance.receivable.manage", "finance.bank-reconciliation.manage", "finance.cash-position.read", "finance.expense.manage", "finance.budget.manage", "finance.reporting-export.create", "finance.project-cost.read", "finance.consolidation.run"}
 
 
 def registry() -> Registry:
@@ -75,8 +75,14 @@ def validator(name: str, resources: Registry | None = None) -> Draft202012Valida
 def validate_package() -> int:
     resources = registry()
     schemas = sorted(PACKAGE.glob("*.schema.json"))
-    if len(schemas) != 7:
-        raise ValueError("Finance F1 must publish common vocabulary and six wire schemas")
+    definitions = yaml.safe_load((PACKAGE / "capabilities.yaml").read_text())["capabilities"]
+    expected = {"domain.schema.json", "f2-f3-domain.schema.json"}
+    for definition in definitions:
+        for contract in definition["contracts"]:
+            expected.add(contract["request_schema"])
+            expected.add(contract["response_schema"])
+    if {p.name for p in schemas} != expected:
+        raise ValueError("Finance F1/F2/F3 wire schema inventory differs from definitions")
     for path in schemas:
         document = json.loads(path.read_text())
         expected = "https://contracts.baobab-platform.com/finance/v1/" + path.name
@@ -88,7 +94,7 @@ def validate_package() -> int:
             resolver.lookup(reference)
 
     definitions = yaml.safe_load((PACKAGE / "capabilities.yaml").read_text())["capabilities"]
-    if {entry["capability_key"] for entry in definitions} != CAPABILITIES or len(definitions) != 3:
+    if {entry["capability_key"] for entry in definitions} != CAPABILITIES or len(definitions) != len(CAPABILITIES):
         raise ValueError("Finance F1 capability census drift")
     for entry in definitions:
         if (entry["lifecycle"], entry["maturity"], entry["owner"], entry["data_classification"]) != (
@@ -99,7 +105,7 @@ def validate_package() -> int:
     entries = [item for item in lock if item["domain"] == "finance" and item["version"] == "v1"]
     if len(entries) != 1 or set(entries[0]["schemas"]) != {p.name for p in schemas} | {"capabilities.yaml"}:
         raise ValueError("Finance F1 lock index must list every published schema exactly once")
-    if len(entries[0]["schemas"]) != 8:
+    if len(entries[0]["schemas"]) != len(schemas) + 1:
         raise ValueError("Finance F1 lock index contains duplicates")
 
     count = 0

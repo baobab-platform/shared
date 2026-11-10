@@ -44,7 +44,7 @@ class AdmittedFinanceTranches(unittest.TestCase):
         registry = load(CAPABILITY / "namespace-registry.yaml")
         self.assertIn("finance", {domain["key"] for domain in registry["domains"]})
 
-    def test_only_f1_has_canonical_definitions_today(self):
+    def test_f1_f2_f3_canonical_draft_definitions(self):
         catalogue = load(CAPABILITY / "catalogue.yaml")
         definitions = load(ROOT / "contracts/finance/v1/capabilities.yaml")
         finance_index = {
@@ -53,8 +53,8 @@ class AdmittedFinanceTranches(unittest.TestCase):
         }
         # Historical ERP order consequence remains separate; its ownership
         # and provider status must never be silently overwritten by F1.
-        self.assertEqual(F1 | {EXISTING}, set(finance_index))
-        self.assertEqual(F1, {x["capability_key"] for x in definitions["capabilities"]})
+        self.assertEqual(F1 | F2 | F3 | {EXISTING}, set(finance_index))
+        self.assertEqual(F1 | F2 | F3, {x["capability_key"] for x in definitions["capabilities"]})
         for definition in definitions["capabilities"]:
             key = definition["capability_key"]
             with self.subTest(key=key):
@@ -70,10 +70,10 @@ class AdmittedFinanceTranches(unittest.TestCase):
                 for ref in ("request_schema", "response_schema", "error_schema"):
                     self.assertTrue(entry.get(ref), "all F1 wire/error schemas are required")
 
-    def test_f2_f3_are_census_only_and_not_in_transitional_provider_bundles(self):
+    def test_f2_f3_admission_does_not_invent_erp_provider_registration(self):
         catalogue = load(CAPABILITY / "catalogue.yaml")
         registered = {x["capability_key"] for x in catalogue["capabilities"]}
-        self.assertFalse((F2 | F3) & registered, "F2/F3 require individual §11 admission, not bulk activation")
+        self.assertTrue((F2 | F3) <= registered, "Every F2/F3 key must be admitted as canonical DRAFT with wire schemas")
         bundles = load(CAPABILITY / "registration-bundles.yaml")
         self.assertFalse(any(b["engine_id"] == "baobab-erp" for b in bundles["bundles"]),
                          "Shared must not invent an ERP F1 provider registration")

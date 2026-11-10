@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/project-cost-read-response.schema.json",
+  "title": "Finance F3 Read project costs response",
+  "description": "DRAFT/EXPERIMENTAL: Costs by project and accounting period with explicit expensed/capitalised/policy-pending flags; no implicit capitalization. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "completeness",
+    "observed_at",
+    "data_version",
+    "finance_baselines",
+    "project_ref",
+    "rows",
+    "snapshot_id"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "completeness": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/completeness"
+    },
+    "observed_at": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/timestamp"
+    },
+    "data_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/dataVersion"
+    },
+    "finance_baselines": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/financeBaselines"
+    },
+    "project_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "$ref": "f2-f3-domain.schema.json#/$defs/amountRow"
+      }
+    },
+    "snapshot_id": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "next_cursor": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/readCursor"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "completeness"
+        ],
+        "properties": {
+          "completeness": {
+            "const": "withheld"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rows": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

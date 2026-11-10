@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/consolidation-run-request.schema.json",
+  "title": "Finance F3 Run governed group consolidation request",
+  "description": "DRAFT/EXPERIMENTAL: Finance-approved ownership, elimination and FX model, separate from internal-trade; never self-authorizes group access. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "operation",
+    "idempotency_key"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "operation": {
+      "enum": [
+        "REQUEST_RUN"
+      ]
+    },
+    "idempotency_key": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/idempotencyKey"
+    },
+    "resource_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "expected_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "group_model_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "model_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "ownership_snapshot_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "elimination_policy_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "fx_rate_set_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "REQUEST_RUN"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "group_model_ref",
+          "model_version",
+          "ownership_snapshot_ref",
+          "elimination_policy_ref",
+          "fx_rate_set_ref"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "resource_ref"
+              ]
+            },
+            {
+              "required": [
+                "expected_version"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "resource_ref",
+          "expected_version"
+        ]
+      }
+    }
+  ]
+}

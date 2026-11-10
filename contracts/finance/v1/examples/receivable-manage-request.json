@@ -1,0 +1,22 @@
+{
+  "scope": {
+    "book_ref": "erp_booksynth",
+    "period_start": "2026-01-01",
+    "period_end": "2026-01-31",
+    "as_of": "2026-02-01T00:00:00Z",
+    "currency": "ZAR"
+  },
+  "operation": "REGISTER_INVOICE",
+  "idempotency_key": "synthetic-receivable-manage-command-0001",
+  "source_document": {
+    "type": "SUBSCRIPTIONS_INVOICE",
+    "id": "sub_invoice_synthetic01",
+    "authority": "baobab-subscriptions"
+  },
+  "gross_amount": {
+    "amount": "750.00",
+    "currency": "ZAR"
+  },
+  "due_date": "2026-02-10",
+  "counterparty_ref": "erp_customer_synthetic01"
+}

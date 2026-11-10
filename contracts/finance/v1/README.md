@@ -1,4 +1,4 @@
-# Finance F1 — corporate ledger, journal and statement wire contracts
+# Finance F1–F3 — governed corporate financial capability contracts
 
 **Lifecycle: DRAFT / EXPERIMENTAL. Semantic owner: baobab-erp.**
 Shared publishes vocabulary and wire validation. ADR-SHARED-033 was Accepted 2026-11-10 as a finance capability census;
@@ -151,3 +151,11 @@ There are no conforming provider consumers to migrate in this draft increment.
 Rollback is to revert the Shared source commit and keep providers unregistered.
 A future consumer must pin an exact reviewed Shared revision before adoption;
 DRAFT does not silently become STABLE or production-permitted.
+
+## F2/F3 DRAFT admission — 10 November 2026
+
+Nine operations under accepted ADR-SHARED-033 are now authored with individual request, response, RFC 9457 error, synthetic positive and negative conformance cases. F2 covers accounts payable, source-typed receivables, bank reconciliation, cash position, expense and budgets. F3 covers immutable reporting export, project costs and accountant-governed group consolidation. All remain **DRAFT / EXPERIMENTAL / RESTRICTED**.
+
+**Separation of authorities:** Caller only supplies an intended book-scoped request. CP/IAM establishes legal actor, active employer/market/organisation/grant, provider and mandate. ERP independently verifies selected book, native accounting state, approval and historical FinanceBaseline. Signed source events and documentary custody establish provenance: a string `authority` in a source-document reference never grants access. A Subscriptions invoice does not require a Trade commerce order; Finance never computes subscription invoice charges. Bank reconciliation does not originate settlement facts; expense claims do not expose payroll detail; payment execution belongs to `payment.*`; intercompany trading remains `internal-trade`.
+
+Consolidation requests name a **candidate** group model, ownership snapshot, elimination policy and FX rate set—not a declaration that these are Finance-approved. ERP must retrieve independently approved versions, check legal ownership and segregated group authorization, and reject missing or stale approvals. No route, provider support, binding, accountant signoff or accounting guarantee is implied by this canonical source change. Synthetic examples are **not** live evidence.

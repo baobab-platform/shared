@@ -342,6 +342,8 @@ jobs:
         run: python scripts/validate-wms-contracts.py
       - name: Test Finance F1 canonical wire invariants
         run: python scripts/tests/test_finance_f1_canonical.py
+      - name: Test F2/F3 canonical wire, typed-source and denial fixtures
+        run: python scripts/tests/test_finance_f2_f3_canonical.py
       - name: Audit accepted Finance F1/F2/F3 registration without false provider claims
         run: python scripts/tests/test_finance_adr033_registration.py
       - name: Test review-only Finance F1 schemas

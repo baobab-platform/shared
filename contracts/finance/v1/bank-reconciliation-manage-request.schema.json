@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/finance/v1/bank-reconciliation-manage-request.schema.json",
+  "title": "Finance F2 Manage bank reconciliation request",
+  "description": "DRAFT/EXPERIMENTAL: Statement import, matching and exception custody; settlement is never invented by ERP. No provider, CP grant, native financial posting or approval implied.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "operation",
+    "idempotency_key"
+  ],
+  "properties": {
+    "scope": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/scope"
+    },
+    "operation": {
+      "enum": [
+        "IMPORT_STATEMENT",
+        "MATCH",
+        "RECORD_EXCEPTION",
+        "RECONCILE"
+      ]
+    },
+    "idempotency_key": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/idempotencyKey"
+    },
+    "resource_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "expected_version": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/version"
+    },
+    "source_document": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+    },
+    "evidence_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "bank_account_ref": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/resourceRef"
+    },
+    "statement_balance": {
+      "$ref": "f2-f3-domain.schema.json#/$defs/money"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "IMPORT_STATEMENT"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "source_document",
+          "evidence_ref",
+          "bank_account_ref",
+          "statement_balance"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "resource_ref"
+              ]
+            },
+            {
+              "required": [
+                "expected_version"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "resource_ref",
+          "expected_version"
+        ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "source_document"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source_document": {
+            "allOf": [
+              {
+                "$ref": "f2-f3-domain.schema.json#/$defs/sourceDocument"
+              },
+              {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "BANK_STATEMENT",
+                      "PAYMENT_SETTLEMENT"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "const": "MATCH"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "source_document"
+        ],
+        "properties": {
+          "source_document": {
+            "properties": {
+              "type": {
+                "const": "PAYMENT_SETTLEMENT"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
