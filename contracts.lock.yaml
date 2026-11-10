@@ -198,6 +198,15 @@ contracts:
       - statement-read-response.schema.json
       - capabilities.yaml
 
+  - domain: wms
+    version: v1
+    schemas:
+      - capabilities.yaml
+      - custody-read-request.schema.json
+      - custody-read-response.schema.json
+      - warehouse-operation-manage-request.schema.json
+      - warehouse-operation-manage-response.schema.json
+
   - domain: people
     version: v1
     schemas:

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/wms/v1/warehouse-operation-manage-response.schema.json",
+  "title": "warehouse operation manage response",
+  "description": "Durable WMS observation outcome. Does not grant posting, Trade reservation or TMS custody authority. Unknown status requires independent readback before a retry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation_ref",
+    "status",
+    "revision",
+    "observed_at"
+  ],
+  "properties": {
+    "operation_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "status": {
+      "enum": [
+        "RECORDED",
+        "DUPLICATE",
+        "REJECTED",
+        "UNKNOWN"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "reason_code": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+    }
+  }
+}

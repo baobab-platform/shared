@@ -95,6 +95,12 @@ capabilities:
   - capability_key: inventory.availability.query
     owner: baobab-erp
     source: ../../erp/v1/capabilities.yaml
+  - capability_key: inventory.custody.read
+    owner: baobab-erp
+    source: ../../wms/v1/capabilities.yaml
+  - capability_key: inventory.warehouse-operation.manage
+    owner: baobab-erp
+    source: ../../wms/v1/capabilities.yaml
   - capability_key: payment.intent.cancel
     owner: baobab-payments
     source: ../../payments/v1/capabilities.yaml

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/wms/v1/warehouse-operation-manage-request.schema.json",
+  "title": "warehouse operation manage request",
+  "description": "Idempotent WMS operational observation. The request's owner_ref is an inventory-owner identity, not an authorization assertion; CP resolves legal actor, operator, provider and warehouse. This request cannot directly post GL/valuation or execute transport/payment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation_ref",
+    "warehouse_ref",
+    "inventory_owner_ref",
+    "operation",
+    "sku_ref",
+    "quantity",
+    "uom",
+    "observed_at",
+    "evidence_ref"
+  ],
+  "properties": {
+    "operation_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "warehouse_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "inventory_owner_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "operation": {
+      "enum": [
+        "RECEIPT_OBSERVED",
+        "MOVE_OBSERVED",
+        "COUNT_OBSERVED",
+        "DISPATCH_OBSERVED"
+      ]
+    },
+    "sku_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "lot_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "from_bin_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "to_bin_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "quantity": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$"
+    },
+    "uom": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "evidence_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "source_document_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+  }
+}

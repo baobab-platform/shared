@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/wms/v1/custody-read-request.schema.json",
+  "title": "custody read request",
+  "description": "Read an observed WMS custody snapshot; optional owner_ref is a filter, never authority. CP resolves operator/warehouse scope and tenant/legal entity from authenticated context.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "warehouse_ref",
+    "as_of"
+  ],
+  "properties": {
+    "warehouse_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "owner_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "sku_ref": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+}
