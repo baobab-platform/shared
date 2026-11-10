@@ -132,6 +132,7 @@ on:
       - "scripts/validate-payments-money-movement-authority-contract.py"
       - "scripts/validate-evidence-contracts.py"
       - "scripts/validate-finance-contracts.py"
+      - "scripts/validate-wms-contracts.py"
       - "scripts/validate-people-contracts.py"
       - "scripts/tests/test_scanner_intake_contract.py"
       - "scripts/validate-commercial-contracts.py"
@@ -189,6 +190,7 @@ on:
       - "scripts/validate-payments-money-movement-authority-contract.py"
       - "scripts/validate-evidence-contracts.py"
       - "scripts/validate-finance-contracts.py"
+      - "scripts/validate-wms-contracts.py"
       - "scripts/validate-people-contracts.py"
       - "scripts/tests/test_scanner_intake_contract.py"
       - "scripts/validate-commercial-contracts.py"
@@ -336,6 +338,8 @@ jobs:
         run: python scripts/tests/test_schema_reference_resolution.py
       - name: Validate Finance F1 DRAFT contracts and examples
         run: python scripts/validate-finance-contracts.py
+      - name: Validate ERP-owned WMS/3PL DRAFT contracts and injection negatives
+        run: python scripts/validate-wms-contracts.py
       - name: Test Finance F1 canonical wire invariants
         run: python scripts/tests/test_finance_f1_canonical.py
       - name: Audit accepted Finance F1/F2/F3 registration without false provider claims
