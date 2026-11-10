@@ -249,6 +249,8 @@ jobs:
         run: python scripts/tests/test_dependabot_policy.py
       - name: Test SHA-pinned GitHub Actions advisory watch (offline fixtures)
         run: python scripts/tests/test_action_advisory_watch.py
+      - name: Validate ADR-SHARED-006/010 supplier authority and six event types
+        run: python scripts/tests/test_supplier_authority_drift.py
       - name: Validate engineering philosophy governance (ADR-SHARED-041)
         run: python scripts/tests/test_engineering_philosophy_governance.py
       - name: Validate Accepted EA v2.3 plan, 20-repo audit and historical precedence

@@ -35,14 +35,10 @@ generalizes from.
   This package does not decide what authenticates a supplier applicant —
   that is Zuribeans' Medusa customer today, and will be whatever Thamani's
   own account system provides once it exists.
-- **Not a canonical Organisation.** `canonicalOrganisationId` is reserved
-  and nullable everywhere in this package, and no code here ever populates
-  it. `baobab-platform/baobab-cp` does not yet have a canonical Organisation type,
-  and `baobab-platform/shared`'s own `contracts/erp/v1/system-of-record.yaml` keeps
-  the "Organisation" concept's `canonical_owner` explicitly `unassigned`
-  until a real contract is approved — a CI check in that repository fails
-  if that invariant is ever silently changed. This package must never
-  imply an owner exists ahead of that decision.
+- **Not a canonical Organisation authority.** `canonicalOrganisationId` remains
+  nullable for versioned compatibility. Canonical Organisation identity and
+  its mappings are owned by CP (ADR-BCP-018); a hosting estate may only
+  use CP-attested identity and must never mint or infer it from local registration.
 - **Not the ERP-owned "Supplier".** `contracts/erp/v1/system-of-record.yaml`
   already declares a `Supplier` concept: `canonical_owner: erp`, "Business
   Partner vendor role" in iDempiere terms, minted only once a real ERP
@@ -50,11 +46,17 @@ generalizes from.
   pre-approval, estate-owned applicant — not that entity. An application
   becoming an ERP Supplier is a future provisioning step this package does
   not perform.
-- **Not an event bus.** `contracts/supplier-onboarding/v1/` (in this same
-  repository) defines the canonical event contracts a supplier-onboarding
-  case can eventually publish, but — same as ERP's own event contracts
-  today — no message broker exists yet anywhere in this ecosystem to carry
-  them. Publishing is each estate's own responsibility once one does.
+- **Not an event bus or deployment proof.** Six canonical supplier-onboarding
+  event types are declared in `contracts/supplier-onboarding/v1/`.
+  RabbitMQ infrastructure elsewhere does not prove any supplier route has
+  been activated. Each hosting estate owns its producer, outbox, authorised
+  delivery, replay and negative-path qualification.
+- **Not an approval authority.** The bundled lifecycle table checks transition
+  shape, not KYB, a legal-actor mandate, or reviewer authority. In particular,
+  `supplierApplicationLifecycle.assertTransition("qualification", "approved")`
+  does not prove current KYB is verified. A domain-owned service must check
+  authoritative KYB, evidence and permission before any supplier approval
+  (ADR-SHARED-007 §§56–58; ADR-SHARED-010).
 
 ## Usage
 
