@@ -75,5 +75,48 @@ class AcceptedV23Governance(unittest.TestCase):
         self.assertIn("INT-03", readme)
 
 
+    def test_shared_adr_catalogue_has_no_missing_decisions(self):
+        import json
+        import re
+
+        manifest = json.loads((ROOT / "docs/assessments/adr-shared-source-traceability-2026-11-10.json").read_text())
+        self.assertEqual(list(range(1, 46)), [row["number"] for row in manifest["decisions"]])
+        documents = {
+            match.group(1): path
+            for path in (ROOT / "docs/adr").glob("ADR-*.md")
+            if (match := re.match(r"^(ADR-(?:SHARED-)?\d{3,4})(?:\b|[- ])", path.name))
+        }
+        expected = {row["id"] for row in manifest["decisions"]}
+        self.assertEqual(expected, set(documents), "ADR folder and source audit inventory diverged")
+        index = (ROOT / "docs/adr/README.md").read_text()
+        indexed = re.findall(r"^\|\s*\[(ADR-SHARED-\d{3})\b", index, re.MULTILINE)
+        self.assertEqual(len(indexed), len(set(indexed)), "Duplicate ADR register entries")
+        self.assertEqual(expected, set(indexed), "Every ADR must have exactly one index entry")
+        for n in range(1, 7):
+            self.assertIn(f"historical ADR-{n:04}", index, "Retain accepted legacy ADR references")
+        self.assertEqual("2026-11-10", manifest["audit_date"])
+        self.assertTrue(all(row["runtime_qualification"] == "NOT_ASSESSED" for row in manifest["decisions"]))
+        for row in manifest["decisions"]:
+            with self.subTest(adr=row["id"]):
+                self.assertTrue((ROOT / row["source"]).is_file())
+                if row["related_check"] is not None:
+                    self.assertTrue((ROOT / row["related_check"]).is_file())
+                self.assertIn(row["id"], documents)
+                self.assertTrue(row["owner_validation_required"])
+                self.assertEqual("ACCEPTED", row["decision_status"])
+
+    def test_proposed_finance_and_accepted_product_read_are_indexed_honestly(self):
+        index = (ROOT / "docs/adr/README.md").read_text()
+        for number, state in ((33, "Accepted"), (44, "Accepted")):
+            key = f"ADR-SHARED-{number:03}"
+            row = next((line for line in index.splitlines() if line.startswith(f"| [{key} ")), None)
+            self.assertIsNotNone(row, f"Missing {key}")
+            self.assertIn(state, row)
+        finance = next((ROOT / "docs/adr").glob("ADR-SHARED-033*.md")).read_text()
+        self.assertIn("**Status:** **Accepted", finance)
+        read = next((ROOT / "docs/adr").glob("ADR-SHARED-044*.md")).read_text()
+        self.assertIn("| Status | Accepted |", read)
+
+
 if __name__ == "__main__":
     unittest.main()
