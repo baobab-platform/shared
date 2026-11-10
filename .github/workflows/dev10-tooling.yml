@@ -18,7 +18,7 @@ jobs:
           ref: eb9fb92f043c782acff5d87c77301d9a9e8b80dd
           path: .dev10-provider
           persist-credentials: false
-      - uses: actions/setup-python@ad3497abcd142e169a10aac37abd5175c44f33c4 # v7.0.0+6
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.0.0+6
         with:
           python-version: "3.13"
       - run: python -m pip install --disable-pip-version-check -r .github/foundation-tests/requirements.txt
