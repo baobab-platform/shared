@@ -6,7 +6,7 @@
 
 All numbered Shared decisions 001–045 have been located and read for scope, decision status, amendment chain, intended source contracts and owning runtimes. This is an **artifacts and boundary audit**, not an end-to-end assertion that every ADR's invariants execute. The accompanying machine-readable register names one primary source artifact and one **related** source check per decision where available. The check's existence **does not** establish full conformance of every clause, nor does it imply that a consuming repository is pinned to the audited revision. Current source contracts were checked against the main tree; historical decision approvals have not been changed.
 
-Baseline classification: **44 accepted decisions, 1 proposal (ADR-SHARED-033)**. The first six predate the `ADR-SHARED-*` filename convention and retain historic `ADR-0001`…`ADR-0006` identifiers. The source register is evidence inventory, not compliance certification.
+Baseline classification: **44 accepted decisions, 1 proposal (ADR-SHARED-033)**. The first six decisions are filed as `ADR-SHARED-001`…`ADR-SHARED-006` but retain historic `ADR-0001`…`ADR-0006` aliases. The index now displays both names without rewriting accepted decision history. The source register is evidence inventory, not compliance certification.
 
 ## Identified corrective implementation work
 
@@ -18,12 +18,12 @@ Baseline classification: **44 accepted decisions, 1 proposal (ADR-SHARED-033)**.
 
 | ADR | Topic | Decision | Verified Shared source | Related source check | Downstream qualification still required |
 |---|---|---|---|---|---|
-| `ADR-0001` | Digital Estate architecture | ACCEPTED | `contracts/tenancy/tenancy.yaml` | `scripts/validate-governance-contracts.rb` | CP / digital estates: current boundaries and consumer adoption |
-| `ADR-0002` | Control Plane polyrepo boundaries | ACCEPTED | `README.md` | `.github/workflows/foundation-repository-gates.yml` | CP / Infrastructure: no owner bypass |
-| `ADR-0003` | Tenant / Legal Entity / Estate separation | ACCEPTED | `contracts/tenancy/tenancy.yaml` | `scripts/validate-governance-contracts.rb` | CP / IAM / engines: isolation and governed mappings |
-| `ADR-0004` | Cross-engine event/error/idempotency metadata | ACCEPTED | `contracts/events/v1/envelope.schema.json` | `scripts/validate-cross-engine-contracts.rb` | Trade / ERP / Infra: native replay and causal traces |
-| `ADR-0005` | ERP system of record | ACCEPTED | `contracts/erp/v1/system-of-record.yaml` | `scripts/validate-erp-contracts.rb` | ERP: native iDempiere execution and provenance |
-| `ADR-0006` | Supplier-onboarding contract | ACCEPTED | `contracts/supplier-onboarding/v1/asyncapi.yaml` | `scripts/validate-event-registry.py` | Estates / ERP: live KYB and supplier projection |
+| `ADR-SHARED-001` | Digital Estate architecture | ACCEPTED | `contracts/tenancy/tenancy.yaml` | `scripts/validate-governance-contracts.rb` | CP / digital estates: current boundaries and consumer adoption |
+| `ADR-SHARED-002` | Control Plane polyrepo boundaries | ACCEPTED | `README.md` | `.github/workflows/foundation-repository-gates.yml` | CP / Infrastructure: no owner bypass |
+| `ADR-SHARED-003` | Tenant / Legal Entity / Estate separation | ACCEPTED | `contracts/tenancy/tenancy.yaml` | `scripts/validate-governance-contracts.rb` | CP / IAM / engines: isolation and governed mappings |
+| `ADR-SHARED-004` | Cross-engine event/error/idempotency metadata | ACCEPTED | `contracts/events/v1/envelope.schema.json` | `scripts/validate-cross-engine-contracts.rb` | Trade / ERP / Infra: native replay and causal traces |
+| `ADR-SHARED-005` | ERP system of record | ACCEPTED | `contracts/erp/v1/system-of-record.yaml` | `scripts/validate-erp-contracts.rb` | ERP: native iDempiere execution and provenance |
+| `ADR-SHARED-006` | Supplier-onboarding contract | ACCEPTED | `contracts/supplier-onboarding/v1/asyncapi.yaml` | `scripts/validate-event-registry.py` | Estates / ERP: live KYB and supplier projection |
 | `ADR-SHARED-007` | Capability model and provider neutrality | ACCEPTED | `contracts/capability/v1/catalogue.yaml` | `scripts/validate-capability-contracts.rb` | CP / engines: provider eligibility and consumer conformance |
 | `ADR-SHARED-008` | Capability namespaces and canonical events | ACCEPTED | `contracts/capability/v1/namespace-registry.yaml` | `scripts/validate-capability-contracts.rb` | Trade / CP: versioned adoption and no legacy event publication |
 | `ADR-SHARED-009` | Product, provisioning, readiness and drift schemas | ACCEPTED | `contracts/product/v1/subscription.schema.json` | `scripts/validate-capability-contracts.rb` | CP: durable lifecycle and reconciliation |
