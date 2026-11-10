@@ -64,7 +64,7 @@ class FirstPartyRegistryConformance(unittest.TestCase):
         registry["entities"][1]["baobab_products"].append(copy.deepcopy(registry["entities"][1]["baobab_products"][0]))
         self.assertTrue(self.violations(registry))
         registry = copy.deepcopy(REGISTRY)
-        registry["entities"][1]["legacy_aliases"] = registry["entities"][2].get("legacy_aliases", []) + ["zuribeans_za"]
+        registry["entities"][2]["legacy_aliases"] = ["zuribeans_za"]
         self.assertTrue(self.violations(registry))
         tenancy = copy.deepcopy(TENANCY)
         tenancy["tenant_definition"]["first_party_identities"].append("EXTERNAL-CUSTOMER")
