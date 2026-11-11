@@ -23,22 +23,34 @@ Trace context has no authority role. OTLP/HTTP JSON uses hexadecimal trace and s
 | [CP #465](https://github.com/baobab-platform/baobab-cp/pull/465) | Reconciled with CP main, preserving the price issuer lifecycle and current Go dependencies. The candidate already uses the OpenTelemetry SDK. It is the CP pin in the new composed candidate. Its Go CI and Foundation gates passed. The two CP exporter candidates overlap and require owner review before integration. |
 | [IAM #153](https://github.com/baobab-platform/baobab-iam/pull/153) | Updated the Hydra audience candidate's separate security patch and verified the exact runtime module graph selects `golang.org/x/net v0.62.0`. JWT, assertion-audience and driver configuration tests passed locally. IAM exports wire-correct IDs, applies the sampled bit, records bounded HTTP status classes and sends asynchronously with a finite in-flight limit. Race-enabled native BFF tests passed. The SAML dependency finding is independently tracked in [IAM #180](https://github.com/baobab-platform/baobab-iam/pull/180) and remains a Foundation blocker until remediated. |
 | [ZuriBeans #159](https://github.com/baobab-platform/zuribeans/pull/159) | Follow-up to merged #156. Fixed OTLP wire IDs and sampled ancestry, capped in-flight requests and removed Collector waits from the buyer HTTP response path. Six focused source tests passed. Estate browser and production-build quality remain subject to their owner workflows. |
-| [Infrastructure #72](https://github.com/baobab-platform/infrastructure/pull/72) | Previous connected run [42168676260](https://github.com/baobab-platform/infrastructure/actions/runs/42168676260) stopped during the Trade image build. The harness now writes an immutable, redacted failure receipt after independent teardown, avoids native cleanup before fixture preparation starts, and still attempts CP/IAM cleanup after a failed control probe. The scrubbed receipt remains a failure. The new locks identify the exact owner candidates. The local development suite passed 250 tests. |
+| [Infrastructure #72](https://github.com/baobab-platform/infrastructure/pull/72) | Previous connected run [42168676260](https://github.com/baobab-platform/infrastructure/actions/runs/42168676260) stopped during the Trade image build. A subsequent attempt stopped during preparation. The CP-embedded registry differed byte-for-byte from the old Shared pin. The corrected pin matches all three required contract files and the IAM buyer fixture accepts that registry. The harness retains redacted preparation and runtime failure receipts, cleans only started native fixtures, and attempts CP/IAM and host teardown independently. The local development suite passed 251 tests. |
 | [ERP #125](https://github.com/baobab-platform/baobab-erp/pull/125) | Merged native same-event JVM implementation. Historical [run 41946627517](https://github.com/baobab-platform/baobab-erp/actions/runs/41946627517) used a different source tuple and retained `NATIVE_ORDER_ABSENT`. The ten-span component graph and loss/replay evidence remain valid for that run. |
 
 ## Reviewed source tuple
 
 | Owner | Source |
 | --- | --- |
-| Infrastructure | `794420887aafd23bdf81584577b8d73aad808f41` |
+| Infrastructure | `749166768633d8c8a36fd496a3f878b673f5ff87` |
 | ZuriBeans | `2ca5d85c663a725c698df4fe66452f113a8a3a23` |
 | IAM | `399a505f08ad34922845bfd8a08bab385e2de80f` |
 | Control Plane | `ba337b5700ff344e9ca3762a5ded53042a0c07fe` |
 | Trade | `b9ad5fa42745f79bc94f43abaec28771a4996ce2` |
 | ERP | `f8558b616e81f37ef0246a0e7fc58bc81b2a1e3a` |
+| Shared contract baseline | `7f547ccdd759208355ef9224d2177929f4bf224e` |
 
 This tuple records the candidate sources. Runtime evidence requires the same
 sources in the owning workflow receipts and the independent readback.
+
+The complete local Trade suite passed 1,151 tests. The first waiver-free
+[Trade Foundation run](https://github.com/baobab-platform/baobab-trade/actions/runs/43011990893)
+executed the scanners and failed on production dependency and container
+findings. The [CP PostgreSQL 17 and race-enabled Go run](https://github.com/baobab-platform/baobab-cp/actions/runs/43011577194),
+[IAM Ory Foundation Live](https://github.com/baobab-platform/baobab-iam/actions/runs/43012470107),
+and [ZuriBeans owner CI](https://github.com/baobab-platform/zuribeans/actions/runs/43011880360)
+passed on the sources above. The [Infrastructure preparation failure](https://github.com/baobab-platform/infrastructure/actions/runs/43012970051)
+belongs to the preceding tuple with the older Shared contract pin. The
+[corrected connected BFF run](https://github.com/baobab-platform/infrastructure/actions/runs/43013695067)
+executes the source tuple above.
 
 ## Remaining gate
 
