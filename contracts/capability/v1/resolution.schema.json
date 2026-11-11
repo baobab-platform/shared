@@ -96,7 +96,7 @@
         "properties": { "decision": { "const": "RESOLVED" } }
       },
       "then": { "required": ["grant_id", "binding_id", "invocation"] },
-      "else": { "required": ["reason_code"] }
+      "else": { "required": ["reason_code"], "not": { "required": ["invocation"] } }
     },
     "batchResolution": {
       "type": "object",
