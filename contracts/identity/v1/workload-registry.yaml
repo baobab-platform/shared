@@ -264,6 +264,22 @@ workloads:
     rotation_owner: baobab-platform/baobab-cms
     status: ACTIVE
 
+  # ADR-SHARED-045 — governed, standing development-only People reader.
+  # The registry records the eligible Principal profile; it never creates a
+  # Hydra client, credential, tenant grant, provider binding or certification.
+  # Provider-side provision and CP choice must be independently approved,
+  # evidence-linked and revoked on their own lifecycles. No protected copy.
+  baobab-erp-people-reader-dev:
+    repository: baobab-platform/baobab-erp
+    owner: baobab-platform/baobab-erp
+    runtime: "Baobab People read-only provider selector in the ERP development runtime"
+    environment: development
+    allowed_audiences: ["baobab-control-plane"]
+    allowed_scopes: ["context:resolve", "people:provider:read"]
+    credential_type: client_credentials
+    rotation_owner: baobab-platform/baobab-iam
+    status: ACTIVE
+
   baobab-erp-workload:
     repository: baobab-platform/baobab-erp
     owner: baobab-platform/baobab-erp
