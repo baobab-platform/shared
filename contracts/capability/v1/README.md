@@ -247,3 +247,16 @@ The Control Plane converges through the follow-up gates in
 namespace is not registered. SS43 requires the ADR-SHARED-007 architecture
 review first, so Regulations capabilities can only be *planned*
 (`proposed_key: regulations.*`) until that review accepts it.
+
+## Capability resolution conformance
+
+`resolution-conformance.json` provides portable accepted and refused
+response cases for consumers and providers. Validate each `response`
+against `schema_ref` from the same Shared checkout and compare the result with
+`valid`. The suite checks that a resolved decision carries an invocation and
+that a denial carries a reason without offering an invocation target.
+
+Run `python3 scripts/tests/test_capability_resolution_conformance.py` from
+the repository root. The corpus tests the wire contract. CP owns
+the decision and runtime authority checks. Generated language bindings and
+other Phase 1 work remain tracked in [Shared #34](https://github.com/baobab-platform/shared/issues/34).

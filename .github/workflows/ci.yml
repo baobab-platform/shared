@@ -111,6 +111,7 @@ on:
       - "scripts/validate-identity-events-contracts.rb"
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
+      - "scripts/tests/test_capability_resolution_conformance.py"
       - "scripts/validate-trade-contracts.rb"
       - "scripts/validate-trade-document-contracts.py"
       - "scripts/validate-cross-engine-reference-contracts.py"
@@ -171,6 +172,7 @@ on:
       - "scripts/validate-identity-events-contracts.rb"
       - "scripts/validate-authorization-contracts.rb"
       - "scripts/validate-capability-contracts.rb"
+      - "scripts/tests/test_capability_resolution_conformance.py"
       - "scripts/validate-trade-contracts.rb"
       - "scripts/validate-trade-document-contracts.py"
       - "scripts/validate-cross-engine-reference-contracts.py"
@@ -386,6 +388,8 @@ jobs:
         run: python scripts/validate-topology-contracts.py
       - name: Validate the canonical capability catalogue and provider declarations (ADR-SHARED-017)
         run: python scripts/capability_catalogue.py validate-catalogue
+      - name: Verify portable capability resolution conformance cases
+        run: python scripts/tests/test_capability_resolution_conformance.py
       - name: Test capability catalogue and provider declaration validation (ADR-SHARED-017)
         run: python scripts/tests/test_capability_catalogue.py
       - name: Test Regulations capability census (ADR-SHARED-027)
