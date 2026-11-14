@@ -2638,8 +2638,8 @@
           },
           {
             "case": "secure-provider-image-and-lock",
-            "result": "PASS",
-            "reason": "V151_RC2_AND_GA_SIGNED_MULTIARCH_OCI_RELEASE_VERIFIED_DEV_ONLY_RISK_BOUNDED",
+            "result": "BLOCKED",
+            "reason": "SIGNED_V151_RC2_GA_SOURCE_VERIFIED_HOSTED_CODESPACES_CONSUMER_RECEIPT_OUTSTANDING",
             "evidence_urls": [
               "https://github.com/baobab-platform/baobab-dev/actions/runs/43493272371",
               "https://github.com/baobab-platform/baobab-dev/actions/runs/43559737080"
