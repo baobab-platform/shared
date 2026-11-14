@@ -394,3 +394,7 @@ This acceptance approves programme design only. Do **not** assign new Accepted A
 ---
 
 **Accepted design end-state:** EA-XB v1.0 remains the historical Accepted cross-border-execution objective. EA-XB v1.1, **effective upon reviewed CI-green merge**, corrects business-outcome *composition, external evidence semantics, independent-enterprise continuity and CRM inclusion* while keeping enterprise-domain authority, real-component testing and independent approval intact. No real-world BCU/Kyagulanyi JV, incorporated company, regulatory decision, payment, shipment or provider qualification is asserted.
+
+## 14 November 2026 — Development-toolchain dependency observation (non-XBE receipt)
+
+The shared [EA-DEV register](ea-dev-implementation-register.md) now records successful `baobab-dev` v1.5.1 RC2 and GA release qualification: [RC2](https://github.com/baobab-platform/baobab-dev/actions/runs/43493272371), [GA](https://github.com/baobab-platform/baobab-dev/actions/runs/43559737080), both at `13493b24d6af1a9e7bddf7df9be555d1c06a635d`. This supplies a signed development-toolchain candidate for EA-XB engine/estate consumer testing only. It does **not** execute XBE/XBN/CORE/AGR/MFG/NET/LOG/CRM scenarios, validate legal actors, create cross-border transaction evidence, or authorise staging/production. DEV-14 hosted-user Codespaces/private dependencies, engine adoption and rollback remain separate blocked gates. Preserve the 2026-11-26 00:00 UTC development-only CVE exception expiry.
