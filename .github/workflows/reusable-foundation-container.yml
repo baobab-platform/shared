@@ -156,6 +156,7 @@ jobs:
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
         env:
           FINDINGS_POLICY: "${{ inputs.findings_policy }}"
+          IGNORE_UNFIXED: "${{ inputs.ignore_unfixed }}"
           IMAGE: "foundation-scan:${{ github.sha }}"
           EVIDENCE_DIR: "${{ runner.temp }}/foundation-container-evidence"
         run: |
@@ -170,9 +171,11 @@ jobs:
 
           # Exit code 0 means findings are reported, not suppressed. Trivy
           # transport/database/parser/runtime errors still return non-zero.
-          trivy image --scanners vuln --severity HIGH,CRITICAL \
-            --ignorefile /dev/null --pkg-types os,library --exit-code 0 \
-            --skip-version-check --format json --output "$vuln_raw" "$IMAGE"
+          vuln_args=(--scanners vuln --severity HIGH,CRITICAL --ignorefile /dev/null --pkg-types os,library --exit-code 0 --skip-version-check)
+          if [[ "$IGNORE_UNFIXED" == "true" ]]; then
+            vuln_args+=(--ignore-unfixed)
+          fi
+          trivy image "${vuln_args[@]}" --format json --output "$vuln_raw" "$IMAGE"
           trivy image --scanners secret --ignorefile /dev/null --exit-code 0 \
             --skip-version-check --format json --output "$secret_raw" "$IMAGE"
 
