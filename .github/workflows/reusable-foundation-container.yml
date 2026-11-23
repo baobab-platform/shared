@@ -177,7 +177,7 @@ jobs:
             abort "Trivy report has an unsupported schema" unless report.is_a?(Hash) && report["SchemaVersion"] == 2
             results = report["Results"]
             if results.nil?
-              abort "Trivy report is missing artifact identity" unless report["ArtifactName"].is_a?(String) && report["ArtifactType"].is_a?(String) && report["ArtifactID"].to_s.match?(/\\Asha256:[a-f0-9]{64}\\z/) && report["Metadata"].is_a?(Hash)
+              abort "Trivy report is missing artifact identity" unless report["ArtifactName"].is_a?(String) && report["ArtifactType"].is_a?(String) && report["ArtifactID"].to_s.match?(/\Asha256:[a-f0-9]{64}\z/) && report["Metadata"].is_a?(Hash)
               results = []
             end
             abort "Trivy Results inventory is malformed" unless results.is_a?(Array)
