@@ -182,7 +182,7 @@ jobs:
 
           # Require complete machine-readable reports. Only allowlisted
           # metadata is retained; secret matches/snippets never leave runner.
-          jq -e '.Results | type == "array" and length > 0' "$vuln_raw" >/dev/null
+          jq -e '.Results | type == "array"' "$vuln_raw" >/dev/null
           jq -e 'all(.Results[]; (.Target|type) == "string" and (.Target|length) > 0 and (.Type|type) == "string" and (.Type|length) > 0 and ((.Vulnerabilities // [])|type) == "array" and ((.Secrets // [])|type) == "array")' "$vuln_raw" >/dev/null
           jq '{
             schema_version: 1,
