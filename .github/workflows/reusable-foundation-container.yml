@@ -171,18 +171,16 @@ jobs:
 
           # Exit code 0 means findings are reported, not suppressed. Trivy
           # transport/database/parser/runtime errors still return non-zero.
-          vuln_args=(--scanners vuln --severity HIGH,CRITICAL --ignorefile /dev/null --pkg-types os,library --exit-code 0 --skip-version-check)
+          vuln_args=(--scanners vuln --severity HIGH,CRITICAL --ignorefile /dev/null --pkg-types os,library --exit-code 1 --skip-version-check)
           if [[ "$IGNORE_UNFIXED" == "true" ]]; then
             vuln_args+=(--ignore-unfixed)
           fi
-          trivy image "${vuln_args[@]}" --format json --output "$vuln_raw" "$IMAGE"
-          trivy image --scanners secret --ignorefile /dev/null --exit-code 0 \
-            --skip-version-check --format json --output "$secret_raw" "$IMAGE"
-
-          # Require complete machine-readable reports. Only allowlisted
-          # metadata is retained; secret matches/snippets never leave runner.
-          jq -e '.Results | type == "array"' "$vuln_raw" >/dev/null
-          jq -e '.Results | type == "array"' "$secret_raw" >/dev/null
+          set +e
+          trivy image "${vuln_args[@]}" --format json --output "$vuln_raw" "$IMAGE" 2>"$RUNNER_TEMP/trivy-vulnerability-stderr.txt"
+          vuln_rc=$?
+          set -e
+          jq -e '.Results | type == "array" and length > 0' "$vuln_raw" >/dev/null
+          jq -e 'all(.Results[]; (.Target|type) == "string" and (.Target|length) > 0 and (.Type|type) == "string" and (.Type|length) > 0 and ((.Vulnerabilities // [])|type) == "array")' "$vuln_raw" >/dev/null
           jq '{
             schema_version: 1,
             findings: [
@@ -201,6 +199,22 @@ jobs:
               }
             ]
           }' "$vuln_raw" > "$EVIDENCE_DIR/vulnerabilities.json"
+          vuln_count="$(jq '.findings | length' "$EVIDENCE_DIR/vulnerabilities.json")"
+          if grep -Eq '(^|[[:space:]])(ERROR|FATAL)([[:space:]]|:)' "$RUNNER_TEMP/trivy-vulnerability-stderr.txt" ||
+             { (( vuln_rc != 0 )) && { (( vuln_rc != 1 )) || (( vuln_count == 0 )); }; }; then
+            cat "$RUNNER_TEMP/trivy-vulnerability-stderr.txt" >&2
+            echo "::error::Trivy vulnerability scan failed or returned no findings report"
+            exit "${vuln_rc:-1}"
+          fi
+
+          set +e
+          trivy image --scanners secret --ignorefile /dev/null --exit-code 1 \
+            --skip-version-check --format json --output "$secret_raw" "$IMAGE" \
+            2>"$RUNNER_TEMP/trivy-secret-stderr.txt"
+          secret_rc=$?
+          set -e
+          jq -e '.Results | type == "array" and length > 0' "$secret_raw" >/dev/null
+          jq -e 'all(.Results[]; (.Target|type) == "string" and (.Target|length) > 0 and (.Type|type) == "string" and (.Type|length) > 0 and ((.Secrets // [])|type) == "array")' "$secret_raw" >/dev/null
           jq '{
             schema_version: 1,
             findings: [
@@ -217,10 +231,16 @@ jobs:
               }
             ]
           }' "$secret_raw" > "$EVIDENCE_DIR/secrets-sanitized.json"
-          rm -f "$vuln_raw" "$secret_raw"
-
-          vuln_count="$(jq '.findings | length' "$EVIDENCE_DIR/vulnerabilities.json")"
           secret_count="$(jq '.findings | length' "$EVIDENCE_DIR/secrets-sanitized.json")"
+          if grep -Eq '(^|[[:space:]])(ERROR|FATAL)([[:space:]]|:)' "$RUNNER_TEMP/trivy-secret-stderr.txt" ||
+             { (( secret_rc != 0 )) && { (( secret_rc != 1 )) || (( secret_count == 0 )); }; }; then
+            cat "$RUNNER_TEMP/trivy-secret-stderr.txt" >&2
+            echo "::error::Trivy secret scan failed or returned no findings report"
+            exit "${secret_rc:-1}"
+          fi
+          rm -f "$vuln_raw" "$secret_raw" \
+            "$RUNNER_TEMP/trivy-vulnerability-stderr.txt" "$RUNNER_TEMP/trivy-secret-stderr.txt"
+
           image_id="$(docker image inspect --format '{{.Id}}' "$IMAGE")"
           [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ ]]
           jq -n --arg commit "$GITHUB_SHA" --arg image "$image_id" \
