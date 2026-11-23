@@ -8,7 +8,8 @@ on:
       build_context: { type: string, default: "." }
       runtime: { type: boolean, default: true }
       # Opt-in: skip vulnerabilities that have no fixed version upstream
-      # (trivy --ignore-unfixed). Anything with an available fix still fails.
+      # (trivy --ignore-unfixed). Findings remain in the report; enforcement is
+      # controlled separately by fail_on_findings.
       ignore_unfixed: { type: boolean, default: false }
       # Development consumers may retain findings without blocking image builds.
       # Scanner/tool errors remain fatal; strict blocking is the default.
