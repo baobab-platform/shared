@@ -204,7 +204,7 @@ jobs:
              { (( vuln_rc != 0 )) && { (( vuln_rc != 1 )) || (( vuln_count == 0 )); }; }; then
             cat "$RUNNER_TEMP/trivy-vulnerability-stderr.txt" >&2
             echo "::error::Trivy vulnerability scan failed or returned no findings report"
-            exit "${vuln_rc:-1}"
+            exit 1
           fi
 
           set +e
@@ -236,7 +236,7 @@ jobs:
              { (( secret_rc != 0 )) && { (( secret_rc != 1 )) || (( secret_count == 0 )); }; }; then
             cat "$RUNNER_TEMP/trivy-secret-stderr.txt" >&2
             echo "::error::Trivy secret scan failed or returned no findings report"
-            exit "${secret_rc:-1}"
+            exit 1
           fi
           rm -f "$vuln_raw" "$secret_raw" \
             "$RUNNER_TEMP/trivy-vulnerability-stderr.txt" "$RUNNER_TEMP/trivy-secret-stderr.txt"
