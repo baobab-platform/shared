@@ -166,6 +166,9 @@ jobs:
             exit 2
           }
           mkdir -p "$EVIDENCE_DIR"
+          # Create a diagnostic receipt before invoking the scanner, so failure
+          # paths retain a non-secret status artifact.
+          printf '{"schema_version":1,"state":"BLOCK","reason":"scan_incomplete"}\n' > "$EVIDENCE_DIR/scan-status.json"
           vuln_raw="$RUNNER_TEMP/trivy-vulnerabilities-private.json"
 
           # Exit code 1 is expected when findings exist. Validate the complete
@@ -182,7 +185,10 @@ jobs:
 
           # Require complete machine-readable reports. Only allowlisted
           # metadata is retained; secret matches/snippets never leave runner.
-          jq -e '.Results | type == "array"' "$vuln_raw" >/dev/null
+          if [[ ! -s "$vuln_raw" ]] || ! jq -e '.Results | type == "array"' "$vuln_raw" >/dev/null; then
+            echo "::error::Trivy did not produce a valid results inventory (exit $scan_rc)"
+            exit 1
+          fi
           jq -e 'all(.Results[]; (.Target|type) == "string" and (.Target|length) > 0 and (.Type|type) == "string" and (.Type|length) > 0 and ((.Vulnerabilities // [])|type) == "array" and ((.Secrets // [])|type) == "array")' "$vuln_raw" >/dev/null
           jq '{
             schema_version: 1,
@@ -239,7 +245,14 @@ jobs:
             > "$EVIDENCE_DIR/scan-receipt.json"
 
           echo "Vulnerability findings: $vuln_count; secret findings: $secret_count"
-          if (( vuln_count + secret_count > 0 )); then
+          # Report-only is evidence collection, never a canonical DEV-10 pass.
+          jq -n --argjson secrets "$secret_count" --argjson vulns "$vuln_count" \
+            '{schema_version:1,state:"DELEGATION_PENDING",vulnerability_findings:$vulns,secret_findings:$secrets}' > "$EVIDENCE_DIR/scan-status.json"
+          if (( secret_count > 0 )); then
+            echo "::error::Container image secret findings always block"
+            exit 1
+          fi
+          if (( vuln_count > 0 )); then
             if [[ "$FINDINGS_POLICY" == "block" ]]; then
               echo "::error::Container scan found HIGH/CRITICAL vulnerabilities or secrets"
               exit 1
@@ -253,7 +266,7 @@ jobs:
         with:
           name: foundation-container-scan-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/foundation-container-evidence/
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
 
       - name: Record container-scan exception
