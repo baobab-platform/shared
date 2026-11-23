@@ -162,7 +162,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$REPORT_DIR"
-          args=(--severity HIGH,CRITICAL --exit-code 0 --skip-version-check --format json --output "$REPORT_DIR/trivy-vulnerability-raw.json")
+          args=(--scanners vuln --severity HIGH,CRITICAL --exit-code 0 --skip-version-check --format json --output "$REPORT_DIR/trivy-vulnerability-raw.json")
           if [[ "$IGNORE_UNFIXED" == "true" ]]; then
             echo "::notice::Container scan ignores vulnerabilities without an upstream fix (ignore_unfixed opt-in)"
             echo "- Container scan: unfixed vulnerabilities ignored (ignore_unfixed: true)" >> "$GITHUB_STEP_SUMMARY"
