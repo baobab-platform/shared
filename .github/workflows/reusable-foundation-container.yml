@@ -164,6 +164,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$REPORT_DIR"
           printf '{"schema_version":1,"state":"BLOCK","reason":"scan_incomplete"}\n' > "$REPORT_DIR/scan-status.json"
+          [[ "$FAIL_ON_FINDINGS" == "true" || "$FAIL_ON_FINDINGS" == "false" ]] || { echo "::error::fail_on_findings must be true or false"; exit 2; }
           # Secret findings and scanner errors always block, independently of vulnerability policy.
           trivy image --scanners secret --exit-code 1 --skip-version-check --format json \
             --output "$RUNNER_TEMP/foundation-image-secrets-private.json" "foundation-scan:${{ github.sha }}" || {
@@ -225,9 +226,9 @@ jobs:
           image_id="$(docker image inspect --format '{{.Id}}' "foundation-scan:${{ github.sha }}")"
           [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ ]] || exit 1
           report_sha="$(sha256sum "$REPORT_DIR/trivy-vulnerability-raw.json" | cut -d' ' -f1)"
-          jq -n --arg sha "$GITHUB_SHA" --arg image "$image_id" --arg report "$report_sha" \
+          jq -n --arg sha "$GITHUB_SHA" --arg image "$image_id" --arg report "$report_sha" --arg policy "$FAIL_ON_FINDINGS" \
             --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
-            '{schema_version:1,state:"SCAN_EVIDENCE_ONLY",source_sha:$sha,local_image_id:$image,report_sha256:$report,run_id:$run,run_attempt:$attempt}' \
+            '{schema_version:1,state:"SCAN_EVIDENCE_ONLY",vulnerabilities_blocking:($policy == "true"),source_sha:$sha,local_image_id:$image,report_sha256:$report,run_id:$run,run_attempt:$attempt}' \
             > "$REPORT_DIR/scan-status.json"
 
       - name: Retain container vulnerability scan evidence
