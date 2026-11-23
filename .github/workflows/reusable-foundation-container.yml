@@ -171,6 +171,22 @@ jobs:
               rm -f "$RUNNER_TEMP/foundation-image-secrets-private.json"
               exit 1
             }
+          ruby -rjson -e '
+            report = JSON.parse(File.read(ARGV.fetch(0)))
+            abort "secret scan schema invalid" unless report.is_a?(Hash) && report["SchemaVersion"] == 2
+            results = report.fetch("Results", [])
+            abort "secret inventory malformed" unless results.is_a?(Array)
+            count = results.sum do |item|
+              abort "secret result malformed" unless item.is_a?(Hash)
+              secrets = item.fetch("Secrets", []) || []
+              abort "secret list malformed" unless secrets.is_a?(Array)
+              secrets.length
+            end
+            abort "image secrets detected" if count > 0
+          ' "$RUNNER_TEMP/foundation-image-secrets-private.json" || {
+            rm -f "$RUNNER_TEMP/foundation-image-secrets-private.json"
+            exit 1
+          }
           rm -f "$RUNNER_TEMP/foundation-image-secrets-private.json"
           args=(--scanners vuln --severity HIGH,CRITICAL --exit-code 0 --skip-version-check --format json --output "$REPORT_DIR/trivy-vulnerability-raw.json")
           if [[ "$IGNORE_UNFIXED" == "true" ]]; then
@@ -203,9 +219,16 @@ jobs:
                 abort "HIGH/CRITICAL container findings are blocking under this consumer policy"
               end
               abort "DELEGATION_PENDING: canonical exact-subject DEV-10 verification is not implemented; Foundation blocks"
-              File.open(ENV.fetch("GITHUB_STEP_SUMMARY"), "a") { |f| f.puts "- Container scan: **#{findings}** HIGH/CRITICAL finding(s); non-blocking development policy; evidence retained." }
             end
           ' "$REPORT_DIR/trivy-vulnerability-raw.json"
+          # Only clean scans can complete this interim Foundation implementation.
+          image_id="$(docker image inspect --format '{{.Id}}' "foundation-scan:${{ github.sha }}")"
+          [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ ]] || exit 1
+          report_sha="$(sha256sum "$REPORT_DIR/trivy-vulnerability-raw.json" | cut -d' ' -f1)"
+          jq -n --arg sha "$GITHUB_SHA" --arg image "$image_id" --arg report "$report_sha" \
+            --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
+            '{schema_version:1,state:"SCAN_CLEAN_LOCAL_ONLY",source_sha:$sha,local_image_id:$image,report_sha256:$report,run_id:$run,run_attempt:$attempt}' \
+            > "$REPORT_DIR/scan-status.json"
 
       - name: Retain container vulnerability scan evidence
         if: always() && steps.container-scan.outcome != 'skipped'
