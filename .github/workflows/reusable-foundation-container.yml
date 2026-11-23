@@ -163,6 +163,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$REPORT_DIR"
+          printf '{"schema_version":1,"state":"BLOCK","reason":"scan_incomplete"}\n' > "$REPORT_DIR/scan-status.json"
+          # Secret findings and scanner errors always block, independently of vulnerability policy.
+          trivy image --scanners secret --exit-code 1 --skip-version-check --format json \
+            --output "$RUNNER_TEMP/foundation-image-secrets-private.json" "foundation-scan:${{ github.sha }}" || {
+              echo "::error::Image secret finding or secret-scanner failure"
+              rm -f "$RUNNER_TEMP/foundation-image-secrets-private.json"
+              exit 1
+            }
+          rm -f "$RUNNER_TEMP/foundation-image-secrets-private.json"
           args=(--scanners vuln --severity HIGH,CRITICAL --exit-code 0 --skip-version-check --format json --output "$REPORT_DIR/trivy-vulnerability-raw.json")
           if [[ "$IGNORE_UNFIXED" == "true" ]]; then
             echo "::notice::Container scan ignores vulnerabilities without an upstream fix (ignore_unfixed opt-in)"
@@ -193,7 +202,7 @@ jobs:
               if ENV.fetch("FAIL_ON_FINDINGS") == "true"
                 abort "HIGH/CRITICAL container findings are blocking under this consumer policy"
               end
-              warn "::warning::Development container has #{findings} HIGH/CRITICAL finding(s); scan evidence is retained and build continues."
+              abort "DELEGATION_PENDING: canonical exact-subject DEV-10 verification is not implemented; Foundation blocks"
               File.open(ENV.fetch("GITHUB_STEP_SUMMARY"), "a") { |f| f.puts "- Container scan: **#{findings}** HIGH/CRITICAL finding(s); non-blocking development policy; evidence retained." }
             end
           ' "$REPORT_DIR/trivy-vulnerability-raw.json"
@@ -203,8 +212,8 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: foundation-container-trivy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/foundation-container-scan/trivy-vulnerability-raw.json
-          if-no-files-found: ignore
+          path: ${{ runner.temp }}/foundation-container-scan/
+          if-no-files-found: error
           retention-days: 30
       - name: Record container-scan exception
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] != null
