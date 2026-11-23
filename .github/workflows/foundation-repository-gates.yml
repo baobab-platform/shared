@@ -35,6 +35,13 @@ on:
           Intended for release/container pipelines; default false preserves waiver behaviour.
         type: boolean
         default: false
+      container_findings_policy:
+        description: >
+          block fails on findings; report retains sanitized vulnerability and secret
+          evidence but permits development image builds. Default block preserves
+          existing consumer behavior.
+        type: string
+        default: block
       container_ignore_unfixed:
         description: >
           Opt-in for the container gate to ignore vulnerabilities that have no fixed
@@ -131,6 +138,7 @@ jobs:
       build_context: "${{ needs.classify.outputs.container_context }}"
       runtime: "${{ needs.classify.outputs.container_runtime == 'true' }}"
       ignore_unfixed: "${{ inputs.container_ignore_unfixed }}"
+      findings_policy: "${{ inputs.container_findings_policy }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   result:
     name: Foundation / Result
