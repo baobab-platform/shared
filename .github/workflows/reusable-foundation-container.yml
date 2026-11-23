@@ -257,7 +257,8 @@ jobs:
               echo "::error::Container scan found HIGH/CRITICAL vulnerabilities or secrets"
               exit 1
             fi
-            echo "::warning::Development image has scan findings; sanitized evidence is retained and the build continues"
+            echo "::error::DELEGATION_PENDING: authenticated DEV-10 verdict verification is not implemented; report mode cannot authorize Foundation success"
+            exit 1
           fi
 
       - name: Retain sanitized container scan evidence
