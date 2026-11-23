@@ -167,10 +167,9 @@ jobs:
           }
           mkdir -p "$EVIDENCE_DIR"
           vuln_raw="$RUNNER_TEMP/trivy-vulnerabilities-private.json"
-          secret_raw="$RUNNER_TEMP/trivy-secrets-private.json"
 
-          # Exit code 0 means findings are reported, not suppressed. Trivy
-          # transport/database/parser/runtime errors still return non-zero.
+          # Exit code 1 is expected when findings exist. Validate the complete
+          # report and reject scanner diagnostics before applying the policy.
           scan_args=(--scanners vuln,secret --severity HIGH,CRITICAL --ignorefile /dev/null --pkg-types os,library --exit-code 1 --skip-version-check)
           if [[ "$IGNORE_UNFIXED" == "true" ]]; then
             scan_args+=(--ignore-unfixed)
@@ -232,10 +231,11 @@ jobs:
           image_id="$(docker image inspect --format '{{.Id}}' "$IMAGE")"
           [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ ]]
           jq -n --arg commit "$GITHUB_SHA" --arg image "$image_id" \
+            --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
             --arg scanner "$(trivy --version | head -n 1)" \
             --arg policy "$FINDINGS_POLICY" --argjson vulnerabilities "$vuln_count" \
             --argjson secrets "$secret_count" \
-            '{schema_version:1,source_commit:$commit,image_id:$image,scanner:$scanner,findings_policy:$policy,vulnerability_findings:$vulnerabilities,secret_findings:$secrets}' \
+            '{schema_version:1,source_commit:$commit,image_id:$image,run_id:$run,run_attempt:$attempt,scanner:$scanner,findings_policy:$policy,vulnerability_findings:$vulnerabilities,secret_findings:$secrets}' \
             > "$EVIDENCE_DIR/scan-receipt.json"
 
           echo "Vulnerability findings: $vuln_count; secret findings: $secret_count"
