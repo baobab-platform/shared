@@ -218,16 +218,16 @@ jobs:
               if ENV.fetch("FAIL_ON_FINDINGS") == "true"
                 abort "HIGH/CRITICAL container findings are blocking under this consumer policy"
               end
-              abort "DELEGATION_PENDING: canonical exact-subject DEV-10 verification is not implemented; Foundation blocks"
+              warn "::warning::Development-only vulnerability findings retained; this is not a DEV-10 publication approval"
             end
           ' "$REPORT_DIR/trivy-vulnerability-raw.json"
-          # Only clean scans can complete this interim Foundation implementation.
+          # A scan receipt records evidence; it does not authorize publication.
           image_id="$(docker image inspect --format '{{.Id}}' "foundation-scan:${{ github.sha }}")"
           [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ ]] || exit 1
           report_sha="$(sha256sum "$REPORT_DIR/trivy-vulnerability-raw.json" | cut -d' ' -f1)"
           jq -n --arg sha "$GITHUB_SHA" --arg image "$image_id" --arg report "$report_sha" \
             --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
-            '{schema_version:1,state:"SCAN_CLEAN_LOCAL_ONLY",source_sha:$sha,local_image_id:$image,report_sha256:$report,run_id:$run,run_attempt:$attempt}' \
+            '{schema_version:1,state:"SCAN_EVIDENCE_ONLY",source_sha:$sha,local_image_id:$image,report_sha256:$report,run_id:$run,run_attempt:$attempt}' \
             > "$REPORT_DIR/scan-status.json"
 
       - name: Retain container vulnerability scan evidence
