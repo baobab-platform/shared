@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-go@e626ada899467caf4efc6cfd0484b965da944ce8 # v7.0.0+6 (main, 2026-09-18)
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0+6 (main, 2026-09-18)
         with:
           go-version: stable
           cache: false
@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.0.1+1 (main, 2026-09-10)
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.0.1+1 (main, 2026-09-10)
         with:
           distribution: temurin
           java-version: "21"
