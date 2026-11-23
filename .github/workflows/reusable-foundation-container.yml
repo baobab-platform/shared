@@ -174,8 +174,14 @@ jobs:
           trivy image "${args[@]}" "foundation-scan:${{ github.sha }}"
           ruby -rjson -e '
             report = JSON.parse(File.read(ARGV.fetch(0)))
-            abort "Trivy report has no complete Results array" unless report.is_a?(Hash) && report["Results"].is_a?(Array) && !report["Results"].empty?
-            findings = report["Results"].sum do |result|
+            abort "Trivy report has an unsupported schema" unless report.is_a?(Hash) && report["SchemaVersion"] == 2
+            results = report["Results"]
+            if results.nil?
+              abort "Trivy report is missing artifact identity" unless report["ArtifactName"].is_a?(String) && report["ArtifactType"].is_a?(String)
+              results = []
+            end
+            abort "Trivy Results inventory is malformed" unless results.is_a?(Array)
+            findings = results.sum do |result|
               abort "malformed Trivy result" unless result.is_a?(Hash)
               values = result.fetch("Vulnerabilities", [])
               abort "malformed Trivy vulnerability inventory" unless values.is_a?(Array)
