@@ -35,6 +35,13 @@ on:
           Intended for release/container pipelines; default false preserves waiver behaviour.
         type: boolean
         default: false
+      container_fail_on_findings:
+        description: >
+          Whether HIGH/CRITICAL container findings fail the gate. Keep true for
+          strict consumers; development consumers may set false while retaining
+          the full scan report. Scanner/tool failures always remain fatal.
+        type: boolean
+        default: true
       container_ignore_unfixed:
         description: >
           Opt-in for the container gate to ignore vulnerabilities that have no fixed
@@ -131,6 +138,7 @@ jobs:
       build_context: "${{ needs.classify.outputs.container_context }}"
       runtime: "${{ needs.classify.outputs.container_runtime == 'true' }}"
       ignore_unfixed: "${{ inputs.container_ignore_unfixed }}"
+      fail_on_findings: "${{ inputs.container_fail_on_findings }}"
       exceptions: "${{ needs.classify.outputs.exceptions }}"
   result:
     name: Foundation / Result
