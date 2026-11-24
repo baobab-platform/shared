@@ -88,9 +88,7 @@ jobs:
           # Audit each actual locked Node project in its own directory. A
           # package.json in a fixture is not a runnable root Node project.
           # Do not install with a manager that disagrees with the lockfile.
-          mapfile -d '' lockfiles < <(find . -type f \\
-            \\( -name pnpm-lock.yaml -o -name package-lock.json -o -name yarn.lock \\) \\
-            -not -path '*/node_modules/*' -not -path '*/.git/*' -print0)
+          mapfile -d '' lockfiles < <(find . -type f \( -name pnpm-lock.yaml -o -name package-lock.json -o -name yarn.lock \) -not -path '*/node_modules/*' -not -path '*/.git/*' -print0)
           if [[ -f package.json && ${#lockfiles[@]} -eq 0 ]]; then
             echo "::error::Root Node project has no supported dependency lockfile"
             exit 1
