@@ -85,26 +85,47 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          case "$NODE_MGR" in
-            pnpm)
-              corepack enable
-              pnpm install --frozen-lockfile
-              pnpm audit --audit-level high
-              ;;
-            npm)
-              npm ci
-              npm audit --audit-level=high
-              ;;
-            yarn)
-              corepack enable
-              yarn install --immutable
-              yarn npm audit --severity high
-              ;;
-            *)
-              echo "::error::Unsupported Node package manager: $NODE_MGR"
+          # Audit each actual locked Node project in its own directory. A
+          # package.json in a fixture is not a runnable root Node project.
+          # Do not install with a manager that disagrees with the lockfile.
+          mapfile -d '' lockfiles < <(find . -type f \( -name pnpm-lock.yaml -o -name package-lock.json -o -name yarn.lock \) -not -path '*/node_modules/*' -not -path '*/.git/*' -print0)
+          if [[ -f package.json && ${#lockfiles[@]} -eq 0 ]]; then
+            echo "::error::Root Node project has no supported dependency lockfile"
+            exit 1
+          fi
+          for lockfile in "${lockfiles[@]}"; do
+            project="$(dirname "$lockfile")"
+            if [[ ! -f "$project/package.json" ]]; then
+              echo "::error::Node lockfile without adjacent package.json: $lockfile"
               exit 1
-              ;;
-          esac
+            fi
+            case "${lockfile##*/}" in
+              pnpm-lock.yaml) manager=pnpm ;;
+              package-lock.json) manager=npm ;;
+              yarn.lock) manager=yarn ;;
+            esac
+            echo "::group::Node dependency audit: $project ($manager)"
+            (
+              cd "$project"
+              case "$manager" in
+                pnpm)
+                  corepack enable
+                  pnpm install --frozen-lockfile
+                  pnpm audit --audit-level high
+                  ;;
+                npm)
+                  npm ci
+                  npm audit --audit-level=high
+                  ;;
+                yarn)
+                  corepack enable
+                  yarn install --immutable
+                  yarn npm audit --severity high
+                  ;;
+              esac
+            )
+            echo "::endgroup::"
+          done
 
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.0.0+6 (main, 2026-09-09)
         if: ${{ fromJSON(inputs.exceptions)['dependency-audit'] == null && steps.managers.outputs.run_python == 'true' }}

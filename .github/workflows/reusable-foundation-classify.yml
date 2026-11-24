@@ -206,7 +206,7 @@ jobs:
 
           evidence = {
             "python" => !Dir.glob("{,**/}pyproject.toml").empty?,
-            "node" => !Dir.glob("{,**/}package.json").empty?,
+            "node" => File.file?("package.json") || !Dir.glob("{,**/}{pnpm-lock.yaml,package-lock.json,yarn.lock}").empty?,
             "go" => !Dir.glob("{,**/}go.mod").empty?,
             "java" => !Dir.glob("{,**/}{pom.xml,build.gradle,build.gradle.kts}").empty?,
             "rust" => !Dir.glob("{,**/}Cargo.toml").empty?,
