@@ -8,8 +8,12 @@ on:
       build_context: { type: string, default: "." }
       runtime: { type: boolean, default: true }
       # Opt-in: skip vulnerabilities that have no fixed version upstream
-      # (trivy --ignore-unfixed). Anything with an available fix still fails.
+      # (trivy --ignore-unfixed). Findings remain in the report; enforcement is
+      # controlled separately by fail_on_findings.
       ignore_unfixed: { type: boolean, default: false }
+      # Development consumers may retain findings without blocking image builds.
+      # Scanner/tool errors remain fatal; strict blocking is the default.
+      fail_on_findings: { type: boolean, default: true }
       exceptions: { type: string, default: "{}" }
 
 permissions:
@@ -140,8 +144,8 @@ jobs:
           # GitHub Releases intermittently returns 5xx/504 on asset downloads.
           # Retry transport failures only; never fall back to another binary,
           # release, digest, cached scanner, or a waived security result.
-          # Both checksum verification and the subsequent Trivy HIGH/CRITICAL
-          # exit-code gate remain unconditional and fail closed.
+          # Checksum verification and scanner execution remain fail-closed;
+          # the consumer controls only whether findings block its gate.
           curl -fsSL --retry 4 --retry-all-errors --retry-delay 3 --retry-max-time 240 \
             --connect-timeout 15 --max-time 65 \
             -o "$asset" "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/${asset}"
@@ -150,19 +154,91 @@ jobs:
           sudo install -m 0755 trivy /usr/local/bin/trivy
 
       - name: Scan built image
+        id: container-scan
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
         env:
           IGNORE_UNFIXED: "${{ inputs.ignore_unfixed }}"
+          FAIL_ON_FINDINGS: "${{ inputs.fail_on_findings }}"
+          REPORT_DIR: "${{ runner.temp }}/foundation-container-scan"
         run: |
           set -euo pipefail
-          args=(--severity HIGH,CRITICAL --exit-code 1 --skip-version-check)
+          mkdir -p "$REPORT_DIR"
+          printf '{"schema_version":1,"state":"BLOCK","reason":"scan_incomplete"}\n' > "$REPORT_DIR/scan-status.json"
+          [[ "$FAIL_ON_FINDINGS" == "true" || "$FAIL_ON_FINDINGS" == "false" ]] || { echo "::error::fail_on_findings must be true or false"; exit 2; }
+          # Secret findings and scanner errors always block, independently of vulnerability policy.
+          trivy image --scanners secret --exit-code 1 --skip-version-check --format json \
+            --output "$RUNNER_TEMP/foundation-image-secrets-private.json" "foundation-scan:${{ github.sha }}" || {
+              echo "::error::Image secret finding or secret-scanner failure"
+              rm -f "$RUNNER_TEMP/foundation-image-secrets-private.json"
+              exit 1
+            }
+          ruby -rjson -e '
+            report = JSON.parse(File.read(ARGV.fetch(0)))
+            abort "secret scan schema invalid" unless report.is_a?(Hash) && report["SchemaVersion"] == 2
+            results = report.fetch("Results", [])
+            abort "secret inventory malformed" unless results.is_a?(Array)
+            count = results.sum do |item|
+              abort "secret result malformed" unless item.is_a?(Hash)
+              secrets = item.fetch("Secrets", []) || []
+              abort "secret list malformed" unless secrets.is_a?(Array)
+              secrets.length
+            end
+            abort "image secrets detected" if count > 0
+          ' "$RUNNER_TEMP/foundation-image-secrets-private.json" || {
+            rm -f "$RUNNER_TEMP/foundation-image-secrets-private.json"
+            exit 1
+          }
+          rm -f "$RUNNER_TEMP/foundation-image-secrets-private.json"
+          args=(--scanners vuln --severity HIGH,CRITICAL --exit-code 0 --skip-version-check --format json --output "$REPORT_DIR/trivy-vulnerability-raw.json")
           if [[ "$IGNORE_UNFIXED" == "true" ]]; then
             echo "::notice::Container scan ignores vulnerabilities without an upstream fix (ignore_unfixed opt-in)"
-            echo "- Container scan: unfixed vulnerabilities ignored (\`ignore_unfixed: true\`)" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Container scan: unfixed vulnerabilities ignored (ignore_unfixed: true)" >> "$GITHUB_STEP_SUMMARY"
             args+=(--ignore-unfixed)
           fi
+          # --exit-code 0 makes findings data, not a scanner failure. Download,
+          # database, parsing and execution errors still return non-zero.
           trivy image "${args[@]}" "foundation-scan:${{ github.sha }}"
+          ruby -rjson -e '
+            report = JSON.parse(File.read(ARGV.fetch(0)))
+            abort "Trivy report has an unsupported schema" unless report.is_a?(Hash) && report["SchemaVersion"] == 2
+            results = report["Results"]
+            if results.nil?
+              abort "Trivy report is missing artifact identity" unless report["ArtifactName"].is_a?(String) && report["ArtifactType"].is_a?(String) && report["ArtifactID"].to_s.match?(/\Asha256:[a-f0-9]{64}\z/) && report["Metadata"].is_a?(Hash)
+              results = []
+            end
+            abort "Trivy Results inventory is malformed" unless results.is_a?(Array)
+            findings = results.sum do |result|
+              abort "malformed Trivy result" unless result.is_a?(Hash)
+              values = result.fetch("Vulnerabilities", [])
+              values = [] if values.nil?
+              abort "malformed Trivy vulnerability inventory" unless values.is_a?(Array)
+              values.length
+            end
+            puts "HIGH/CRITICAL vulnerability findings: #{findings}"
+            if findings.positive?
+              if ENV.fetch("FAIL_ON_FINDINGS") == "true"
+                abort "HIGH/CRITICAL container findings are blocking under this consumer policy"
+              end
+              warn "::warning::Development-only vulnerability findings retained; this is not a DEV-10 publication approval"
+            end
+          ' "$REPORT_DIR/trivy-vulnerability-raw.json"
+          # A scan receipt records evidence; it does not authorize publication.
+          image_id="$(docker image inspect --format '{{.Id}}' "foundation-scan:${{ github.sha }}")"
+          [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ ]] || exit 1
+          report_sha="$(sha256sum "$REPORT_DIR/trivy-vulnerability-raw.json" | cut -d' ' -f1)"
+          jq -n --arg sha "$GITHUB_SHA" --arg image "$image_id" --arg report "$report_sha" --arg policy "$FAIL_ON_FINDINGS" \
+            --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
+            '{schema_version:1,state:"SCAN_EVIDENCE_ONLY",vulnerabilities_blocking:($policy == "true"),source_sha:$sha,local_image_id:$image,report_sha256:$report,run_id:$run,run_attempt:$attempt}' \
+            > "$REPORT_DIR/scan-status.json"
 
+      - name: Retain container vulnerability scan evidence
+        if: always() && steps.container-scan.outcome != 'skipped'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: foundation-container-trivy-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/foundation-container-scan/
+          if-no-files-found: error
+          retention-days: 30
       - name: Record container-scan exception
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] != null
         run: echo "::warning::Container vulnerability scan waived by an approved repository exception"

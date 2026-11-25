@@ -47,3 +47,17 @@ but it must not silently deploy or mutate a consumer repository.
 - Some changes require coordinated, separately reviewed pull requests.
 - Existing mixed-responsibility content in `baobab-cp` must be retired through
   an explicit migration rather than treated as the target architecture.
+
+
+## Reusable Foundation container finding policy
+
+The Shared reusable Foundation container gate is strict by default: HIGH and
+CRITICAL vulnerability findings fail the gate. It also supports an explicit
+consumer input to make findings non-blocking where the consumer's accepted
+development policy requires image-build continuity. This setting never skips
+the build or scan, never changes scanner coverage or output, and never converts
+findings into a clean result. The full vulnerability report is retained as
+evidence. Scanner, database, report-validation and tool failures remain fatal
+regardless of the finding policy. Consumers must select the non-blocking mode
+explicitly; release and protected-environment consumers retain strict
+blocking behavior.
