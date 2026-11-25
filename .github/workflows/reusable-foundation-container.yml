@@ -10,6 +10,9 @@ on:
       # Opt-in: skip vulnerabilities that have no fixed version upstream
       # (trivy --ignore-unfixed). Anything with an available fix still fails.
       ignore_unfixed: { type: boolean, default: false }
+      # report records vulnerability/secret findings without blocking development builds.
+      # block remains the default for every existing consumer.
+      findings_policy: { type: string, default: "block" }
       exceptions: { type: string, default: "{}" }
 
 permissions:
@@ -149,19 +152,123 @@ jobs:
           tar -xzf "$asset" trivy
           sudo install -m 0755 trivy /usr/local/bin/trivy
 
-      - name: Scan built image
+      - name: Scan built image and retain sanitized findings
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
         env:
+          FINDINGS_POLICY: "${{ inputs.findings_policy }}"
           IGNORE_UNFIXED: "${{ inputs.ignore_unfixed }}"
+          IMAGE: "foundation-scan:${{ github.sha }}"
+          EVIDENCE_DIR: "${{ runner.temp }}/foundation-container-evidence"
         run: |
           set -euo pipefail
-          args=(--severity HIGH,CRITICAL --exit-code 1 --skip-version-check)
+          [[ "$FINDINGS_POLICY" == "block" || "$FINDINGS_POLICY" == "report" ]] || {
+            echo "::error::findings_policy must be block or report"
+            exit 2
+          }
+          mkdir -p "$EVIDENCE_DIR"
+          # Create a diagnostic receipt before invoking the scanner, so failure
+          # paths retain a non-secret status artifact.
+          printf '{"schema_version":1,"state":"BLOCK","reason":"scan_incomplete"}\n' > "$EVIDENCE_DIR/scan-status.json"
+          vuln_raw="$RUNNER_TEMP/trivy-vulnerabilities-private.json"
+
+          # Exit code 1 is expected when findings exist. Validate the complete
+          # report and reject scanner diagnostics before applying the policy.
+          scan_args=(--scanners vuln,secret --severity HIGH,CRITICAL --ignorefile /dev/null --pkg-types os,library --exit-code 1 --skip-version-check)
           if [[ "$IGNORE_UNFIXED" == "true" ]]; then
-            echo "::notice::Container scan ignores vulnerabilities without an upstream fix (ignore_unfixed opt-in)"
-            echo "- Container scan: unfixed vulnerabilities ignored (\`ignore_unfixed: true\`)" >> "$GITHUB_STEP_SUMMARY"
-            args+=(--ignore-unfixed)
+            scan_args+=(--ignore-unfixed)
           fi
-          trivy image "${args[@]}" "foundation-scan:${{ github.sha }}"
+          set +e
+          trivy image "${scan_args[@]}" --format json --output "$vuln_raw" "$IMAGE" \
+            2>"$RUNNER_TEMP/trivy-scan-stderr.txt"
+          scan_rc=$?
+          set -e
+
+          # Require complete machine-readable reports. Only allowlisted
+          # metadata is retained; secret matches/snippets never leave runner.
+          if [[ ! -s "$vuln_raw" ]] || ! jq -e '.Results | type == "array"' "$vuln_raw" >/dev/null; then
+            echo "::error::Trivy did not produce a valid results inventory (exit $scan_rc)"
+            exit 1
+          fi
+          jq -e 'all(.Results[]; (.Target|type) == "string" and (.Target|length) > 0 and (.Type|type) == "string" and (.Type|length) > 0 and ((.Vulnerabilities // [])|type) == "array" and ((.Secrets // [])|type) == "array")' "$vuln_raw" >/dev/null
+          jq '{
+            schema_version: 1,
+            findings: [
+              .Results[]? as $r |
+              $r.Vulnerabilities[]? |
+              {
+                target: $r.Target,
+                type: $r.Type,
+                vulnerability_id: .VulnerabilityID,
+                package: .PkgName,
+                installed_version: .InstalledVersion,
+                fixed_version: (.FixedVersion // ""),
+                severity: .Severity,
+                title: (.Title // ""),
+                primary_url: (.PrimaryURL // "")
+              }
+            ]
+          }' "$vuln_raw" > "$EVIDENCE_DIR/vulnerabilities.json"
+          jq '{
+            schema_version: 1,
+            findings: [
+              .Results[]? as $r |
+              $r.Secrets[]? |
+              {
+                target: $r.Target,
+                category: (.Category // ""),
+                rule_id: (.RuleID // ""),
+                severity: (.Severity // ""),
+                title: (.Title // ""),
+                start_line: (.StartLine // 0),
+                end_line: (.EndLine // 0)
+              }
+            ]
+          }' "$vuln_raw" > "$EVIDENCE_DIR/secrets-sanitized.json"
+          vuln_count="$(jq '.findings | length' "$EVIDENCE_DIR/vulnerabilities.json")"
+          secret_count="$(jq '.findings | length' "$EVIDENCE_DIR/secrets-sanitized.json")"
+          if grep -Eq '(^|[[:space:]])(ERROR|FATAL)([[:space:]]|:)' "$RUNNER_TEMP/trivy-scan-stderr.txt" ||
+             { (( scan_rc != 0 )) && { (( scan_rc != 1 )) || (( vuln_count + secret_count == 0 )); }; }; then
+            cat "$RUNNER_TEMP/trivy-scan-stderr.txt" >&2
+            echo "::error::Trivy scan failed or returned no findings report"
+            exit 1
+          fi
+          rm -f "$vuln_raw" "$RUNNER_TEMP/trivy-scan-stderr.txt"
+
+          image_id="$(docker image inspect --format '{{.Id}}' "$IMAGE")"
+          [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ ]]
+          jq -n --arg commit "$GITHUB_SHA" --arg image "$image_id" \
+            --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
+            --arg scanner "$(trivy --version | head -n 1)" \
+            --arg policy "$FINDINGS_POLICY" --argjson vulnerabilities "$vuln_count" \
+            --argjson secrets "$secret_count" \
+            '{schema_version:1,source_commit:$commit,image_id:$image,run_id:$run,run_attempt:$attempt,scanner:$scanner,findings_policy:$policy,vulnerability_findings:$vulnerabilities,secret_findings:$secrets}' \
+            > "$EVIDENCE_DIR/scan-receipt.json"
+
+          echo "Vulnerability findings: $vuln_count; secret findings: $secret_count"
+          # Report-only is evidence collection, never a canonical DEV-10 pass.
+          jq -n --argjson secrets "$secret_count" --argjson vulns "$vuln_count" \
+            '{schema_version:1,state:"DELEGATION_PENDING",vulnerability_findings:$vulns,secret_findings:$secrets}' > "$EVIDENCE_DIR/scan-status.json"
+          if (( secret_count > 0 )); then
+            echo "::error::Container image secret findings always block"
+            exit 1
+          fi
+          if (( vuln_count > 0 )); then
+            if [[ "$FINDINGS_POLICY" == "block" ]]; then
+              echo "::error::Container scan found HIGH/CRITICAL vulnerabilities or secrets"
+              exit 1
+            fi
+            echo "::error::DELEGATION_PENDING: authenticated DEV-10 verdict verification is not implemented; report mode cannot authorize Foundation success"
+            exit 1
+          fi
+
+      - name: Retain sanitized container scan evidence
+        if: always() && inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] == null
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: foundation-container-scan-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/foundation-container-evidence/
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Record container-scan exception
         if: inputs.enabled && fromJSON(inputs.exceptions)['container-scan'] != null
