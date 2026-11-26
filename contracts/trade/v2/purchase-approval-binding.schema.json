@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/trade/v2/purchase-approval-binding.schema.json",
+  "title": "Trade high-value purchase approval attempt binding",
+  "description": "Server-owned binding facts for the initial HIGH_VALUE_APPROVAL assurance profile. This object is neither a credential nor a policy decision. Its shape does not register an endpoint, capability, issuer policy or grant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "operation", "intended_decision", "attempt_id", "authentication_binding",
+    "approver_principal_id", "initiator_principal_id", "tenant_id",
+    "seller_legal_entity_id", "canonical_organisation_id", "market_id",
+    "approval_id", "approval_revision", "purchase", "amount_minor", "currency",
+    "transaction_digest", "step_up_rule", "authority_digest"
+  ],
+  "properties": {
+    "operation": { "const": "trade.purchase-approval.decide" },
+    "intended_decision": { "const": "APPROVED" },
+    "attempt_id": { "$ref": "#/$defs/uuid", "description": "Server-minted unique attempt. Retries of this attempt retain the same identifier and binding." },
+    "authentication_binding": {
+      "$ref": "buyer-execution-context.schema.json#/$defs/transactionDigest",
+      "description": "IAM-issued confidential binding over the verified issuer, subject, provider session and confidential BFF session. A caller-supplied digest is not evidence."
+    },
+    "approver_principal_id": { "$ref": "#/$defs/uuid" },
+    "initiator_principal_id": { "$ref": "#/$defs/uuid" },
+    "tenant_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/tenantId" },
+    "seller_legal_entity_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/canonicalLegalEntityId" },
+    "canonical_organisation_id": { "$ref": "../../organisation/v2/domain.schema.json#/$defs/organisationId" },
+    "market_id": { "$ref": "../../control-plane/v1/domain.schema.json#/$defs/resourceId" },
+    "approval_id": { "$ref": "#/$defs/resourceIdentifier", "description": "Trade PurchaseApproval identifier in PENDING state at challenge creation and execution." },
+    "approval_revision": { "$ref": "#/$defs/revision", "description": "The Trade-owned approval row revision, distinct from the version of the underlying purchase." },
+    "purchase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id", "version"],
+      "properties": {
+        "kind": { "enum": ["CART", "QUOTATION"] },
+        "id": { "$ref": "#/$defs/resourceIdentifier" },
+        "version": { "$ref": "#/$defs/revision" }
+      }
+    },
+    "amount_minor": { "$ref": "#/$defs/minorUnits" },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "transaction_digest": { "$ref": "buyer-execution-context.schema.json#/$defs/transactionDigest" },
+    "step_up_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_revision", "threshold_minor", "comparison"],
+      "properties": {
+        "policy_revision": { "$ref": "#/$defs/resourceIdentifier" },
+        "threshold_minor": { "$ref": "#/$defs/minorUnits" },
+        "comparison": { "enum": ["ABOVE", "AT_OR_ABOVE"] }
+      },
+      "description": "Applicable governed A3 step-up rule in the transaction currency. An approver's independent spending ceiling is a distinct business constraint."
+    },
+    "authority_digest": {
+      "$ref": "buyer-execution-context.schema.json#/$defs/transactionDigest",
+      "description": "Binding to current security and commercial authority state, including applicable policy and membership revisions. Independently refreshed decision IDs and observation times are excluded from state equality."
+    }
+  },
+  "$defs": {
+    "uuid": { "type": "string", "format": "uuid" },
+    "resourceIdentifier": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "revision": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "minorUnits": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+  }
+}

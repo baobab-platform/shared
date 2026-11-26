@@ -188,3 +188,50 @@ Trade's own buyer relationship.
   means no native order commitment.
 
 Run `python scripts/tests/test_estate_commerce_classification.py`.
+
+### High-value purchase approval attempt (`purchase-approval-binding.schema.json`)
+
+Proposed initial connected IAM-N06 A3 profile for the existing
+`trade.purchase-approval.decide` operation. The first qualified outcome is
+`APPROVED` on a persistent, pending Trade PurchaseApproval. The approval row
+revision and underlying cart or quotation version have independent lifecycles.
+A resource without current authoritative version and valuation is ineligible.
+The approver and initiator must be different canonical Principals.
+
+Trade reads the complete current obligation and currency from its governed
+commercial records. The applicable, versioned step-up rule determines whether
+that amount crosses the A3 threshold in the same currency. The Trade approval
+policy that triggers escalation and the approver's spending ceiling remain
+separate inputs. Zero or multiple applicable rules, an unavailable source,
+and an amount that fails the selected comparison are ineligible for this
+profile.
+
+IAM verifies the WebAuthn ceremony and binds assurance to the current issuer,
+subject and provider/BFF sessions. IAM vouches for assurance only. CP resolves
+the current canonical Principal, Tenant and seller LegalEntity and supplies
+the applicable platform policy decision. Trade checks its independent buyer
+policy, authoritative purchase facts and pending approval under the execution
+fence. ZuriBeans forwards only the actor's intent and opaque identifiers from a
+confidential BFF with the original browser session. Raw session identifiers,
+proofs and transaction claims must stay out of browser-visible evidence,
+logs, telemetry and business events. OAuth login and consent do not redeem
+approval proof.
+
+The current authenticated binding, CP and Trade authority state, approval
+revision, purchase version, amount/currency, digest, outcome and rule must
+all match the attempted decision. Missing or different evidence refuses the
+transition. Recheck authority and commercial facts immediately before the
+write. A stable attempt ID with different facts or a reused proof for another
+attempt cannot execute. A denied or failed authorization makes no business
+change. In one Trade database transaction the owner must fence the proof ID,
+transition the pending approval and record the outcome. Rollback removes the
+uncommitted redemption and outcome. An ambiguous response is resolved by
+authorized readback of the original outcome on the same bound attempt before
+anything is re-executed. An IAM handoff issued more than once for the same
+ceremony must retain its original proof and attempt identities. Source pins,
+original authorization and domain outcome evidence, and independent replay
+and failure readback are required for DEV-07/DEV-11 acceptance.
+
+This proposal leaves the HTTP transport, reviewed issuer profile and digest
+construction for companion approval. Schema validation alone establishes
+neither matching authority nor single-use execution.
