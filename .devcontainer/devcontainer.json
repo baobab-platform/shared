@@ -1,6 +1,6 @@
 {
   "name": "Baobab Shared Contracts — governed development",
-  "image": "ghcr.io/baobab-platform/baobab-dev:1.4.4",
+  "image": "ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371",
   "remoteUser": "vscode",
   "updateRemoteUserUID": true,
   "init": true,
@@ -43,11 +43,6 @@
         "redhat.vscode-yaml",
         "dbaeumer.vscode-eslint"
       ]
-    }
-  },
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "24.21.0"
     }
   }
 }
