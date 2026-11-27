@@ -8,7 +8,7 @@ const root=resolve(fileURLToPath(new URL("../..",import.meta.url)));
 const config=JSON.parse(readFileSync(resolve(root,".devcontainer/devcontainer.json"),"utf8"));
 const manifest=JSON.parse(readFileSync(resolve(root,"package.json"),"utf8"));
 test("v1.4.4 Codespaces image and nonblocking startup",()=>{
-  assert.equal(config.image,"ghcr.io/baobab-platform/baobab-dev:1.4.4");
+  assert.equal(config.image,"ghcr.io/baobab-platform/baobab-dev:1.4.4-frontend@sha256:1b3165067912eacbca96b576efb67e0428850b1ff1a953aa9013127a01635371");
   assert.equal(config.remoteUser,"vscode");assert.equal(config.waitFor,"postCreateCommand");
   assert.equal(config.updateContentCommand,undefined);
   assert.doesNotMatch(config.postCreateCommand,/install|private-npm|bootstrap/);
