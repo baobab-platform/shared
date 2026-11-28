@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.baobab-platform.com/identity/v1/session-risk-observation.schema.json",
+  "title": "Current IAM session risk and recovery observation",
+  "description": "Private server-to-server evidence for IAM assurance. The responding security authority authenticates the calling workload, independently verifies the exact provider session and applicable canonical binding, and reads current risk and recovery evidence. A clear recovery result requires a complete, fresh event watermark. The contract carries no browser credentials, privileged approval, or business permission.",
+  "$defs": {
+    "OriginalReference": {
+      "type": "string",
+      "pattern": "^ref_[a-z0-9_-]{8,128}$"
+    },
+    "ObserveRequest": {
+      "description": "The authenticated BFF supplies a fresh nonce for each exact issuer, subject, session and operation lookup.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer",
+        "subject",
+        "session_id",
+        "operation",
+        "nonce"
+      ],
+      "properties": {
+        "issuer": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "maxLength": 512
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "operation": {
+          "enum": [
+            "LOGIN",
+            "BUYER_COMMIT",
+            "HIGH_VALUE_APPROVAL",
+            "CREDENTIAL_CHANGE",
+            "RECOVERY_REBIND",
+            "PRIVILEGED_GRANT",
+            "BREAK_GLASS"
+          ]
+        },
+        "nonce": {
+          "type": "string",
+          "minLength": 48,
+          "maxLength": 48,
+          "pattern": "^[0-9a-f]{48}$"
+        }
+      }
+    },
+    "Observation": {
+      "description": "The authority echoes the exact request tuple and nonce. Both source timestamps must be current within 30 seconds. The recovery cursor may not follow the observation. Unknown, incomplete, stale or unauthorized evidence does not produce an observation.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer",
+        "subject",
+        "session_id",
+        "operation",
+        "nonce",
+        "level",
+        "observed_at",
+        "recovery_state",
+        "recovery_checked_through",
+        "risk_reference",
+        "recovery_reference"
+      ],
+      "properties": {
+        "issuer": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "maxLength": 512
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "operation": {
+          "enum": [
+            "LOGIN",
+            "BUYER_COMMIT",
+            "HIGH_VALUE_APPROVAL",
+            "CREDENTIAL_CHANGE",
+            "RECOVERY_REBIND",
+            "PRIVILEGED_GRANT",
+            "BREAK_GLASS"
+          ]
+        },
+        "nonce": {
+          "type": "string",
+          "minLength": 48,
+          "maxLength": 48,
+          "pattern": "^[0-9a-f]{48}$"
+        },
+        "level": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "recovery_state": {
+          "enum": [
+            "clear",
+            "hold",
+            "suspicious"
+          ]
+        },
+        "recovery_checked_through": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "risk_reference": {
+          "$ref": "#/$defs/OriginalReference"
+        },
+        "recovery_reference": {
+          "$ref": "#/$defs/OriginalReference"
+        }
+      }
+    }
+  }
+}
